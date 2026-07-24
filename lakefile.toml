@@ -1,0 +1,6 @@
+name = "reversible-pebbling-lean"
+version = "0.1.0"
+defaultTargets = ["GenJanus"]
+
+[[lean_lib]]
+name = "GenJanus"
