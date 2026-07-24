@@ -171,4 +171,62 @@ the largest instance under the 120 s/theorem budget; f_60 (≈ 360 s)
 is cut, see the file docstring. -/
 theorem rle_f_50 : fRLE 50 = 328129268250340571627 := by native_decide
 
+
+-- ------------------------------------------------------------------
+-- Phase 3 of the ratio-convergence programme (追記23/28): certify the
+-- log-concavity family and the corner-based reduction inequality
+-- G_{p+1}·f_{p-1} ≤ G_p·f_p on exact values via the RLE rows.
+-- G_p = F(2^{p-2}, p) is a prefix sum of row p.
+-- ------------------------------------------------------------------
+
+/-- Prefix sum of the first t entries of an RLE row, plus 1
+(i.e. F(t+1, S) when the row is row S). -/
+def rleFpre (row : RLERow) (t : Nat) : Nat := Id.run do
+  let mut left := t
+  let mut acc := 1
+  for h : i in [0:row.size] do
+    let (v, c) := row[i]
+    if left ≤ c then
+      acc := acc + v * left
+      left := 0
+      break
+    acc := acc + v * c
+    left := left - c
+  return acc
+
+/-- G_p = F(2^{p-2}, p). -/
+def gRLE (rows : Array RLERow) (p : Nat) : Nat :=
+  rleFpre rows[p - 1]! (2 ^ (p - 2) - 1)
+
+/-- BOUNDED: sanity of the prefix reader against the DP table:
+rleFpre matches F(2^{p-2}, p) for p = 3..7 (G_3..G_7 = 3, 7, 21, 51,
+145 from the 64-wide table). -/
+theorem g_rle_small :
+    (let rows := rleRows 7
+     [gRLE rows 3, gRLE rows 4, gRLE rows 5, gRLE rows 6, gRLE rows 7])
+      = [3, 7, 21, 51, 145] := by native_decide
+
+/-- BOUNDED Phase 3 (log-concavity of f): f_{p+2}·f_p ≤ f_{p+1}² for
+all 15 ≤ p ≤ 38 (so the ratio f_{p+1}/f_p is nonincreasing there);
+together with `RatioConvergence.ratio_cauchy_of_eventually_logconcave`
+this certifies the Cauchy property on the verified range. -/
+theorem f_logconcave_15_40 :
+    (let rows := rleRows 40
+     (List.range 24).all fun i =>
+       let p := i + 15
+       decide ((rleF rows[p + 1]!) * (rleF rows[p - 1]!) ≤
+         (rleF rows[p]!) * (rleF rows[p]!))) = true := by
+  native_decide
+
+/-- BOUNDED Phase 3 (reduction inequality): G_{p+1}·f_{p-1} ≤ G_p·f_p
+for 15 ≤ p ≤ 39 — the single family to which ratio convergence was
+reduced (追記22), certified on exact values. -/
+theorem g_reduction_inequality_15_40 :
+    (let rows := rleRows 40
+     (List.range 25).all fun i =>
+       let p := i + 15
+       decide ((gRLE rows (p + 1)) * (rleF rows[p - 2]!) ≤
+         (gRLE rows p) * (rleF rows[p - 1]!))) = true := by
+  native_decide
+
 end GenJanus.RLEPebble
