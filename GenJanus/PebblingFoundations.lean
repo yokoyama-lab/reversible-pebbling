@@ -421,4 +421,130 @@ theorem reverse_append_roundtrip (b : Board) (s : List Nat)
   · rw [exec_append]; exact exec_reverse_cancel b s
   · rw [maxOnes_append, maxOnes_reverse, Nat.max_self]
 
+
+-- ------------------------------------------------------------------
+-- Prefix coverage and roundtrip completeness (this work, 追記20):
+-- entry infrastructure for the general impossibility side of
+-- Knill Thm 2.3.  Roadmap (Královič Lemma 4.2/4.3 adapted to clean
+-- reach; see notes/research-plan 追記20):
+--   (a) prefix coverage: a legal computation that ever pebbles v
+--       from a v-empty prefix must ever pebble every j ≤ v  [PROVED]
+--   (b) roundtrip: a clean reach K yields the complete computation
+--       K ++ rev(K) with the same peak, covering all of 1..n [PROVED]
+--   (c) middle-vertex induction: any complete computation of Ch(m)
+--       with peak ≤ p has m ≤ 2^p - 1                      [future]
+--   (d) corollary via the junction board {n} forcing the middle
+--       vertex to n: clean reach n with peak p ⇒ n ≤ 2^{p-1} [future]
+-- ------------------------------------------------------------------
+
+/-- Node v is pebbled at some point (including the start) of the
+trace of `s` from `b`. -/
+def everOn (b : Board) (s : List Nat) (v : Nat) : Prop :=
+  ∃ k, nth (execB b (s.take k)) v = true
+
+theorem everOn_start {b : Board} {s : List Nat} {v : Nat}
+    (h : nth b v = true) : everOn b s v :=
+  ⟨0, by simpa [execB] using h⟩
+
+theorem everOn_cons {b : Board} {i : Nat} {s : List Nat} {v : Nat}
+    (h : everOn (toggle b i) s v) : everOn b (i :: s) v := by
+  obtain ⟨k, hk⟩ := h
+  exact ⟨k + 1, by simpa [execB] using hk⟩
+
+/-- Single descent step: if v was unpebbled at the start and is ever
+pebbled, then (unless v = 0) node v-1 is also ever pebbled. -/
+theorem everOn_descend :
+    ∀ (s : List Nat) (b : Board) (v : Nat), legalB b s = true →
+      nth b v = false → everOn b s v → v = 0 ∨ everOn b s (v - 1) := by
+  intro s
+  induction s with
+  | nil =>
+      intro b v _ hb hev
+      obtain ⟨k, hk⟩ := hev
+      simp [execB] at hk
+      rw [hb] at hk
+      exact absurd hk (by simp)
+  | cons i rest ih =>
+      intro b v hleg hb hev
+      have hok : okMove b i = true ∧ legalB (toggle b i) rest = true := by
+        simpa [legalB, Bool.and_eq_true] using hleg
+      by_cases hiv : i = v
+      · subst hiv
+        rcases (by simpa [okMove, Bool.or_eq_true] using hok.1 :
+            (i == 0) = true ∨ nth b (i - 1) = true) with h0 | hprev
+        · exact Or.inl (by simpa using h0)
+        · exact Or.inr (everOn_start hprev)
+      · have hb' : nth (toggle b i) v = false := by
+          rw [show nth (toggle b i) v = nth b v from
+            nth_set_ne b i v _ hiv]
+          exact hb
+        have hev' : everOn (toggle b i) rest v := by
+          obtain ⟨k, hk⟩ := hev
+          match k with
+          | 0 =>
+              simp [execB] at hk
+              rw [hb] at hk
+              exact absurd hk (by simp)
+          | k + 1 =>
+              exact ⟨k, by simpa [execB] using hk⟩
+        rcases ih (toggle b i) v hok.2 hb' hev' with h0 | hcov
+        · exact Or.inl h0
+        · exact Or.inr (everOn_cons hcov)
+
+/-- PREFIX COVERAGE: from the empty board, a legal computation that
+ever pebbles v ever pebbles every j ≤ v. -/
+theorem coverage (n : Nat) (s : List Nat) (v : Nat)
+    (hleg : legalB (List.replicate n false) s = true)
+    (hv : everOn (List.replicate n false) s v) :
+    ∀ j, j ≤ v → everOn (List.replicate n false) s j := by
+  induction v with
+  | zero =>
+      intro j hj
+      have : j = 0 := by omega
+      subst this
+      exact hv
+  | succ v ihv =>
+      intro j hj
+      have hstep := everOn_descend s (List.replicate n false) (v + 1)
+        hleg (nth_replicate n (v + 1)) hv
+      rcases hstep with h0 | hcov
+      · omega
+      · simp at hcov
+        rcases Nat.lt_or_ge j (v + 1) with hlt | hge
+        · exact ihv hcov j (by omega)
+        · have : j = v + 1 := by omega
+          subst this
+          exact hv
+
+/-- everOn is monotone under appending further moves. -/
+theorem everOn_append_left {b : Board} {s t : List Nat} {v : Nat}
+    (h : everOn b s v) : everOn b (s ++ t) v := by
+  obtain ⟨k, hk⟩ := h
+  refine ⟨min k s.length, ?_⟩
+  rw [List.take_append_of_le_length (Nat.min_le_right k s.length)]
+  rcases Nat.le_total k s.length with hle | hge
+  · rwa [Nat.min_eq_left hle]
+  · rw [Nat.min_eq_right hge, List.take_of_length_le (Nat.le_refl _)]
+    rwa [List.take_of_length_le hge] at hk
+
+/-- ROUNDTRIP COMPLETENESS: a legal computation from the empty board
+that ends with node v pebbled yields, by appending its own reverse, a
+COMPLETE computation -- legal, returning to empty, covering every
+node ≤ v -- with exactly the same peak. -/
+theorem roundtrip_complete (n : Nat) (s : List Nat) (v : Nat)
+    (hleg : legalB (List.replicate n false) s = true)
+    (hend : nth (execB (List.replicate n false) s) v = true) :
+    legalB (List.replicate n false) (s ++ s.reverse) = true ∧
+    execB (List.replicate n false) (s ++ s.reverse) =
+      List.replicate n false ∧
+    maxOnes (List.replicate n false) (s ++ s.reverse) =
+      maxOnes (List.replicate n false) s ∧
+    (∀ j, j ≤ v → everOn (List.replicate n false) (s ++ s.reverse) j) := by
+  obtain ⟨h1, h2, h3⟩ := reverse_append_roundtrip _ s hleg
+  refine ⟨h1, h2, h3, ?_⟩
+  intro j hj
+  have hv : everOn (List.replicate n false) s v :=
+    ⟨s.length, by simpa [List.take_of_length_le (Nat.le_refl _)] using hend⟩
+  exact everOn_append_left (coverage n s v hleg hv j hj)
+
 end GenJanus.PebblingFoundations
