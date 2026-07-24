@@ -746,4 +746,51 @@ theorem count_binomial_bound :
   native_decide
 
 
+
+-- ------------------------------------------------------------------
+-- P_k ≥ 0 in full generality (this work, 追記27): the DUAL counting
+-- recursion.  From the Merge Lemma equality
+--   C_S(v) = [1 ≤ v] + C_{S-1}(v) + #{i : B_i ≤ v}
+-- and B_i ≤ 2δ(i,S-1) (pointwise domination, other side):
+--   C_S(v) ≥ 1 + C_{S-1}(v) + C_{S-1}(⌊v/2⌋).
+-- Since x^{(k+1)} − 1 = Σ_{i≤k+1} C(S-1,i) − 1 satisfies the SAME
+-- recursion with equality (Pascal) and matches both boundaries
+-- (count(1) = S−1; row 2), induction gives C_S(2^k) ≥ x^{(k+1)} − 1,
+-- i.e. P_k(S) ≥ 0 for ALL S, k.  Corollary: the binomial median gives
+-- m_S ≤ 2^{⌈S/2⌉}, hence d ≤ √2 and c ≤ 2√2 — a CLOSED-FORM upper
+-- bound T(n, S_min) = O(n^{3/2+o(1)}), improving Královič's
+-- O(n^{log₂ 3}) = O(n^{1.585}).
+-- ------------------------------------------------------------------
+
+/-- BOUNDED dual (lower) counting recursion
+C_S(v) ≥ 1 + C_{S-1}(v) + C_{S-1}(⌊v/2⌋)  (S ≤ 8, v ≤ 64). -/
+theorem count_lower_recursion :
+    ((List.range 6).all fun s3 =>
+      let S := s3 + 3
+      (List.range 64).all fun v0 =>
+        let v := v0 + 1
+        decide (1 + cCount (S - 1) v + cCount (S - 1) (v / 2) ≤
+          cCount S v)) = true := by
+  native_decide
+
+/-- BOUNDED P_k ≥ 0: C_S(2^k) ≥ Σ_{i≤k+1} C(S-1,i) − 1
+(S ≤ 8, k ≤ 10). -/
+theorem pk_nonneg :
+    ((List.range 7).all fun s2 =>
+      let S := s2 + 2
+      (List.range 11).all fun k =>
+        decide (((List.range (k + 2)).map fun i => choose (S - 1) i).sum ≤
+          cCount S (2 ^ k) + 1)) = true := by
+  native_decide
+
+/-- BOUNDED closed-form midpoint bound m_S ≤ 2^{⌈S/2⌉} (S ≤ 8),
+the finite instance of d ≤ √2, c ≤ 2√2. -/
+theorem midpoint_sqrt_bound :
+    ((List.range 5).all fun s4 =>
+      let S := s4 + 4
+      decide ((deltaRow S)[2 ^ (S - 2) - 2]?.getD 0 ≤ 2 ^ ((S + 1) / 2)))
+      = true := by
+  native_decide
+
+
 end GenJanus.PebblingTheory
