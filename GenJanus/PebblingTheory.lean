@@ -642,4 +642,35 @@ theorem c_below_three_witness :
     fval 4 = some 25 ∧ 25 < 3 ^ 3 := by
   native_decide
 
+-- ------------------------------------------------------------------
+-- Lower-bound side (this work, 追記14): via the Merge Lemma,
+-- total(row S) = 1 + total(row S-1) + total(B) and B_i ≥ δ(i,S-1),
+-- so f_S ≥ 2 f_{S-1} - 1 and hence c ≥ 2 (matching the exponent of
+-- Královič's Ω(n lg n)).  Beyond 2 the corner identity reduces a
+-- bound c ≥ 2 + θ to the pointwise row ratio δ(i,S) ≥ θ δ(i,S-1)
+-- (measured min = m_S/Δmax(S-1) ≈ 0.276 at S = 60); its
+-- unconditional proof needs the transition regime and remains open.
+-- ------------------------------------------------------------------
+
+/-- BOUNDED lower recursion f_S ≥ 2 f_{S-1} - 1 (grid S ≤ 7). -/
+theorem fval_lower_doubling :
+    ((List.range 6).all fun s2 =>
+      let S := s2 + 2
+      match fval S, fval (S - 1) with
+      | some a, some b => decide (2 * b - 1 ≤ a)
+      | _, _ => false) = true := by
+  native_decide
+
+/-- BOUNDED pointwise row-ratio floor: 4 δ(i,S) ≥ δ(i,S-1) for all
+i ≤ 2^{S-2} on the grid S ≤ 8 (the measured asymptotic floor is
+≈ 0.276 > 1/4). -/
+theorem delta_pointwise_ratio_floor :
+    ((List.range 6).all fun s3 =>
+      let S := s3 + 3
+      let cur := deltaRow S
+      let prev := deltaRow (S - 1)
+      (List.range (2 ^ (S - 2) - 1)).all fun i =>
+        decide (prev[i]?.getD 0 ≤ 4 * (cur[i]?.getD 0))) = true := by
+  native_decide
+
 end GenJanus.PebblingTheory
