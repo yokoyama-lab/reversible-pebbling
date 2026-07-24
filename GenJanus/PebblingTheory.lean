@@ -673,4 +673,41 @@ theorem delta_pointwise_ratio_floor :
         decide (prev[i]?.getD 0 ≤ 4 * (cur[i]?.getD 0))) = true := by
   native_decide
 
+-- ------------------------------------------------------------------
+-- THEOREM c = 2d (this work, 追記15).  Sandwich:
+--   2^{S-1} · m_S ≤ f_S ≤ 2^S · M_S   and   M_S ≤ S · m_S,
+-- where m_S is the midpoint value and M_S = Δmax/2 the row maximum.
+-- (Lower: sortedness puts ≥ 2^{S-2} entries ≥ m_S past the midpoint;
+--  M_S ≤ S·m_S from the Merge-Lemma max decomposition
+--  M_S = m_S + M_{S-1} and midpoint monotonicity; upper: trivial.)
+-- Hence f_S = 2^S M_S · Θ(S)^{±1}, and since c = lim f_S^{1/(S-1)}
+-- exists (Fekete, via fval_submult), the root limit
+-- d = lim M_S^{1/(S-1)} exists and c = 2d.
+-- ------------------------------------------------------------------
+
+/-- BOUNDED sandwich for c = 2d, grid 3 ≤ S ≤ 8 (halved rows;
+f_S = 1 + 2·Σδ). -/
+theorem c_eq_2d_sandwich :
+    ((List.range 6).all fun s3 =>
+      let S := s3 + 3
+      let r := deltaRow S
+      let f := 1 + 2 * r.sum
+      let m := r[2 ^ (S - 2) - 2]?.getD 0
+      let M := r.foldl max 0
+      decide (2 ^ (S - 1) * m ≤ f) &&
+      decide (f ≤ 2 ^ S * M) &&
+      decide (M ≤ S * m)) = true := by
+  native_decide
+
+/-- BOUNDED Merge-Lemma max decomposition M_S = m_S + M_{S-1}
+(grid 4 ≤ S ≤ 8). -/
+theorem max_decomposition :
+    ((List.range 5).all fun s4 =>
+      let S := s4 + 4
+      let m := (deltaRow S)[2 ^ (S - 2) - 2]?.getD 0
+      let M := (deltaRow S).foldl max 0
+      let Mp := (deltaRow (S - 1)).foldl max 0
+      M == m + Mp) = true := by
+  native_decide
+
 end GenJanus.PebblingTheory
