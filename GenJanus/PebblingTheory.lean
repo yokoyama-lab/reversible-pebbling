@@ -710,4 +710,40 @@ theorem max_decomposition :
       M == m + Mp) = true := by
   native_decide
 
+
+-- ------------------------------------------------------------------
+-- The counting recursion behind the rigorous lower bound
+-- c ≥ 2^{1+ε*} ≈ 2.4518 (this work, 追記25; paper proof in
+-- notes/c-lower-bound-draft.md).  From the Merge Lemma and pointwise
+-- domination: C_S(v) ≤ 1 + C_{S-1}(v) + C_S(⌊v/2⌋), whence
+-- C_S(2^k) ≤ 2·C(S+k-1, k+1) − 1 by a Pascal induction, so all but
+-- an exponentially small fraction of the row exceeds 2^{εS} for
+-- ε < ε* (root of (1+ε)H(ε/(1+ε)) = 1) and f_S ≥ 2^{(1+ε)S − o(S)}.
+-- ------------------------------------------------------------------
+
+/-- #entries of the halved row of S with value ≤ v. -/
+def cCount (S v : Nat) : Nat := ((deltaRow S).filter (· ≤ v)).length
+
+/-- BOUNDED counting recursion C_S(v) ≤ 1 + C_{S-1}(v) + C_S(⌊v/2⌋)
+(S ≤ 8, v ≤ 64). -/
+theorem count_recursion :
+    ((List.range 6).all fun s3 =>
+      let S := s3 + 3
+      (List.range 64).all fun v0 =>
+        let v := v0 + 1
+        decide (cCount S v ≤ 1 + cCount (S - 1) v + cCount S (v / 2))) =
+      true := by
+  native_decide
+
+/-- BOUNDED binomial bound C_S(2^k) ≤ 2·C(S+k-1, k+1) − 1
+(S ≤ 8, k ≤ 8). -/
+theorem count_binomial_bound :
+    ((List.range 7).all fun s2 =>
+      let S := s2 + 2
+      (List.range 9).all fun k =>
+        decide (cCount S (2 ^ k) + 1 ≤ 2 * choose (S + k - 1) (k + 1))) =
+      true := by
+  native_decide
+
+
 end GenJanus.PebblingTheory
