@@ -2,5 +2,6 @@ import GenJanus.PebblingGame
 import GenJanus.PebblingFoundations
 import GenJanus.PebblingTheory
 import GenJanus.MergeLemma
+import GenJanus.CountRecursion
 import GenJanus.RatioConvergence
 import GenJanus.RLEPebble
