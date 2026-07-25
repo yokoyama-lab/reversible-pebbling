@@ -19,9 +19,14 @@ Main results:
   board satisfying the natural frame conditions;
 * `reach_two_pow` — the achievability half of the reach
   characterisation: for every `p ≥ 1` a chain of length `2^(p-1)` can
-  be cleanly reached with peak `p` (Bennett 1973/1989; the matching
-  impossibility half, Knill 1995 Thm 2.3, is checked exhaustively in
-  `PebblingTheory.lean` and remains future work as a general proof).
+  be cleanly reached with peak `p` (Bennett 1973/1989);
+* `complete_bound` / `reach_impossible_general` — the matching
+  impossibility half (Knill 1995 Thm 2.3), fully general: a complete
+  computation with peak P covers at most 2^P - 1 cells
+  (middle-vertex induction through the unconditional restriction
+  lemmas), hence a clean reach of cell v with peak p has
+  v + 1 ≤ 2^(p-1).  Together the two halves characterise the game
+  exactly: reach(p) = 2^(p-1).
 -/
 
 namespace GenJanus.PebblingFoundations
@@ -823,5 +828,595 @@ theorem everOn_keepBelow {b : Board} {s : List Nat} {v x : Nat}
   rw [show (keepBelow x s).take j = keepBelow x (s.take k) from hj,
       ← execB_keepBelow, nth_take _ _ _ hv]
   exact hk
+
+-- ------------------------------------------------------------------
+-- Middle-vertex machinery (roadmap steps (d)-(f), 追記32): helper
+-- lemmas for the general impossibility theorem.
+-- ------------------------------------------------------------------
+
+/-- Every prefix pebble count is bounded by the peak. -/
+theorem ones_prefix_le_maxOnes :
+    ∀ (s : List Nat) (b : Board) (k : Nat),
+      ones (execB b (s.take k)) ≤ maxOnes b s
+  | [], b, k => by simp [execB, maxOnes]
+  | i :: rest, b, 0 => by
+      simpa [execB] using ones_le_maxOnes b (i :: rest)
+  | i :: rest, b, k + 1 => by
+      have := ones_prefix_le_maxOnes rest (toggle b i) k
+      show ones (execB (toggle b i) (rest.take k)) ≤ _
+      exact Nat.le_trans this (Nat.le_max_right _ _)
+
+/-- Conversely, the peak is bounded by any uniform prefix bound. -/
+theorem maxOnes_le_of_prefixes :
+    ∀ (s : List Nat) (b : Board) (K : Nat),
+      (∀ k, ones (execB b (s.take k)) ≤ K) → maxOnes b s ≤ K
+  | [], b, K, h => by
+      show ones b ≤ K
+      simpa [execB] using h 0
+  | i :: rest, b, K, h => by
+      show max (ones b) (maxOnes (toggle b i) rest) ≤ K
+      have h0 : ones b ≤ K := by simpa [execB] using h 0
+      have h1 : maxOnes (toggle b i) rest ≤ K := by
+        apply maxOnes_le_of_prefixes
+        intro k
+        simpa [execB] using h (k + 1)
+      omega
+
+theorem nth_true_lt_length {b : Board} {v : Nat} (h : nth b v = true) :
+    v < b.length := by
+  by_cases hlt : v < b.length
+  · exact hlt
+  · rw [nth_ge_length b v (by omega)] at h
+    exact absurd h (by simp)
+
+theorem ones_pos_of_nth' :
+    ∀ (b : Board) (v : Nat), nth b v = true → 1 ≤ ones b
+  | [], v, h => by simp [nth] at h
+  | a :: t, 0, h => by
+      have ha : a = true := h
+      subst ha
+      simp [ones]
+  | a :: t, v + 1, h => by
+      have := ones_pos_of_nth' t v (by simpa [nth] using h)
+      cases a <;> simp [ones] at this ⊢ <;> omega
+
+theorem ones_pos_of_nth {b : Board} {v : Nat} (h : nth b v = true) :
+    1 ≤ ones b := ones_pos_of_nth' b v h
+
+/-- Cells untouched by the move list keep their value on every
+prefix. -/
+theorem nth_exec_of_not_mem :
+    ∀ (t : List Nat) (b : Board) (x : Nat), x ∉ t →
+      nth (execB b t) x = nth b x
+  | [], _, _, _ => rfl
+  | i :: rest, b, x, hx => by
+      have hxi : x ≠ i := fun hc => hx (hc ▸ List.mem_cons_self ..)
+      have hrest : x ∉ rest := fun hc => hx (List.mem_cons_of_mem _ hc)
+      show nth (execB (toggle b i) rest) x = nth b x
+      rw [nth_exec_of_not_mem rest (toggle b i) x hrest]
+      exact nth_set_ne b i x _ (fun hc => hxi hc.symm)
+
+/-- Last-occurrence split: any list containing x splits as
+u₁ ++ x :: u₂ with x ∉ u₂. -/
+theorem last_occurrence_split {x : Nat} :
+    ∀ {u : List Nat}, x ∈ u →
+      ∃ u₁ u₂, u = u₁ ++ x :: u₂ ∧ x ∉ u₂ := by
+  intro u
+  induction u with
+  | nil => intro h; exact absurd h (by simp)
+  | cons i rest ih =>
+      intro h
+      by_cases hr : x ∈ rest
+      · obtain ⟨u₁, u₂, heq, hnot⟩ := ih hr
+        exact ⟨i :: u₁, u₂, by rw [heq]; rfl, hnot⟩
+      · have hxi : x = i := by
+          rcases List.mem_cons.mp h with h1 | h2
+          · exact h1
+          · exact absurd h2 hr
+        exact ⟨[], rest, by rw [hxi]; rfl, hr⟩
+
+/-- A prefix that is pointwise unpebbled is literally the empty
+board. -/
+theorem take_all_false_replicate' :
+    ∀ (b : Board) (x : Nat), x ≤ b.length →
+      (∀ j, j < x → nth b j = false) →
+      b.take x = List.replicate x false
+  | _, 0, _, _ => by simp
+  | [], x + 1, hlen, _ => by simp at hlen
+  | a :: t, x + 1, hlen, h => by
+      have ha : a = false := h 0 (by omega)
+      subst ha
+      have ht := take_all_false_replicate' t x (by simpa using hlen)
+        (fun j hj => by simpa [nth] using h (j + 1) (by omega))
+      simp [List.replicate_succ, ht]
+
+theorem take_all_false_replicate {b : Board} {x : Nat}
+    (hlen : x ≤ b.length) (h : ∀ j, j < x → nth b j = false) :
+    b.take x = List.replicate x false :=
+  take_all_false_replicate' b x hlen h
+
+/-- One pebble at or beyond the cut is invisible to the taken part:
+ones (b.take x) < ones b whenever cell x is pebbled. -/
+theorem ones_take_lt_of_nth {b : Board} {x : Nat}
+    (h : nth b x = true) : ones (b.take x) + 1 ≤ ones b := by
+  have hsplit := ones_take_drop b x
+  have hdrop : nth (b.drop x) 0 = true := by
+    rw [nth_drop]
+    simpa using h
+  have := ones_pos_of_nth hdrop
+  omega
+
+/-- Converse prefix correspondence: every prefix of a filtered list
+is the filter of some prefix. -/
+theorem filter_take_surj (p : Nat → Bool) :
+    ∀ (s : List Nat) (j : Nat),
+      ∃ k, (s.filter p).take j = (s.take k).filter p
+  | [], j => ⟨0, by simp⟩
+  | i :: rest, j => by
+      cases hp : p i with
+      | true =>
+          match j with
+          | 0 => exact ⟨0, by simp⟩
+          | j + 1 =>
+              obtain ⟨k, hk⟩ := filter_take_surj p rest j
+              exact ⟨k + 1, by simp [hp, hk]⟩
+      | false =>
+          obtain ⟨k, hk⟩ := filter_take_surj p rest j
+          exact ⟨k + 1, by simp [hp, hk]⟩
+
+/-- Index of the first pebble, if any. -/
+def firstOn : Board → Option Nat
+  | [] => none
+  | true :: _ => some 0
+  | false :: t => (firstOn t).map (· + 1)
+
+theorem firstOn_spec :
+    ∀ (b : Board) (v : Nat), firstOn b = some v →
+      nth b v = true ∧ ∀ j, j < v → nth b j = false
+  | [], v, h => by simp [firstOn] at h
+  | true :: t, v, h => by
+      have hv : v = 0 := by simpa [firstOn] using h.symm
+      subst hv
+      exact ⟨rfl, by omega⟩
+  | false :: t, v, h => by
+      simp only [firstOn, Option.map_eq_some_iff] at h
+      obtain ⟨w, hw, hwv⟩ := h
+      obtain ⟨h1, h2⟩ := firstOn_spec t w hw
+      subst hwv
+      refine ⟨by simpa [nth] using h1, ?_⟩
+      intro j hj
+      cases j with
+      | zero => rfl
+      | succ j' => simpa [nth] using h2 j' (by omega)
+
+theorem firstOn_none :
+    ∀ (b : Board), firstOn b = none → ∀ v, nth b v = false
+  | [], _, v => by simp [nth]
+  | true :: t, h, v => by simp [firstOn] at h
+  | false :: t, h, v => by
+      simp only [firstOn, Option.map_eq_none_iff] at h
+      cases v with
+      | zero => rfl
+      | succ v' => simpa [nth] using firstOn_none t h v'
+
+theorem firstOn_isSome_of_nth {b : Board} {v : Nat}
+    (h : nth b v = true) : (firstOn b).isSome = true := by
+  cases hf : firstOn b with
+  | none => rw [firstOn_none b hf v] at h; exact absurd h (by simp)
+  | some w => rfl
+
+/-- Max of a list of naturals. -/
+def natMax (l : List Nat) : Nat := l.foldl max 0
+
+theorem foldl_max_ge_init : ∀ (l : List Nat) (a : Nat), a ≤ l.foldl max a
+  | [], _ => Nat.le_refl _
+  | i :: rest, a => by
+      have := foldl_max_ge_init rest (max a i)
+      show a ≤ (i :: rest).foldl max a
+      simp only [List.foldl_cons]
+      omega
+
+theorem le_natMax_of_mem : ∀ {l : List Nat} {a : Nat}, a ∈ l → a ≤ natMax l := by
+  intro l
+  suffices h : ∀ (l : List Nat) (c a : Nat), a ∈ l → a ≤ l.foldl max c by
+    intro a ha; exact h l 0 a ha
+  intro l
+  induction l with
+  | nil => intro c a ha; exact absurd ha (by simp)
+  | cons i rest ih =>
+      intro c a ha
+      rcases List.mem_cons.mp ha with rfl | hrest
+      · simp only [List.foldl_cons]
+        exact Nat.le_trans (Nat.le_max_right c a) (foldl_max_ge_init rest _)
+      · simpa using ih (max c i) a hrest
+
+theorem natMax_attained :
+    ∀ (l : List Nat), natMax l = 0 ∨ natMax l ∈ l := by
+  suffices h : ∀ (l : List Nat) (c : Nat),
+      l.foldl max c = c ∨ l.foldl max c ∈ l by
+    intro l; exact (h l 0).imp id id
+  intro l
+  induction l with
+  | nil => intro c; exact Or.inl rfl
+  | cons i rest ih =>
+      intro c
+      simp only [List.foldl_cons]
+      rcases ih (max c i) with h1 | h2
+      · rw [h1]
+        rcases Nat.le_total c i with hci | hic
+        · rw [Nat.max_eq_right hci]
+          exact Or.inr (List.mem_cons_self ..)
+        · rw [Nat.max_eq_left hic]
+          exact Or.inl rfl
+      · exact Or.inr (List.mem_cons_of_mem _ h2)
+
+theorem legal_take {b : Board} {s : List Nat} (a : Nat)
+    (h : legalB b s = true) : legalB b (s.take a) = true := by
+  rw [← List.take_append_drop a s, legal_append, Bool.and_eq_true] at h
+  exact h.1
+
+theorem maxOnes_take_le (b : Board) (s : List Nat) (a : Nat) :
+    maxOnes b (s.take a) ≤ maxOnes b s := by
+  apply maxOnes_le_of_prefixes
+  intro k
+  rw [List.take_take]
+  exact ones_prefix_le_maxOnes s b (min k a)
+
+theorem ones_zero_of_firstOn_none :
+    ∀ (b : Board), firstOn b = none → ones b = 0
+  | [], _ => rfl
+  | true :: t, h => by simp [firstOn] at h
+  | false :: t, h => by
+      simp only [firstOn, Option.map_eq_none_iff] at h
+      simpa [ones] using ones_zero_of_firstOn_none t h
+
+theorem drop_replicate (n m : Nat) (v : Bool) :
+    (List.replicate n v).drop m = List.replicate (n - m) v := by
+  induction n generalizing m with
+  | zero => simp
+  | succ n' ih =>
+      cases m with
+      | zero => simp
+      | succ m' => simpa [List.replicate_succ] using ih m'
+
+-- ------------------------------------------------------------------
+-- The middle vertex and the general impossibility theorem
+-- (roadmap steps (d)-(f)): a complete computation of a chain with
+-- peak P covers at most 2^P - 1 cells, hence clean reach with peak p
+-- stops at cell 2^(p-1) - 1 (Knill 1995 Thm 2.3, impossibility half,
+-- now GENERAL).
+-- ------------------------------------------------------------------
+
+/-- Trace configuration after k moves. -/
+def cfg (n : Nat) (s : List Nat) (k : Nat) : Board :=
+  execB (List.replicate n false) (s.take k)
+
+theorem cfg_clip (n : Nat) (s : List Nat) (k : Nat) :
+    cfg n s k = cfg n s (min k s.length) := by
+  unfold cfg
+  rcases Nat.le_total k s.length with h | h
+  · rw [Nat.min_eq_left h]
+  · rw [Nat.min_eq_right h, List.take_of_length_le h,
+        List.take_of_length_le (Nat.le_refl _)]
+
+/-- The middle vertex: the largest first-pebbled index over the whole
+trace. -/
+def midX (n : Nat) (s : List Nat) : Nat :=
+  natMax ((List.range (s.length + 1)).map
+    (fun k => (firstOn (cfg n s k)).getD 0))
+
+theorem midX_ge (n : Nat) (s : List Nat) (k : Nat) :
+    (firstOn (cfg n s k)).getD 0 ≤ midX n s := by
+  rw [cfg_clip]
+  apply le_natMax_of_mem
+  apply List.mem_map.mpr
+  refine ⟨min k s.length, ?_, rfl⟩
+  simp [List.mem_range]
+  omega
+
+theorem midX_attained (n : Nat) (s : List Nat) :
+    midX n s = 0 ∨
+    ∃ k, k ≤ s.length ∧ (firstOn (cfg n s k)).getD 0 = midX n s := by
+  rcases natMax_attained ((List.range (s.length + 1)).map
+      (fun k => (firstOn (cfg n s k)).getD 0)) with h0 | hmem
+  · exact Or.inl h0
+  · obtain ⟨k, hk, hval⟩ := List.mem_map.mp hmem
+    have hk' := List.mem_range.mp hk
+    exact Or.inr ⟨k, by omega, hval⟩
+
+/-- Every nonempty configuration has a pebble at or below the middle
+vertex. -/
+theorem cfg_low_pebble {n : Nat} {s : List Nat} (k : Nat) {w : Nat}
+    (hw : nth (cfg n s k) w = true) :
+    ∃ u, u ≤ midX n s ∧ nth (cfg n s k) u = true := by
+  cases hf : firstOn (cfg n s k) with
+  | none =>
+      rw [firstOn_none _ hf w] at hw
+      exact absurd hw (by simp)
+  | some u =>
+      obtain ⟨h1, _⟩ := firstOn_spec _ u hf
+      refine ⟨u, ?_, h1⟩
+      have := midX_ge n s k
+      rw [hf] at this
+      simpa using this
+
+theorem take_append_exact :
+    ∀ (l₁ l₂ : List Nat) (m : Nat),
+      (l₁ ++ l₂).take (l₁.length + m) = l₁ ++ l₂.take m
+  | [], l₂, m => by simp
+  | i :: t, l₂, m => by
+      simp only [List.cons_append, List.length_cons]
+      rw [show t.length + 1 + m = (t.length + m) + 1 from by omega]
+      simp [take_append_exact t l₂ m]
+
+/-- LEFT EXTRACTION (roadmap step (e)): if some trace configuration
+has cell x pebbled with all lower cells empty, then chain x admits a
+COMPLETE computation whose peak is strictly below the peak of s. -/
+theorem left_extraction {n : Nat} {s : List Nat} {x a P : Nat}
+    (hleg : legalB (List.replicate n false) s = true)
+    (hpeak : maxOnes (List.replicate n false) s ≤ P)
+    (hx : nth (cfg n s a) x = true)
+    (hlow : ∀ j, j < x → nth (cfg n s a) j = false) :
+    ∃ t : List Nat,
+      legalB (List.replicate x false) t = true ∧
+      execB (List.replicate x false) t = List.replicate x false ∧
+      maxOnes (List.replicate x false) t + 1 ≤ P ∧
+      (∀ j, j < x → everOn (List.replicate x false) t j) := by
+  have hP1 : 1 ≤ P := by
+    have h1 := ones_pos_of_nth hx
+    have h2 : ones (cfg n s a) ≤ maxOnes (List.replicate n false) s :=
+      ones_prefix_le_maxOnes s (List.replicate n false) a
+    omega
+  match x with
+  | 0 =>
+      refine ⟨[], rfl, rfl, ?_, by intro j hj; omega⟩
+      show ones (List.replicate 0 false) + 1 ≤ P
+      simpa [ones] using hP1
+  | x + 1 =>
+      -- u := s.take a, split at the LAST occurrence of the move x+1
+      have hlegu : legalB (List.replicate n false) (s.take a) = true :=
+        legal_take a hleg
+      have hxlt : x + 1 < (cfg n s a).length := nth_true_lt_length hx
+      by_cases hmem : (x + 1) ∈ s.take a
+      case neg =>
+        exfalso
+        have := nth_exec_of_not_mem (s.take a)
+          (List.replicate n false) (x + 1) hmem
+        rw [show execB (List.replicate n false) (s.take a) = cfg n s a
+              from rfl, hx, nth_replicate] at this
+        exact absurd this (by simp)
+      case pos =>
+      obtain ⟨u₁, u₂, hsplit, hnotin⟩ := last_occurrence_split hmem
+      have hlegu' := hlegu
+      rw [hsplit, legal_append, Bool.and_eq_true] at hlegu'
+      have hokd : okMove (execB (List.replicate n false) u₁) (x + 1) = true ∧
+          legalB (toggle (execB (List.replicate n false) u₁) (x + 1)) u₂
+            = true := by
+        simpa [legalB, Bool.and_eq_true] using hlegu'.2
+      -- names: c₁ = board before the last x+1 move, d = just after
+      have hca : cfg n s a
+          = execB (toggle (execB (List.replicate n false) u₁) (x + 1)) u₂ := by
+        show execB (List.replicate n false) (s.take a) = _
+        rw [hsplit, exec_append]
+        rfl
+      have hdon : nth (toggle (execB (List.replicate n false) u₁) (x + 1))
+          (x + 1) = true := by
+        have := nth_exec_of_not_mem u₂
+          (toggle (execB (List.replicate n false) u₁) (x + 1)) (x + 1) hnotin
+        rw [← hca] at this
+        rw [← this]
+        exact hx
+      have hprev : nth (execB (List.replicate n false) u₁) x = true := by
+        simpa [okMove] using hokd.1
+      -- restriction to the cells below x+1
+      have hb0 : (toggle (execB (List.replicate n false) u₁) (x + 1)).take
+          (x + 1) = (execB (List.replicate n false) u₁).take (x + 1) :=
+        take_toggle_high _ (x + 1) (x + 1) (Nat.le_refl _)
+      have hlegR : legalB ((toggle (execB (List.replicate n false) u₁)
+            (x + 1)).take (x + 1)) (keepBelow (x + 1) u₂) = true :=
+        legalB_keepBelow (x + 1) u₂ _ hokd.2
+      have hexecR : execB ((toggle (execB (List.replicate n false) u₁)
+            (x + 1)).take (x + 1)) (keepBelow (x + 1) u₂)
+          = List.replicate (x + 1) false := by
+        rw [← execB_keepBelow, ← hca]
+        exact take_all_false_replicate (by omega) hlow
+      -- t₁ reaches the top cell x of the restricted chain from empty
+      have hlegT : legalB (List.replicate (x + 1) false)
+          ((keepBelow (x + 1) u₂).reverse) = true := by
+        have := legal_reverse _ _ hlegR
+        rwa [hexecR] at this
+      have hexecT : execB (List.replicate (x + 1) false)
+          ((keepBelow (x + 1) u₂).reverse)
+          = (toggle (execB (List.replicate n false) u₁) (x + 1)).take
+              (x + 1) := by
+        have := exec_reverse_cancel ((toggle (execB (List.replicate n false)
+          u₁) (x + 1)).take (x + 1)) (keepBelow (x + 1) u₂)
+        rwa [hexecR] at this
+      have hendT : nth (execB (List.replicate (x + 1) false)
+          ((keepBelow (x + 1) u₂).reverse)) x = true := by
+        rw [hexecT, hb0, nth_take _ _ _ (by omega)]
+        exact hprev
+      -- peak of the restricted computation is < P
+      have hpeakR : maxOnes ((toggle (execB (List.replicate n false) u₁)
+            (x + 1)).take (x + 1)) (keepBelow (x + 1) u₂) + 1 ≤ P := by
+        have hpre : ∀ j, ones (execB ((toggle (execB (List.replicate n
+            false) u₁) (x + 1)).take (x + 1))
+              ((keepBelow (x + 1) u₂).take j)) ≤ P - 1 := by
+          intro j
+          obtain ⟨k, hk⟩ := filter_take_surj
+            (fun i => decide (i < x + 1)) u₂ j
+          have hkB : (keepBelow (x + 1) u₂).take j
+              = keepBelow (x + 1) (u₂.take k) := hk
+          rw [hkB, ← execB_keepBelow]
+          -- e := execB d (u₂.take k) is a global prefix configuration
+          have hnotk : (x + 1) ∉ u₂.take k :=
+            fun hc => hnotin (List.take_subset k u₂ hc)
+          have heon : nth (execB (toggle (execB (List.replicate n false)
+              u₁) (x + 1)) (u₂.take k)) (x + 1) = true := by
+            rw [nth_exec_of_not_mem _ _ _ hnotk]
+            exact hdon
+          have hcut := ones_take_lt_of_nth heon
+          have hglob : ones (execB (toggle (execB (List.replicate n false)
+              u₁) (x + 1)) (u₂.take k)) ≤ P := by
+            have he : execB (toggle (execB (List.replicate n false) u₁)
+                (x + 1)) (u₂.take k)
+                = execB (List.replicate n false)
+                    ((s.take a).take (u₁.length + (k + 1))) := by
+              rw [hsplit, take_append_exact, exec_append]
+              rfl
+            rw [he]
+            calc ones (execB (List.replicate n false)
+                  ((s.take a).take (u₁.length + (k + 1))))
+                ≤ maxOnes (List.replicate n false) (s.take a) :=
+                  ones_prefix_le_maxOnes _ _ _
+              _ ≤ maxOnes (List.replicate n false) s :=
+                  maxOnes_take_le _ _ _
+              _ ≤ P := hpeak
+          omega
+        have := maxOnes_le_of_prefixes (keepBelow (x + 1) u₂) _ (P - 1) hpre
+        omega
+      have hpeakT : maxOnes (List.replicate (x + 1) false)
+          ((keepBelow (x + 1) u₂).reverse) + 1 ≤ P := by
+        have := maxOnes_reverse ((toggle (execB (List.replicate n false)
+          u₁) (x + 1)).take (x + 1)) (keepBelow (x + 1) u₂)
+        rw [hexecR] at this
+        omega
+      -- assemble the roundtrip
+      obtain ⟨hL, hE, hM, hC⟩ := roundtrip_complete (x + 1)
+        ((keepBelow (x + 1) u₂).reverse) x hlegT hendT
+      refine ⟨(keepBelow (x + 1) u₂).reverse
+        ++ ((keepBelow (x + 1) u₂).reverse).reverse, hL, hE, ?_, ?_⟩
+      · rw [hM]; exact hpeakT
+      · intro j hj
+        exact hC j (by omega)
+
+/-- Local: powers of two are positive. -/
+theorem one_le_two_pow : ∀ (k : Nat), 1 ≤ 2 ^ k
+  | 0 => Nat.le_refl 1
+  | k + 1 => by
+      rw [Nat.pow_succ]
+      have := one_le_two_pow k
+      omega
+
+/-- THE GENERAL COMPLETE-COMPUTATION BOUND (roadmap step (f)): a
+complete computation (empty to empty) of peak at most P covers at
+most 2^P - 1 cells.  Middle-vertex induction on P. -/
+theorem complete_bound :
+    ∀ (P n : Nat) (s : List Nat) (m : Nat),
+      legalB (List.replicate n false) s = true →
+      execB (List.replicate n false) s = List.replicate n false →
+      maxOnes (List.replicate n false) s ≤ P →
+      (∀ j, j < m → everOn (List.replicate n false) s j) →
+      m ≤ 2 ^ P - 1 := by
+  intro P
+  induction P with
+  | zero =>
+      intro n s m _ _ hpeak hcov
+      by_cases hm : m = 0
+      · omega
+      · exfalso
+        obtain ⟨k, hk⟩ := hcov 0 (by omega)
+        have h1 := ones_pos_of_nth hk
+        have h2 := ones_prefix_le_maxOnes s (List.replicate n false) k
+        omega
+  | succ P ih =>
+      intro n s m hleg hexec hpeak hcov
+      by_cases hm : m = 0
+      · have := one_le_two_pow (P + 1); omega
+      -- the middle vertex
+      have hxbound : midX n s ≤ 2 ^ P - 1 := by
+        rcases midX_attained n s with h0 | ⟨a, _, hval⟩
+        · rw [h0]; omega
+        · by_cases hx0 : midX n s = 0
+          · rw [hx0]; omega
+          · cases hf : firstOn (cfg n s a) with
+            | none => rw [hf] at hval; simp at hval; omega
+            | some w =>
+                rw [hf] at hval
+                simp at hval
+                rw [← hval]
+                obtain ⟨hon, hlow⟩ := firstOn_spec _ w hf
+                obtain ⟨t, hL, hE, hM, hC⟩ :=
+                  left_extraction hleg hpeak hon hlow
+                exact ih w t w hL hE (by omega) (fun j hj => hC j hj)
+      -- the right side: cells above the middle vertex
+      have hright : m - (midX n s + 1) ≤ 2 ^ P - 1 := by
+        apply ih (n - (midX n s + 1)) (shiftAbove (midX n s) s)
+        · have := legalB_shiftAbove (midX n s) s _ hleg
+          rwa [drop_replicate] at this
+        · have := execB_shiftAbove (midX n s) s (List.replicate n false)
+          rw [hexec, drop_replicate] at this
+          exact this.symm
+        · -- peak of the restriction drops by one: every nonempty
+          -- configuration keeps a pebble at or below the middle vertex
+          have hpre : ∀ j, ones (execB (List.replicate
+              (n - (midX n s + 1)) false)
+                ((shiftAbove (midX n s) s).take j)) ≤ P := by
+            intro j
+            obtain ⟨k, hk⟩ := filter_take_surj
+              (fun i => decide (midX n s < i)) s j
+            have hsj : (shiftAbove (midX n s) s).take j
+                = shiftAbove (midX n s) (s.take k) := by
+              unfold shiftAbove
+              rw [← List.map_take, hk]
+            rw [hsj, ← drop_replicate n (midX n s + 1) false,
+                ← execB_shiftAbove]
+            cases hf : firstOn (cfg n s k) with
+            | none =>
+                have hz := ones_zero_of_firstOn_none _ hf
+                have := ones_take_drop (cfg n s k) (midX n s + 1)
+                show ones ((cfg n s k).drop (midX n s + 1)) ≤ P
+                omega
+            | some w =>
+                obtain ⟨hon, _⟩ := firstOn_spec _ w hf
+                have hwx : w ≤ midX n s := by
+                  have := midX_ge n s k
+                  rw [hf] at this
+                  simpa using this
+                have htk : nth ((cfg n s k).take (midX n s + 1)) w
+                    = true := by
+                  rw [nth_take _ _ _ (by omega)]
+                  exact hon
+                have h1 := ones_pos_of_nth htk
+                have h2 := ones_take_drop (cfg n s k) (midX n s + 1)
+                have h3 : ones (cfg n s k) ≤ P + 1 :=
+                  Nat.le_trans (ones_prefix_le_maxOnes s _ k) hpeak
+                show ones ((cfg n s k).drop (midX n s + 1)) ≤ P
+                omega
+          exact maxOnes_le_of_prefixes _ _ P hpre
+        · intro j hj
+          have hcv := hcov (midX n s + 1 + j) (by omega)
+          have := everOn_shiftAbove
+            (x := midX n s) (by omega) hcv
+          rw [drop_replicate] at this
+          have harith : midX n s + 1 + j - (midX n s + 1) = j := by omega
+          rwa [harith] at this
+      have hpow := one_le_two_pow P
+      have hpow2 : 2 ^ (P + 1) = 2 * 2 ^ P := by
+        rw [Nat.pow_succ]; omega
+      omega
+
+/-- KNILL THM 2.3, IMPOSSIBILITY HALF, GENERAL: a legal computation
+from the empty board with peak at most p whose final configuration
+has cell v pebbled and all lower cells empty (in particular a CLEAN
+REACH of cell v) satisfies v + 1 ≤ 2^(p-1).  Together with
+`reach_two_pow` this characterises the reach of the reversible pebble
+game exactly: reach(p) = 2^(p-1). -/
+theorem reach_impossible_general {n p v : Nat} {s : List Nat}
+    (hleg : legalB (List.replicate n false) s = true)
+    (hpeak : maxOnes (List.replicate n false) s ≤ p)
+    (hon : nth (execB (List.replicate n false) s) v = true)
+    (hmin : ∀ j, j < v → nth (execB (List.replicate n false) s) j = false) :
+    v + 1 ≤ 2 ^ (p - 1) := by
+  have hcfg : cfg n s s.length = execB (List.replicate n false) s := by
+    show execB (List.replicate n false) (s.take s.length) = _
+    rw [List.take_of_length_le (Nat.le_refl _)]
+  obtain ⟨t, hL, hE, hM, hC⟩ := left_extraction hleg hpeak
+    (a := s.length) (by rw [hcfg]; exact hon)
+    (by intro j hj; rw [hcfg]; exact hmin j hj)
+  have hb := complete_bound (p - 1) v t v hL hE (by omega)
+    (fun j hj => hC j hj)
+  have := one_le_two_pow (p - 1)
+  omega
 
 end GenJanus.PebblingFoundations
