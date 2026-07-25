@@ -547,4 +547,281 @@ theorem roundtrip_complete (n : Nat) (s : List Nat) (v : Nat)
     ⟨s.length, by simpa [List.take_of_length_le (Nat.le_refl _)] using hend⟩
   exact everOn_append_left (coverage n s v hleg hv j hj)
 
+-- ------------------------------------------------------------------
+-- Restriction lemmas (roadmap step (c), 追記31): a legal computation
+-- restricts to the cells above x (moves > x, shifted so that x+1
+-- becomes the new free left end) and to the cells below x (moves < x)
+-- UNCONDITIONALLY: legality, execution, and coverage all commute with
+-- the restriction.  These are the workhorses for the middle-vertex
+-- induction of the general impossibility side of Knill Thm 2.3.
+-- ------------------------------------------------------------------
+
+/-- Moves strictly above x, re-indexed so cell x+1 becomes cell 0. -/
+def shiftAbove (x : Nat) (s : List Nat) : List Nat :=
+  (s.filter (fun i => decide (x < i))).map (fun i => i - (x + 1))
+
+/-- Moves strictly below x. -/
+def keepBelow (x : Nat) (s : List Nat) : List Nat :=
+  s.filter (fun i => decide (i < x))
+
+theorem drop_set_lt (b : Board) (m i : Nat) (v : Bool) (h : i < m) :
+    (b.set i v).drop m = b.drop m := by
+  induction b generalizing m i with
+  | nil => rfl
+  | cons a t ih =>
+      cases m with
+      | zero => omega
+      | succ m' =>
+          cases i with
+          | zero => rfl
+          | succ i' => simpa [List.set] using ih m' i' (by omega)
+
+theorem drop_set_ge (b : Board) (m i : Nat) (v : Bool) (h : m ≤ i) :
+    (b.set i v).drop m = (b.drop m).set (i - m) v := by
+  induction b generalizing m i with
+  | nil => simp
+  | cons a t ih =>
+      cases m with
+      | zero => simp
+      | succ m' =>
+          cases i with
+          | zero => omega
+          | succ i' =>
+              have := ih m' i' (by omega)
+              simpa [List.set, Nat.succ_sub_succ] using this
+
+theorem take_set_lt (b : Board) (m i : Nat) (v : Bool) (h : i < m) :
+    (b.set i v).take m = (b.take m).set i v := by
+  induction b generalizing m i with
+  | nil => simp
+  | cons a t ih =>
+      cases m with
+      | zero => omega
+      | succ m' =>
+          cases i with
+          | zero => rfl
+          | succ i' => simpa [List.set] using ih m' i' (by omega)
+
+theorem take_set_ge (b : Board) (m i : Nat) (v : Bool) (h : m ≤ i) :
+    (b.set i v).take m = b.take m := by
+  induction b generalizing m i with
+  | nil => rfl
+  | cons a t ih =>
+      cases m with
+      | zero => rfl
+      | succ m' =>
+          cases i with
+          | zero => omega
+          | succ i' => simpa [List.set] using ih m' i' (by omega)
+
+theorem nth_drop (b : Board) (m i : Nat) :
+    nth (b.drop m) i = nth b (m + i) := by
+  induction b generalizing m with
+  | nil => simp [nth]
+  | cons a t ih =>
+      cases m with
+      | zero => simp
+      | succ m' => simpa [nth, Nat.succ_add] using ih m'
+
+theorem nth_take (b : Board) (m i : Nat) (h : i < m) :
+    nth (b.take m) i = nth b i := by
+  induction b generalizing m i with
+  | nil => simp [nth]
+  | cons a t ih =>
+      cases m with
+      | zero => omega
+      | succ m' =>
+          cases i with
+          | zero => rfl
+          | succ i' => simpa [nth] using ih m' i' (by omega)
+
+/-- Toggling at or below x leaves the part above x unchanged. -/
+theorem drop_toggle_low (b : Board) (x i : Nat) (h : i ≤ x) :
+    (toggle b i).drop (x + 1) = b.drop (x + 1) :=
+  drop_set_lt b (x + 1) i _ (by omega)
+
+/-- Toggling above x is toggling the shifted cell of the dropped
+board. -/
+theorem drop_toggle_high (b : Board) (x i : Nat) (h : x < i) :
+    (toggle b i).drop (x + 1) = toggle (b.drop (x + 1)) (i - (x + 1)) := by
+  unfold toggle
+  rw [drop_set_ge b (x + 1) i _ (by omega), nth_drop]
+  have : x + 1 + (i - (x + 1)) = i := by omega
+  rw [this]
+
+/-- Toggling at or above x leaves the part below x unchanged. -/
+theorem take_toggle_high (b : Board) (x i : Nat) (h : x ≤ i) :
+    (toggle b i).take x = b.take x :=
+  take_set_ge b x i _ h
+
+/-- Toggling below x is toggling the same cell of the taken board. -/
+theorem take_toggle_low (b : Board) (x i : Nat) (h : i < x) :
+    (toggle b i).take x = toggle (b.take x) i := by
+  unfold toggle
+  rw [take_set_lt b x i _ h, nth_take b x i h]
+
+/-- Execution commutes with the above-x restriction (no legality
+needed). -/
+theorem execB_shiftAbove (x : Nat) :
+    ∀ (s : List Nat) (b : Board),
+      (execB b s).drop (x + 1) = execB (b.drop (x + 1)) (shiftAbove x s)
+  | [], _ => rfl
+  | i :: rest, b => by
+      show (execB (toggle b i) rest).drop (x + 1) = _
+      by_cases h : x < i
+      · have hs : shiftAbove x (i :: rest)
+            = (i - (x + 1)) :: shiftAbove x rest := by
+          simp [shiftAbove, h]
+        rw [hs, execB_shiftAbove x rest (toggle b i),
+            drop_toggle_high b x i h]
+        rfl
+      · have hs : shiftAbove x (i :: rest) = shiftAbove x rest := by
+          simp [shiftAbove, h]
+        rw [hs, execB_shiftAbove x rest (toggle b i),
+            drop_toggle_low b x i (by omega)]
+
+/-- Execution commutes with the below-x restriction. -/
+theorem execB_keepBelow (x : Nat) :
+    ∀ (s : List Nat) (b : Board),
+      (execB b s).take x = execB (b.take x) (keepBelow x s)
+  | [], _ => rfl
+  | i :: rest, b => by
+      show (execB (toggle b i) rest).take x = _
+      by_cases h : i < x
+      · have hs : keepBelow x (i :: rest) = i :: keepBelow x rest := by
+          simp [keepBelow, h]
+        rw [hs, execB_keepBelow x rest (toggle b i),
+            take_toggle_low b x i h]
+        rfl
+      · have hs : keepBelow x (i :: rest) = keepBelow x rest := by
+          simp [keepBelow, h]
+        rw [hs, execB_keepBelow x rest (toggle b i),
+            take_toggle_high b x i (by omega)]
+
+/-- LEGALITY of the above-x restriction: moves on cell x+1 become
+free (new left end), higher moves keep their support. -/
+theorem legalB_shiftAbove (x : Nat) :
+    ∀ (s : List Nat) (b : Board), legalB b s = true →
+      legalB (b.drop (x + 1)) (shiftAbove x s) = true
+  | [], _, _ => rfl
+  | i :: rest, b, hleg => by
+      have hok : okMove b i = true ∧ legalB (toggle b i) rest = true := by
+        simpa [legalB, Bool.and_eq_true] using hleg
+      by_cases h : x < i
+      · have hs : shiftAbove x (i :: rest)
+            = (i - (x + 1)) :: shiftAbove x rest := by
+          simp [shiftAbove, h]
+        rw [hs]
+        have htail := legalB_shiftAbove x rest (toggle b i) hok.2
+        rw [drop_toggle_high b x i h] at htail
+        have hoknew : okMove (b.drop (x + 1)) (i - (x + 1)) = true := by
+          by_cases hx1 : i = x + 1
+          · subst hx1; simp [okMove]
+          · have hi2 : i - (x + 1) ≠ 0 := by omega
+            have := hok.1
+            rcases (by simpa [okMove, Bool.or_eq_true] using this :
+                (i == 0) = true ∨ nth b (i - 1) = true) with h0 | hprev
+            · simp at h0; omega
+            · have harith : x + 1 + (i - (x + 1) - 1) = i - 1 := by omega
+              simp only [okMove, Bool.or_eq_true]
+              right
+              rw [nth_drop, harith]
+              exact hprev
+        simp [legalB, hoknew, htail]
+      · have hs : shiftAbove x (i :: rest) = shiftAbove x rest := by
+          simp [shiftAbove, h]
+        rw [hs]
+        have htail := legalB_shiftAbove x rest (toggle b i) hok.2
+        rwa [drop_toggle_low b x i (by omega)] at htail
+
+/-- LEGALITY of the below-x restriction: supports of low moves live
+below x, and high moves do not disturb them. -/
+theorem legalB_keepBelow (x : Nat) :
+    ∀ (s : List Nat) (b : Board), legalB b s = true →
+      legalB (b.take x) (keepBelow x s) = true
+  | [], _, _ => rfl
+  | i :: rest, b, hleg => by
+      have hok : okMove b i = true ∧ legalB (toggle b i) rest = true := by
+        simpa [legalB, Bool.and_eq_true] using hleg
+      by_cases h : i < x
+      · have hs : keepBelow x (i :: rest) = i :: keepBelow x rest := by
+          simp [keepBelow, h]
+        rw [hs]
+        have htail := legalB_keepBelow x rest (toggle b i) hok.2
+        rw [take_toggle_low b x i h] at htail
+        have hoknew : okMove (b.take x) i = true := by
+          cases i with
+          | zero => simp [okMove]
+          | succ j =>
+              have := hok.1
+              rcases (by simpa [okMove, Bool.or_eq_true] using this :
+                  (j + 1 == 0) = true ∨ nth b j = true) with h0 | hprev
+              · simp at h0
+              · simp only [okMove, Bool.or_eq_true]
+                right
+                rw [show j + 1 - 1 = j from rfl, nth_take b x j (by omega)]
+                exact hprev
+        simp [legalB, hoknew, htail]
+      · have hs : keepBelow x (i :: rest) = keepBelow x rest := by
+          simp [keepBelow, h]
+        rw [hs]
+        have htail := legalB_keepBelow x rest (toggle b i) hok.2
+        rwa [take_toggle_high b x i (by omega)] at htail
+
+/-- Pebble counts split across the cut: ones = ones(take) + ones(drop). -/
+theorem ones_take_drop :
+    ∀ (b : Board) (m : Nat), ones (b.take m) + ones (b.drop m) = ones b
+  | _, 0 => by simp [ones]
+  | [], _ + 1 => by simp [ones]
+  | a :: t, m + 1 => by
+      have := ones_take_drop t m
+      cases a <;> simp [ones, List.count_cons] at this ⊢ <;> omega
+
+/-- A filter of a prefix is a prefix of the filter. -/
+theorem filter_take_prefix (p : Nat → Bool) :
+    ∀ (s : List Nat) (k : Nat),
+      ∃ j, (s.filter p).take j = (s.take k).filter p
+  | _, 0 => ⟨0, by simp⟩
+  | [], _ + 1 => ⟨0, by simp⟩
+  | i :: rest, k + 1 => by
+      obtain ⟨j, hj⟩ := filter_take_prefix p rest k
+      cases hp : p i with
+      | true =>
+          exact ⟨j + 1, by simp [hp, hj]⟩
+      | false =>
+          exact ⟨j, by simp [hp, hj]⟩
+
+/-- A prefix of the trace corresponds to a prefix of the restricted
+trace (above form). -/
+theorem shiftAbove_take_prefix (x : Nat) (s : List Nat) (k : Nat) :
+    ∃ j, (shiftAbove x s).take j = shiftAbove x (s.take k) := by
+  obtain ⟨j, hj⟩ := filter_take_prefix (fun i => decide (x < i)) s k
+  refine ⟨j, ?_⟩
+  unfold shiftAbove
+  rw [← List.map_take, hj]
+
+/-- COVERAGE transfers to the above-x restriction. -/
+theorem everOn_shiftAbove {b : Board} {s : List Nat} {v x : Nat}
+    (hv : x < v) (h : everOn b s v) :
+    everOn (b.drop (x + 1)) (shiftAbove x s) (v - (x + 1)) := by
+  obtain ⟨k, hk⟩ := h
+  obtain ⟨j, hj⟩ := shiftAbove_take_prefix x s k
+  refine ⟨j, ?_⟩
+  rw [hj, ← execB_shiftAbove, nth_drop]
+  have : x + 1 + (v - (x + 1)) = v := by omega
+  rw [this]
+  exact hk
+
+/-- COVERAGE transfers to the below-x restriction. -/
+theorem everOn_keepBelow {b : Board} {s : List Nat} {v x : Nat}
+    (hv : v < x) (h : everOn b s v) :
+    everOn (b.take x) (keepBelow x s) v := by
+  obtain ⟨k, hk⟩ := h
+  obtain ⟨j, hj⟩ := filter_take_prefix (fun i => decide (i < x)) s k
+  refine ⟨j, ?_⟩
+  show nth (execB (b.take x) ((keepBelow x s).take j)) v = true
+  rw [show (keepBelow x s).take j = keepBelow x (s.take k) from hj,
+      ← execB_keepBelow, nth_take _ _ _ hv]
+  exact hk
+
 end GenJanus.PebblingFoundations
