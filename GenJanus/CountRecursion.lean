@@ -681,4 +681,72 @@ theorem midpoint_bound_general (s : Nat) :
         omega
       exact sorted_getElem_le_of_countLe _ _ _ hsort _ hcnt
 
+-- ------------------------------------------------------------------
+-- The IMPROVED (two-split, self-referential) lower recursion (M1,
+-- 追記36): for EVERY split v = u + w,
+--   C_S(u+w) >= 1 + C_{S-1}(u+w) + min(C_{S-1}(u), C_S(w)).
+-- The old lower recursion is the special case u = w = v/2 (with
+-- C_S(w) >= C_{S-1}(w)).  Numerically the fixed point of this
+-- recursion has midpoint exponent kappa -> ~0.337 vs the true
+-- log2(d) ~ 0.3355: a candidate exact characterisation of d.
+-- ------------------------------------------------------------------
+
+/-- If the first m entries satisfy p, the count is at least m. -/
+theorem countP_ge_prefix :
+    ∀ (l : List Nat) (p : Nat → Bool) (m : Nat) (hm : m ≤ l.length),
+      (∀ i (hi : i < m), p (l[i]'(Nat.lt_of_lt_of_le hi hm)) = true) →
+      m ≤ l.countP p
+  | _, _, 0, _, _ => Nat.zero_le _
+  | [], _, m + 1, hm, _ => by simp at hm
+  | a :: t, p, m + 1, hm, h => by
+      have hhead : p a = true := h 0 (by omega)
+      have htail : m ≤ t.countP p := by
+        apply countP_ge_prefix t p m (by simpa using hm)
+        intro i hi
+        have := h (i + 1) (by omega)
+        simpa using this
+      simp [List.countP_cons, hhead]
+      omega
+
+theorem countLe_le_length (l : List Nat) (v : Nat) :
+    countLe l v ≤ l.length :=
+  List.countP_le_length
+
+/-- THE TWO-SPLIT LOWER RECURSION, fully general: the first
+min(C_{S-1}(u), C_S(w)) aligned B-entries are ≤ u + w. -/
+theorem count_recursion_split (s u w : Nat) (huw : 1 ≤ u + w) :
+    1 + countLe (rowIter s) (u + w)
+      + min (countLe (rowIter s) u) (countLe (rowIter (s + 1)) w)
+      ≤ countLe (rowIter (s + 1)) (u + w) := by
+  obtain ⟨hsortp, _⟩ := rowIter_invariant s
+  obtain ⟨hsortc, _⟩ := rowIter_invariant (s + 1)
+  have hsplit := countLe_split s (u + w)
+  have hlenp : countLe (rowIter s) u ≤ (rowIter s).length :=
+    countLe_le_length _ _
+  have hB : min (countLe (rowIter s) u) (countLe (rowIter (s + 1)) w)
+      ≤ countLe (List.zipWith (· + ·) (rowIter (s + 1)) (rowIter s))
+          (u + w) := by
+    have hmlen : min (countLe (rowIter s) u) (countLe (rowIter (s + 1)) w)
+        ≤ (List.zipWith (· + ·) (rowIter (s + 1)) (rowIter s)).length := by
+      rw [List.length_zipWith]
+      have h1 := countLe_le_length (rowIter s) u
+      have h2 := rowIter_succ_length_ge s
+      omega
+    apply countP_ge_prefix _ _ _ hmlen
+    intro i hi
+    have hip : i < countLe (rowIter s) u := by omega
+    have hic : i < countLe (rowIter (s + 1)) w := by omega
+    have hilenp : i < (rowIter s).length := by omega
+    have hilenc : i < (rowIter (s + 1)).length :=
+      Nat.lt_of_lt_of_le hilenp (rowIter_succ_length_ge s)
+    have hpu : (rowIter s)[i]'(hilenp) ≤ u :=
+      sorted_getElem_le_of_countLe _ _ _ hsortp hilenp (by omega)
+    have hcw : (rowIter (s + 1))[i]'(hilenc) ≤ w :=
+      sorted_getElem_le_of_countLe _ _ _ hsortc hilenc (by omega)
+    rw [List.getElem_zipWith]
+    simp only [decide_eq_true_eq]
+    omega
+  simp [huw] at hsplit
+  omega
+
 end GenJanus.CountRecursion
