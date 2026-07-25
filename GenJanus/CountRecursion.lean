@@ -451,4 +451,234 @@ theorem count_binomial_general :
           rw [he2] at h2
           omega
 
+-- ------------------------------------------------------------------
+-- The LOWER binomial bound (P_k >= 0, general) and the binomial
+-- median argument: the combinatorial core of the closed-form upper
+-- bound c <= 2*sqrt(2)  (追記33).
+-- ------------------------------------------------------------------
+
+/-- Partial sums of a binomial row: psum n j = Σ_{i ≤ j} C(n,i). -/
+def psum (n : Nat) : Nat → Nat
+  | 0 => 1
+  | j + 1 => psum n j + binom n (j + 1)
+
+theorem psum_pascal (n : Nat) :
+    ∀ j, psum (n + 1) (j + 1) = psum n (j + 1) + psum n j
+  | 0 => by
+      show 1 + binom (n + 1) 1 = (1 + binom n 1) + 1
+      rw [binom_one, binom_one]
+      omega
+  | j + 1 => by
+      show psum (n + 1) (j + 1) + binom (n + 1) (j + 2) = _
+      rw [psum_pascal n j,
+          show binom (n + 1) (j + 2) = binom n (j + 2) + binom n (j + 1)
+            from rfl]
+      show _ = (psum n (j + 1) + binom n (j + 2))
+        + (psum n j + binom n (j + 1))
+      omega
+
+theorem psum_self : ∀ n, psum n n = 2 ^ n
+  | 0 => rfl
+  | n + 1 => by
+      rw [psum_pascal n n,
+          show psum n (n + 1) = psum n n + binom n (n + 1) from rfl,
+          binom_gt (by omega), psum_self n, Nat.pow_succ]
+      omega
+
+theorem psum_sat : ∀ (n j : Nat), n ≤ j → psum n j = 2 ^ n
+  | n, 0, h => by
+      have hn : n = 0 := by omega
+      subst hn
+      rfl
+  | n, j + 1, h => by
+      by_cases hn : n ≤ j
+      · show psum n j + binom n (j + 1) = 2 ^ n
+        rw [psum_sat n j hn, binom_gt (by omega)]
+        omega
+      · have hn' : n = j + 1 := by omega
+        subst hn'
+        exact psum_self (j + 1)
+
+theorem psum_mono (n : Nat) : ∀ {j j' : Nat}, j ≤ j' → psum n j ≤ psum n j'
+  | j, 0, h => by
+      have : j = 0 := by omega
+      subst this
+      exact Nat.le_refl _
+  | j, j' + 1, h => by
+      by_cases hj : j = j' + 1
+      · subst hj; exact Nat.le_refl _
+      · have := psum_mono n (j := j) (j' := j') (by omega)
+        show psum n j ≤ psum n j' + binom n (j' + 1)
+        omega
+
+/-- Reflection identity: the lower and the reflected-upper partial
+sums tile the full row. -/
+theorem psum_reflect : ∀ (n m : Nat), m < n →
+    psum n m + psum n (n - m - 1) = 2 ^ n := by
+  intro n
+  induction n with
+  | zero => intro m h; omega
+  | succ n ih =>
+      intro m hm
+      have hedge : psum (n + 1) n + 1 = 2 ^ (n + 1) := by
+        have h1 : psum (n + 1) (n + 1)
+            = psum (n + 1) n + binom (n + 1) (n + 1) := rfl
+        rw [binom_self] at h1
+        have h2 := psum_self (n + 1)
+        omega
+      match m, hm with
+      | 0, _ =>
+          show 1 + psum (n + 1) (n + 1 - 0 - 1) = 2 ^ (n + 1)
+          have hidx : n + 1 - 0 - 1 = n := by omega
+          rw [hidx]
+          omega
+      | m + 1, hm =>
+          by_cases hmn : m + 1 = n
+          · have h0 : n + 1 - (m + 1) - 1 = 0 := by omega
+            rw [h0]
+            show psum (n + 1) (m + 1) + 1 = 2 ^ (n + 1)
+            rw [hmn]
+            exact hedge
+          · have hmlt : m + 1 < n := by omega
+            have hp1 : psum (n + 1) (m + 1)
+                = psum n (m + 1) + psum n m := psum_pascal n m
+            have hidx : n + 1 - (m + 1) - 1 = (n - (m + 1) - 1) + 1 := by
+              omega
+            have hp2 : psum (n + 1) (n + 1 - (m + 1) - 1)
+                = psum n ((n - (m + 1) - 1) + 1)
+                  + psum n (n - (m + 1) - 1) := by
+              rw [hidx]
+              exact psum_pascal n (n - (m + 1) - 1)
+            have hi1 := ih (m + 1) hmlt
+            have hi2 := ih m (by omega)
+            have hidx2 : (n - (m + 1) - 1) + 1 = n - m - 1 := by omega
+            rw [hidx2] at hp2
+            have hpow : 2 ^ (n + 1) = 2 * 2 ^ n := by
+              rw [Nat.pow_succ]; omega
+            omega
+
+/-- BINOMIAL MEDIAN: the half partial sum holds at least half the
+total mass. -/
+theorem psum_ge_half (n m : Nat) (h : n ≤ 2 * m + 1) :
+    2 ^ n ≤ 2 * psum n m := by
+  by_cases hm : n ≤ m
+  · rw [psum_sat n m hm]
+    omega
+  · have hlt : m < n := by omega
+    have hrefl := psum_reflect n m hlt
+    have hmono : psum n (n - m - 1) ≤ psum n m :=
+      psum_mono n (by omega)
+    omega
+
+/-- THE KNILL PARTIAL-SUM LOWER BOUND (P_k ≥ 0, fully general): the
+value counts dominate the binomial partial sums,
+C_S(2^k) + 1 ≥ Σ_{i ≤ k+1} C(S-1, i).  Dual Pascal induction on the
+lower counting recursion. -/
+theorem count_partial_sum_lower :
+    ∀ (s k : Nat), psum (s + 1) (k + 1) ≤ countLe (rowIter s) (2 ^ k) + 1 := by
+  intro s
+  induction s with
+  | zero =>
+      intro k
+      have h1 : countLe (rowIter 0) (2 ^ k) = 1 := by
+        show countLe [1] (2 ^ k) = 1
+        rw [countLe_cons, countLe_nil]
+        simp [two_pow_ge_one k]
+      rw [h1, psum_sat 1 (k + 1) (by omega)]
+      decide
+  | succ s ihs =>
+      intro k
+      cases k with
+      | zero =>
+          show psum (s + 2) 1 ≤ _
+          rw [show psum (s + 2) 1 = 1 + binom (s + 2) 1 from rfl,
+              binom_one,
+              show (2:Nat) ^ 0 = 1 from rfl, rowIter_count_one]
+          omega
+      | succ k =>
+          show psum (s + 2) (k + 2) ≤ _
+          have hrec := count_recursion_lower s (2 ^ (k + 1))
+            (two_pow_ge_one (k + 1))
+          have hhalf : 2 ^ (k + 1) / 2 = 2 ^ k := by
+            rw [Nat.pow_succ, Nat.mul_div_cancel]
+            omega
+          rw [hhalf] at hrec
+          have h1 := ihs (k + 1)
+          have hk2 : k + 1 + 1 = k + 2 := rfl
+          rw [hk2] at h1
+          have h2 := ihs k
+          have hpas : psum (s + 2) (k + 2)
+              = psum (s + 1) (k + 2) + psum (s + 1) (k + 1) :=
+            psum_pascal (s + 1) (k + 1)
+          omega
+
+/-- In a sorted list, if at least j+1 entries are ≤ v then the entry
+at index j is ≤ v. -/
+theorem sorted_getElem_le_of_countLe :
+    ∀ (l : List Nat) (v j : Nat) (_ : NDec l) (hj : j < l.length),
+      j + 1 ≤ countLe l v → l[j]'hj ≤ v
+  | [], v, j, _, hj, _ => by simp at hj
+  | a :: t, v, j, hsort, hj, hcnt => by
+      have htail : NDec t := by cases hsort with | cons _ ht => exact ht
+      match j with
+      | 0 =>
+          show a ≤ v
+          by_cases hav : a ≤ v
+          · exact hav
+          · exfalso
+            have hz : countLe (a :: t) v = 0 := by
+              unfold countLe
+              rw [List.countP_eq_zero]
+              intro z hz
+              simp only [decide_eq_true_eq]
+              rcases List.mem_cons.mp hz with rfl | hzt
+              · omega
+              · have haz : a ≤ z := by
+                  cases hsort with
+                  | cons h _ => exact h z hzt
+                omega
+            omega
+      | j + 1 =>
+          have hcnt' : j + 1 ≤ countLe t v := by
+            rw [countLe_cons] at hcnt
+            by_cases hav : a ≤ v <;> simp [hav] at hcnt <;> omega
+          have := sorted_getElem_le_of_countLe t v j htail
+            (by simpa using hj) hcnt'
+          simpa using this
+
+/-- THE MIDPOINT BOUND, fully general (combinatorial core of the
+closed-form upper bound c ≤ 2√2): the midpoint entry of row S = s+2,
+m_S = δ(2^{S-2}, S) = rowIter s [2^s - 2], is at most
+2^{s/2} = 2^{(S-2)/2}.  Proof: the Knill partial-sum lower bound at
+k = s/2 puts at least 2^s - 1 entries at or below 2^k (binomial
+median), and the row is sorted. -/
+theorem midpoint_bound_general (s : Nat) :
+    (rowIter s)[2 ^ s - 2]'(by
+        rw [rowIter_length]
+        have h1 := two_pow_ge_one s
+        have h3 : (2:Nat) ^ s + 2 ^ s = 2 ^ (s + 1) := by
+          rw [Nat.pow_succ]; omega
+        omega) ≤ 2 ^ (s / 2) := by
+  match s with
+  | 0 => exact Nat.le_refl 1
+  | s + 1 =>
+      obtain ⟨hsort, _⟩ := rowIter_invariant (s + 1)
+      have hlow := count_partial_sum_lower (s + 1) ((s + 1) / 2)
+      have hs2 : s + 1 + 1 = s + 2 := rfl
+      rw [hs2] at hlow
+      have hmed : 2 ^ (s + 2) ≤ 2 * psum (s + 2) ((s + 1) / 2 + 1) :=
+        psum_ge_half (s + 2) ((s + 1) / 2 + 1) (by omega)
+      have hb : 2 ^ (s + 1) ≤ psum (s + 2) ((s + 1) / 2 + 1) := by
+        have hpow : 2 ^ (s + 2) = 2 * 2 ^ (s + 1) := by
+          rw [Nat.pow_succ]; omega
+        omega
+      have h2 : 2 ≤ 2 ^ (s + 1) := by
+        have := two_pow_ge_one s
+        rw [Nat.pow_succ]
+        omega
+      have hcnt : (2 ^ (s + 1) - 2) + 1
+          ≤ countLe (rowIter (s + 1)) (2 ^ ((s + 1) / 2)) := by
+        omega
+      exact sorted_getElem_le_of_countLe _ _ _ hsort _ hcnt
+
 end GenJanus.CountRecursion
