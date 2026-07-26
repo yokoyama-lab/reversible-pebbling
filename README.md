@@ -53,7 +53,10 @@ the rest are general (unbounded) proofs.
   over the entropy lower bound `2^{1+ε*} ≈ 2.4518`.
 - `GenJanus/DispersionBound32.lean` — the q = 3/2 instance (σ = 9/8,
   integralised via `W v = ⌊1000 v^{3/2}⌋`): `dispersion32_main` and
-  its midpoint corollary certify `c ≥ 2^{5/3}·64/81 ≈ 2.5085`.
+  its midpoint corollary certify `c ≥ 2^{5/3}·64/81 ≈ 2.5085`;
+  `DispersionBound32b.lean` refines to σ = 11231/10000, certifying
+  `c ≥ 2^{5/3}·10⁸/11231² ≈ 2.5169802` — within 6·10⁻⁵ of the q = 3/2
+  optimum and of the conjectured exact value `2^{1+κ*} = 2.517065`.
 
 The namespace `GenJanus.*` is kept identical to the private benchmark
 repository so that theorem names and file hashes match the pinned

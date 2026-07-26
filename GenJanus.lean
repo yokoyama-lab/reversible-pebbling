@@ -7,5 +7,6 @@ import GenJanus.CompositionAnchor
 import GenJanus.MinimaxDuality
 import GenJanus.DispersionBound
 import GenJanus.DispersionBound32
+import GenJanus.DispersionBound32b
 import GenJanus.RatioConvergence
 import GenJanus.RLEPebble
