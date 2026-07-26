@@ -4,5 +4,6 @@ import GenJanus.PebblingTheory
 import GenJanus.MergeLemma
 import GenJanus.CountRecursion
 import GenJanus.CompositionAnchor
+import GenJanus.MinimaxDuality
 import GenJanus.RatioConvergence
 import GenJanus.RLEPebble

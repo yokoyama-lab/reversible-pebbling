@@ -38,6 +38,14 @@ the rest are general (unbounded) proofs.
   amplification, and the tail-invariance base S = 11 / step S = 12 on
   1024/2048-wide tables.
 
+- `GenJanus/MinimaxDuality.lean` — ZERO duality gap: the elementary
+  minimax duality identity for monotone functions
+  (`minimax_duality`), making the maximin lower recursion
+  (`count_recursion_split`) and the minimax upper recursion
+  (`count_recursion_minmax`) EXACT (`count_recursion_split_exact`,
+  `count_recursion_minmax_exact`, `bcount_maximin_exact`) — the dual
+  DP pair is one exact self-referential recursion.
+
 The namespace `GenJanus.*` is kept identical to the private benchmark
 repository so that theorem names and file hashes match the pinned
 proof manifest referenced by the paper.
