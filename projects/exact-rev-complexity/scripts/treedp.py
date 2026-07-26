@@ -51,6 +51,15 @@ from __future__ import annotations
 
 _SHIFT = 27  # 子 id は 2^27 未満と仮定（assert で検査）
 
+# 実測した到達範囲（2026-07-27, 61GB マシン。他の作業と共用）:
+#   m<=5 (cbt(6) free-leaves, 63 頂点): p<=10 まで数分・数百MB で完走。
+#   m=6  (cbt(7) free-leaves, 127 頂点): p=8 は 11 秒、p=9 は 104 秒でどちらも到達不能を確定。
+#     p=10 は **未到達**。shape id が 2^27 を超えて上の assert が発火し、
+#     その時点で 18〜20GB を消費していた。$M^*(T_7)$ を出すには
+#     (a) 距離辞書を配列に、(b) レベル同期 BFS で 2 レベルのみ保持、(c) IDA*
+#     のいずれかが必要（`data/exp01_results.md` §7-1）。
+#   → **並行作業者がいる環境では必ず cap を渡すこと。**
+
 
 class QuotientTree:
     """高さ m の完全二分木の状態を Aut で割った商グラフ。"""
@@ -303,8 +312,13 @@ class TreeRealizer:
         return bool((mask >> k[0]) & 1) and bool((mask >> k[1]) & 1)
 
 
-def dist_to_goal(m: int, p: int, qt: QuotientTree | None = None) -> dict[int, int]:
-    """目標 shape からの単方向 BFS 距離（ピーク上限 p）。realize 用。"""
+def dist_to_goal(
+    m: int, p: int, qt: QuotientTree | None = None, *, cap: int | None = None
+) -> dict[int, int]:
+    """目標 shape からの単方向 BFS 距離（ピーク上限 p）。realize 用。
+
+    `cap` を超えたら RuntimeError（並行作業者がいる環境ではメモリ保護のため必ず渡す）。
+    """
     qt = qt or QuotientTree(m)
     goal = qt.goal_id()
     dist = {goal: 0}
@@ -319,17 +333,114 @@ def dist_to_goal(m: int, p: int, qt: QuotientTree | None = None) -> dict[int, in
                     nxt.append(t)
         d += 1
         frontier = nxt
+        if cap is not None and len(dist) > cap:
+            raise RuntimeError(f"状態数が cap={cap} を超えた（m={m}, p={p}）: 到達できなかった")
     return dist
 
 
-def realize_optimal(h: int, p: int) -> list[tuple[str, int]] | None:
+def first_root_pebbled_depth(
+    m: int, p: int, qt: QuotientTree | None = None, *, cap: int | None = None
+) -> int | None:
+    """$\\varnothing$ から「根がペブル済みの**何らかの**状態」への最小手数 $g_m(p)$。
+
+    clean（根だけ）である必要がない点が $M^*$ との違い。**下界の材料**である:
+
+    高さ $m+2$ の木の任意の手順を、部分木 $A$／部分木 $B$／根 の手に分解する
+    （3 つは互いに素で、全体を覆う）。$A$ の制限手順は
+    $\\varnothing \\to (a を含む状態) \\to \\varnothing$ を辿るので、
+    その長さは $\\ge 2g_m(p)$（往復。状態グラフが無向なので復路も同じ距離）。
+    根のトグルは $\\ge 1$ 回。よって
+
+    $$M^*(T_{m+2},\\,p) \\;\\ge\\; 4\\,g_m(p) + 1 .$$
+
+    $A$ に許すピークを全体の $p$ まで緩めているので**健全な下界**（緩い側に外す）。
+    """
+    qt = qt or QuotientTree(m)
+    start = qt.empty_id()
+    if qt.root_pebbled(qt.m, start):
+        return 0
+    seen = {start}
+    frontier = [start]
+    d = 0
+    while frontier:
+        nxt = []
+        for s in frontier:
+            for t in qt.neighbors(qt.m, s):
+                if t in seen or qt.popcount(qt.m, t) > p:
+                    continue
+                if qt.root_pebbled(qt.m, t):
+                    return d + 1
+                seen.add(t)
+                nxt.append(t)
+        d += 1
+        frontier = nxt
+        if cap is not None and len(seen) > cap:
+            raise RuntimeError(f"状態数が cap={cap} を超えた（m={m}, p={p}）: 到達できなかった")
+    return None
+
+
+def lower_bound_mstar(m: int, p: int, *, cap: int | None = None) -> int | None:
+    """$M^*(T_{m+2},p) \\ge 4g_m(p)+1$ の下界（`first_root_pebbled_depth` の系）。"""
+    g = first_root_pebbled_depth(m, p, cap=cap)
+    return None if g is None else 4 * g + 1
+
+
+def lower_bound_mstar_phased(m: int, p: int, *, cap: int | None = None) -> int | None:
+    """$M^*(\\text{高さ }m{+}1,\\,p) \\ge 2\\big(g_m(p)+g_m(p-1)\\big)+1$（`lower_bound_mstar` の改良）。
+
+    $t^*$ を「根が**最後に**置かれた時刻」とする（以後、根は最終状態まで盤上に残る）。
+    部分木 $A$ の制限手順を $t^*$ で切ると:
+
+    - $t^*$ 以前: $\\varnothing \\to S_A$（$a\\in S_A$）。ピーク $\\le p$。長さ $\\ge g_m(p)$。
+    - $t^*$ 以降: $S_A \\to \\varnothing$。**根が 1 本占めている**のでピーク $\\le p-1$。
+      長さ $\\ge \\mathrm{dist}_{p-1}(S_A,\\varnothing) \\ge g_m(p-1)$
+      （状態グラフが無向なので $\\mathrm{dist}_{p-1}(S_A,\\varnothing)=\\mathrm{dist}_{p-1}(\\varnothing,S_A)$、
+      これは $a$ を含む配置への最小距離以上）。
+
+    $B$ も同様。$A$／$B$／根 の手は互いに素なので合計して上の式。
+    $g_m$ は $p$ について非増加なので $g_m(p-1)\\ge g_m(p)$、
+    よってこの下界は `lower_bound_mstar`（$4g_m(p)+1$）以上である。
+    """
+    a = first_root_pebbled_depth(m, p, cap=cap)
+    b = first_root_pebbled_depth(m, p - 1, cap=cap)
+    if a is None or b is None:
+        return None
+    return 2 * (a + b) + 1
+
+
+def smin_tree(m: int, pmax: int = 20, *, cap: int | None = None) -> int | None:
+    """**Královič の $S_{\\min}(Bt(m))$**（complete computation の最小空間）。
+
+    彼の $Bt(m)$ = 高さ $m$ の完全二分木で**葉も空間に数える**流儀。
+    これは `QuotientTree(m)` がそのまま対応する（高さ 0 の節点の子は free な葉ではなく、
+    高さ 0 の節点自身が彼の葉である）。
+
+    彼の complete computation は「空→空・全頂点を一度カバー」で、木では
+    「根を一度カバーする」と同値（`scripts/exp01b_engine.py` の該当節）。
+    → 根がペブル済みの配置が到達可能な最小ピーク。
+    """
+    for p in range(1, pmax + 1):
+        if first_root_pebbled_depth(m, p, cap=cap) is not None:
+            return p
+    return None
+
+
+def tmin_tree(m: int, p: int, *, cap: int | None = None) -> int | None:
+    """**Královič の $T(Bt(m),p)$** = $2 g_m(p)$（往復するので片道の 2 倍）。"""
+    g = first_root_pebbled_depth(m, p, cap=cap)
+    return None if g is None else 2 * g
+
+
+def realize_optimal(
+    h: int, p: int, *, cap: int | None = None
+) -> list[tuple[str, int]] | None:
     """`complete_binary_tree(h)` free-leaves の最適手順を実頂点番号で1本返す。
 
     商グラフ上の距離表を使って $\\varnothing$ から貪欲に降りる。長さは $M^*$ に一致する
     （`tests/test_exp01c_treedp.py` が検証器つきで確認する）。
     """
     tr = TreeRealizer(h)
-    dist = dist_to_goal(tr.m, p, qt=tr.qt)
+    dist = dist_to_goal(tr.m, p, qt=tr.qt, cap=cap)
     mask = 0
     s = tr.shape_of(mask)
     if s not in dist:
@@ -386,6 +497,41 @@ def compose_schedule(h: int, sub: list[tuple[str, int]]) -> list[tuple[str, int]
     right = lift(h, sub, right=True)
     root = _offset(h, h)
     return left + right + [("put", root)] + invert(right) + invert(left)
+
+
+def compose_asymmetric(
+    h: int,
+    build_a: list[tuple[str, int]],
+    build_b: list[tuple[str, int]],
+    clear_b: list[tuple[str, int]],
+    clear_a: list[tuple[str, int]],
+) -> list[tuple[str, int]]:
+    """位相ごとに別のピーク予算を使う合成（`compose_schedule` の一般化）。
+
+    「$A$ を作る → $B$ を作る → 根を置く → $B$ を片付ける → $A$ を片付ける」の各位相で
+    **他方が盤上に占める本数が違う**ので、部分木に許されるピークも位相ごとに違う。
+    全体ピークを $P$ とすると overhead は順に $0,1,(2),2,1$ なので、部分木の許容ピークは
+
+    | 位相 | $A$ を作る | $B$ を作る | 根 | $B$ を片付ける | $A$ を片付ける |
+    |---|---|---|---|---|---|
+    | 盤上の他の駒 | なし | $a$ | $a,b$ | $a$,根 | 根 |
+    | 部分木の許容ピーク | $P$ | $P-1$ | — | $P-2$ | $P-1$ |
+
+    どの位相も $\\varnothing \\leftrightarrow \\{\\text{根}\\}$ をつなぐ手順であればよいので
+    **位相ごとに違う手順を使ってよい**（`compose_schedule` は 4 位相すべてで同じ手順を
+    使う特殊形で、そのぶん損をしている）。
+
+    引数は4つとも「高さ $h-1$ の木の $\\varnothing\\to\\{\\text{根}\\}$ 手順」。
+    `clear_*` は内部で `invert` して使う。
+    """
+    root = _offset(h, h)
+    return (
+        lift(h, build_a, right=False)
+        + lift(h, build_b, right=True)
+        + [("put", root)]
+        + invert(lift(h, clear_b, right=True))
+        + invert(lift(h, clear_a, right=False))
+    )
 
 
 if __name__ == "__main__":  # 手動確認

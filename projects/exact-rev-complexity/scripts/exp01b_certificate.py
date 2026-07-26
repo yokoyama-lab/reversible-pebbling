@@ -28,10 +28,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import revpebble as rp  # noqa: E402
 from exp01b_engine import verify_schedule  # noqa: E402
-from treedp import compose_schedule, mstar_tree, pmin_tree, realize_optimal  # noqa: E402
+from treedp import compose_schedule, realize_optimal  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "exp01b_certificate.md"
+
+# 既に確定済みの実測値（`tests/test_exp01c_treedp.py` に固定してある）。
+# ここで pmin_tree/mstar_tree を呼び直すと $h=7$ で巨大な探索が走るので**再計算しない**。
+KNOWN_PMIN = {2: 3, 3: 5, 4: 6, 5: 7, 6: 8, 7: 10}
+KNOWN_MSTAR = {2: 5, 3: 17, 4: 53, 5: 155, 6: 429}  # p = p_min。h=7 は未確定
 
 
 def certify(h: int, q: int) -> dict:
@@ -98,19 +103,16 @@ def main() -> None:
         "（合成は最適でない）。手数も $M^*$ より大きい。"
     )
     for r in rows:
-        p0 = pmin_tree(r["h"] - 1)
-        exact = mstar_tree(r["h"] - 1, p0) if p0 is not None else None
-        if p0 is not None:
-            lines.append(
-                f"  - $h={r['h']}$: 合成 = ピーク {r['peak']} / {r['moves']} 手、"
-                f"実測 $p_{{\\min}}={p0}$ / $M^*={exact}$"
-                if exact is not None
-                else f"  - $h={r['h']}$: 実測 $p_{{\\min}}={p0}$"
-            )
+        h = r["h"]
+        p0 = KNOWN_PMIN.get(h)
+        exact = KNOWN_MSTAR.get(h)
+        head = f"  - $h={h}$: 合成 = ピーク {r['peak']} / {r['moves']} 手"
+        if exact is not None:
+            lines.append(f"{head}、実測 $p_{{\\min}}={p0}$ / $M^*={exact}$")
         else:
             lines.append(
-                f"  - $h={r['h']}$: 実測の $p_{{\\min}}$ は探索が届かず未確定。"
-                f"合成の証書のみ（ピーク {r['peak']} / {r['moves']} 手）。"
+                f"{head}、実測 $p_{{\\min}}={p0}$（$M^*$ は未確定なので"
+                f"この {r['moves']} 手が現時点の上界）"
             )
     lines.append("")
     lines.append(

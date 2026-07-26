@@ -213,6 +213,94 @@ def bfs_dist(g: Dag, p: int, *, cap: int | None = None) -> dict[int, int]:
     return dist
 
 
+# ---------------------------------------------------------------------------
+# Královič 2004 の「complete computation」流儀（我々の clean-reach とは別物）
+# ---------------------------------------------------------------------------
+#
+# Královič 2004 の定義（本文精読・2026-07-27）。**2 つの量を混同しないこと。**
+#
+#   R1/R2（§2, p.139） = 我々と同じ toggle 規則（先行点が全てペブル済みなら置ける・取れる）。
+#
+#   (A) **complete computation**（§2, p.139）= 最初と最後の配置が空で、かつ
+#       **各頂点が途中のどこかでペブルされている**計算。最小空間 $S_{\\min}(G)$、最小時間 $T(G,s)$。
+#
+#   (B) **semicomplete computation**（Def 4.1, p.147）= 空から始まり、
+#       最後の配置が $\\mathrm{Put}(E, \\mathrm{root}, 1)$ =
+#       **「根だけがペブルされた配置」**である計算。最小空間 $S'_{\\min}(h)$。
+#
+# **(B) は我々の clean-reach と完全に同一である。** つまり
+#
+#     我々の $p_{\\min}(G)$ = 彼の $S'_{\\min}$ 、  我々の $M^*(G,p)$ = (B) の最小時間
+#
+# （我々の $M^*$ に対応する量は彼の論文には**表も式も無い**。彼は木・バタフライについて
+#  空間のみを扱っている: §4 冒頭「we shall discuss the space complexity」。）
+#
+# 一方 (A) は別の量で、こちらが本モジュールの `smin_kralovic` / `tmin_kralovic`。
+# 目標が唯一の sink である DAG（木・ピラミッド）では、根を置くには両方の子が同時に
+# ペブル済みでなければならず、再帰的に全祖先が過去にペブルされている。全頂点が根の
+# 祖先なので「全頂点がどこかでペブルされる」⟺「根がどこかでペブルされる」。
+# さらに状態グラフが無向なので「空→根を含む配置→空」の最小長は片道の 2 倍。よって
+#
+#     S_min(G)（彼, (A)） = 「根を含む**何らかの**配置が空から到達可能な最小ピーク」
+#     T(G,s)（彼, (A)）   = 2 × 「空から根を含む何らかの配置への最小手数」
+#
+# (A) は (B) より易しい（clean にする手間が要らない）。彼の Lem 4.2/4.3 が両者を結ぶ:
+#     Lem 4.2: $S_{\\min}(h) \\le S'_{\\min}(h) \\le S_{\\min}(h)+1$
+#     Lem 4.3: $S'_{\\min}(h+1) = S_{\\min}(h) + 2$
+#
+# `tests/test_exp01d_kralovic.py` が彼の Thm 3.1・Lem 4.2・Lem 4.3・Lem 4.10/4.11 と
+# 先行プロジェクトの完全計算変種の値で、この読みを検証する。
+
+
+def reach_target_dist(g: Dag, target: int, p: int, *, cap: int | None = None) -> int | None:
+    """$\\varnothing$ から「target がペブル済みの**何らかの**配置」への最小手数。
+
+    Královič の semicomplete computation の時間。clean である必要はない。到達不能なら None。
+    """
+    c = compile_dag(g)
+    if (1 << target) & c.free_mask:
+        return 0
+    if p < 1:
+        return None
+    bit = 1 << target
+    seen = {0}
+    frontier = [0]
+    d = 0
+    while frontier:
+        nxt: list[int] = []
+        for s in frontier:
+            pc = s.bit_count()
+            for t in _expand(s, c.moves, p, pc):
+                if t in seen:
+                    continue
+                if t & bit:
+                    return d + 1
+                seen.add(t)
+                nxt.append(t)
+        d += 1
+        frontier = nxt
+        if cap is not None and len(seen) > cap:
+            raise RuntimeError(f"状態数が cap={cap} を超えた（{g.name}, p={p}）")
+    return None
+
+
+def smin_kralovic(g: Dag, target: int, pmax: int = 40) -> int | None:
+    """Královič の $S_{\\min}(G)$（complete computation の最小空間）。
+
+    上の同値性により「target を含む配置が空から到達可能な最小ピーク」。
+    """
+    for p in range(1, pmax + 1):
+        if reach_target_dist(g, target, p) is not None:
+            return p
+    return None
+
+
+def tmin_kralovic(g: Dag, target: int, p: int, *, cap: int | None = None) -> int | None:
+    """Královič の $T(G,p)$（complete computation の最小時間）= 片道の最小手数の 2 倍。"""
+    d = reach_target_dist(g, target, p, cap=cap)
+    return None if d is None else 2 * d
+
+
 def pmin_mask(g: Dag, goal: int, pmax: int = 40) -> int | None:
     """clean に頂点集合 `goal` へ到達できる最小ピーク。"""
     for p in range(1, pmax + 1):

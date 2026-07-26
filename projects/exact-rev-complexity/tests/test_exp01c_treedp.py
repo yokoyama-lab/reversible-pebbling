@@ -21,12 +21,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import revpebble as rp  # noqa: E402
 from exp01b_engine import mstar as mstar_fast  # noqa: E402
 from exp01b_engine import verify_schedule  # noqa: E402
+from exp01b_engine import bfs_dist  # noqa: E402
 from treedp import (  # noqa: E402
     QuotientTree,
+    compose_asymmetric,
     compose_schedule,
+    first_root_pebbled_depth,
     invert,
     level_index,
     lift,
+    lower_bound_mstar,
     mstar_tree,
     pmin_tree,
     realize_optimal,
@@ -235,6 +239,116 @@ def test_compose_schedule_certifies_pmin_bound() -> None:
         # 合成は上界にすぎない（h>=4 では真に最適でない）
         p0 = pmin_tree(h - 1)
         assert p0 is not None and p0 <= q + 2
+
+
+# --------------------------------------------------------------------------
+# $M^*(T_7)$ の上界／下界（確定値が出ないときに必要な道具）
+# --------------------------------------------------------------------------
+
+
+def test_first_root_pebbled_depth_matches_brute_force() -> None:
+    """$g_m(p)$ が素朴な全状態 BFS と一致する。
+
+    素朴側: $\\varnothing$ からの距離表を作り、根がペブル済みの状態への最小距離を取る。
+    """
+    for h in (2, 3, 4):
+        g = rp.complete_binary_tree(h)
+        root = g.n - 1
+        for p in range(1, 9):
+            dist = bfs_dist(g, p)
+            want = min(
+                (d for s, d in dist.items() if (s >> root) & 1),
+                default=None,
+            )
+            got = first_root_pebbled_depth(h - 1, p)
+            assert got == want, (h, p, got, want)
+
+
+def test_g_is_at_most_mstar() -> None:
+    """$g_m(p) \\le M^*(T_{m+1},p)$（clean にする分だけ余計にかかる）。"""
+    for m in range(0, 4):
+        p0 = pmin_tree(m)
+        assert p0 is not None
+        for p in range(p0, p0 + 3):
+            g = first_root_pebbled_depth(m, p)
+            mm = mstar_tree(m, p)
+            assert g is not None and mm is not None and g <= mm, (m, p, g, mm)
+
+
+def test_lower_bound_is_valid() -> None:
+    """下界 $4g_m(p)+1 \\le M^*(\\text{高さ }m{+}1, p)$ が既知の厳密値を破らない。
+
+    高さ $m+1$ の木の根の 2 つの部分木は**高さ $m$** なので、比べる相手は
+    `mstar_tree(m+1, p)`（`m+2` ではない）。
+    これが破れたら下界の議論（手順を A/B/根 に分解する）が誤っている。
+    """
+    checked = 0
+    for m in range(0, 4):
+        for p in range(1, 11):
+            lb = lower_bound_mstar(m, p)
+            exact = mstar_tree(m + 1, p)
+            if lb is None or exact is None:
+                continue
+            assert lb <= exact, (m, p, lb, exact)
+            checked += 1
+    assert checked >= 10, checked  # 空回りしていないこと
+
+
+def test_phased_lower_bound_is_valid_and_tighter() -> None:
+    """改良下界 $2(g_m(p)+g_m(p-1))+1$ が健全で、かつ $4g_m(p)+1$ 以上。
+
+    健全性は既知の厳密値と突き合わせて確認する（破れたら議論が誤っている）。
+    """
+    from treedp import lower_bound_mstar_phased
+
+    checked = 0
+    for m in range(0, 4):
+        for p in range(2, 11):
+            lb2 = lower_bound_mstar_phased(m, p)
+            lb1 = lower_bound_mstar(m, p)
+            exact = mstar_tree(m + 1, p)
+            if lb2 is None or exact is None:
+                continue
+            assert lb2 <= exact, f"m={m} p={p}: 下界 {lb2} > 厳密値 {exact}"
+            if lb1 is not None:
+                assert lb2 >= lb1, (m, p, lb2, lb1)
+            checked += 1
+    assert checked >= 10, checked
+
+
+def test_compose_asymmetric_beats_symmetric() -> None:
+    """位相ごとに予算を変える合成は、同じ全体ピークで**同じか短い**手順を作る。
+
+    小さい $h$ で検証器つきに確認する（$h=5$: 全体ピーク 8）。
+    """
+    for h, P in ((4, 7), (5, 8)):
+        q = P - 2  # 最も厳しい位相（B を片付ける）で許されるピーク
+        build_a = realize_optimal(h - 1, P)
+        build_b = realize_optimal(h - 1, P - 1)
+        clear_b = realize_optimal(h - 1, q)
+        clear_a = realize_optimal(h - 1, P - 1)
+        assert all(x is not None for x in (build_a, build_b, clear_b, clear_a)), h
+        asym = compose_asymmetric(h, build_a, build_b, clear_b, clear_a)
+        sym = compose_schedule(h, clear_b)  # 全位相で q の手順を使う従来版
+        g = rp.complete_binary_tree(h)
+        verify_schedule(g, g.n - 1, P, asym)  # 同じ全体ピークで合法
+        verify_schedule(g, g.n - 1, P, sym)
+        assert len(asym) <= len(sym), (h, len(asym), len(sym))
+
+
+def test_composed_upper_bound_is_above_exact() -> None:
+    """合成で得た上界が既知の厳密値を下回らない（上界として健全）。"""
+    for h, P in ((4, 7), (5, 8)):
+        q = P - 2
+        parts = [
+            realize_optimal(h - 1, P),
+            realize_optimal(h - 1, P - 1),
+            realize_optimal(h - 1, q),
+            realize_optimal(h - 1, P - 1),
+        ]
+        asym = compose_asymmetric(h, *parts)
+        exact = mstar_tree(h - 1, P)
+        assert exact is not None and len(asym) >= exact, (h, len(asym), exact)
 
 
 if __name__ == "__main__":
