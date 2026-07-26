@@ -52,11 +52,24 @@ def pascal_dag(n): ...
 ## 4. 初日の実験
 
 ```bash
-python3 scripts/exp04_memo_dags.py --family fib --nmax 24
+python3 scripts/exp04_memo_dags.py --fib-nmax 24 --grid-max 4 --pascal-nmax 6
 ```
 
 初日の目標: **Fibonacci 型 DAG の $p_{\min}(n)$ と $M^*(n)$ の数列を $n\le24$ で出し、OEIS 照合。**
 帯幅2なので $n$ を大きく取れ、初日で「数列 + 差分構造 + OEIS 未登録」まで到達できる。
+
+### 進捗（2026-07-27）
+
+`scripts/memo_dags.py`（`fib_dag`, `grid_dag`, `pascal_dag`）を実装し、
+`tests/test_exp04_memo_dags.py` で構造テスト＋回帰値を固定した。目標の $n\le24$ を超え
+Fibonacci 型は素朴 BFS で $n\le29$ まで到達（OEIS 未登録を確認）。グリッド型は
+$k\times k$ を $k\le5$、パスカル型（中央二項係数目標）は $n\le6$ まで。
+詳細・数表・次の一手は `data/exp04_results.md`。
+
+**未着手**: フロンティア DP（グリッド $k=6$・Fibonacci $n>29$ 帯で素朴 BFS の壁に当たった）、
+既存実装（`fib.janus` 等）との定量比較（永続メモ再利用のモデルが異なり翻訳作業が必要）、
+Lean 二層検証、閉形式/漸化式の確定。$p_{\min}$ ブラケット長が $1,1,2,2,4,4,8,\dots$
+と2ステップごとに倍加するように見える観察があるが、8点のみで検証前（`data/exp04_results.md` §3）。
 
 ## 5. 成功判定と撤退条件
 
