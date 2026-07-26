@@ -749,4 +749,90 @@ theorem count_recursion_split (s u w : Nat) (huw : 1 ≤ u + w) :
   simp [huw] at hsplit
   omega
 
+-- ------------------------------------------------------------------
+-- The MIN-MAX dual upper recursion (M8, 追記47): the B-column is a
+-- sum of two aligned sorted lists, so {i : B_i ≤ v} lies inside the
+-- union of two PREFIXES, and its count is bounded by the longer one:
+--   C_{S}(v) ≤ 1 + C_{S−1}(v) + max(C_S(τ), C_{S−1}(v−1−τ))
+-- for EVERY threshold τ — the exact dual of count_recursion_split.
+-- Measured accuracy of min_τ of the right side: within 6·10⁻⁴ of the
+-- exact B-count (the ⌊v/2⌋ conjunction bound is 12–51% loose).
+-- ------------------------------------------------------------------
+
+/-- If every index whose entry satisfies `p` is `< m`, the count is
+at most `m`. -/
+theorem countP_le_of_index_bound (l : List Nat) (p : Nat → Bool) (m : Nat)
+    (h : ∀ i (hi : i < l.length), p (l[i]'hi) = true → i < m) :
+    l.countP p ≤ m := by
+  have hsplit : l = l.take m ++ l.drop m := (List.take_append_drop m l).symm
+  have hdrop : (l.drop m).countP p = 0 := by
+    rw [List.countP_eq_zero]
+    intro a ha
+    obtain ⟨j, hj, rfl⟩ := List.mem_iff_getElem.mp ha
+    have hjl : m + j < l.length := by
+      have := hj
+      rw [List.length_drop] at this
+      omega
+    have hgd : (l.drop m)[j]'hj = l[m + j]'hjl := by
+      simp [List.getElem_drop]
+    rw [hgd]
+    intro hp
+    have := h (m + j) hjl hp
+    omega
+  calc l.countP p = (l.take m).countP p + (l.drop m).countP p := by
+        conv => lhs; rw [hsplit]
+        rw [List.countP_append]
+    _ = (l.take m).countP p := by rw [hdrop]; omega
+    _ ≤ (l.take m).length := List.countP_le_length
+    _ ≤ m := by
+        rw [List.length_take]
+        omega
+
+/-- In a sorted list, the index of an entry ≤ v is below the count of
+entries ≤ v. -/
+theorem index_lt_countLe (l : List Nat) (v i : Nat) (hs : NDec l)
+    (hi : i < l.length) (hle : l[i]'hi ≤ v) : i < countLe l v := by
+  have : i + 1 ≤ countLe l v := by
+    unfold countLe
+    apply countP_ge_prefix _ _ (i + 1) (by omega)
+    intro j hj
+    simp only [decide_eq_true_eq]
+    exact Nat.le_trans (sorted_getElem_le hs (by omega) hi) hle
+  omega
+
+/-- THE MIN-MAX DUAL UPPER RECURSION, fully general: for every
+threshold τ,
+  C_S(v) ≤ 1 + C_{S−1}(v) + max(C_S(τ), C_{S−1}(v−1−τ)).
+Dual of `count_recursion_split`; captures the E-band almost exactly
+when minimised over τ. -/
+theorem count_recursion_minmax (s v τ : Nat) :
+    countLe (rowIter (s + 1)) v ≤
+      1 + countLe (rowIter s) v
+      + max (countLe (rowIter (s + 1)) τ) (countLe (rowIter s) (v - 1 - τ)) := by
+  obtain ⟨hsortc, _⟩ := rowIter_invariant (s + 1)
+  obtain ⟨hsortp, _⟩ := rowIter_invariant s
+  have hsplit := countLe_split s v
+  have hB : countLe (List.zipWith (· + ·) (rowIter (s + 1)) (rowIter s)) v
+      ≤ max (countLe (rowIter (s + 1)) τ) (countLe (rowIter s) (v - 1 - τ)) := by
+    apply countP_le_of_index_bound
+    intro i hi hp
+    rw [List.length_zipWith] at hi
+    have hic : i < (rowIter (s + 1)).length := by omega
+    have hip : i < (rowIter s).length := by omega
+    rw [List.getElem_zipWith] at hp
+    simp only [decide_eq_true_eq] at hp
+    by_cases hτ : (rowIter (s + 1))[i]'hic ≤ τ
+    · have := index_lt_countLe _ τ i hsortc hic hτ
+      omega
+    · have hrem : (rowIter s)[i]'hip ≤ v - 1 - τ := by omega
+      have := index_lt_countLe _ (v - 1 - τ) i hsortp hip hrem
+      omega
+  by_cases hv : 1 ≤ v
+  · simp [hv] at hsplit
+    omega
+  · have hv0 : v = 0 := by omega
+    subst hv0
+    simp at hsplit
+    omega
+
 end GenJanus.CountRecursion
