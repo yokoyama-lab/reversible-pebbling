@@ -209,6 +209,116 @@ def landauer_bfs(
 
 
 # ---------------------------------------------------------------------------
+# 最適スケジュールの抽出（予想 A の証明の構造補題を実データで検査するため）
+# ---------------------------------------------------------------------------
+
+
+def landauer_schedule(
+    dag: Dag,
+    target: int,
+    p: int,
+    e: int,
+) -> list[tuple[str, int]] | None:
+    """予算 $e$ 以内の最適スケジュールを 1 本抽出する（`mode="ops"` のみ）。
+
+    返り値は `("put"|"take"|"erase", 頂点)` の列（`erase` = 不可逆消去）。
+    `data/exp03_results.md` の予想 A の証明で使う構造補題
+    （$2n-1$ 手なら各点ちょうど 1 回 put/take・put は昇順・
+    不可逆消去の回数 = 取り除き時刻列の上昇数）を実データで検査するのに使う。
+    """
+    free_mask, pred_mask, movable = _compile(dag)
+    goal = 1 << target
+    if target in dag.free:
+        return []
+    if p < 1:
+        return None
+    width = e + 1
+    dist: dict[int, int] = {0: 0}
+    parent: dict[int, tuple[int, str, int]] = {}
+    queue: deque[int] = deque([0])
+    end: int | None = None
+    while queue:
+        key = queue.popleft()
+        d = dist[key]
+        state, used = divmod(key, width)
+        if state == goal:
+            end = key
+            break
+        npeb = state.bit_count()
+        for v in movable:
+            bit = 1 << v
+            ready = (pred_mask[v] & ~(state | free_mask)) == 0
+            if bit & state:
+                if ready:
+                    nk, act = (state ^ bit) * width + used, "take"
+                elif used + 1 <= e:
+                    nk, act = (state ^ bit) * width + used + 1, "erase"
+                else:
+                    continue
+            elif ready and npeb + 1 <= p:
+                nk, act = (state | bit) * width + used, "put"
+            else:
+                continue
+            if nk not in dist:
+                dist[nk] = d + 1
+                parent[nk] = (key, act, v)
+                queue.append(nk)
+    if end is None:
+        return None
+    seq: list[tuple[str, int]] = []
+    cur = end
+    while cur in parent:
+        prev, act, v = parent[cur]
+        seq.append((act, v))
+        cur = prev
+    seq.reverse()
+    return seq
+
+
+def analyse_chain_schedule(n: int, seq: list[tuple[str, int]]) -> dict:
+    """鎖の最適スケジュールを予想 A の証明の言葉に翻訳する。
+
+    返り値のキー:
+      `moves` 手数, `rigid` 各点ちょうど 1 回 put / 1..n-1 が 1 回 take か,
+      `puts_sorted` put が昇順か, `tau` 取り除き時刻の列 $\\tau(1..n-1)$,
+      `ascents` $\\#\\{i\\in[2,n-1] : \\tau(i)>\\tau(i-1)\\}$,
+      `erasures` 実際の `erase` の回数, `runs` $\\tau$ の極大下降連の長さのリスト。
+    """
+    puts = [v for a, v in seq if a == "put"]
+    removes = [(t, v, a) for t, (a, v) in enumerate(seq) if a in ("take", "erase")]
+    tau: dict[int, int] = {}
+    for t, v, _a in removes:
+        tau.setdefault(v, t)
+    rigid = (
+        sorted(puts) == list(range(1, n + 1))
+        and len(puts) == n
+        and sorted(v for _t, v, _a in removes) == list(range(1, n))
+    )
+    ascents = 0
+    if rigid:
+        ascents = sum(1 for i in range(2, n) if tau[i] > tau[i - 1])
+    runs: list[int] = []
+    if rigid and n >= 2:
+        cur = 1
+        for i in range(2, n):
+            if tau[i] < tau[i - 1]:
+                cur += 1
+            else:
+                runs.append(cur)
+                cur = 1
+        runs.append(cur)
+    return {
+        "moves": len(seq),
+        "rigid": rigid,
+        "puts_sorted": puts == sorted(puts),
+        "tau": [tau.get(i) for i in range(1, n)],
+        "ascents": ascents,
+        "erasures": sum(1 for a, _v in seq if a == "erase"),
+        "runs": runs,
+    }
+
+
+# ---------------------------------------------------------------------------
 # 標準ペブリング（e = ∞ の極）
 # ---------------------------------------------------------------------------
 
