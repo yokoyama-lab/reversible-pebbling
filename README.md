@@ -51,6 +51,9 @@ the rest are general (unbounded) proofs.
   `dispersion_midpoint_16` (`16^s ≤ 64 m_S 13^s + 8^s`), certifying
   `c = 2d ≥ 32/13 ≈ 2.4615` — the first machine-checked improvement
   over the entropy lower bound `2^{1+ε*} ≈ 2.4518`.
+- `GenJanus/DispersionBound32.lean` — the q = 3/2 instance (σ = 9/8,
+  integralised via `W v = ⌊1000 v^{3/2}⌋`): `dispersion32_main` and
+  its midpoint corollary certify `c ≥ 2^{5/3}·64/81 ≈ 2.5085`.
 
 The namespace `GenJanus.*` is kept identical to the private benchmark
 repository so that theorem names and file hashes match the pinned

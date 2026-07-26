@@ -6,5 +6,6 @@ import GenJanus.CountRecursion
 import GenJanus.CompositionAnchor
 import GenJanus.MinimaxDuality
 import GenJanus.DispersionBound
+import GenJanus.DispersionBound32
 import GenJanus.RatioConvergence
 import GenJanus.RLEPebble
