@@ -45,6 +45,12 @@ the rest are general (unbounded) proofs.
   (`count_recursion_minmax`) EXACT (`count_recursion_split_exact`,
   `count_recursion_minmax_exact`, `bcount_maximin_exact`) — the dual
   DP pair is one exact self-referential recursion.
+- `GenJanus/DispersionBound.lean` — the dispersion lower bound,
+  rational instance q = 1, λ = 13/8: `dispersion_main`
+  (`8^s C_S(v) ≤ 64 v 13^s`, unconditional) and
+  `dispersion_midpoint_16` (`16^s ≤ 64 m_S 13^s + 8^s`), certifying
+  `c = 2d ≥ 32/13 ≈ 2.4615` — the first machine-checked improvement
+  over the entropy lower bound `2^{1+ε*} ≈ 2.4518`.
 
 The namespace `GenJanus.*` is kept identical to the private benchmark
 repository so that theorem names and file hashes match the pinned

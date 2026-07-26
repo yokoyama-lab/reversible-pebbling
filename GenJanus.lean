@@ -5,5 +5,6 @@ import GenJanus.MergeLemma
 import GenJanus.CountRecursion
 import GenJanus.CompositionAnchor
 import GenJanus.MinimaxDuality
+import GenJanus.DispersionBound
 import GenJanus.RatioConvergence
 import GenJanus.RLEPebble
