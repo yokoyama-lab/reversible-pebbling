@@ -101,14 +101,18 @@ def run_nuxmv(path: Path, *, timeout: float = 600.0) -> tuple[str, str]:
         [f"read_model -i {path}", "go_msat", "check_invar_ic3", "quit", ""]
     )
     env = dict(os.environ, LD_LIBRARY_PATH=str(NUXMV_LIBS))
-    out = subprocess.run(
-        [str(NUXMV), "-int"],
-        input=cmds,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        env=env,
-    )
+    try:
+        out = subprocess.run(
+            [str(NUXMV), "-int"],
+            input=cmds,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=env,
+        )
+    except subprocess.TimeoutExpired:
+        # 時間切れは例外にせず UNKNOWN として返す（掃引が途中で死なないように）
+        return ("UNKNOWN", f"timeout after {timeout}s")
     txt = out.stdout + out.stderr
     if "is false" in txt:
         return ("REACHABLE", txt)
