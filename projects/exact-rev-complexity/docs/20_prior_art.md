@@ -12,12 +12,23 @@ clean reachability reversible pebbling game:
 - 初期状態はペブル無し、終端は**目標頂点だけにペブルがある clean 状態**。
 - ピーク（同時ペブル数の最大）を $p$ で抑え、**手数**を最小化する。$M^*$ と書く。
 
+> **⚠️ Královič の用語との対応（2026-07-27 追記。取り違え防止）**: このモデルは
+> Královič の **semicomplete computation（Def 4.1, p.147）と字義通り同一**であり、
+> 彼の **complete computation（§2, p.139。各頂点が途中でカバーされることを要求）とは別物**。
+> 対応は 我々の $p_{\min}(G)$ = 彼の $S'_{\min}$、我々の $M^*(G,p)$ = semicomplete の時間。
+> 彼の $Bt(h)$ は $2^h-1$ 頂点で葉も空間に数えるので、**我々の記法とはレベルが 1 ずれる**
+> （`all_pebbled(complete_binary_tree(h-1))` = 「$T_h$ free-leaves」）。
+> 検証記録は `data/exp01_results.md` §8（彼の Thm 3.1・Thm 3.4・Lem 4.2・Lem 4.3・
+> Lem 4.10/4.11 の 6 件を我々の実装で再現し全て一致）。
+
 実装は `scripts/revpebble.py`。鎖 `chain(n)` が Bennett のゲームに対応する。
 
 ## 2. 鎖について確定していること
 
 - **到達可能性**: ピーク $p$ で clean 到達できる最大鎖長は $\mathrm{reach}(p)=2^{p-1}$。
   これは **Královič 2001 Thm 3.1**（$S^{-1}(p)=2^p-1$）の系であり **既知**。
+  **正確な導出は $\mathrm{reach}(p) = S^{-1}(p-1)+1$**（$=2^{p-1}$。2026-07-27 訂正。
+  以前ここに書いていた「端条件ブリッジ $(S^{-1}(p)+1)/2$」は数値は合うが導出として不正確）。
   （先行プロジェクトでは当初 Conjecture として書いていたが、本文精読の結果 降格した。）
   同値な形で Knill 1995 Thm 2.3: $F(n,S)<\infty \iff n \le 2^{S-1}$。
 - **厳密最小手数** $M^*(n)$（$p=p_{\min}$ で評価）、$n=1..16$:
