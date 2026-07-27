@@ -2,110 +2,125 @@
 
 `docs/51_paper_plan_candidate3.md` §4 の穴 3。**これが書けないと落ちる**と判定していた項目。
 
----
+**2026-07-28: 本文を入手・精読した**（先生が Paperpile に所蔵。Paperpile の Google Drive 同期
+`gdrive:Paperpile/All Papers/G/` から取得）。以下は**本文の表現に基づく**。
 
-## 0. 文献の入手状況（正直に）
-
-| 文献 | 入手 | 状態 |
-|---|---|---|
-| **Grochow & Wolpert**, *Beyond Number of Bit Erasures*, SIGACT News 49(2):33–56, 2018, doi:`10.1145/3232679.3232689` | ❌ **本文未読** | ACM DL 有料。SFI Press 版（`sfipress.org/energetics/beyond-number-of-bit-erasures`）は**導入と文献一覧のみ**で本論が無い |
-| **Wolpert & Kolchinsky**, *Thermodynamics of computing with circuits*, `arXiv:1806.04103v6` | ✅ **本文精読** | 無料公開。**著者の一方（Wolpert）が同じ**で、mismatch cost の技術的定義と定理を含む |
-
-**⚠️ 投稿前に GW の本文を入手すること**（南山大の ACM DL 契約で取れるはず）。
-下の応答は **Wolpert 自身の accessible な技術論文に基づく**もので、
-GW の具体的な主張文には当たっていない。**この点は査読で不利になりうるので必ず埋める。**
+| 文献 | 状態 |
+|---|---|
+| **Grochow & Wolpert**, *Beyond number of bit erasures: New complexity questions raised by recently discovered thermodynamic costs of computation*, SIGACT News **49(2):33–56**, June 2018, doi:`10.1145/3232679.3232689` | ✅ **精読済み** |
+| **Wolpert & Kolchinsky**, *Thermodynamics of computing with circuits*, `arXiv:1806.04103v6` | ✅ 精読済み（mismatch cost の技術的定義） |
 
 ---
 
-## 1. 批判の要旨（我々の理解。GW 本文未読なので abstract と背景から再構成）
+## 1. GW が実際に述べている批判（本文から）
 
-> Landauer 以来、計算の熱力学的コストは「消去したビット数」で測られてきた。
-> しかし非平衡統計力学の進展により、実際の熱力学的コストは
-> **入力分布と物理実装に依存**し、消去ビット数だけでは決まらないことが分かった。
+### 1.1 abstract の位置づけ
 
-したがって「$e$ 回の不可逆消去」を資源として数える本稿のモデルは、
-**時代遅れの粗い近似ではないか**という批判が想定される。
+> "we now understand that while **logically reversible computing can have some thermodynamic
+> benefits, it is far from the end of the story**"
 
-## 2. 応答（Wolpert 自身の枠組みが我々を支持する）
+つまり「可逆計算に利点が無い」ではなく「**それで話は終わらない**」という主張である。
 
-Wolpert–Kolchinsky（`arXiv:1806.04103v6`, §III）は、エントロピー生成 (EP) を
-**mismatch cost** と **residual EP** に分解し、次の 2 つを示している（本文 p.7 付近）:
+### 1.2 核心は「会計」の議論（§2、本文 p.38 付近）
 
-> **(i)** 「$P$ が状態集合 $Z$ 上で**論理的に可逆**で $\mathrm{supp}\,p \subseteq Z$ ならば、
-> **mismatch cost と Landauer cost はどちらも 0 でなければならない**」
+これが我々に最も関係する箇所である。$f$ を可逆関数 $f_r$ に埋め込んで
+出力 $(x, f(x))$ を得る場合について:
+
+> "since $f_r$ is logically reversible, there is no Landauer cost incurred when it produces the
+> output $(x, f(x))$. … **This is misleading though.** In the case of embedding $f$ in a
+> reversible function $f_r$, in addition to the sunk cost of erasing $f(x)$, we face an
+> **additional cost of erasing the other component of the output, $x$**. … It is
+> straight-forward to show that the cost of doing this is **precisely the Landauer cost of
+> simply using the conventional computer to implement $f$ directly** … Ultimately, whether or
+> not $f_r$ is considered to have lower Landauer cost than $f$ **depends on how we do the
+> accounting**."
+
+**要するに「可逆化して残した $x$ を最後に誰が消すのか」という会計の問題である。**
+
+### 1.3 GW が提起している問いは我々の設定を含まない
+
+> "In light of this, here we **focus almost entirely on implementing circuits with AND, OR, NOT**"
+
+Question 3.2（普遍ゲート集合の下での最悪ケース熱力学コストの最小化。NP 困難か、MCSP に帰着するか）、
+3.6（不正な prior に由来するコスト）、3.11、5.1（物理乱数とのトレードオフ）、
+6.1–6.3（誤り訂正符号・ノイズのある素子・近似計算）は**すべて不可逆回路についての問い**であり、
+**消去予算つき可逆ペブリングの時間計算量は含まれていない**。
+
+→ **我々は GW の問いのいずれにも答えていない。** 論文でもそう明記する（下記 §3）。
+
+## 2. 応答（GW の会計問題は、本稿のモデルがまさに固定するもの）
+
+**GW の 1.2 の指摘は、本稿のモデルでは定義によって解決されている。**
+
+- 本稿は**clean 到達**を要求する。すなわち終端では**目標以外に何も残さない**。
+  GW が問題にする「残った $x$ を誰が消すのか」は、本稿では
+  **「可逆な `take` の列で uncompute する」** と定めており、**消去しない**。
+- 可逆な `take` は論理的に可逆なので Landauer コストを負わない
+  （GW も 1.2 で「$f_r$ が出力を produce する分には Landauer コストが無い」と認めている）。
+- **その代わりに払うのが手数（時間）である。** 本稿の $M^*(n,p,e)$ はまさにその値である。
+- そして**可逆に片付けられない `take`** だけが不可逆消去であり、その回数が $e$ である。
+
+> **したがって本稿は GW の「会計」問題に対して、
+> 一つの明示的な会計方式（clean 終端を要求し、片付けの代価を手数で数え、
+> 可逆に片付けられない回数だけを $e$ として別建てにする）を与え、
+> その方式の下での厳密な値を決めている。**
+
+さらに Wolpert 自身の技術論文（`arXiv:1806.04103v6` §III）は、我々の可逆操作が
+**現代の枠組みでも**無料であることを支持する:
+
+> 「$P$ が $Z$ 上で論理的に可逆で $\mathrm{supp}\,p\subseteq Z$ ならば、
+> **mismatch cost と Landauer cost はどちらも 0** でなければならない」
+> 「逆に $P$ が論理的に可逆でないならば、$\mathrm{supp}\,p\subseteq Z$ なる
+> **すべての初期分布 $p$ に対して mismatch cost を 0 にはできない**」
+
+→ **$e$ は「熱の量」ではなく、避けられないエントロピー生成が生じうる箇所の個数である。**
+量は入力分布と実装に依存するが、**どの箇所で生じうるかは論理構造だけで決まる**。
+
+## 3. 論文に入れる最終形（草案・約 210 語）
+
+> Grochow and Wolpert [SIGACT News 49(2), 2018] argue that counting bit erasures does not
+> capture the thermodynamic cost of a computation, and in particular that the apparent
+> Landauer saving of embedding $f$ in a reversible $f_r$ "depends on how we do the accounting":
+> the retained copy of the input must eventually be erased, at precisely the Landauer cost of
+> computing $f$ irreversibly in the first place.
 >
-> **(ii)** 「逆に $P$ が $Z$ 上で論理的に可逆でないならば、
-> **$\mathrm{supp}\,p\subseteq Z$ なるすべての初期分布 $p$ に対して mismatch cost を 0 にはできない**。
-> …したがって論理的に不可逆な写像を実装するどの固定過程にも、
-> **避けられない EP を生む初期分布が存在する**」
+> Our model fixes that accounting explicitly. We require a *clean* terminal configuration, so
+> the retained material is **uncomputed by reversible removals rather than erased**; what we pay
+> for cleaning is *time*, and $M^*(n,p,e)$ is exactly that price. The budget $e$ counts only
+> those removals that cannot be performed reversibly. Under this accounting the reversible moves
+> are free even in the modern framework: for a map that is logically reversible on the relevant
+> support, both mismatch cost and Landauer cost vanish, while for a logically irreversible map no
+> single process makes the mismatch cost vanish for all input distributions
+> [Wolpert–Kolchinsky, arXiv:1806.04103].
+>
+> We therefore read $e$ not as an amount of heat but as **the number of occasions at which
+> unavoidable entropy production can arise** — its magnitude depends on the input distribution
+> and on implementation details, but its *placement* is fixed by the logical structure. We make
+> no claim about magnitude, and we do not address the open questions of [GW], which concern
+> irreversible circuits built from AND/OR/NOT gates.
 
-この 2 つを我々のモデルに読み替えると:
-
-- 本稿の**可逆な `put`/`take`** は論理的に可逆な操作なので、(i) より
-  **mismatch cost も Landauer cost も 0**。つまり**現代の枠組みでも「無料」である**
-  （Landauer 近似に頼った主張ではない）。
-- 本稿の**不可逆消去**は論理的に不可逆な操作なので、(ii) より
-  **避けられない EP が生じうる箇所そのもの**である。
-
-> **したがって $e$ は「熱の量」ではなく、
-> 避けられないエントロピー生成が生じうる箇所の個数を数える組合せ量である。**
-> 現代の非平衡熱力学は「その箇所でいくら出るか」が入力分布と実装に依存すると言うが、
-> **「どの箇所で出うるか」は論理構造だけで決まり、それを数えるのが $e$ である。**
-> $e$ を最小化することは、**実装や入力分布に依存せずに、
-> 避けられない散逸の機会の数を最小化すること**に対応する。
-
-### 2.1 この応答の強みと限界
-
-**強み**: 批判の出典の著者自身の枠組みで、我々の量が意味を持つことを示せる。
-「Landauer は粗い」に対して「粗い Landauer に依存していない」と答えられる。
-
-**限界（論文にも書く）**:
-1. $e$ は **EP の量を与えない**。$e$ が小さくても、その少数回で大量の EP が出る実装はありうる。
-   本稿の主張は「機会の数」の最小化に限る。
-2. 逆に $e$ が下界になるとも主張しない（residual EP は可逆操作でも 0 でないことがありうる。
-   W–K は「適切な準静的過程なら 0 にできる」と述べているが、これは実装への条件である）。
-3. GW が提起している「計算量理論への具体的な問い」との関係は**未確認**（本文未読）。
-   入手後、我々の $M^*(G,p,e)$ が彼らの問いのどれかに答えていないか照合する。
-
-## 3. 今日の実測が援護材料になる（副次的な論拠）
+## 4. 実測が援護材料になる（副次的な論拠）
 
 `data/exp52_cutrod_findings.md` の実測で、既存の可逆メモ化実装が実際に払っている資源は
+**空間**（メモ表 7〜20）・**スタック**（`topDownCutRod` でピーク 75,802）・**時間**
+（総歩数 959〜27,157）の 3 つで、**熱（不可逆消去）は一度も使っていない**。
 
-- **空間**（メモ表 7〜20 スロット）
-- **スタック**（`topDownCutRod` でピーク **75,802** スロット）
-- **時間**（総歩数 959〜27,157）
-
-の 3 つで、**熱（不可逆消去）は一度も使っていない**ことが分かった。
-
-> つまり実装者は、熱を使わない 2 つの設計点の間で選択させられている。
+> 実装者は熱を使わない 2 つの設計点の間で選択させられている。
 > 本稿の $e$ は**第 3 の軸を明示的に与える**ものであり、
-> その軸の目盛りが「EP の量」なのか「EP の機会の数」なのかという問い（GW の批判）は、
-> **軸を導入することの価値とは独立**である。
-> 軸が無ければ設計者はそこを選べない。
+> 「その軸の目盛りが EP の量か機会の数か」という問い（GW の批判）は、
+> **軸を導入することの価値とは独立である**。軸が無ければ設計者はそこを選べない。
 
-この段落は「モデルが粗いかどうか」の議論を「設計空間に軸を足す価値」の議論にずらす。
 **批判を否定せず、主張の射程を限定して受け止める**書き方であり、
 査読で「反論に耳を貸さない」と取られるリスクが小さい。
 
----
+## 5. 記録: この節を書くまでに踏んだ手順
 
-## 4. 論文に入れる最終形（草案・約 200 語相当）
+1. 当初は abstract と二次情報から「消去ビット数は粗い」という批判だと**推測**していた。
+2. ACM DL 有料・SFI Press 版は本論なし → **一度は「本文未読」と明記して草案を書いた**。
+3. 先生が Paperpile 所蔵を教示 → **Paperpile の Google Drive 同期から現物を取得**
+   （`gdrive:Paperpile/All Papers/G/`。`rclone copy` で読み取りのみ）。
+4. 精読の結果、**批判の核心は「粗い」ではなく「会計」だった**ことが判明し、
+   応答の骨格を書き換えた（§2）。**推測で書いた版とは論点が違っていた。**
 
-> Recent work in nonequilibrium statistical mechanics shows that the thermodynamic cost of
-> a computation is not determined by its number of bit erasures alone: the entropy production
-> depends on the input distribution and on implementation details [Grochow–Wolpert 2018].
-> Our erasure budget $e$ is therefore **not** a measure of dissipated heat. What it measures is
-> the number of *occasions* at which unavoidable entropy production can arise.
-> This reading is supported by the decomposition of entropy production into mismatch cost and
-> residual EP [Wolpert–Kolchinsky, arXiv:1806.04103]: for a map that is logically reversible on
-> the relevant support, both mismatch cost and Landauer cost vanish, whereas for a logically
-> irreversible map no single process can make the mismatch cost vanish for all input
-> distributions. Hence the reversible moves of our game are free even in the modern framework,
-> and the irreversible removals are exactly the steps that can incur unavoidable dissipation.
-> Minimizing $e$ minimizes the number of such steps, independently of the input distribution and
-> of implementation details — while making no claim about the magnitude of the dissipation.
-> We regard this as the appropriate combinatorial abstraction: the *placement* of unavoidable
-> dissipation is fixed by the logical structure, even though its *magnitude* is not.
-
-**投稿前の必須作業**: GW 本文を入手し、この段落が彼らの主張を正しく要約しているか確認する。
-（現状は abstract と Wolpert の別論文からの再構成。**引用の正確さに責任を持てる状態ではない。**）
+→ 教訓（`docs/60_novelty_audit.md` §7 に同じことを書いた）: **本文を読むまで論点は分からない。**
+abstract からの再構成は、方向は当たっても**論点を外す**。
