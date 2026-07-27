@@ -154,7 +154,9 @@ def _union_tree(parts: list):
     return parts[0]
 
 
-def one_move_image(F, g: dict[int, tuple[int, ...]], p: int, gz: dict | None = None):
+def one_move_image(
+    F, g: dict[int, tuple[int, ...]], p: int, gz: dict | None = None, chunk: int = 8
+):
     """族 $F$ から1手で到達できる状態族（ピーク $\\le p$）。
 
     3 つの最適化を入れてある:
@@ -163,21 +165,35 @@ def one_move_image(F, g: dict[int, tuple[int, ...]], p: int, gz: dict | None = N
        $h=7$ ではペブル対象 127 個のうち 64 個が空 guard なのでフィルタが半減する。
     2. **濃度制約 `smaller(p+1)` は union の後に 1 回だけ**適用する。
        濃度による制限は union と可換なので、127 回 → 1 回にできる。
-    3. union は平衡二分木で畳む（`_union_tree`）。
+    3. union は `chunk` 個ずつ平衡二分木で畳み、累積する（`_union_tree`）。
+
+    `chunk` の意味（**$h=7$ ではここが効く**）: 127 個の中間 ZDD を一度に作って
+    まとめて畳むと**同時生存する中間 ZDD が 127 個**になり、graphillion の
+    ノード表・演算キャッシュが膨れて $h=7$ では RSS が 6GB（レベル 55 時点）〜24GB に達した。
+    フロンティア自体は 7.6MB しかないので、これは純粋に中間結果の同時生存数の問題である。
+    `chunk` 個ずつに区切れば同時生存は `chunk+1` 個で抑えられる。
     """
     _require()
     if gz is None:
         gz = _guard_setsets(g)
-    parts = []
+    acc = None
+    buf: list = []
     for v in g:
         need = gz[v]
         sub = F if need is None else F.supersets(need)
         sub = sub.copy()
         sub.flip(v)
-        parts.append(sub)
-    if not parts:
+        buf.append(sub)
+        if len(buf) >= chunk:
+            part = _union_tree(buf)
+            buf = []
+            acc = part if acc is None else acc.union(part)
+    if buf:
+        part = _union_tree(buf)
+        acc = part if acc is None else acc.union(part)
+    if acc is None:
         return setset()
-    return _union_tree(parts).smaller(p + 1)
+    return acc.smaller(p + 1)
 
 
 def mstar_zdd(
