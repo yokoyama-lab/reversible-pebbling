@@ -5,36 +5,65 @@
 
 ---
 
-## 1. nuXmv（IC3/PDR のモデル検査器）— **手動ライセンス同意が必要**
+## 1. nuXmv 2.2.0（IC3/PDR・SMT ベースのモデル検査器）— **導入済み（2026-07-27）**
 
-**自動化できない。** ダウンロード前に web フォームでライセンスに同意する必要があり、
-Claude が代理で同意すべきではない。**先生ご自身で下記を実施してください。**
+先生から直接 URL の指示があったので取得した（ライセンス同意は先生が実施）。
 
-```
-1. https://nuxmv.fbk.eu/ を開く
-2. "Download" → 「非商用/学術利用」のライセンスに同意（氏名・所属・メールの入力あり）
-   ※ nuXmv は academic/non-commercial 用途は無償。商用は別途契約
-3. Linux 64bit 版 (nuXmv-x.y.z-linux64.tar.gz) を取得
-4. 展開して配置:
-   tar xzf nuXmv-*-linux64.tar.gz -C ~/dev/infra/tools/
-   ln -s ~/dev/infra/tools/nuXmv-*/bin/nuXmv ~/dev/infra/tools/nuXmv
-5. 疎通確認:
-   ~/dev/infra/tools/nuXmv -int   # 対話モード。quit で終了
+```bash
+cd ~/dev/infra/tools
+curl -sL -o nuXmv.tar.xz "https://nuxmv.fbk.eu/downloads/2.2.0/nuXmv-2.2.0-linux64.tar.xz"
+tar xJf nuXmv.tar.xz
+chmod +x nuXmv-2.2.0-linux64/usr/local/bin/nuXmv
+ln -sf ~/dev/infra/tools/nuXmv-2.2.0-linux64/usr/local/bin/nuXmv ~/dev/infra/tools/nuXmv
 ```
 
-**ただし本プロジェクトでは不要。** IC3/PDR は **ABC で代替済み**（§4）。
-ABC の `pdr` コマンドが Bradley の IC3 実装（Een の改良入り）である。
-nuXmv の利点は SMT ベースの無限状態モデル検査（`ic3_invar` 等）なので、
-**整数変数を持つモデルを扱いたくなったときに初めて必要になる。**
+**⚠️ 罠: `libxml2.so.2` が無い。** nuXmv 2.2.0 は旧 ABI の `libxml2.so.2` を要求するが、
+本機の libxml2 は soname が **`.so.16`**（Ubuntu 15 系 / brew 2.15）に上がっており、
+そのままでは `error while loading shared libraries: libxml2.so.2` で起動しない。
 
----
+**対処（システムを汚さない private shim）**:
+
+```bash
+mkdir -p ~/dev/infra/tools/nuxmv-libs
+ln -sf /usr/lib/x86_64-linux-gnu/libxml2.so.16 ~/dev/infra/tools/nuxmv-libs/libxml2.so.2
+# 実行時に LD_LIBRARY_PATH を渡す
+LD_LIBRARY_PATH=$HOME/dev/infra/tools/nuxmv-libs ~/dev/infra/tools/nuXmv -int
+```
+
+起動時に `no version information available` の警告が 2 行出るが**動作する**。
+（soname を偽装しているため。nuXmv が libxml2 を使うのは XML トレース入出力の経路のみなので、
+IC3/PDR による有限モデルの検査には影響しない。厳密にやるなら libxml2 2.9 系の
+`.so.2` を別途用意して同じ場所に置く。）
+
+**機能確認（IC3 が反例を出すこと）**:
+
+```bash
+cat > counter.smv <<'EOF'
+MODULE main
+VAR c : 0..7;
+ASSIGN init(c) := 0; next(c) := (c + 1) mod 8;
+INVARSPEC c < 6;   -- 偽（反例が出る）
+INVARSPEC c < 8;   -- 真
+EOF
+LD_LIBRARY_PATH=$HOME/dev/infra/tools/nuxmv-libs ~/dev/infra/tools/nuXmv -int <<'CMD'
+read_model -i counter.smv
+go_msat
+check_invar_ic3
+quit
+CMD
+# → "invariant c < 6 is false" ＋ IC3 smt counterexample のトレース（c=0,1,2,3,4,...）
+```
+
+**ABC との使い分け**: ABC の `pdr` は AIG（ビットレベル有限状態）向け。
+nuXmv は **整数変数を持つモデルを SMT ベースで扱える**（`go_msat` + `check_invar_ic3`）。
+ペブリングの下界を「ペブル数 $\le p$」のような算術制約付きで書くなら nuXmv 側が向く。
 
 ## 2. AProVE（TRS の停止性・複雑度解析）
 
 **要点: Java 25 が必要（本機の既定は 21）。ライセンスは非商用のみ。**
 
 ```bash
-# (a) JDK 25 を入れる（既定の java は 21 のまま。共存させる）
+# (a) JDK 25 を入れる
 brew install openjdk@25
 /home/linuxbrew/.linuxbrew/opt/openjdk@25/bin/java --version   # openjdk 25.0.4
 
@@ -51,6 +80,12 @@ printf '(VAR x)\n(RULES\n f(s(x)) -> f(x)\n)\n' > t.trs
 
 **実測: JDK 21 でも起動して `YES` を返した**（公称は Java 25 用）。
 ただし公称に従い 25 を使うのが安全。
+
+> ⚠️ **副作用（2026-07-27 に確認）**: `brew install openjdk@25` を入れた結果、
+> **PATH 上の `java` が 25.0.4 に変わった**（`/home/linuxbrew/.linuxbrew/bin/java` が
+> `/usr/bin/java`＝system の 21 より先に来る）。当初 "既定は 21 のまま" と書いたのは誤り。
+> 影響を確認したもの: **Alloy と TLA+/TLC は Java 25 でも問題なく動作**した。
+> 21 を明示したい場合は `/usr/bin/java` を直接呼ぶ（`/etc/alternatives/java` → openjdk 21.0.11）。
 
 **外部ソルバ（任意）**: 複雑度解析や一部の手法で Z3 / Yices / MiniSat / KoAT / LoAT / CoFloCo を
 呼ぶ。本機は `minisat`・`yices2`（brew）と `koat2`・`CoFloCo`（§5）を導入済み。
@@ -83,6 +118,31 @@ print(len(setset({}).larger(0) - setset({}).larger(2)))   # 濃度<=2 の集合�
 
 つまずいた順序: ①`g++-13` が無い → `CC/CXX` を明示 → ②`setuptools.build_meta` が
 無い（venv が新しく setuptools 未同梱）→ `setuptools wheel` を先に入れる → 成功。
+
+### 3.1 恒久対応（2026-07-27 実施）— 以後は `CC/CXX` の指定が不要
+
+罠①は graphillion 固有ではなく、**Homebrew python の `sysconfig` が `gcc-13`/`g++-13` を
+記録している**ことに起因する。したがって**他の C 拡張パッケージでも同じ失敗が起きる**。
+そこで `~/.local/bin`（PATH 上）に shim を置いて恒久的に解消した:
+
+```bash
+mkdir -p ~/.local/bin
+for v in 13 14; do for c in gcc g++; do
+  printf '#!/bin/sh\nexec %s "$@"\n' "$(command -v $c)" > ~/.local/bin/${c}-${v}
+  chmod +x ~/.local/bin/${c}-${v}
+done; done
+g++-13 --version   # → g++ (Ubuntu 15.2.0) が応答
+```
+
+**検証**: 環境変数なしでソースから再ビルドできることを確認した。
+
+```bash
+.venv/bin/pip install --force-reinstall --no-cache-dir --no-binary :all: graphillion
+# → Successfully installed graphillion-2.1（CC/CXX の指定なし）
+```
+
+罠②（`setuptools wheel` の先行導入）は venv を作るたびに必要なので、
+**新しい venv を作ったら最初に `pip install setuptools wheel` を実行する**こと。
 
 ---
 
