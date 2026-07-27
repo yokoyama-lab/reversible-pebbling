@@ -375,7 +375,7 @@ def main() -> int:
             w.writeheader()
             w.writerows(rows)
         with (DATA / "exp03_ltv_vs_ours.csv").open("w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=["p", "e", "ltv_a_reach", "ours_reach",
+            w = csv.DictWriter(fh, fieldnames=["p", "e", "ltv_a_reach", "ltv_nm", "ours_reach",
                                                "ratio", "diff", "block_2_p_minus_2"])
             w.writeheader()
             w.writerows(cmp_rows)

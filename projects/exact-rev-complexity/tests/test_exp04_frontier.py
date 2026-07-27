@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from frontierdp_memo import bidir_bfs, pmin_bidir  # noqa: E402
 from memo_dags import fib_dag, grid_dag, grid_target, pascal_dag, pascal_target  # noqa: E402
+from real_program_dags import knapsack_dag, knapsack_target, mcm_dag, mcm_target  # noqa: E402
 from revpebble import bfs, chain, complete_binary_tree, pmin, pyramid  # noqa: E402
 
 
@@ -65,6 +66,25 @@ def test_bidir_matches_naive_on_trees() -> None:
     for h in range(1, 5):
         g = pyramid(h)
         _cross_check(g, g.n - 1)
+
+
+def test_bidir_matches_naive_on_knapsack() -> None:
+    """依存構造が違う実プログラム DAG（重み依存の可変ジャンプ）でも一致するか。"""
+    for cap in [3, 5, 7]:
+        for weights in ([1, 2, 3], [2, 3, 4, 1], [1, 1, 2, 3, 5]):
+            g = knapsack_dag(weights, cap)
+            if len(g.pebbleable()) > 17:
+                continue
+            _cross_check(g, knapsack_target(weights, cap))
+
+
+def test_bidir_matches_naive_on_mcm() -> None:
+    """区間 DP（先行点が区間長に比例して増える高 in-degree）でも一致するか。"""
+    for n in range(2, 7):
+        g = mcm_dag(n)
+        if len(g.pebbleable()) > 17:
+            continue
+        _cross_check(g, mcm_target(n))
 
 
 if __name__ == "__main__":
