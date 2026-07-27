@@ -5,6 +5,7 @@ import GenJanus.MergeLemma
 import GenJanus.CountRecursion
 import GenJanus.CompositionAnchor
 import GenJanus.MinimaxDuality
+import GenJanus.CrossingConcentration
 import GenJanus.DispersionBound
 import GenJanus.DispersionBound32
 import GenJanus.DispersionBound32b
