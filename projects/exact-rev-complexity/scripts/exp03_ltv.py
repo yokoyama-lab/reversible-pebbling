@@ -97,8 +97,12 @@ def ltv_procedure_a(n: int, m: int, *, finish_clean: bool = True) -> list[Move]:
     - $i=0$ の「erase springboard on node 0」は、節点 0 が常時可用な源で
       そもそもペブルが載っていないため**省略**する（消去に数えない）。
     - 原文どおりに回すと最後に踏み台が $(m-1)2^n$ に残り **clean でない**。
-      `finish_clean=True` のとき、それを消去する 1 手を足して clean 終端にする
+      `finish_clean=True` のとき、それを取り除く 1 手を足して clean 終端にする
       （我々のモデルの終端条件に合わせるための最小の補完）。
+
+    踏み台の取り除きは `remove` として出力し、**可逆か不可逆かは検証器に判定させる**
+    （$n=0$ のときの節点 1 の取り除きは源 0 のおかげで実は可逆なので、
+    ラベルを固定すると LTV に不当に不利になる）。
     """
     seq: list[Move] = []
     for i in range(m):
@@ -107,9 +111,9 @@ def ltv_procedure_a(n: int, m: int, *, finish_clean: bool = True) -> list[Move]:
         seq.append(("put", (i + 1) * 2**n))
         seq += ltv_unpebble(s, n)
         if i < m - 1 and s >= 1:
-            seq.append(("erase", s))
+            seq.append(("remove", s))
     if finish_clean and m >= 2:
-        seq.append(("erase", (m - 1) * 2**n))
+        seq.append(("remove", (m - 1) * 2**n))
     return seq
 
 
@@ -126,8 +130,12 @@ def verify_schedule(
 ) -> dict:
     """手順を我々のモデルの規則で実行し、実測値を返す。
 
-    規則: `put v` / `take v` は先行点 $v-1$ が載っている（または $v=1$）ことを要求。
-    `erase v` は先行点が載っていないときの取り除き（不可逆）。
+    規則: `put v` は先行点 $v-1$ が載っている（または $v=1$）ことを要求。
+    取り除きは 3 通りの書き方を受け付ける:
+      - `remove v`: **検証器が可逆/不可逆を自動判定する**（推奨。ラベルの誤りが混入しない）
+      - `take v`  : 可逆であることを主張する（可逆でなければ不合格）
+      - `erase v` : 不可逆であることを主張する（実は可逆なら不合格）
+    LTV の手順は `remove` で書く。**「LTV が何回消去するか」は主張ではなく実測で決める。**
     `require_clean=True` なら終端は $\\{target\\}$ のみ、`False` なら target が載っていれば可。
 
     返り値の `ok` が False のときは `why` に理由が入る。ピーク・消去回数・手数は実測。
@@ -159,6 +167,13 @@ def verify_schedule(
                 return {"ok": False, "why": f"手 {i}: erase({v}) は実は可逆（消去に数える必要なし）"}
             state.discard(v)
             erasures += 1
+        elif act == "remove":
+            # 可逆/不可逆を検証器が判定する（ラベルを信用しない）
+            if v not in state:
+                return {"ok": False, "why": f"手 {i}: remove({v}) は未ペブル"}
+            state.discard(v)
+            if not ready:
+                erasures += 1
         else:
             return {"ok": False, "why": f"手 {i}: 未知の操作 {act}"}
     if require_clean:
@@ -266,6 +281,12 @@ def main() -> int:
     if args.compare:
         import exp03_reach as R
 
+        def simulate_ours(n_: int, p_: int, e_: int) -> bool:
+            ok, why = R.simulate(n_, p_, R.construction(p_, e_))
+            if not ok:
+                print(f"    我々の構成が規則違反: p={p_} e={e_}: {why}")
+            return ok
+
         print("== LTV Procedure A を我々のモデルで実測（clean 終端に補完した版）==")
         print("   n=LTV の自由ペブル数, m=区間数。主張は「n+2 ペブル・m-1 消去で T_G=m*2^n」")
         rows = []
@@ -291,31 +312,63 @@ def main() -> int:
                              "reached": target, "moves": res["moves"],
                              "claim_p": claim_p, "claim_e": claim_e})
 
-        print("\n== 同じ (peak, 消去) で我々の構成が到達する長さ ==")
-        print(f"  {'p':>3} {'e':>3} | {'LTV-A 到達':>10} | {'我々 到達':>10} | {'比':>6} | {'差':>8}")
+        print("\n== 同じ (実測 peak, 実測 消去) の予算で到達できる長さの比較 ==")
+        print("   ★ LTV 側は **主張 p=n+2 ではなく実測ピーク** を使い、")
+        print("      その予算 (p,e) を満たす全ての (n,m) の中で **最良の到達長** を採る。")
+        print("      （m=1 では第2の踏み台が不要でピークが n+1 になるため、これを見落とすと")
+        print("      　LTV を不当に弱く見積もる。実際 e=0 では LTV も 2^{p-1} に達する。）")
+        # 実測値から (peak, erasures) -> 最良到達長 の表を作る
+        best: dict[tuple[int, int], tuple[int, int, int]] = {}
+        for n in range(0, args.pmax + 2):
+            for m in range(1, args.mmax + 2):
+                target = m * 2**n
+                r = verify_schedule(
+                    ltv_procedure_a(n, m, finish_clean=True), target, require_clean=True
+                )
+                if not r["ok"]:
+                    continue
+                key = (r["peak"], r["erasures"])
+                if key not in best or target > best[key][0]:
+                    best[key] = (target, n, m)
+
+        def ltv_best(p_: int, e_: int):
+            """予算 (p<=p_, e<=e_) を満たす実測値の中で最良の到達長。"""
+            out = None
+            for (pk, er), (tgt, n, m) in best.items():
+                if pk <= p_ and er <= e_ and (out is None or tgt > out[0]):
+                    out = (tgt, n, m, pk, er)
+            return out
+
+        print(f"  {'p':>3} {'e':>3} | {'LTV-A 最良':>10} {'(n,m)':>8} | {'我々':>6} | {'比':>6} | {'差':>7}")
         cmp_rows = []
-        for p in range(2, args.pmax + 1):
-            for e in range(0, args.mmax):
-                n, m = p - 2, e + 1
-                ltv_target = m * 2**n
-                ltv_seq = ltv_procedure_a(n, m, finish_clean=True)
-                ltv_res = verify_schedule(ltv_seq, ltv_target, require_clean=True)
-                if not ltv_res["ok"] or ltv_res["peak"] > p or ltv_res["erasures"] > e:
-                    ltv_len = None
-                else:
-                    ltv_len = ltv_target
-                ours_len = (e + 2) * 2 ** (p - 2)
-                ours_seq = R.construction(p, e)
-                ours_res = R.simulate(ours_len, p, ours_seq)
-                assert ours_res[0], f"我々の構成が壊れている: p={p} e={e} {ours_res[1]}"
-                ratio = f"{ours_len/ltv_len:.2f}x" if ltv_len else "-"
-                diff = f"+{ours_len-ltv_len}" if ltv_len else "-"
-                print(f"  {p:>3} {e:>3} | {str(ltv_len):>10} | {ours_len:>10} | {ratio:>6} | {diff:>8}")
-                cmp_rows.append({"p": p, "e": e, "ltv_a_reach": ltv_len if ltv_len else "",
-                                 "ours_reach": ours_len,
-                                 "ratio": f"{ours_len/ltv_len:.4f}" if ltv_len else "",
-                                 "diff": ours_len - ltv_len if ltv_len else "",
-                                 "block_2_p_minus_2": 2 ** (p - 2)})
+        for p_ in range(2, args.pmax + 1):
+            for e_ in range(0, args.mmax):
+                lb = ltv_best(p_, e_)
+                ours_len = (e_ + 2) * 2 ** (p_ - 2)
+                ours_res = simulate_ours(ours_len, p_, e_)
+                assert ours_res, f"我々の構成が壊れている: p={p_} e={e_}"
+                if lb is None:
+                    print(f"  {p_:>3} {e_:>3} | {'-':>10} {'-':>8} | {ours_len:>6} | {'-':>6} | {'-':>7}")
+                    cmp_rows.append({"p": p_, "e": e_, "ltv_a_reach": "", "ltv_nm": "",
+                                     "ours_reach": ours_len, "ratio": "", "diff": "",
+                                     "block_2_p_minus_2": 2 ** (p_ - 2)})
+                    continue
+                tgt, n, m, pk, er = lb
+                ratio = ours_len / tgt
+                print(
+                    f"  {p_:>3} {e_:>3} | {tgt:>10} {f'({n},{m})':>8} | {ours_len:>6} | "
+                    f"{ratio:>5.2f}x | {ours_len-tgt:>+7d}"
+                )
+                cmp_rows.append({"p": p_, "e": e_, "ltv_a_reach": tgt, "ltv_nm": f"n={n},m={m}",
+                                 "ours_reach": ours_len, "ratio": f"{ratio:.4f}",
+                                 "diff": ours_len - tgt, "block_2_p_minus_2": 2 ** (p_ - 2)})
+        eq0 = [r for r in cmp_rows if r["e"] == 0 and r["diff"] == 0]
+        print(f"\n  e=0 で LTV と同値だった (p,e): {len(eq0)} 件 / p の総数 {args.pmax-1}")
+        pos = [r for r in cmp_rows if r["diff"] not in ("", 0)]
+        print(f"  我々が真に上回った (p,e): {len(pos)} 件（すべて e>=1 か？ "
+              f"{'はい' if all(r['e'] >= 1 for r in pos) else 'いいえ'}）")
+        onblock = [r for r in pos if r["diff"] == r["block_2_p_minus_2"]]
+        print(f"  そのうち差がちょうど 1 ブロック 2^(p-2) だったもの: {len(onblock)}/{len(pos)} 件")
         with (DATA / "exp03_ltv_compare.csv").open("w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=["src", "n", "m", "ok", "peak", "erasures",
                                                "reached", "moves", "claim_p", "claim_e"])
