@@ -71,3 +71,9 @@ clean reachability reversible pebbling game:
   会議版 SOFSEM 2001, LNCS 2234, pp.292–303, doi:10.1007/3-540-45627-9_26。
 - Knill 1995 は技術報告 **LAUR-95-2258**（査読誌版が無いので引用時に明記）。
 - 裏取りできない書誌項目は捏造せず「要確認」と書く。
+
+## 12. 完走事例（方法論の移植実証）
+
+2点反射クエリゲームの厳密値 q(N, ℓ) = min(ℓ−2, k₁*) を本パイプラインで
+確定した（periodic-tm, 2026-07）。二重実装照合が下界補題の適用範囲バグを
+検出した実証例を含む。詳細は [`21_case_two_point_reflection.md`](21_case_two_point_reflection.md)。
