@@ -4,6 +4,7 @@ import RevPebbling.CrossingConcentration
 import RevPebbling.DispersionBound
 import RevPebbling.DispersionBound32
 import RevPebbling.DispersionBound32b
+import RevPebbling.DispersionBound32c
 import RevPebbling.FrontDP
 import RevPebbling.MergeLemma
 import RevPebbling.MinimaxDuality

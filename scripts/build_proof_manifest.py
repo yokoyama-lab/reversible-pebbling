@@ -342,7 +342,17 @@ def main() -> int:
                           "(DispersionBound32b, W' = floor(10^5 v^{3/2})) "
                           "certifying c >= 2^{5/3} 10^8/11231^2 ~ "
                           "2.5169802, within 6e-5 of the q=3/2 optimum "
-                          "2.5170384.  The lambda-admissibility "
+                          "2.5170378; and at the critical sigma = "
+                          "112308717/10^8 (DispersionBound32c, W' = "
+                          "floor(10^8 v^{3/2}), threshold "
+                          "floor(222162090806 v / 502380643653)) "
+                          "certifying c >= 2^{5/3} 10^16/112308717^2 = "
+                          "2.5170377412, i.e. within 3.4e-8 of that "
+                          "optimum -- at q = 3/2 the rational rounding of "
+                          "rho now costs essentially nothing, and the "
+                          "whole remaining 2.7e-5 shortfall to "
+                          "2^{1+kappa*} is the choice of q itself "
+                          "(q* = 1.5153832...).  The lambda-admissibility "
                           "conditions are the exact rational dispersion "
                           "inequalities (272 <= 273 golden-ratio form; "
                           "729^2 64^3 <= 145^3 217^2).  Per the "
@@ -369,6 +379,12 @@ def main() -> int:
                     "RevPebbling.DispersionBound32b.dispersion32b_main_sq",
                     "RevPebbling.DispersionBound32b.dispersion32b_midpoint",
                     "RevPebbling.DispersionBound32b.dispersion32b_midpoint_sq",
+                    "RevPebbling.DispersionBound32c.dispersion32c_admissible",
+                    "RevPebbling.DispersionBound32c.step32c_arith",
+                    "RevPebbling.DispersionBound32c.dispersion32c_main",
+                    "RevPebbling.DispersionBound32c.dispersion32c_main_sq",
+                    "RevPebbling.DispersionBound32c.dispersion32c_midpoint",
+                    "RevPebbling.DispersionBound32c.dispersion32c_midpoint_sq",
                 ],
             },
             "crossing_concentration": {

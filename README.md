@@ -55,8 +55,14 @@ the rest are general (unbounded) proofs.
   integralised via `W v = ⌊1000 v^{3/2}⌋`): `dispersion32_main` and
   its midpoint corollary certify `c ≥ 2^{5/3}·64/81 ≈ 2.5085`;
   `DispersionBound32b.lean` refines to σ = 11231/10000, certifying
-  `c ≥ 2^{5/3}·10⁸/11231² ≈ 2.5169802` — within 6·10⁻⁵ of the q = 3/2
-  optimum and of the conjectured exact value `2^{1+κ*} = 2.517065`.
+  `c ≥ 2^{5/3}·10⁸/11231² ≈ 2.5169802`, and
+  `DispersionBound32c.lean` goes to the critical σ = 112308717/10⁸,
+  certifying `c ≥ 2^{5/3}·10¹⁶/112308717² = 2.5170377412` — within
+  3.4·10⁻⁸ of the q = 3/2 ceiling `2^{5/3}/ρ_c(3/2) = 2.5170377753`.
+  At q = 3/2 the rational rounding of ρ therefore costs essentially
+  nothing; the whole remaining 2.7·10⁻⁵ shortfall to the conjectured
+  exact value `2^{1+κ*} = 2.5170648369` is the choice of q itself
+  (`q* = 1.5153832…`).
 
 The namespace `GenJanus.*` is kept identical to the private benchmark
 repository so that theorem names and file hashes match the pinned
