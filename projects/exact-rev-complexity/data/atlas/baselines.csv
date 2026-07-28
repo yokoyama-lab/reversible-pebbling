@@ -1,0 +1,31 @@
+family,n,dag_N,p_min,mstar,floor,impl_moves,impl_peak,error
+fib_pairs_2017,3,2,2,3,3,2,2,
+fib_pairs_2017,5,3,3,5,5,3,3,
+fib_pairs_2017,7,4,3,9,7,4,4,
+fib_pairs_2017,9,5,4,11,9,5,5,
+fib_pairs_2017,11,6,4,15,11,6,6,
+fib_pairs_2017,13,7,4,19,13,7,7,
+cutrod_linear,4,4,4,7,7,14,3,
+cutrod_linear,6,6,6,11,11,40,4,
+cutrod_linear,8,8,8,15,15,100,6,
+cutrod_linear,10,10,10,19,19,236,7,
+cutrod_linear,12,12,12,23,23,546,9,
+cutrod_linear,14,14,14,27,27,1246,10,
+edit_distance,2,4,4,7,7,8,8,
+edit_distance,3,9,6,25,17,15,15,
+edit_distance,4,16,8,63,31,24,24,
+edit_distance,5,25,10,117,49,35,35,
+edit_distance,6,36,,,71,48,48,baseline skipped (N=36>25)
+edit_distance,7,49,,,97,63,63,baseline skipped (N=49>25)
+lcs,2,4,4,7,7,3,3,
+lcs,3,9,6,25,17,8,8,
+lcs,4,16,8,63,31,15,15,
+lcs,5,25,10,117,49,24,24,
+lcs,6,36,,,71,35,35,baseline skipped (N=36>25)
+lcs,7,49,,,97,48,48,baseline skipped (N=49>25)
+knapsack,2,10,3,5,19,6,6,
+knapsack,3,18,5,17,35,13,13,
+knapsack,4,28,,,55,22,22,baseline skipped (N=28>25)
+knapsack,5,40,,,79,33,33,baseline skipped (N=40>25)
+knapsack,6,54,,,107,46,46,baseline skipped (N=54>25)
+knapsack,7,70,,,139,61,61,baseline skipped (N=70>25)
