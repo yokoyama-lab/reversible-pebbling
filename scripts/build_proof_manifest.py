@@ -352,7 +352,19 @@ def main() -> int:
                           "rho now costs essentially nothing, and the "
                           "whole remaining 2.7e-5 shortfall to "
                           "2^{1+kappa*} is the choice of q itself "
-                          "(q* = 1.5153832...).  The lambda-admissibility "
+                          "(q* = 1.5153832...).  That last loss is removed "
+                          "by DispersionBound4731, which moves the whole "
+                          "argument to q = 47/31 (the convergent of q* "
+                          "within 7.5e-4 of it): the potential v^{47/31} is "
+                          "integralised by the integer 31st root of "
+                          "RevPebbling.IntRoot, W v = iroot 31 (10^248 v^47) "
+                          "= floor(10^8 v^{47/31}), with s = 1007357123/10^9, "
+                          "D = 10^423, threshold floor(2894171759 v / "
+                          "6526721862), certifying c >= 2^{1+31/47} 10^279 / "
+                          "1007357123^31 = 2.5170647241 -- within 1.1e-7 of "
+                          "2^{1+kappa*}, i.e. the rational dispersion family "
+                          "now matches the conjectured exact value to eight "
+                          "decimals.  The lambda-admissibility "
                           "conditions are the exact rational dispersion "
                           "inequalities (272 <= 273 golden-ratio form; "
                           "729^2 64^3 <= 145^3 217^2).  Per the "
@@ -385,6 +397,16 @@ def main() -> int:
                     "RevPebbling.DispersionBound32c.dispersion32c_main_sq",
                     "RevPebbling.DispersionBound32c.dispersion32c_midpoint",
                     "RevPebbling.DispersionBound32c.dispersion32c_midpoint_sq",
+                    "RevPebbling.DispersionBound4731.dispersion4731_admissible",
+                    "RevPebbling.DispersionBound4731.step4731_arith",
+                    "RevPebbling.DispersionBound4731.dispersion4731_main",
+                    "RevPebbling.DispersionBound4731.dispersion4731_main_pow",
+                    "RevPebbling.DispersionBound4731.dispersion4731_midpoint",
+                    "RevPebbling.DispersionBound4731.dispersion4731_midpoint_pow",
+                    "RevPebbling.IntRoot.iroot_pow_le",
+                    "RevPebbling.IntRoot.le_iroot",
+                    "RevPebbling.IntRoot.lt_succ_iroot",
+                    "RevPebbling.IntRoot.lt_of_pow_lt_pow",
                 ],
             },
             "crossing_concentration": {

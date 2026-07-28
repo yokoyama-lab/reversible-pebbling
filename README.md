@@ -10,6 +10,34 @@ To our knowledge this is the first machine-checked treatment of the
 reversible-pebbling literature (Knill 1995, Královič 2004,
 Pesu–Phillips 2015).
 
+## `data/` — numerical certificates
+
+The Lean development is accompanied by exact DP certificates that the
+machine-checked composition theorem (`count_composition` /
+`midpoint_composition`) turns into unconditional bounds on `c`.  Each
+file records the exact integer `v*` with `L(T0, v*) ≥ 2^{T0−2}`, whence
+`c ≤ 2·(v*)^{1/(T0−2)}`.
+
+| file | T0 | grid | `c ≤` |
+|---|---|---|---|
+| `anchor_t598.txt` | 600 | mant 5 | 2.547097 |
+| `anchor_t1198.txt` | 1200 | mant 5 | 2.536842 |
+| `anchor_T7500_m7.txt` | 7500 | mant 7 | 2.521235 |
+| `anchor_T141000_m10.txt` | 141000 | mant 10 | 2.5174496 |
+| **`anchor_T98500_m11.txt`** | 98500 | mant 11 | **2.5174407** |
+
+Together with `DispersionBound4731` this brackets the growth rate as
+
+  **2.5170647241 ≤ c ≤ 2.5174406519**,
+
+a window of 3.8·10⁻⁴ around the conjectured exact value
+`2^{1+κ*} = 2.5170648369`, which sits 1.1·10⁻⁷ above the lower bound.
+The two large anchors were produced by `m33_anchor_c.c` (paper
+repository), which reproduces the earlier bignum certificates bit for
+bit while running ~600x faster; `base_check_T3000_eps001.txt` and
+`kappa_enclosure_certified.txt` are the base-row check and the certified
+23-digit enclosure of `κ*`.
+
 ## Build
 
 ```
@@ -63,6 +91,15 @@ the rest are general (unbounded) proofs.
   nothing; the whole remaining 2.7·10⁻⁵ shortfall to the conjectured
   exact value `2^{1+κ*} = 2.5170648369` is the choice of q itself
   (`q* = 1.5153832…`).
+- `RevPebbling/IntRoot.lean` + `RevPebbling/DispersionBound4731.lean` —
+  removing that last loss: the integer `r`-th root (`iroot`, with the
+  three characterising lemmas, all unconditional) lets the dispersion
+  argument run at **q = 47/31**, the convergent of `q*` within 7.5·10⁻⁴
+  of it.  With `s = 1007357123/10⁹`, `ρ = s³¹`, `λ = s⁴⁷ = L/10⁴²³` and
+  `W v = ⌊10⁸·v^{47/31}⌋ = iroot 31 (10²⁴⁸·v⁴⁷)`, `dispersion4731_main`
+  certifies `c ≥ 2^{1+31/47}·10²⁷⁹/1007357123³¹ = 2.5170647241` —
+  **within 1.1·10⁻⁷ of the conjectured exact `2^{1+κ*}`**, so the
+  rational dispersion family now matches it to eight decimals.
 
 The namespace `GenJanus.*` is kept identical to the private benchmark
 repository so that theorem names and file hashes match the pinned

@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "d84b60b1042853d73277b9f069000a83eabe9f89e718be8379a6e0927cd73205",
+ "proof_bundle_sha256": "fbf47928fc3c0fe4af3eac07c3b958f887e2dd1eb046889ceac676fafff12190",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -13,7 +13,9 @@
   "RevPebbling/DispersionBound32.lean": "8b4043326dd4a632197aa1bff75795e1b26783b3098f6ecce654a6b263ef1c7c",
   "RevPebbling/DispersionBound32b.lean": "ce3ca5c1832be0f63a622b0050c0dfd744372daf556a6cf6983f7412b20e11d8",
   "RevPebbling/DispersionBound32c.lean": "405cce1d59f6cf871e45912fafbe762b6c395ba0a506e0ac50b6dcde38073271",
+  "RevPebbling/DispersionBound4731.lean": "a006b9b415712858565ed498ab27ace8047c505ad06cb5c41f32c4e57dca0fba",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
+  "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
   "RevPebbling/MergeLemma.lean": "7482c56e788377bcca273e459314539f6d36f1fb631a8c8a50e0d5d20a636829",
   "RevPebbling/MinimaxDuality.lean": "143d38be91278c145228bb789eef8fb6d47c653f0d4222e00e84657ff2f3be5f",
   "RevPebbling/PebblingFoundations.lean": "71b64a285bf9a297af9ee754d65d3a23150b9a96e83349337cd27d8a3f718fe1",
@@ -22,7 +24,7 @@
   "RevPebbling/RLEPebble.lean": "16778b6f409261003cba86405663385b03a28f39fd2312dcb465a215931e4275",
   "RevPebbling/RatioConvergence.lean": "7c445dee4137ce2dcb37d4e91640cf88c037f45638d769a92263bbe16fae5702",
   "RevPebbling/SeamIdentity.lean": "d4030b8ed249b2dfab5a45c7b588784a503ada5ab5b6fde81f191f7a05167cbf",
-  "RevPebbling.lean": "15fb31ce62b514502dd1ebc45546ad08f7fdc3bd3e16ca21ce1de583faf7c467"
+  "RevPebbling.lean": "e525a20a56a3b698796311b52317e8fc7e2b95c3a1191385d97823b5a616b214"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -136,7 +138,7 @@
   },
   "dispersion_bound": {
    "status": "proved_unbounded",
-   "scope": "DISPERSION LOWER BOUNDS (追記50/52): power-mode supersolutions of the exact minimax recursion.  q = 1 instance lambda = 13/8, threshold tau = floor(3v/8), A = 64: dispersion_main 8^s C_S(v) <= 64 v 13^s unconditionally; at the midpoint (countLe_midv) this inverts to 16^s <= 64 midv(s) 13^s + 8^s, certifying c = 2d >= 32/13 ~ 2.4615 -- the first machine-checked improvement over the entropy bound 2^{1+eps*} ~ 2.4518.  q = 3/2 instance sigma = 9/8 (rho = 81/64, lambda = 729/512), threshold floor(4v/9), integralised via W v = isqrt(10^6 v^3) = floor(1000 v^{3/2}): dispersion32_main 512^s C_S(v) <= W(v) 729^s, midpoint corollary certifying c >= 2^{5/3} * 64/81 ~ 2.5085; refined sigma = 11231/10000 (DispersionBound32b, W' = floor(10^5 v^{3/2})) certifying c >= 2^{5/3} 10^8/11231^2 ~ 2.5169802, within 6e-5 of the q=3/2 optimum 2.5170378; and at the critical sigma = 112308717/10^8 (DispersionBound32c, W' = floor(10^8 v^{3/2}), threshold floor(222162090806 v / 502380643653)) certifying c >= 2^{5/3} 10^16/112308717^2 = 2.5170377412, i.e. within 3.4e-8 of that optimum -- at q = 3/2 the rational rounding of rho now costs essentially nothing, and the whole remaining 2.7e-5 shortfall to 2^{1+kappa*} is the choice of q itself (q* = 1.5153832...).  The lambda-admissibility conditions are the exact rational dispersion inequalities (272 <= 273 golden-ratio form; 729^2 64^3 <= 145^3 217^2).  Per the Clairaut/envelope analysis (追記52) the supremum of this certified family, c = 2^{1+kappa*} = 2.517065..., is conjecturally the exact growth rate.",
+   "scope": "DISPERSION LOWER BOUNDS (追記50/52): power-mode supersolutions of the exact minimax recursion.  q = 1 instance lambda = 13/8, threshold tau = floor(3v/8), A = 64: dispersion_main 8^s C_S(v) <= 64 v 13^s unconditionally; at the midpoint (countLe_midv) this inverts to 16^s <= 64 midv(s) 13^s + 8^s, certifying c = 2d >= 32/13 ~ 2.4615 -- the first machine-checked improvement over the entropy bound 2^{1+eps*} ~ 2.4518.  q = 3/2 instance sigma = 9/8 (rho = 81/64, lambda = 729/512), threshold floor(4v/9), integralised via W v = isqrt(10^6 v^3) = floor(1000 v^{3/2}): dispersion32_main 512^s C_S(v) <= W(v) 729^s, midpoint corollary certifying c >= 2^{5/3} * 64/81 ~ 2.5085; refined sigma = 11231/10000 (DispersionBound32b, W' = floor(10^5 v^{3/2})) certifying c >= 2^{5/3} 10^8/11231^2 ~ 2.5169802, within 6e-5 of the q=3/2 optimum 2.5170378; and at the critical sigma = 112308717/10^8 (DispersionBound32c, W' = floor(10^8 v^{3/2}), threshold floor(222162090806 v / 502380643653)) certifying c >= 2^{5/3} 10^16/112308717^2 = 2.5170377412, i.e. within 3.4e-8 of that optimum -- at q = 3/2 the rational rounding of rho now costs essentially nothing, and the whole remaining 2.7e-5 shortfall to 2^{1+kappa*} is the choice of q itself (q* = 1.5153832...).  That last loss is removed by DispersionBound4731, which moves the whole argument to q = 47/31 (the convergent of q* within 7.5e-4 of it): the potential v^{47/31} is integralised by the integer 31st root of RevPebbling.IntRoot, W v = iroot 31 (10^248 v^47) = floor(10^8 v^{47/31}), with s = 1007357123/10^9, D = 10^423, threshold floor(2894171759 v / 6526721862), certifying c >= 2^{1+31/47} 10^279 / 1007357123^31 = 2.5170647241 -- within 1.1e-7 of 2^{1+kappa*}, i.e. the rational dispersion family now matches the conjectured exact value to eight decimals.  The lambda-admissibility conditions are the exact rational dispersion inequalities (272 <= 273 golden-ratio form; 729^2 64^3 <= 145^3 217^2).  Per the Clairaut/envelope analysis (追記52) the supremum of this certified family, c = 2^{1+kappa*} = 2.517065..., is conjecturally the exact growth rate.",
    "theorems": [
     "RevPebbling.DispersionBound.lambda_admissible",
     "RevPebbling.DispersionBound.threshold_admissible",
@@ -161,7 +163,17 @@
     "RevPebbling.DispersionBound32c.dispersion32c_main",
     "RevPebbling.DispersionBound32c.dispersion32c_main_sq",
     "RevPebbling.DispersionBound32c.dispersion32c_midpoint",
-    "RevPebbling.DispersionBound32c.dispersion32c_midpoint_sq"
+    "RevPebbling.DispersionBound32c.dispersion32c_midpoint_sq",
+    "RevPebbling.DispersionBound4731.dispersion4731_admissible",
+    "RevPebbling.DispersionBound4731.step4731_arith",
+    "RevPebbling.DispersionBound4731.dispersion4731_main",
+    "RevPebbling.DispersionBound4731.dispersion4731_main_pow",
+    "RevPebbling.DispersionBound4731.dispersion4731_midpoint",
+    "RevPebbling.DispersionBound4731.dispersion4731_midpoint_pow",
+    "RevPebbling.IntRoot.iroot_pow_le",
+    "RevPebbling.IntRoot.le_iroot",
+    "RevPebbling.IntRoot.lt_succ_iroot",
+    "RevPebbling.IntRoot.lt_of_pow_lt_pow"
    ]
   },
   "crossing_concentration": {
