@@ -92,8 +92,12 @@
 
 ## 8. 次の作業
 
-1. 上記 7-3 が決まり次第、Overleaf プロジェクトを作って `main.tex` の骨組み（§1–6 の見出しと
-   表 1–3 のプレースホルダ）を置く。**表は `scripts/gen_tables.py` 生成物のみ**（手打ち禁止、
-   候補3 論文と同じ規約）。
-2. 表 1–3 の LaTeX 生成スクリプト `scripts/gen_atlas_tables.py` を書く（テストファースト）。
+1. ~~Overleaf プロジェクトと `main.tex` の骨組み~~ **完了（2026-07-28）**。ビルド通過。
+2. ~~表 1–3 の生成スクリプト~~ **完了（2026-07-29）**: `scripts/gen_atlas_tables.py`
+   （`tests/test_gen_atlas_tables.py` 11 件 pass）。`tables/{category,scaling,baselines}.tex`
+   を Overleaf 側へ書き出し、`main.tex` が `\input` する。**手編集禁止**。
+   - 表 1 = 区分別要約（5 区分・111 本）、表 2 = 9 族 × 6 サイズ、
+     表 3 = 族ごとの基準線 1 行（cutrod は $\dagger$ 付きで最後）。
+   - 資源ベクトルの定義表はデータ由来でないので `main.tex` に手書きする（未着手）。
 3. SciDraft 方式で §1 から 1 段落ずつ執筆・確認。
+4. 図 1・図 2 の作成（人間確認を経てから）。
