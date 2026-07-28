@@ -216,7 +216,7 @@ def sweep(timeout: float) -> None:
             w.writeheader(); w.writerows(main_rows)
         with out_arr.open("w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=[
-                "name", "array", "puts", "takes", "peak_nonzero"],
+                "name", "array", "puts", "takes", "peak_nonzero", "final_nonzero"],
                 extrasaction="ignore")
             w.writeheader(); w.writerows(arr_rows)
         status = rec.get("error") or f"steps={rec.get('steps')}"
