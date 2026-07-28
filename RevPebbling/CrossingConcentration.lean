@@ -1,4 +1,4 @@
-import GenJanus.MinimaxDuality
+import RevPebbling.MinimaxDuality
 
 /-!
 # Crossing concentration: the B-count IS the crossing value (追記55)
@@ -37,10 +37,10 @@ All statements are unconditional (no bounded search, no `sorry`); the
 bounded `native_decide` examples below are the test-first fixtures.
 -/
 
-namespace GenJanus.CrossingConcentration
+namespace RevPebbling.CrossingConcentration
 
-open GenJanus.MergeLemma GenJanus.CountRecursion GenJanus.CompositionAnchor
-open GenJanus.MinimaxDuality
+open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.MinimaxDuality
 
 -- ------------------------------------------------------------------
 -- The two objects: the B-column count and the crossing point.
@@ -334,4 +334,4 @@ theorem count_recursion_lower_via_cross (s v : Nat) (hv : 1 ≤ v) :
     countLe_mono_val _ (half_le_crossPeb s v)
   omega
 
-end GenJanus.CrossingConcentration
+end RevPebbling.CrossingConcentration

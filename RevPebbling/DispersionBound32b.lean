@@ -1,9 +1,9 @@
-import GenJanus.DispersionBound32
+import RevPebbling.DispersionBound32
 
 /-!
 # The dispersion lower bound at q = 3/2, refined σ = 11231/10000
 
-This sharpens `GenJanus.DispersionBound32` (which does `σ = 9/8`,
+This sharpens `RevPebbling.DispersionBound32` (which does `σ = 9/8`,
 `ρ = 81/64`, `c ≥ 2^{23/3}/81 ≈ 2.5085`) by taking a much finer
 rational `σ` just above the critical value `σ_c = √ρ_c(3/2) =
 1.1230857…`:
@@ -87,11 +87,11 @@ improving `2.5084865…` (`σ = 9/8`) and `32/13 = 2.4615…` (`q = 1`).
 
 set_option maxRecDepth 1000000
 
-namespace GenJanus.DispersionBound32b
+namespace RevPebbling.DispersionBound32b
 
-open GenJanus.MergeLemma GenJanus.CountRecursion GenJanus.CompositionAnchor
-open GenJanus.MinimaxDuality
-open GenJanus.DispersionBound32 (isqrt isqrt_sq_le le_isqrt lt_succ_isqrt lt_of_sq_lt_sq)
+open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.MinimaxDuality
+open RevPebbling.DispersionBound32 (isqrt isqrt_sq_le le_isqrt lt_succ_isqrt lt_of_sq_lt_sq)
 
 -- ------------------------------------------------------------------
 -- Bounded computational checks first (test-first convention).
@@ -456,4 +456,4 @@ theorem dispersion32b_midpoint_sq (s : Nat) :
     omega
   omega
 
-end GenJanus.DispersionBound32b
+end RevPebbling.DispersionBound32b

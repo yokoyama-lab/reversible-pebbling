@@ -1,4 +1,4 @@
-import GenJanus.CompositionAnchor
+import RevPebbling.CompositionAnchor
 
 /-!
 # Minimax duality: the dual counting recursions have ZERO gap (追記49)
@@ -31,9 +31,9 @@ zero gap is confirmed for all integer v, S ≤ 30 (scripts/m9_dual_gap
 in 2026_exact_reversible_pebbling).
 -/
 
-namespace GenJanus.MinimaxDuality
+namespace RevPebbling.MinimaxDuality
 
-open GenJanus.MergeLemma GenJanus.CountRecursion GenJanus.CompositionAnchor
+open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
 
 -- ------------------------------------------------------------------
 -- Bounded computational checks first (test-first convention): the
@@ -246,4 +246,4 @@ theorem bcount_maximin_exact (s v : Nat) (hv : 1 ≤ v) :
   simp only [hv, if_pos] at hsplit
   exact ⟨u, w, huw, by omega⟩
 
-end GenJanus.MinimaxDuality
+end RevPebbling.MinimaxDuality

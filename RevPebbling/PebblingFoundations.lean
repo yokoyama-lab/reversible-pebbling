@@ -29,7 +29,7 @@ Main results:
   exactly: reach(p) = 2^(p-1).
 -/
 
-namespace GenJanus.PebblingFoundations
+namespace RevPebbling.PebblingFoundations
 
 abbrev Board := List Bool
 
@@ -1419,4 +1419,4 @@ theorem reach_impossible_general {n p v : Nat} {s : List Nat}
   have := one_le_two_pow (p - 1)
   omega
 
-end GenJanus.PebblingFoundations
+end RevPebbling.PebblingFoundations

@@ -12,7 +12,7 @@ iff i = 1 or node i-1 is pebbled; at most p pebbles on the board.
 is kept so theorem names match the pinned proof manifest.)
 -/
 
-namespace GenJanus.Hard18
+namespace RevPebbling.PebblingGame
 
 def popcount : Nat → Nat
   | 0 => 0
@@ -62,4 +62,4 @@ theorem pmin_table :
   native_decide
 
 
-end GenJanus.Hard18
+end RevPebbling.PebblingGame

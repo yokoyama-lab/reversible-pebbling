@@ -1,4 +1,4 @@
-import GenJanus.MergeLemma
+import RevPebbling.MergeLemma
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic
 
@@ -47,7 +47,7 @@ of the exact-reversible-pebbling project.
 
 namespace RevPebbling.Seam
 
-open GenJanus.MergeLemma
+open RevPebbling.MergeLemma
 
 /-- Number of entries `≤ b` (the count function `N`). -/
 def cle (l : List Nat) (b : Nat) : Nat := l.countP (fun x => x ≤ b)
@@ -408,7 +408,7 @@ remained was the bookkeeping.  It is done here:
   hypotheses, `N_S(a)·N_t(b)·(1 - ε t b) ≤ N_{S+t}(ab)` for all `t ≥ 2`.
 
 The hypotheses are exactly the facts proved in this file and in
-`GenJanus.MergeLemma`: the seam identity, the witness lemma, the rank
+`RevPebbling.MergeLemma`: the seam identity, the witness lemma, the rank
 bounds and the lex decrease.  Nothing here is specific to pebbling.
 -/
 

@@ -1,4 +1,4 @@
-import GenJanus.MergeLemma
+import RevPebbling.MergeLemma
 
 /-!
 # The counting recursion, fully general (this work, 追記30)
@@ -28,9 +28,9 @@ Only the analytic entropy step (binomial → 2^{(1+ε)H(...)S}) remains
 outside Lean.
 -/
 
-namespace GenJanus.CountRecursion
+namespace RevPebbling.CountRecursion
 
-open GenJanus.MergeLemma
+open RevPebbling.MergeLemma
 
 theorem two_pow_ge_one : ∀ n, 1 ≤ 2 ^ n
   | 0 => Nat.le_refl 1
@@ -835,4 +835,4 @@ theorem count_recursion_minmax (s v τ : Nat) :
     simp at hsplit
     omega
 
-end GenJanus.CountRecursion
+end RevPebbling.CountRecursion

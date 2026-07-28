@@ -32,7 +32,7 @@ the bounded instance `PebblingTheory.delta_merge_representation`
 cross-checks this against the DP table.)
 -/
 
-namespace GenJanus.MergeLemma
+namespace RevPebbling.MergeLemma
 
 /-- Sorted (nondecreasing) merge of two lists. -/
 def smerge : List Nat → List Nat → List Nat
@@ -851,4 +851,4 @@ theorem gen_satisfies_knill (prev : List Nat) (hprev : NDec prev)
     simp only [Fpre, Nat.add_sub_cancel] at *
     omega
 
-end GenJanus.MergeLemma
+end RevPebbling.MergeLemma

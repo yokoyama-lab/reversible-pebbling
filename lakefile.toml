@@ -1,14 +1,11 @@
 name = "reversible-pebbling-lean"
 version = "0.1.0"
-defaultTargets = ["GenJanus", "RevPebbling"]
+defaultTargets = ["RevPebbling"]
 
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.31.0"
-
-[[lean_lib]]
-name = "GenJanus"
 
 [[lean_lib]]
 name = "RevPebbling"

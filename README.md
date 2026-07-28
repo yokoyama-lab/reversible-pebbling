@@ -62,10 +62,21 @@ The namespace `GenJanus.*` is kept identical to the private benchmark
 repository so that theorem names and file hashes match the pinned
 proof manifest referenced by the paper.
 
-## `RevPebbling/` — the supermultiplicativity and front-DP layer (2026-07-28)
+## Canonical home (2026-07-28 unification)
 
-Newer results live in the `RevPebbling` library (namespace
-`RevPebbling.*`; requires mathlib, pinned in `lakefile.toml`):
+This repository is now the **single source of truth** for the pebbling
+formalisation: the 13 legacy modules were renamed from the historical
+`GenJanus.*` namespace (they originated in the private genjanus
+benchmark workspace) to **`RevPebbling.*`**, and the corresponding
+files were retired from that workspace.  `scripts/build_proof_manifest.py`
+rebuilds everything, audits every listed theorem's axioms
+(kernel axioms only for general theorems; `native_decide` permitted
+for bounded certificates), and pins source hashes in
+`proof-manifest.json`.
+
+## `RevPebbling/` — the supermultiplicativity and front-DP layer
+
+Newest results (require mathlib, pinned in `lakefile.toml`):
 
 * `RevPebbling/SeamIdentity.lean` — the seam identity
   `N_t(b) = N_{t-1}(b) + β_t(b) + 1`, the rank and constant-run

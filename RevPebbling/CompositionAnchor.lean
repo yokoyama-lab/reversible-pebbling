@@ -1,4 +1,4 @@
-import GenJanus.CountRecursion
+import RevPebbling.CountRecursion
 
 /-!
 # Composition theorem: finite DP certificates → unconditional midpoint bounds
@@ -33,9 +33,9 @@ c ≤ 2.5788) use the same theorem with a Python-certified exact bigint
 DP; their Lean-internal replay is future work (Array DP + native_decide).
 -/
 
-namespace GenJanus.CompositionAnchor
+namespace RevPebbling.CompositionAnchor
 
-open GenJanus.MergeLemma GenJanus.CountRecursion
+open RevPebbling.MergeLemma RevPebbling.CountRecursion
 
 /-- countLe is monotone in the threshold. -/
 theorem countLe_mono_val (l : List Nat) {v v' : Nat} (h : v ≤ v') :
@@ -255,4 +255,4 @@ theorem midpoint_anchor_44 (s : Nat) : midv (s + 8) ≤ midv s * 44 :=
   midpoint_composition s 44 8 44 Lanchor Lanchor_hL0 Lanchor_hstep
     (by omega) (Nat.le_refl _) Lanchor_cert
 
-end GenJanus.CompositionAnchor
+end RevPebbling.CompositionAnchor

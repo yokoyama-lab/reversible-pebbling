@@ -1,4 +1,4 @@
-import GenJanus.PebblingTheory
+import RevPebbling.PebblingTheory
 import Std
 
 /-!
@@ -17,8 +17,8 @@ under construction, self-referential, reading only the built prefix)
 and pc (into the previous row) together give the B-stream
 Δ(m+1,S) + Δ(m+1,S-1) ("case B": grow m).  At each step the smaller
 head value is emitted for a whole run at once.  Correctness rests on
-the Merge Lemma (see `GenJanus.MergeLemma` for the general proof and
-`GenJanus.PebblingTheory.delta_merge_representation` for the bounded
+the Merge Lemma (see `RevPebbling.MergeLemma` for the general proof and
+`RevPebbling.PebblingTheory.delta_merge_representation` for the bounded
 DP-level check).
 
 Scope labels:
@@ -35,9 +35,9 @@ Scope labels:
   (f_60 = 3864271883997196147394945) but is not kept as a theorem.
 -/
 
-namespace GenJanus.RLEPebble
+namespace RevPebbling.RLEPebble
 
-open GenJanus.PebblingTheory (deltaRowA)
+open RevPebbling.PebblingTheory (deltaRowA)
 
 /-- An RLE row: array of (value, run length) with positive lengths and
 adjacent values distinct.  Row S lists Δ(n,S) for n = 2..2^{S-1}. -/
@@ -148,7 +148,7 @@ theorem rle_agrees_with_dp :
   native_decide
 
 /-- BOUNDED known small values f_S = 3, 9, 25, 71, 193, 531
-(S = 2..7), matching `GenJanus.PebblingTheory.fval`. -/
+(S = 2..7), matching `RevPebbling.PebblingTheory.fval`. -/
 theorem rle_f_small :
     fRLE 2 = 3 ∧ fRLE 3 = 9 ∧ fRLE 4 = 25 ∧
     fRLE 5 = 71 ∧ fRLE 6 = 193 ∧ fRLE 7 = 531 := by
@@ -229,4 +229,4 @@ theorem g_reduction_inequality_15_40 :
          (gRLE rows p) * (rleF rows[p - 1]!))) = true := by
   native_decide
 
-end GenJanus.RLEPebble
+end RevPebbling.RLEPebble

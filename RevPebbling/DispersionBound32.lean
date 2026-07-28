@@ -1,9 +1,9 @@
-import GenJanus.DispersionBound
+import RevPebbling.DispersionBound
 
 /-!
 # The dispersion lower bound, rational instance q = 3/2, λ = 729/512
 
-This is the `q = 3/2` companion of `GenJanus.DispersionBound` (which
+This is the `q = 3/2` companion of `RevPebbling.DispersionBound` (which
 does `q = 1`, `λ = 13/8`).  The potential is now
 
   `Φ_S(v) = A · v^{3/2} · λ^S`,   `λ = ρ^{3/2}`,  `ρ = σ²`,  `λ = σ³`,
@@ -65,10 +65,10 @@ branches become the clean integer facts
 and `216 · 1000 + 727 ≤ 217 · 1000` closes the additive `+1`.
 -/
 
-namespace GenJanus.DispersionBound32
+namespace RevPebbling.DispersionBound32
 
-open GenJanus.MergeLemma GenJanus.CountRecursion GenJanus.CompositionAnchor
-open GenJanus.MinimaxDuality
+open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.MinimaxDuality
 
 -- ------------------------------------------------------------------
 -- Bounded computational checks first (test-first convention).
@@ -435,4 +435,4 @@ theorem dispersion32_midpoint_sq (s : Nat) :
     omega
   omega
 
-end GenJanus.DispersionBound32
+end RevPebbling.DispersionBound32

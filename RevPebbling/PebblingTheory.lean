@@ -1,4 +1,4 @@
-import GenJanus.PebblingGame
+import RevPebbling.PebblingGame
 import Std
 
 /-!
@@ -17,12 +17,12 @@ pebbling of chains.  Scope labels are explicit:
   Prop 3.6; and the bridge A(n,k) ≤ C(n+k-1,k) matching Knill's
   Lemma 2.9 upper bound.
 
-The game-side optimum reuses `GenJanus.Hard18.mstar` (clean-reach BFS).
+The game-side optimum reuses `RevPebbling.PebblingGame.mstar` (clean-reach BFS).
 -/
 
-namespace GenJanus.PebblingTheory
+namespace RevPebbling.PebblingTheory
 
-open GenJanus.Hard18 (mstar popcount)
+open RevPebbling.PebblingGame (mstar popcount)
 
 -- ------------------------------------------------------------------
 -- Knill's recursion F(n,S)  (Thm 2.1; none = infinite)
@@ -793,4 +793,4 @@ theorem midpoint_sqrt_bound :
   native_decide
 
 
-end GenJanus.PebblingTheory
+end RevPebbling.PebblingTheory

@@ -25,7 +25,7 @@ to the single inequality family
 whose measured margin is 1 - O(1/p) (追記22).
 -/
 
-namespace GenJanus.RatioConvergence
+namespace RevPebbling.RatioConvergence
 
 /-- Cross-multiplied, subtraction-free Cauchy predicate for the ratio
 sequence f (p+1) / f p from index p₀: for every precision 1/e there
@@ -234,4 +234,4 @@ theorem ratio_cauchy_of_eventually_logconcave
             rw [Nat.add_mul, Nat.one_mul]
     omega
 
-end GenJanus.RatioConvergence
+end RevPebbling.RatioConvergence

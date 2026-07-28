@@ -1,4 +1,4 @@
-import GenJanus.MinimaxDuality
+import RevPebbling.MinimaxDuality
 
 /-!
 # The dispersion lower bound, rational instance q = 1, λ = 13/8 (追記50)
@@ -43,10 +43,10 @@ of slack is what absorbs the `+1` of the recursion *for every v ≥ 1*
 with the constant `A = 64`, so no separate small-`v` regime is needed.
 -/
 
-namespace GenJanus.DispersionBound
+namespace RevPebbling.DispersionBound
 
-open GenJanus.MergeLemma GenJanus.CountRecursion GenJanus.CompositionAnchor
-open GenJanus.MinimaxDuality
+open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.MinimaxDuality
 
 -- ------------------------------------------------------------------
 -- Bounded computational checks first (test-first convention).
@@ -206,4 +206,4 @@ theorem dispersion_midpoint_16 (s : Nat) :
   rw [hsub] at hd
   omega
 
-end GenJanus.DispersionBound
+end RevPebbling.DispersionBound
