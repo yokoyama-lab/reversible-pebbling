@@ -61,3 +61,24 @@ the rest are general (unbounded) proofs.
 The namespace `GenJanus.*` is kept identical to the private benchmark
 repository so that theorem names and file hashes match the pinned
 proof manifest referenced by the paper.
+
+## `RevPebbling/` — the supermultiplicativity and front-DP layer (2026-07-28)
+
+Newer results live in the `RevPebbling` library (namespace
+`RevPebbling.*`; requires mathlib, pinned in `lakefile.toml`):
+
+* `RevPebbling/SeamIdentity.lean` — the seam identity
+  `N_t(b) = N_{t-1}(b) + β_t(b) + 1`, the rank and constant-run
+  lemmas, the witness lemma, and the CLOSED composition induction
+  (`supermult_closed`): `N_S(a) N_t(b) (1 − ε(t,b)) ≤ N_{S+t}(ab)`
+  with `ε` defined by well-founded recursion and `ε < 3/5` — the
+  machine-checked core of the supermultiplicativity theorem and the
+  existence/concavity of the count profile `g(β)`.
+* `RevPebbling/FrontDP.lean` — the autonomous front DP `L`, the split
+  lower bound, the ceiling `L ≤ 2^(t−2)`, the fully proved binomial
+  Pascal subsolution (Zone 0), and the transfer principle
+  `subsolution_le` for the four-zone subsolution architecture toward
+  `FrontExp(L) ≤ κ*`.
+
+Both build with `lake build` (Lean 4.31.0); no `sorry`, axioms are
+`propext` / `Quot.sound` / `Classical.choice` only.
