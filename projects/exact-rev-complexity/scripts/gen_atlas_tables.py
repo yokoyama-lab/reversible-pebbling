@@ -30,6 +30,14 @@ DISPLAY = {
 }
 #: 表1 の区分の並び（本数の多い順ではなく、性格の近いものを隣に置く）
 CATEGORY_ORDER = ["algorithm", "memoization", "injective", "structs", "jana"]
+#: 区分の表示名。本文の言い方（「単射関数の実装」「構造体の操作」）とそろえる
+CATEGORY_JA = {
+    "algorithm": "アルゴリズム",
+    "memoization": "メモ化",
+    "injective": "単射関数",
+    "structs": "構造体",
+    "jana": "jana",
+}
 
 
 def rows(name: str) -> list[dict[str, str]]:
@@ -71,7 +79,8 @@ def category_table() -> str:
         bits = statistics.median(int(r["final_live_bits"]) for r in rs)
         uses = sum(1 for r in rs if int(r["stack_peak"]) > 0)
         body.append(
-            f"{cat} & {len(rs)} & {steps:g} & {uses}/{len(rs)} & {bits:g}" + r" \\"
+            f"{CATEGORY_JA.get(cat, cat)} & {len(rs)} & {steps:g} & "
+            f"{uses}/{len(rs)} & {bits:g}" + r" \\"
         )
     header = (
         r"区分 & 本数 & steps 中央値 & スタックを使う本数 & "
@@ -108,7 +117,7 @@ def scaling_table() -> str:
 def baseline_table() -> str:
     """表3: 族ごとに基準線が届いた最大サイズの 1 行。
 
-    モデル対応が無効な族（impl peak $<$ \\pmin）には $\\dagger$ を付け、最後に置く。
+    モデル対応が無効な族（実装のピーク $<$ \\pmin）には $\\dagger$ を付け、最後に置く。
     行は残す（`docs/82` §6 の限界の明示）。
     """
     by: dict[str, list[dict[str, str]]] = defaultdict(list)
@@ -129,7 +138,7 @@ def baseline_table() -> str:
 
     header = (
         r"族 & $n$ & $N$ & 床 $2N-1$ & $M^{*}$ & $p_{\min}$ & "
-        r"impl 手数 & impl peak \\"
+        r"実装の手数 & 実装のピーク \\"
     )
     return table("l r r r r r r r", header, valid + invalid)
 

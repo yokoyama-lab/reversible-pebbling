@@ -46,11 +46,11 @@ def spec_columns(tex: str) -> int:
 
 def test_category_table_matches_phase1_findings() -> None:
     got = {r[0]: r[1:] for r in body(category_table())}
-    assert got["algorithm"] == ["69", "159", "30/69", "26"], got["algorithm"]
-    assert got["injective"] == ["15", "94", "1/15", "19"], got["injective"]
+    assert got["アルゴリズム"] == ["69", "159", "30/69", "26"], got["アルゴリズム"]
+    assert got["単射関数"] == ["15", "94", "1/15", "19"], got["単射関数"]
     assert got["jana"] == ["7", "52", "2/7", "9"], got["jana"]
-    assert got["memoization"] == ["7", "279", "3/7", "46"], got["memoization"]
-    assert got["structs"] == ["13", "7", "0/13", "17"], got["structs"]
+    assert got["メモ化"] == ["7", "279", "3/7", "46"], got["メモ化"]
+    assert got["構造体"] == ["13", "7", "0/13", "17"], got["構造体"]
 
 
 def test_category_table_covers_all_111_programs() -> None:
@@ -83,7 +83,7 @@ def test_scaling_table_has_all_nine_families() -> None:
 
 def test_baseline_table_matches_phase3_main_table() -> None:
     got = {r[0]: r[1:] for r in body(baseline_table())}
-    # family, n, N, 床 2N-1, M*, p_min, impl moves, impl peak
+    # family, n, N, 床 2N-1, M*, p_min, 実装の手数, 実装のピーク
     assert got[r"fib\_pairs"] == ["13", "7", "13", "19", "4", "7", "7"], got[r"fib\_pairs"]
     assert got[r"edit\_distance"] == ["5", "25", "49", "117", "10", "35", "35"]
     assert got["lcs"] == ["5", "25", "49", "117", "10", "24", "24"]
@@ -136,6 +136,13 @@ def test_underscores_are_escaped() -> None:
             for i, ch in enumerate(text):
                 if ch == "_":
                     assert i and text[i - 1] == "\\", line
+
+
+def test_headers_are_japanese_not_raw_column_names() -> None:
+    """和文論文の表なので，見出しに CSV の列名（impl 等）を残さない。"""
+    for tex in (category_table(), scaling_table(), baseline_table()):
+        header = tex.splitlines()[3]
+        assert "impl" not in header, header
 
 
 def test_no_em_dash_in_output() -> None:
