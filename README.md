@@ -133,6 +133,13 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   Pascal subsolution (Zone 0), and the transfer principle
   `subsolution_le` for the four-zone subsolution architecture toward
   `FrontExp(L) ≤ κ*`.
+* `RevPebbling/ChordDeficit.lean` — the algebraic core of Zone I.  The
+  dispersion exponent `f` is only *M*-semiconcave (`f'' > 0` for
+  `q ≳ 0.5`), so Jensen runs the wrong way and the chord deficit
+  `(M/2)·w₁w₂(q₁−q₂)²` has to be carried; `chord_deficit` derives it
+  from concavity of `f − (M/2)q²`, and `ledger` / `ledger_pos`
+  assemble Lemma A of the one-step analysis from it plus the two
+  branch gaps — reducing the analytic side to explicit hypotheses.
 
 Both build with `lake build` (Lean 4.31.0); no `sorry`, axioms are
 `propext` / `Quot.sound` / `Classical.choice` only.

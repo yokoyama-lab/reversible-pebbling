@@ -2,10 +2,11 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "fbf47928fc3c0fe4af3eac07c3b958f887e2dd1eb046889ceac676fafff12190",
+ "proof_bundle_sha256": "dfcc5c55f63b214e14850916e9cb07079f4467b0e666c1d7b15f0c4d702b081c",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+  "RevPebbling/ChordDeficit.lean": "3ece7a7e581f5bfc8802892724c51521d98a04ad9b218945d83a54663c8ccd24",
   "RevPebbling/CompositionAnchor.lean": "d1e5c0e53c1f527798bd354910ff0454222e1b50bd8db6c1a70a7c3d2f5b04b2",
   "RevPebbling/CountRecursion.lean": "d381108fb8c604bd5b3a7fc971e80284656fca1d4f86387368fea2020c811dac",
   "RevPebbling/CrossingConcentration.lean": "7befc71e8f7801f3a85af12b9025d8a815b5e1ee6107b67d35ff23220c4a5cdb",
@@ -24,7 +25,7 @@
   "RevPebbling/RLEPebble.lean": "16778b6f409261003cba86405663385b03a28f39fd2312dcb465a215931e4275",
   "RevPebbling/RatioConvergence.lean": "7c445dee4137ce2dcb37d4e91640cf88c037f45638d769a92263bbe16fae5702",
   "RevPebbling/SeamIdentity.lean": "d4030b8ed249b2dfab5a45c7b588784a503ada5ab5b6fde81f191f7a05167cbf",
-  "RevPebbling.lean": "e525a20a56a3b698796311b52317e8fc7e2b95c3a1191385d97823b5a616b214"
+  "RevPebbling.lean": "6f28286af45edfced8266ea75849efa35c25029b159151cfe152df14817b7a93"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -275,7 +276,7 @@
   },
   "front_dp_subsolution_framework": {
    "status": "proved_unbounded",
-   "scope": "FULL GENERAL combinatorial backbone of the four-zone subsolution architecture for the missing upper bound FrontExp(L) <= kappa* (notes 追記76/77): the autonomous front DP L defined by well-founded recursion on lex (t,v) with the implicit same-row term, the split lower bound, the ceiling L <= 2^(t-2), ZONE 0 fully proved (binomial Pascal subsolution sum C(t-2,i) <= L t 2^k via the halving split), and the TRANSFER PRINCIPLE subsolution_le: a rational profile with a verified base row and the one-step property is dominated by L for all t >= T_b.  The analytic Zones I/II supply the one-step hypothesis (numerically validated; future formalisation); the base row is the m30 machine check (0 violations / 98047).",
+   "scope": "FULL GENERAL combinatorial backbone of the four-zone subsolution architecture for the missing upper bound FrontExp(L) <= kappa* (notes 追記76/77): the autonomous front DP L defined by well-founded recursion on lex (t,v) with the implicit same-row term, the split lower bound, the ceiling L <= 2^(t-2), ZONE 0 fully proved (binomial Pascal subsolution sum C(t-2,i) <= L t 2^k via the halving split), and the TRANSFER PRINCIPLE subsolution_le: a rational profile with a verified base row and the one-step property is dominated by L for all t >= T_b.  The analytic Zones I/II supply the one-step hypothesis; the base row is the m30 machine check (0 violations / 98047).  ChordDeficit adds the ALGEBRAIC CORE of Zone I: the dispersion exponent f is only M-semiconcave (f'' > 0 for q > 0.5), so Jensen runs the wrong way and the chord deficit (M/2) w1 w2 (q1-q2)^2 must be carried; chord_deficit derives it from concavity of f - (M/2)q^2, and ledger / ledger_pos assemble Lemma A of the one-step appendix from that plus the two branch gaps, reducing the analytic side to explicit hypotheses on f, E and the soft-plus cap.",
    "theorems": [
     "RevPebbling.FrontDP.L_zero",
     "RevPebbling.FrontDP.L_one",
@@ -284,7 +285,10 @@
     "RevPebbling.FrontDP.L_le_ceiling",
     "RevPebbling.FrontDP.sum_choose_succ",
     "RevPebbling.FrontDP.L_binomial",
-    "RevPebbling.FrontDP.subsolution_le"
+    "RevPebbling.FrontDP.subsolution_le",
+    "RevPebbling.ChordDeficit.chord_deficit",
+    "RevPebbling.ChordDeficit.ledger",
+    "RevPebbling.ChordDeficit.ledger_pos"
    ]
   }
  }

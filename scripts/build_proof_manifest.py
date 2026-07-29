@@ -581,9 +581,18 @@ def main() -> int:
                           "rational profile with a verified base row and "
                           "the one-step property is dominated by L for "
                           "all t >= T_b.  The analytic Zones I/II supply "
-                          "the one-step hypothesis (numerically validated; "
-                          "future formalisation); the base row is the "
-                          "m30 machine check (0 violations / 98047)."),
+                          "the one-step hypothesis; the base row is the "
+                          "m30 machine check (0 violations / 98047).  "
+                          "ChordDeficit adds the ALGEBRAIC CORE of Zone I: "
+                          "the dispersion exponent f is only M-semiconcave "
+                          "(f'' > 0 for q > 0.5), so Jensen runs the wrong "
+                          "way and the chord deficit (M/2) w1 w2 (q1-q2)^2 "
+                          "must be carried; chord_deficit derives it from "
+                          "concavity of f - (M/2)q^2, and ledger / "
+                          "ledger_pos assemble Lemma A of the one-step "
+                          "appendix from that plus the two branch gaps, "
+                          "reducing the analytic side to explicit "
+                          "hypotheses on f, E and the soft-plus cap."),
                 "theorems": [
                     "RevPebbling.FrontDP.L_zero",
                     "RevPebbling.FrontDP.L_one",
@@ -593,6 +602,9 @@ def main() -> int:
                     "RevPebbling.FrontDP.sum_choose_succ",
                     "RevPebbling.FrontDP.L_binomial",
                     "RevPebbling.FrontDP.subsolution_le",
+                    "RevPebbling.ChordDeficit.chord_deficit",
+                    "RevPebbling.ChordDeficit.ledger",
+                    "RevPebbling.ChordDeficit.ledger_pos",
                 ],
             },
     }
