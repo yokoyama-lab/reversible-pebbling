@@ -14,6 +14,10 @@
 
 ## 2. 既知と空白
 
+> **探索前に必読**: この候補に効く既知事実は [`22_known_facts_ledger.md`](22_known_facts_ledger.md) の KF-08, KF-09, KF-10, KF-11, KF-19。
+> 新しい主張を立てたら、まずこれらに一致・包含されないか当てる（探索の負のフィルタ）。
+> 台帳の「含意」欄がそのまま**書いてはいけないこと**である。
+
 - **既知**: Chan–Lauria–Nordström–Vinyals (FOCS 2015) — 可逆ペブル空間の決定は PSPACE 完全、
   任意加法定数以内の近似も PSPACE 困難、標準との分離は**乗法 $\log$ 倍**（グラフ積構成）。
   Chan 2013 — Dymond–Tompa / Raz–McKenzie ゲームとの同値。

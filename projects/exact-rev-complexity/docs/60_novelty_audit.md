@@ -1,6 +1,8 @@
 # 60 — 新規性の監査（2026-07-27、一次文献に当たった結果）
 
 本プロジェクトの主張を、**一次文献の本文**に当たって新規性を判定した記録。
+**ここで既知に降格した主張は必ず [`22_known_facts_ledger.md`](22_known_facts_ledger.md) に
+1 件足す**（次回の探索で同じ再発明を早期に棄却するため。整合は `tests/test_known_facts.py`）。
 判定は保守的に行う（疑わしければ「既知」に寄せる）。
 参照した PDF: `~/dev/overleaf/2026_exact_reversible_pebbling/refs/`（Knill 1995・Královič 2004・
 同修士論文）、`arXiv:quant-ph/9703009`（LTV 1998）、`arXiv:quant-ph/0101133`（BTV 2001）。

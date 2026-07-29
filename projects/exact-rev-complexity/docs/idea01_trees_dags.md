@@ -14,6 +14,10 @@
 
 ## 2. 既知と空白（2026-07-27 本文精読で確定）
 
+> **探索前に必読**: この候補に効く既知事実は [`22_known_facts_ledger.md`](22_known_facts_ledger.md) の KF-01, KF-02, KF-03, KF-04, KF-05, KF-06, KF-07, KF-08, KF-10, KF-11, KF-17, KF-19。
+> 新しい主張を立てたら、まずこれらに一致・包含されないか当てる（探索の負のフィルタ）。
+> 台帳の「含意」欄がそのまま**書いてはいけないこと**である。
+
 **Královič 2004 本文（`~/dev/overleaf/2026_exact_reversible_pebbling/refs/kralovic-2004-rairo.pdf`）
 を精読した。以下は該当箇所つきの確定事実。検証は `tests/test_exp01d_kralovic.py`。**
 
