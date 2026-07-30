@@ -87,7 +87,18 @@ def test_baseline_table_matches_phase3_main_table() -> None:
     assert got[r"fib\_pairs"] == ["13", "7", "13", "19", "4", "7", "7"], got[r"fib\_pairs"]
     assert got[r"edit\_distance"] == ["5", "25", "49", "117", "10", "35", "35"]
     assert got["lcs"] == ["5", "25", "49", "117", "10", "24", "24"]
-    assert got["knapsack"] == ["3", "18", "35", "17", "5", "13", "13"]
+    # knapsack は目標セルの祖先だけを DAG に残すため n=5 まで基準線が届く
+    # （表全体を頂点にしていた頃は N=18 で n=3 止まり、かつ床 35 > M* 17 と矛盾していた）。
+    assert got["knapsack"] == ["5", "22", "43", "103", "7", "33", "33"], got["knapsack"]
+
+
+def test_baseline_table_floor_never_exceeds_mstar() -> None:
+    """床はクリーンな計画の下限なので、表のどの行でも M* を上回ってはならない。"""
+    for row in body(baseline_table()):
+        floor, mstar = row[3], row[4]
+        if not floor or not mstar:
+            continue
+        assert int(floor) <= int(mstar), row
 
 
 def test_baseline_table_flags_invalid_cutrod_row() -> None:

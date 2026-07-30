@@ -23,9 +23,9 @@ lcs,4,16,8,63,31,15,15,
 lcs,5,25,10,117,49,24,24,
 lcs,6,36,,,71,35,35,baseline skipped (N=36>25)
 lcs,7,49,,,97,48,48,baseline skipped (N=49>25)
-knapsack,2,10,3,5,19,6,6,
-knapsack,3,18,5,17,35,13,13,
-knapsack,4,28,,,55,22,22,baseline skipped (N=28>25)
-knapsack,5,40,,,79,33,33,baseline skipped (N=40>25)
-knapsack,6,54,,,107,46,46,baseline skipped (N=54>25)
-knapsack,7,70,,,139,61,61,baseline skipped (N=70>25)
+knapsack,2,3,3,5,5,6,6,
+knapsack,3,7,5,17,13,13,13,
+knapsack,4,14,6,49,27,22,22,
+knapsack,5,22,7,103,43,33,33,
+knapsack,6,31,,,61,46,46,baseline skipped (N=31>25)
+knapsack,7,43,,,85,61,61,baseline skipped (N=43>25)

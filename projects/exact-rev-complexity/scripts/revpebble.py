@@ -40,6 +40,30 @@ class Dag:
         return tuple(v for v in range(self.n) if v not in self.free)
 
 
+def restrict_to_ancestors(dag: Dag, target: int) -> tuple[Dag, int]:
+    """target とその祖先だけを残した DAG と、付け替えた target 番号を返す。
+
+    目標に寄与しない頂点は、クリーンな最適戦略では一度も置かれない
+    （置けば終端までに必ず取り除く必要があり、手数もペブルも純損になる）。
+    したがって p_min と M* は制限の前後で変わらない。変わるのは頂点数 N であり、
+    非祖先を数えたままだと床 2N-1 が過大になって M* を上回りうる。
+    """
+    keep: set[int] = set()
+    stack = [target]
+    while stack:
+        v = stack.pop()
+        if v in keep:
+            continue
+        keep.add(v)
+        stack.extend(dag.preds[v])
+    order = sorted(keep)  # 元の番号がトポロジカル順なので、昇順で順序が保たれる
+    remap = {v: i for i, v in enumerate(order)}
+    preds = tuple(frozenset(remap[u] for u in dag.preds[v]) for v in order)
+    free = frozenset(remap[v] for v in order if v in dag.free)
+    return (Dag(n=len(order), preds=preds, free=free,
+                name=f"{dag.name}|anc({target})"), remap[target])
+
+
 def chain(n: int) -> Dag:
     """長さ n の鎖。頂点 0 が常時可用な入力源、頂点 n が終端。
 

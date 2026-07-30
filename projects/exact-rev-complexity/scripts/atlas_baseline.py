@@ -35,7 +35,7 @@ from atlas_scale import FAMILIES, OUTDIR  # noqa: E402
 from frontierdp_memo import bidir_bfs, pmin_bidir  # noqa: E402
 from memo_dags import grid_dag, grid_target  # noqa: E402
 from real_program_dags import knapsack_dag, knapsack_target  # noqa: E402
-from revpebble import Dag, chain  # noqa: E402
+from revpebble import Dag, chain, restrict_to_ancestors  # noqa: E402
 
 MAX_PEBBLEABLE = 25  # これを超える DAG は基準線を計算しない（正直に空欄）。grid 7x7=36 は候補4で p_min>11 未確定の領域で時間切れになるため 25 に設定（2026-07-28 実測）
 
@@ -47,7 +47,18 @@ def cutrod_dag(n: int) -> Dag:
 
 
 def dag_for(family: str, n: int):
-    """(dag, target, 実装側メモ配列名, 実装→DAG 単位の除数)。"""
+    """(dag, target, 実装側メモ配列名, 実装→DAG 単位の除数)。
+
+    DAG は必ず目標の祖先に制限して返す。目標に寄与しない頂点を N に数えると
+    床 2N-1 が過大になり、M* を上回って矛盾する（knapsack で実際に起きた）。
+    制限は p_min と M* を変えない（revpebble.restrict_to_ancestors 参照）。
+    """
+    dag, target, arr, unit = _dag_for_raw(family, n)
+    dag, target = restrict_to_ancestors(dag, target)
+    return dag, target, arr, unit
+
+
+def _dag_for_raw(family: str, n: int):
     if family == "fib_pairs_2017":
         pairs = (n + 1) // 2
         return chain(pairs), pairs, "M", 2
