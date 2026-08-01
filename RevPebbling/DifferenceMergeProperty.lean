@@ -1,9 +1,9 @@
 import Std
 
 /-!
-# The Merge Lemma: general core (this work, 追記18)
+# The difference-merge property: general core (this work, 追記18)
 
-The Merge Lemma states that the halved difference row of Knill's
+The difference-merge property states that the halved difference row of Knill's
 recursion at space S equals, as a multiset, {1} ∪ row(S-1) ∪ B where
 B_i = δ(i,S) + δ(i,S-1).  Its mathematical heart is the exchange
 principle for sorted streams, proved here in FULL GENERALITY:
@@ -14,14 +14,14 @@ principle for sorted streams, proved here in FULL GENERALITY:
 
 together with multiset preservation (`smerge_count`) and sortedness
 (`smerge_sorted`).  Hence the min-split DP value IS the merged prefix
-sum -- the content of the Merge Lemma once Knill's recursion is
+sum -- the content of the difference-merge property once Knill's recursion is
 rewritten through prefix sums.
 
 The self-referential closure and the prefix-sum identity are ALSO
 proved in full generality below: `gen` builds the row with the
 B-stream reading the accumulator (structural, no well-foundedness
 debt), `gen_invariant`/`gen_count` establish sortedness and the
-multiset bookkeeping, `gen_merge_rep` is the Merge Lemma in
+multiset bookkeeping, `gen_merge_rep` is the difference-merge property in
 representation form (row = 1 :: smerge prev B), and
 `gen_satisfies_knill` is the Knill identity form: the prefix sums of
 the generated row satisfy F(n,S) = min_m [F(m,S) + F(m,S-1) +
@@ -32,7 +32,7 @@ the bounded instance `PebblingTheory.delta_merge_representation`
 cross-checks this against the DP table.)
 -/
 
-namespace RevPebbling.MergeLemma
+namespace RevPebbling.DifferenceMergeProperty
 
 /-- Sorted (nondecreasing) merge of two lists. -/
 def smerge : List Nat → List Nat → List Nat
@@ -242,7 +242,7 @@ theorem smerge_take_exists (a b : List Nat) :
           omega
 
 /-- The merged prefix IS the min-split DP value: the general
-mathematical core of the Merge Lemma. -/
+mathematical core of the difference-merge property. -/
 theorem merged_prefix_is_min_split (a b : List Nat)
     (ha : NDec a) (hb : NDec b) (n : Nat) (hn : n ≤ a.length + b.length) :
     (∀ k l, k + l = n → k ≤ a.length → l ≤ b.length →
@@ -741,7 +741,7 @@ theorem gen_count (prev : List Nat) (hprev : NDec prev)
 
 
 
-/-- THE GENERAL MERGE LEMMA (representation form): the generated row
+/-- THE GENERAL DIFFERENCE-MERGE PROPERTY (representation form): the generated row
 is literally 1 followed by the sorted merge of the previous row with
 its own convolution stream. -/
 theorem gen_merge_rep (prev : List Nat) (hprev : NDec prev)
@@ -785,11 +785,11 @@ theorem gen_merge_rep (prev : List Nat) (hprev : NDec prev)
 halved differences. -/
 def Fpre (l : List Nat) (n : Nat) : Nat := 1 + 2 * ((l.take (n - 1)).sum)
 
-/-- THE GENERAL MERGE LEMMA (Knill identity form): the prefix sums of
+/-- THE GENERAL DIFFERENCE-MERGE PROPERTY (Knill identity form): the prefix sums of
 the generated row satisfy Knill's recursion
 F(n,S) = min_m [F(m,S) + F(m,S-1) + F(n-m,S-1)] over feasible splits
 (with n = k+l+2, m = l+1; infeasible splits are infinite in the game).
-Together with `gen_merge_rep` this is the full general Merge Lemma. -/
+Together with `gen_merge_rep` this is the full general difference-merge property. -/
 theorem gen_satisfies_knill (prev : List Nat) (hprev : NDec prev)
     (hpos : ∀ q ∈ prev, 1 ≤ q) :
     (∀ k l, k ≤ prev.length → l ≤ prev.length →
@@ -851,4 +851,4 @@ theorem gen_satisfies_knill (prev : List Nat) (hprev : NDec prev)
     simp only [Fpre, Nat.add_sub_cancel] at *
     omega
 
-end RevPebbling.MergeLemma
+end RevPebbling.DifferenceMergeProperty

@@ -374,7 +374,7 @@ theorem corner_half_split_recurrence :
 -- Δ(n,S) ≤ Δ(n,S-1), and the five small-value count laws follow by
 -- induction.  Below the representation and its consequences are
 -- machine-checked exhaustively on the n ≤ 128, S ≤ 8 grid; the
--- general Lean formalisation of the merge lemma is future work.
+-- general Lean formalisation of the difference-merge property is future work.
 -- ------------------------------------------------------------------
 
 /-- Wider DP table for the structural laws: n ≤ 128, S ≤ 8. -/
@@ -643,7 +643,7 @@ theorem c_below_three_witness :
   native_decide
 
 -- ------------------------------------------------------------------
--- Lower-bound side (this work, 追記14): via the Merge Lemma,
+-- Lower-bound side (this work, 追記14): via the difference-merge property,
 -- total(row S) = 1 + total(row S-1) + total(B) and B_i ≥ δ(i,S-1),
 -- so f_S ≥ 2 f_{S-1} - 1 and hence c ≥ 2 (matching the exponent of
 -- Královič's Ω(n lg n)).  Beyond 2 the corner identity reduces a
@@ -714,7 +714,7 @@ theorem max_decomposition :
 -- ------------------------------------------------------------------
 -- The counting recursion behind the rigorous lower bound
 -- c ≥ 2^{1+ε*} ≈ 2.4518 (this work, 追記25; paper proof in
--- notes/c-lower-bound-draft.md).  From the Merge Lemma and pointwise
+-- notes/c-lower-bound-draft.md).  From the difference-merge property and pointwise
 -- domination: C_S(v) ≤ 1 + C_{S-1}(v) + C_S(⌊v/2⌋), whence
 -- C_S(2^k) ≤ 2·C(S+k-1, k+1) − 1 by a Pascal induction, so all but
 -- an exponentially small fraction of the row exceeds 2^{εS} for
@@ -749,7 +749,7 @@ theorem count_binomial_bound :
 
 -- ------------------------------------------------------------------
 -- P_k ≥ 0 in full generality (this work, 追記27): the DUAL counting
--- recursion.  From the Merge Lemma equality
+-- recursion.  From the difference-merge property equality
 --   C_S(v) = [1 ≤ v] + C_{S-1}(v) + #{i : B_i ≤ v}
 -- and B_i ≤ 2δ(i,S-1) (pointwise domination, other side):
 --   C_S(v) ≥ 1 + C_{S-1}(v) + C_{S-1}(⌊v/2⌋).

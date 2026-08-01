@@ -35,7 +35,7 @@ DP; their Lean-internal replay is future work (Array DP + native_decide).
 
 namespace RevPebbling.CompositionAnchor
 
-open RevPebbling.MergeLemma RevPebbling.CountRecursion
+open RevPebbling.DifferenceMergeProperty RevPebbling.CountRecursion
 
 /-- countLe is monotone in the threshold. -/
 theorem countLe_mono_val (l : List Nat) {v v' : Nat} (h : v ≤ v') :

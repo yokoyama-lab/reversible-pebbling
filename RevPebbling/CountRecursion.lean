@@ -1,9 +1,9 @@
-import RevPebbling.MergeLemma
+import RevPebbling.DifferenceMergeProperty
 
 /-!
 # The counting recursion, fully general (this work, 追記30)
 
-Building on the general Merge Lemma (`MergeLemma.lean`), this file
+Building on the general difference-merge property (`DifferenceMergeProperty.lean`), this file
 proves — with NO hypotheses beyond the seed row [1], i.e.
 unconditionally for the canonical generated row sequence — the
 value-counting recursion that drives the lower bound
@@ -30,7 +30,7 @@ outside Lean.
 
 namespace RevPebbling.CountRecursion
 
-open RevPebbling.MergeLemma
+open RevPebbling.DifferenceMergeProperty
 
 theorem two_pow_ge_one : ∀ n, 1 ≤ 2 ^ n
   | 0 => Nat.le_refl 1

@@ -39,7 +39,7 @@ bounded `native_decide` examples below are the test-first fixtures.
 
 namespace RevPebbling.CrossingConcentration
 
-open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.DifferenceMergeProperty RevPebbling.CountRecursion RevPebbling.CompositionAnchor
 open RevPebbling.MinimaxDuality
 
 -- ------------------------------------------------------------------

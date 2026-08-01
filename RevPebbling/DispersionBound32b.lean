@@ -89,7 +89,7 @@ set_option maxRecDepth 1000000
 
 namespace RevPebbling.DispersionBound32b
 
-open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.DifferenceMergeProperty RevPebbling.CountRecursion RevPebbling.CompositionAnchor
 open RevPebbling.MinimaxDuality
 open RevPebbling.DispersionBound32 (isqrt isqrt_sq_le le_isqrt lt_succ_isqrt lt_of_sq_lt_sq)
 

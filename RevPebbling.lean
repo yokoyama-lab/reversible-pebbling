@@ -9,11 +9,12 @@ import RevPebbling.DispersionBound32c
 import RevPebbling.DispersionBound4731
 import RevPebbling.FrontDP
 import RevPebbling.IntRoot
-import RevPebbling.MergeLemma
+import RevPebbling.DifferenceMergeProperty
 import RevPebbling.MinimaxDuality
 import RevPebbling.PebblingFoundations
 import RevPebbling.PebblingGame
 import RevPebbling.PebblingTheory
+import RevPebbling.Profile
 import RevPebbling.RLEPebble
 import RevPebbling.RatioConvergence
 import RevPebbling.SeamIdentity

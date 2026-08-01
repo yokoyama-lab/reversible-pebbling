@@ -1,4 +1,4 @@
-import RevPebbling.MergeLemma
+import RevPebbling.DifferenceMergeProperty
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic
 
@@ -15,8 +15,8 @@ formalised here IN FULL GENERALITY (no bounded check, no pebbling
 specifics — they hold for the merge representation of ANY sorted row):
 
 * `seam_identity`  — `N_t(b) = N_{t-1}(b) + β_t(b) + 1`.
-  Immediate from the Merge Lemma `row = 1 :: smerge prev B`
-  (`MergeLemma.gen_merge_rep`) by counting entries `≤ b`.  This is what
+  Immediate from the difference-merge property `row = 1 :: smerge prev B`
+  (`DifferenceMergeProperty.gen_merge_rep`) by counting entries `≤ b`.  This is what
   makes the ε recursion an exact CONVEX COMBINATION (weights
   `N_{t-1}/N_t`, `β_t/N_t`, `1/N_t` summing to 1).
 
@@ -47,7 +47,7 @@ of the exact-reversible-pebbling project.
 
 namespace RevPebbling.Seam
 
-open RevPebbling.MergeLemma
+open RevPebbling.DifferenceMergeProperty
 
 /-- Number of entries `≤ b` (the count function `N`). -/
 def cle (l : List Nat) (b : Nat) : Nat := l.countP (fun x => x ≤ b)
@@ -78,7 +78,7 @@ theorem smerge_cle (a b : List Nat) (v : Nat) :
       by_cases hx : x ≤ v <;> by_cases hy : y ≤ v <;> simp [hx, hy] <;> omega
 
 /-- **THE SEAM IDENTITY** `N_t(b) = N_{t-1}(b) + β_t(b) + 1`.
-For any row given by the merge representation of the Merge Lemma
+For any row given by the merge representation of the difference-merge property
 (`row = 1 :: smerge prev B`) and any `b ≥ 1`. -/
 theorem seam_identity {row prev B : List Nat}
     (hrow : row = 1 :: smerge prev B) {b : Nat} (hb : 1 ≤ b) :
@@ -87,7 +87,7 @@ theorem seam_identity {row prev B : List Nat}
   rw [cle_cons, smerge_cle]
   simp [hb]
 
-/-- The seam identity for the generated row of the Merge Lemma. -/
+/-- The seam identity for the generated row of the difference-merge property. -/
 theorem seam_identity_gen (prev : List Nat) (hprev : NDec prev)
     (hpos : ∀ q ∈ prev, 1 ≤ q) {b : Nat} (hb : 1 ≤ b) :
     cle (gen prev (2 * prev.length)).1 b =
@@ -408,7 +408,7 @@ remained was the bookkeeping.  It is done here:
   hypotheses, `N_S(a)·N_t(b)·(1 - ε t b) ≤ N_{S+t}(ab)` for all `t ≥ 2`.
 
 The hypotheses are exactly the facts proved in this file and in
-`RevPebbling.MergeLemma`: the seam identity, the witness lemma, the rank
+`RevPebbling.DifferenceMergeProperty`: the seam identity, the witness lemma, the rank
 bounds and the lex decrease.  Nothing here is specific to pebbling.
 -/
 

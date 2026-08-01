@@ -64,7 +64,7 @@ set_option maxRecDepth 1000000
 
 namespace RevPebbling.DispersionBound4731
 
-open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.DifferenceMergeProperty RevPebbling.CountRecursion RevPebbling.CompositionAnchor
 open RevPebbling.MinimaxDuality
 open RevPebbling.IntRoot (iroot iroot_pow_le le_iroot lt_succ_iroot lt_of_pow_lt_pow)
 

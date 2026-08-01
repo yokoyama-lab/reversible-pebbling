@@ -67,7 +67,7 @@ and `216 · 1000 + 727 ≤ 217 · 1000` closes the additive `+1`.
 
 namespace RevPebbling.DispersionBound32
 
-open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.DifferenceMergeProperty RevPebbling.CountRecursion RevPebbling.CompositionAnchor
 open RevPebbling.MinimaxDuality
 
 -- ------------------------------------------------------------------

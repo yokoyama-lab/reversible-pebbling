@@ -45,7 +45,7 @@ with the constant `A = 64`, so no separate small-`v` regime is needed.
 
 namespace RevPebbling.DispersionBound
 
-open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.DifferenceMergeProperty RevPebbling.CountRecursion RevPebbling.CompositionAnchor
 open RevPebbling.MinimaxDuality
 
 -- ------------------------------------------------------------------

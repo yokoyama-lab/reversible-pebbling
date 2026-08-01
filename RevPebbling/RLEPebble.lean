@@ -17,7 +17,7 @@ under construction, self-referential, reading only the built prefix)
 and pc (into the previous row) together give the B-stream
 Δ(m+1,S) + Δ(m+1,S-1) ("case B": grow m).  At each step the smaller
 head value is emitted for a whole run at once.  Correctness rests on
-the Merge Lemma (see `RevPebbling.MergeLemma` for the general proof and
+the difference-merge property (see `RevPebbling.DifferenceMergeProperty` for the general proof and
 `RevPebbling.PebblingTheory.delta_merge_representation` for the bounded
 DP-level check).
 

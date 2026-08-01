@@ -137,10 +137,10 @@ def main() -> int:
                     "RevPebbling.PebblingFoundations.reach_impossible_general",
                 ],
             },
-            "merge_lemma_general_core": {
+            "difference_merge_property_general_core": {
                 "status": "proved_unbounded",
-                "scope": ("FULL GENERAL Merge Lemma: exchange principle "
-                          "for sorted streams (merged prefix sums = "
+                "scope": ("FULL GENERAL difference-merge property: exchange "
+                          "principle for sorted streams (merged prefix sums = "
                           "min-split DP value, both directions), multiset "
                           "preservation, sortedness, PLUS the "
                           "self-referential closure: generator gen with "
@@ -151,15 +151,15 @@ def main() -> int:
                           "form gen_satisfies_knill for every sorted "
                           "positive input row."),
                 "theorems": [
-                    "RevPebbling.MergeLemma.smerge_count",
-                    "RevPebbling.MergeLemma.smerge_sorted",
-                    "RevPebbling.MergeLemma.smerge_take_le",
-                    "RevPebbling.MergeLemma.smerge_take_exists",
-                    "RevPebbling.MergeLemma.merged_prefix_is_min_split",
-                    "RevPebbling.MergeLemma.gen_invariant",
-                    "RevPebbling.MergeLemma.gen_count",
-                    "RevPebbling.MergeLemma.gen_merge_rep",
-                    "RevPebbling.MergeLemma.gen_satisfies_knill",
+                    "RevPebbling.DifferenceMergeProperty.smerge_count",
+                    "RevPebbling.DifferenceMergeProperty.smerge_sorted",
+                    "RevPebbling.DifferenceMergeProperty.smerge_take_le",
+                    "RevPebbling.DifferenceMergeProperty.smerge_take_exists",
+                    "RevPebbling.DifferenceMergeProperty.merged_prefix_is_min_split",
+                    "RevPebbling.DifferenceMergeProperty.gen_invariant",
+                    "RevPebbling.DifferenceMergeProperty.gen_count",
+                    "RevPebbling.DifferenceMergeProperty.gen_merge_rep",
+                    "RevPebbling.DifferenceMergeProperty.gen_satisfies_knill",
                 ],
             },
             "rle_pebble_values": {
@@ -592,7 +592,21 @@ def main() -> int:
                           "ledger_pos assemble Lemma A of the one-step "
                           "appendix from that plus the two branch gaps, "
                           "reducing the analytic side to explicit "
-                          "hypotheses on f, E and the soft-plus cap."),
+                          "hypotheses on f, E and the soft-plus cap.  "
+                          "Profile.lean machine-checks the paper's "
+                          "profile theorem from supermultiplicativity: "
+                          "in the logarithmic form (Superadd, joint "
+                          "superadditivity with an additive defect), "
+                          "tendsto_profile gives EXISTENCE of "
+                          "g(beta) = lim_S f(S, beta S)/S for every beta "
+                          "(Fekete, defect absorbed by shifting), and "
+                          "profile_concave_rat gives CONCAVITY at every "
+                          "rational mixture p/(p+q), realised by "
+                          "splitting the budget S = pk + qk across the "
+                          "two scales.  Extending rational weights to "
+                          "real ones needs one further analytic input "
+                          "(continuity of g, or monotonicity of f in its "
+                          "second argument) and is not formalised."),
                 "theorems": [
                     "RevPebbling.FrontDP.L_zero",
                     "RevPebbling.FrontDP.L_one",
@@ -605,6 +619,10 @@ def main() -> int:
                     "RevPebbling.ChordDeficit.chord_deficit",
                     "RevPebbling.ChordDeficit.ledger",
                     "RevPebbling.ChordDeficit.ledger_pos",
+                    "RevPebbling.Profile.subadditive_shifted",
+                    "RevPebbling.Profile.bddBelow_shifted",
+                    "RevPebbling.Profile.tendsto_profile",
+                    "RevPebbling.Profile.profile_concave_rat",
                 ],
             },
     }

@@ -2,30 +2,31 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "dfcc5c55f63b214e14850916e9cb07079f4467b0e666c1d7b15f0c4d702b081c",
+ "proof_bundle_sha256": "f6ba8bef767c7254546ec244b8a2fb50f7586cddca9ddb2f9663f5190aad5621",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
   "RevPebbling/ChordDeficit.lean": "3ece7a7e581f5bfc8802892724c51521d98a04ad9b218945d83a54663c8ccd24",
-  "RevPebbling/CompositionAnchor.lean": "d1e5c0e53c1f527798bd354910ff0454222e1b50bd8db6c1a70a7c3d2f5b04b2",
-  "RevPebbling/CountRecursion.lean": "d381108fb8c604bd5b3a7fc971e80284656fca1d4f86387368fea2020c811dac",
-  "RevPebbling/CrossingConcentration.lean": "7befc71e8f7801f3a85af12b9025d8a815b5e1ee6107b67d35ff23220c4a5cdb",
-  "RevPebbling/DispersionBound.lean": "f3fcc6e08e276da785053ef64ba6d97366b6197768c54f3b153d40aed069c8cd",
-  "RevPebbling/DispersionBound32.lean": "8b4043326dd4a632197aa1bff75795e1b26783b3098f6ecce654a6b263ef1c7c",
-  "RevPebbling/DispersionBound32b.lean": "ce3ca5c1832be0f63a622b0050c0dfd744372daf556a6cf6983f7412b20e11d8",
-  "RevPebbling/DispersionBound32c.lean": "405cce1d59f6cf871e45912fafbe762b6c395ba0a506e0ac50b6dcde38073271",
-  "RevPebbling/DispersionBound4731.lean": "a006b9b415712858565ed498ab27ace8047c505ad06cb5c41f32c4e57dca0fba",
+  "RevPebbling/CompositionAnchor.lean": "040c9eeff6088e4822c17045f7047d8e00e538b240f0344ff651ef13802fcbf9",
+  "RevPebbling/CountRecursion.lean": "a55f80b113f1bf74166c21ad086f217fcd4786de5ee99c7d46eaeeb0539178ef",
+  "RevPebbling/CrossingConcentration.lean": "f13df2ffc6c6f79234793874a3f4d527b75d5144c2e95562d85e557c9ab3c539",
+  "RevPebbling/DifferenceMergeProperty.lean": "bc65c46cf8135e9fd1898e6176874eaabf0ecbf47720450dbff5aba00a4b4878",
+  "RevPebbling/DispersionBound.lean": "12244572e35198d5d550403f2cb5664e9698c3cb0ed43c924887ca15ecdb4c89",
+  "RevPebbling/DispersionBound32.lean": "432ccb527df7f4c06263d2ae5fd1e5f3a008bc677fee7814fade06973e06de63",
+  "RevPebbling/DispersionBound32b.lean": "68ef986d04f83a2efd2afb6fdfde4185cddbe3f166177ac78219b21819859731",
+  "RevPebbling/DispersionBound32c.lean": "398bb340689fb3b61f10c24f553068fd38ea646a99ea4a33c860f05f701e0669",
+  "RevPebbling/DispersionBound4731.lean": "8ff9cc0a50182efe372d634acbf9f8881382ad6e6c638ff782fe7ddea068dfc4",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
-  "RevPebbling/MergeLemma.lean": "7482c56e788377bcca273e459314539f6d36f1fb631a8c8a50e0d5d20a636829",
-  "RevPebbling/MinimaxDuality.lean": "143d38be91278c145228bb789eef8fb6d47c653f0d4222e00e84657ff2f3be5f",
+  "RevPebbling/MinimaxDuality.lean": "567264becafd13f421732b2b0f77f35e6c3afd2fa44524c839f31a010791186e",
   "RevPebbling/PebblingFoundations.lean": "71b64a285bf9a297af9ee754d65d3a23150b9a96e83349337cd27d8a3f718fe1",
   "RevPebbling/PebblingGame.lean": "559aa960515425e4ab3e645d2ee9eeb4a720311f1fe9bf5841a77eb7737a18db",
-  "RevPebbling/PebblingTheory.lean": "4d0bc9d7f9affa7cdf492604e0968d9e53ac61cd453f7783b20550707eae9295",
-  "RevPebbling/RLEPebble.lean": "16778b6f409261003cba86405663385b03a28f39fd2312dcb465a215931e4275",
+  "RevPebbling/PebblingTheory.lean": "1aef47f35d60bfb51f8237cc597cb13b163cf99e3acc4c830bb945d6afbe4718",
+  "RevPebbling/Profile.lean": "d3950502767697dba1ecd7f3e81a19c5af2be2c3dfcc136ab3120d797914a996",
+  "RevPebbling/RLEPebble.lean": "9820aff494ef8cb964439461713b24b5d369502949239b386957f6fad383823a",
   "RevPebbling/RatioConvergence.lean": "7c445dee4137ce2dcb37d4e91640cf88c037f45638d769a92263bbe16fae5702",
-  "RevPebbling/SeamIdentity.lean": "d4030b8ed249b2dfab5a45c7b588784a503ada5ab5b6fde81f191f7a05167cbf",
-  "RevPebbling.lean": "6f28286af45edfced8266ea75849efa35c25029b159151cfe152df14817b7a93"
+  "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
+  "RevPebbling.lean": "2724c165cb04136dc1a7e7b6db5e00f28193f4fe8e3744b94ca86104034f606e"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -53,19 +54,19 @@
     "RevPebbling.PebblingFoundations.reach_impossible_general"
    ]
   },
-  "merge_lemma_general_core": {
+  "difference_merge_property_general_core": {
    "status": "proved_unbounded",
-   "scope": "FULL GENERAL Merge Lemma: exchange principle for sorted streams (merged prefix sums = min-split DP value, both directions), multiset preservation, sortedness, PLUS the self-referential closure: generator gen with accumulator-resolved B-stream, invariant (sortedness/bounds), count identity, representation form gen_merge_rep (row = 1 :: smerge prev B) and Knill identity form gen_satisfies_knill for every sorted positive input row.",
+   "scope": "FULL GENERAL difference-merge property: exchange principle for sorted streams (merged prefix sums = min-split DP value, both directions), multiset preservation, sortedness, PLUS the self-referential closure: generator gen with accumulator-resolved B-stream, invariant (sortedness/bounds), count identity, representation form gen_merge_rep (row = 1 :: smerge prev B) and Knill identity form gen_satisfies_knill for every sorted positive input row.",
    "theorems": [
-    "RevPebbling.MergeLemma.smerge_count",
-    "RevPebbling.MergeLemma.smerge_sorted",
-    "RevPebbling.MergeLemma.smerge_take_le",
-    "RevPebbling.MergeLemma.smerge_take_exists",
-    "RevPebbling.MergeLemma.merged_prefix_is_min_split",
-    "RevPebbling.MergeLemma.gen_invariant",
-    "RevPebbling.MergeLemma.gen_count",
-    "RevPebbling.MergeLemma.gen_merge_rep",
-    "RevPebbling.MergeLemma.gen_satisfies_knill"
+    "RevPebbling.DifferenceMergeProperty.smerge_count",
+    "RevPebbling.DifferenceMergeProperty.smerge_sorted",
+    "RevPebbling.DifferenceMergeProperty.smerge_take_le",
+    "RevPebbling.DifferenceMergeProperty.smerge_take_exists",
+    "RevPebbling.DifferenceMergeProperty.merged_prefix_is_min_split",
+    "RevPebbling.DifferenceMergeProperty.gen_invariant",
+    "RevPebbling.DifferenceMergeProperty.gen_count",
+    "RevPebbling.DifferenceMergeProperty.gen_merge_rep",
+    "RevPebbling.DifferenceMergeProperty.gen_satisfies_knill"
    ]
   },
   "rle_pebble_values": {
@@ -276,7 +277,7 @@
   },
   "front_dp_subsolution_framework": {
    "status": "proved_unbounded",
-   "scope": "FULL GENERAL combinatorial backbone of the four-zone subsolution architecture for the missing upper bound FrontExp(L) <= kappa* (notes 追記76/77): the autonomous front DP L defined by well-founded recursion on lex (t,v) with the implicit same-row term, the split lower bound, the ceiling L <= 2^(t-2), ZONE 0 fully proved (binomial Pascal subsolution sum C(t-2,i) <= L t 2^k via the halving split), and the TRANSFER PRINCIPLE subsolution_le: a rational profile with a verified base row and the one-step property is dominated by L for all t >= T_b.  The analytic Zones I/II supply the one-step hypothesis; the base row is the m30 machine check (0 violations / 98047).  ChordDeficit adds the ALGEBRAIC CORE of Zone I: the dispersion exponent f is only M-semiconcave (f'' > 0 for q > 0.5), so Jensen runs the wrong way and the chord deficit (M/2) w1 w2 (q1-q2)^2 must be carried; chord_deficit derives it from concavity of f - (M/2)q^2, and ledger / ledger_pos assemble Lemma A of the one-step appendix from that plus the two branch gaps, reducing the analytic side to explicit hypotheses on f, E and the soft-plus cap.",
+   "scope": "FULL GENERAL combinatorial backbone of the four-zone subsolution architecture for the missing upper bound FrontExp(L) <= kappa* (notes 追記76/77): the autonomous front DP L defined by well-founded recursion on lex (t,v) with the implicit same-row term, the split lower bound, the ceiling L <= 2^(t-2), ZONE 0 fully proved (binomial Pascal subsolution sum C(t-2,i) <= L t 2^k via the halving split), and the TRANSFER PRINCIPLE subsolution_le: a rational profile with a verified base row and the one-step property is dominated by L for all t >= T_b.  The analytic Zones I/II supply the one-step hypothesis; the base row is the m30 machine check (0 violations / 98047).  ChordDeficit adds the ALGEBRAIC CORE of Zone I: the dispersion exponent f is only M-semiconcave (f'' > 0 for q > 0.5), so Jensen runs the wrong way and the chord deficit (M/2) w1 w2 (q1-q2)^2 must be carried; chord_deficit derives it from concavity of f - (M/2)q^2, and ledger / ledger_pos assemble Lemma A of the one-step appendix from that plus the two branch gaps, reducing the analytic side to explicit hypotheses on f, E and the soft-plus cap.  Profile.lean machine-checks the paper's profile theorem from supermultiplicativity: in the logarithmic form (Superadd, joint superadditivity with an additive defect), tendsto_profile gives EXISTENCE of g(beta) = lim_S f(S, beta S)/S for every beta (Fekete, defect absorbed by shifting), and profile_concave_rat gives CONCAVITY at every rational mixture p/(p+q), realised by splitting the budget S = pk + qk across the two scales.  Extending rational weights to real ones needs one further analytic input (continuity of g, or monotonicity of f in its second argument) and is not formalised.",
    "theorems": [
     "RevPebbling.FrontDP.L_zero",
     "RevPebbling.FrontDP.L_one",
@@ -288,7 +289,11 @@
     "RevPebbling.FrontDP.subsolution_le",
     "RevPebbling.ChordDeficit.chord_deficit",
     "RevPebbling.ChordDeficit.ledger",
-    "RevPebbling.ChordDeficit.ledger_pos"
+    "RevPebbling.ChordDeficit.ledger_pos",
+    "RevPebbling.Profile.subadditive_shifted",
+    "RevPebbling.Profile.bddBelow_shifted",
+    "RevPebbling.Profile.tendsto_profile",
+    "RevPebbling.Profile.profile_concave_rat"
    ]
   }
  }

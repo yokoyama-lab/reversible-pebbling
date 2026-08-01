@@ -33,7 +33,7 @@ in 2026_exact_reversible_pebbling).
 
 namespace RevPebbling.MinimaxDuality
 
-open RevPebbling.MergeLemma RevPebbling.CountRecursion RevPebbling.CompositionAnchor
+open RevPebbling.DifferenceMergeProperty RevPebbling.CountRecursion RevPebbling.CompositionAnchor
 
 -- ------------------------------------------------------------------
 -- Bounded computational checks first (test-first convention): the
