@@ -185,8 +185,7 @@ def main() -> int:
                           "does what the original does) and foundation "
                           "law (below the cut nothing changes, so the "
                           "foundation survives).  The legality and peak "
-                          "laws, and hence the composition itself, are "
-                          "NOT yet proved."),
+                          "laws are proved too, so all four laws of the lift are available (execution, foundation, legality, peak).  The peak law maxOnes b (lift base s) <= ones (b.take base) + maxOnes (b.drop base) s is the accounting behind \"the base is shared\", i.e. behind the p + q - 1 of submultiplicativity.  Kernel axioms only.  Still missing for Knill Thm 2.1: a game-level F as a minimum over plays, and the composition theorem assembled from these laws; the >= half of Thm 2.1 (decomposition of an optimal solution matrix) is untouched."),
                 "theorems": [
                     "RevPebbling.LiftAbove.drop_set_add",
                     "RevPebbling.LiftAbove.nth_drop_add",
@@ -196,6 +195,9 @@ def main() -> int:
                     "RevPebbling.LiftAbove.take_toggle_add",
                     "RevPebbling.LiftAbove.execB_liftAbove_take",
                     "RevPebbling.LiftAbove.liftAbove_append",
+                    "RevPebbling.LiftAbove.nth_toggle_below",
+                    "RevPebbling.LiftAbove.legalB_liftAbove",
+                    "RevPebbling.LiftAbove.maxOnes_liftAbove",
                 ],
             },
             "knill_recursion_uniqueness": {

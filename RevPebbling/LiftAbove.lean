@@ -108,4 +108,87 @@ theorem execB_liftAbove_take (base : Nat) :
       rw [execB_liftAbove_take base rest (toggle b (i + base)),
         take_toggle_add]
 
+/-- A toggle at or above the cut does not disturb any cell below it.
+This is what keeps the foundation alive during the lifted play. -/
+theorem nth_toggle_below (b : Board) (base i j : Nat) (hj : j < base) :
+    nth (toggle b (i + base)) j = nth b j := by
+  have hne : i + base ≠ j := by omega
+  simp only [toggle, nth, List.getD_eq_getElem?_getD,
+    List.getElem?_set_ne hne]
+
+/-- **Legality law.**  A lifted play is legal provided the foundation
+cell just below the cut carries a pebble (or the cut is at the very
+left end).  The foundation is what licenses the play's first move,
+which in the short chain was free. -/
+theorem legalB_liftAbove (base : Nat) :
+    ∀ (s : List Nat) (b : Board),
+      (base = 0 ∨ nth b (base - 1) = true) →
+      legalB (b.drop base) s = true →
+      legalB b (liftAbove base s) = true
+  | [], _, _, _ => rfl
+  | i :: rest, b, hbase, hleg => by
+      have hok2 : okMove (b.drop base) i = true ∧
+          legalB (toggle (b.drop base) i) rest = true := by
+        simpa [legalB, Bool.and_eq_true] using hleg
+      have hok : okMove b (i + base) = true := by
+        rcases Nat.eq_zero_or_pos i with rfl | hi
+        · simp only [Nat.zero_add, okMove, Bool.or_eq_true, beq_iff_eq]
+          rcases hbase with h | h
+          · left; exact h
+          · right; exact h
+        · have h1 : nth (b.drop base) (i - 1) = true := by
+            have hm := hok2.1
+            simp only [okMove, Bool.or_eq_true, beq_iff_eq] at hm
+            rcases hm with h | h
+            · omega
+            · exact h
+          rw [nth_drop_add] at h1
+          have h2 : i - 1 + base = i + base - 1 := by omega
+          rw [h2] at h1
+          simp only [okMove, Bool.or_eq_true]
+          right; exact h1
+      have hbase' : base = 0 ∨ nth (toggle b (i + base)) (base - 1) = true := by
+        rcases Nat.eq_zero_or_pos base with hb | hb
+        · left; exact hb
+        · rcases hbase with h | h
+          · left; exact h
+          · right
+            rw [nth_toggle_below b base i (base - 1) (by omega)]
+            exact h
+      have hleg' : legalB ((toggle b (i + base)).drop base) rest = true := by
+        rw [drop_toggle_add]; exact hok2.2
+      show (okMove b (i + base) &&
+        legalB (toggle b (i + base)) (liftAbove base rest)) = true
+      rw [hok, Bool.true_and]
+      exact legalB_liftAbove base rest (toggle b (i + base)) hbase' hleg'
+
+/-- **Peak law.**  The pebbles below the cut are carried along as a
+constant offset, so the peak of a lifted play splits into the standing
+cost of the foundation plus the peak of the original play.  This is the
+accounting behind "the base is shared", i.e. behind the `p + q - 1` of
+the submultiplicativity lemma. -/
+theorem maxOnes_liftAbove (base : Nat) :
+    ∀ (s : List Nat) (b : Board),
+      maxOnes b (liftAbove base s)
+        ≤ ones (b.take base) + maxOnes (b.drop base) s
+  | [], b => by
+      have hb := ones_take_drop b base
+      simp only [liftAbove_nil, maxOnes]
+      omega
+  | i :: rest, b => by
+      have ih := maxOnes_liftAbove base rest (toggle b (i + base))
+      rw [take_toggle_add, drop_toggle_add] at ih
+      have hb : ones (b.take base) + ones (b.drop base) = ones b :=
+        ones_take_drop b base
+      show max (ones b) (maxOnes (toggle b (i + base)) (liftAbove base rest))
+        ≤ ones (b.take base) + max (ones (b.drop base))
+            (maxOnes (toggle (b.drop base) i) rest)
+      refine Nat.max_le.mpr ⟨?_, ?_⟩
+      · have := Nat.le_max_left (ones (b.drop base))
+          (maxOnes (toggle (b.drop base) i) rest)
+        omega
+      · have := Nat.le_max_right (ones (b.drop base))
+          (maxOnes (toggle (b.drop base) i) rest)
+        omega
+
 end RevPebbling.LiftAbove
