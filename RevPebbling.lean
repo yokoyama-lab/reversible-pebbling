@@ -9,6 +9,7 @@ import RevPebbling.DispersionBound32c
 import RevPebbling.DispersionBound4731
 import RevPebbling.FrontDP
 import RevPebbling.IntRoot
+import RevPebbling.KnillUnique
 import RevPebbling.DifferenceMergeProperty
 import RevPebbling.MinimaxDuality
 import RevPebbling.PebblingFoundations

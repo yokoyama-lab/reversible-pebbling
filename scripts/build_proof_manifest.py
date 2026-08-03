@@ -137,6 +137,31 @@ def main() -> int:
                     "RevPebbling.PebblingFoundations.reach_impossible_general",
                 ],
             },
+            "knill_recursion_uniqueness": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED: Knill's recursion has a unique "
+                          "solution.  The structure theorems of this "
+                          "artifact are statements about the generator "
+                          "`gen`/`rowIter`; the bridge to the pebble game "
+                          "has two links, (1) game -> recursion (Knill "
+                          "1995 Thm 2.1, checked here only on a grid by "
+                          "knill_recursion_agrees_with_game / "
+                          "knillA_agrees_with_F, where `F` is a lookup "
+                          "into a fixed 64x24 table and hence bounded by "
+                          "construction) and (2) recursion -> generator.  "
+                          "Link (2) is proved here in FULL GENERALITY: "
+                          "`solves_unique` shows any two solutions agree "
+                          "on the whole reach range (strong induction on "
+                          "n; a split n = k+l+2 refers back only to "
+                          "l+1 <= n-1), and `solves_eq_gen` identifies "
+                          "every solution with the generated row.  Kernel "
+                          "axioms only, no native_decide."),
+                "theorems": [
+                    "RevPebbling.KnillUnique.solves_unique",
+                    "RevPebbling.KnillUnique.gen_solvesKnill",
+                    "RevPebbling.KnillUnique.solves_eq_gen",
+                ],
+            },
             "difference_merge_property_general_core": {
                 "status": "proved_unbounded",
                 "scope": ("FULL GENERAL difference-merge property: exchange "
