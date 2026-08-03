@@ -168,6 +168,36 @@ def main() -> int:
                     "RevPebbling.GrowthBounds.growth_le_2_6106",
                 ],
             },
+            "lift_above_primitive": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, route beta (game-side).  Knill's "
+                          "Thm 2.1 has an asymmetric proof: the `<=` half "
+                          "(LAUR-95-2258 p.5) is a construction composing "
+                          "S1 (reach m with S), S3 (reach n-m from m with "
+                          "S-1) and reversed S2 (unreach m with S-1); the "
+                          "`>=` half decomposes an optimal solution "
+                          "matrix.  The construction needs a play on a "
+                          "short chain LIFTED onto the segment above an "
+                          "already-pebbled foundation.  "
+                          "PebblingFoundations has only the projection "
+                          "shiftAbove; this file supplies the lift and "
+                          "its execution law (above the cut a lifted play "
+                          "does what the original does) and foundation "
+                          "law (below the cut nothing changes, so the "
+                          "foundation survives).  The legality and peak "
+                          "laws, and hence the composition itself, are "
+                          "NOT yet proved."),
+                "theorems": [
+                    "RevPebbling.LiftAbove.drop_set_add",
+                    "RevPebbling.LiftAbove.nth_drop_add",
+                    "RevPebbling.LiftAbove.drop_toggle_add",
+                    "RevPebbling.LiftAbove.execB_liftAbove_drop",
+                    "RevPebbling.LiftAbove.take_set_add",
+                    "RevPebbling.LiftAbove.take_toggle_add",
+                    "RevPebbling.LiftAbove.execB_liftAbove_take",
+                    "RevPebbling.LiftAbove.liftAbove_append",
+                ],
+            },
             "knill_recursion_uniqueness": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED: Knill's recursion has a unique "

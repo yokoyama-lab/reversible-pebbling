@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "cffd81c51b49b48c790b781b611640ab82eb0c02a13d10e601b940e0ed476ed1",
+ "proof_bundle_sha256": "1000669fee6d1bed71a631e5e3673c5a33ed8f8ce31809e596cdced1b0534627",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -21,6 +21,7 @@
   "RevPebbling/GrowthRate.lean": "4e63c74cec74165853845a2afca25e6a076902aa79b1fcbf0c15f2337afd0988",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
   "RevPebbling/KnillUnique.lean": "6a468f83ef019ab1f00ac482d35e3421bee209da8a4f2dadf6a071f292eeec81",
+  "RevPebbling/LiftAbove.lean": "8249aa83d87b4a7d1b976ee632e65b68af0ef94c3991b9a6155cde0468c230d3",
   "RevPebbling/MinimaxDuality.lean": "567264becafd13f421732b2b0f77f35e6c3afd2fa44524c839f31a010791186e",
   "RevPebbling/PebblingFoundations.lean": "71b64a285bf9a297af9ee754d65d3a23150b9a96e83349337cd27d8a3f718fe1",
   "RevPebbling/PebblingGame.lean": "559aa960515425e4ab3e645d2ee9eeb4a720311f1fe9bf5841a77eb7737a18db",
@@ -29,7 +30,7 @@
   "RevPebbling/RLEPebble.lean": "95e07b7a9c8191baaf825012bf9646af6ae5326553e3b9580f3ef2292c773e99",
   "RevPebbling/RatioConvergence.lean": "7c445dee4137ce2dcb37d4e91640cf88c037f45638d769a92263bbe16fae5702",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
-  "RevPebbling.lean": "f574d2cc8839dfe34073900275d3be4dd11c9c74b7cd6389b470161b5380d162"
+  "RevPebbling.lean": "0931ced81bcba352f2750480e0849710de4ea7bac0fbcae202996ddbadb77759"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -70,6 +71,20 @@
     "RevPebbling.GrowthRate.growth_le_of_geometric",
     "RevPebbling.GrowthRate.tendsto_logSeq",
     "RevPebbling.GrowthBounds.growth_le_2_6106"
+   ]
+  },
+  "lift_above_primitive": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, route beta (game-side).  Knill's Thm 2.1 has an asymmetric proof: the `<=` half (LAUR-95-2258 p.5) is a construction composing S1 (reach m with S), S3 (reach n-m from m with S-1) and reversed S2 (unreach m with S-1); the `>=` half decomposes an optimal solution matrix.  The construction needs a play on a short chain LIFTED onto the segment above an already-pebbled foundation.  PebblingFoundations has only the projection shiftAbove; this file supplies the lift and its execution law (above the cut a lifted play does what the original does) and foundation law (below the cut nothing changes, so the foundation survives).  The legality and peak laws, and hence the composition itself, are NOT yet proved.",
+   "theorems": [
+    "RevPebbling.LiftAbove.drop_set_add",
+    "RevPebbling.LiftAbove.nth_drop_add",
+    "RevPebbling.LiftAbove.drop_toggle_add",
+    "RevPebbling.LiftAbove.execB_liftAbove_drop",
+    "RevPebbling.LiftAbove.take_set_add",
+    "RevPebbling.LiftAbove.take_toggle_add",
+    "RevPebbling.LiftAbove.execB_liftAbove_take",
+    "RevPebbling.LiftAbove.liftAbove_append"
    ]
   },
   "knill_recursion_uniqueness": {

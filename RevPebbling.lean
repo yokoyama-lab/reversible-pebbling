@@ -12,6 +12,7 @@ import RevPebbling.GrowthBounds
 import RevPebbling.GrowthRate
 import RevPebbling.IntRoot
 import RevPebbling.KnillUnique
+import RevPebbling.LiftAbove
 import RevPebbling.DifferenceMergeProperty
 import RevPebbling.MinimaxDuality
 import RevPebbling.PebblingFoundations
