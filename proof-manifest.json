@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "8bf8b5c692d812a1c71ecea56d7bfeced360f9f3f89f7380af47c39af362d498",
+ "proof_bundle_sha256": "100e7ad13312ecdff31ed8c919908f9ed55b99129cb2abfe52b39c9c5cacd83e",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -18,7 +18,7 @@
   "RevPebbling/DispersionBound4731.lean": "8ff9cc0a50182efe372d634acbf9f8881382ad6e6c638ff782fe7ddea068dfc4",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
   "RevPebbling/GrowthBounds.lean": "f901f4c2482433c8348b4b8308231f7f4f399a013c8c1e8e72a0af3bb7575cd7",
-  "RevPebbling/GrowthCertified.lean": "a6d9b99198d90dc13378f469dac726326dfb39aa3e878c81e859c6791e82aa42",
+  "RevPebbling/GrowthCertified.lean": "b70914c7d8ed0b84102e46cbc0789cf86e208780f2c5c8d3bb8022d31e1504c6",
   "RevPebbling/GrowthClosedForm.lean": "9e411c49017a9db6907865d7520fde394c34fe2ec99a20e57299ead54d5d62ee",
   "RevPebbling/GrowthRate.lean": "4e63c74cec74165853845a2afca25e6a076902aa79b1fcbf0c15f2337afd0988",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
@@ -30,7 +30,7 @@
   "RevPebbling/PebblingGame.lean": "559aa960515425e4ab3e645d2ee9eeb4a720311f1fe9bf5841a77eb7737a18db",
   "RevPebbling/PebblingTheory.lean": "1aef47f35d60bfb51f8237cc597cb13b163cf99e3acc4c830bb945d6afbe4718",
   "RevPebbling/Profile.lean": "d3950502767697dba1ecd7f3e81a19c5af2be2c3dfcc136ab3120d797914a996",
-  "RevPebbling/RLECertify.lean": "63c2ddb60c78978e53b8b55e22a0fa090675961c96df4c6e6761f0d8490aee13",
+  "RevPebbling/RLECertify.lean": "26d5d1d709bb9a5456528bca15f0d4e2bbec049c5f540a326d1aee861cff4729",
   "RevPebbling/RLEFix.lean": "76c9a296d8cd56c70b7c6c2ffa58407898aa6487f5818c4b4111d67fefa6a005",
   "RevPebbling/RLEPebble.lean": "95e07b7a9c8191baaf825012bf9646af6ae5326553e3b9580f3ef2292c773e99",
   "RevPebbling/RatioConvergence.lean": "7c445dee4137ce2dcb37d4e91640cf88c037f45638d769a92263bbe16fae5702",
@@ -81,7 +81,7 @@
   },
   "row_equation_certification": {
    "status": "general_framework_plus_certified_values",
-   "scope": "LINK (3), the gap between the general theorems (about `rowIter`) and the machine-checked values (produced by the imperative RLE generator).  Closed by certification rather than by verifying the generator.  (a) UNBOUNDED, kernel axioms only: `mergeFix_unique` -- the self-referential row equation cur = 1 :: smerge prev (cur + prev) has AT MOST ONE solution (entry i depends only on entries < i, so a prefix induction pins the list down; no sortedness, positivity or length hypothesis), hence `eq_rowIter_of_mergeFix`: any list satisfying it IS the generated row.  (b) UNBOUNDED, kernel axioms only: the run-length simulation lemmas `expand_rleMerge` (a whole run may be emitted at once, the only place sortedness is used), `expand_rleZipAdd` and `expand_normRuns`, giving the sound checker `mergeFix_of_checkFix`.  The evaluated definitions are tail-recursive via proved `csimp` lemmas (rows have millions of runs), so no unverified `implemented_by` is involved.  (c) BOUNDED: `chain_sound` + `native_decide` certify the generator's rows level by level, turning them into theorems about `rowIter`; f_10, f_20, f_30, f_40 and f_50 are now values of `fRow` (S = 50: 1.13 M runs, ~50 s), and `fRLE_eq_fRow_50` states the bridge explicitly.  `growth_le_2_6224` spends f_50 on the Fekete step, giving the first NUMERICAL bound on the growth rate of the row-based cost (the sharper 2.6106 still rests on f_60, which is not certified here).  The generator itself stays untrusted, as with an unverified solver's checked certificate.",
+   "scope": "LINK (3), the gap between the general theorems (about `rowIter`) and the machine-checked values (produced by the imperative RLE generator).  Closed by certification rather than by verifying the generator.  (a) UNBOUNDED, kernel axioms only: `mergeFix_unique` -- the self-referential row equation cur = 1 :: smerge prev (cur + prev) has AT MOST ONE solution (entry i depends only on entries < i, so a prefix induction pins the list down; no sortedness, positivity or length hypothesis), hence `eq_rowIter_of_mergeFix`: any list satisfying it IS the generated row.  (b) UNBOUNDED, kernel axioms only: the run-length simulation lemmas `expand_rleMerge` (a whole run may be emitted at once, the only place sortedness is used), `expand_rleZipAdd` and `expand_normRuns`, giving the sound checker `mergeFix_of_checkFix`.  The evaluated definitions are tail-recursive via proved `csimp` lemmas (rows have millions of runs), so no unverified `implemented_by` is involved.  (c) BOUNDED: `chain_sound` + `native_decide` certify the generator's rows level by level, turning them into theorems about `rowIter`; f_10 ... f_60 are now values of `fRow` (S = 50: 1.13 M runs, ~50 s; S = 60: 13.1 M runs, 8 min 26 s, 5.5 GB -- over the usual per-theorem budget on purpose, like RLEPebble.rle_f_60, because it carries the published bound), and `fRLE_eq_fRow_60` states the bridge explicitly.  `growth_le_2_6106` then puts THE PUBLISHED BOUND on the row-based cost: the numerical upper bound and the structure theorems finally speak about the same object.  The generator itself stays untrusted, as with an unverified solver's checked certificate.",
    "theorems": [
     "RevPebbling.MergeFixUnique.smerge_take_congr",
     "RevPebbling.MergeFixUnique.zipWith_add_take",
@@ -108,8 +108,11 @@
     "RevPebbling.RLECertify.fRow_30",
     "RevPebbling.RLECertify.fRow_40",
     "RevPebbling.RLECertify.fRow_50",
+    "RevPebbling.RLECertify.fRow_60",
     "RevPebbling.RLECertify.fRLE_eq_fRow_50",
-    "RevPebbling.GrowthCertified.growth_le_2_6224"
+    "RevPebbling.RLECertify.fRLE_eq_fRow_60",
+    "RevPebbling.GrowthCertified.growth_le_2_6224",
+    "RevPebbling.GrowthCertified.growth_le_2_6106"
    ]
   },
   "row_max_closed_form": {
@@ -176,7 +179,7 @@
   },
   "rle_pebble_values": {
    "status": "proved_bounded",
-   "scope": "run-length (RLE) row generator formalised; agreement with the Array DP on S <= 8; exact space-optimal costs f_S certified by native_decide up to S = 60 (f_50 = 328129268250340571627, f_60 = 3864271883997196147394945; the f_60 theorem costs 384 s / 3.2 GB and deliberately exceeds the usual per-theorem budget because it is the witness behind the published bound c <= 2.6106). The Fekete step to that bound is itself checked as an integer inequality (f_60 * 10000^59 <= 26106^59), tight at four decimals.  These values live on `fRLE`, the generator's own cost function; the stage row_equation_certification links them to `fRow` (and so to `rowIter`) up to S = 50 by checking the row equation instead of verifying the generator.",
+   "scope": "run-length (RLE) row generator formalised; agreement with the Array DP on S <= 8; exact space-optimal costs f_S certified by native_decide up to S = 60 (f_50 = 328129268250340571627, f_60 = 3864271883997196147394945; the f_60 theorem costs 384 s / 3.2 GB and deliberately exceeds the usual per-theorem budget because it is the witness behind the published bound c <= 2.6106). The Fekete step to that bound is itself checked as an integer inequality (f_60 * 10000^59 <= 26106^59), tight at four decimals.  These values live on `fRLE`, the generator's own cost function; the stage row_equation_certification links them to `fRow` (and so to `rowIter`) up to S = 60 by checking the row equation instead of verifying the generator, so the published bound c <= 2.6106 now also holds for the row-based cost.",
    "theorems": [
     "RevPebbling.RLEPebble.rle_agrees_with_dp",
     "RevPebbling.RLEPebble.rle_f_small",

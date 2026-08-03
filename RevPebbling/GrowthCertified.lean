@@ -41,4 +41,24 @@ theorem growth_le_2_6224 (hsub : Submult fRow) :
   rw [h]
   decide
 
+/-- **THE PUBLISHED BOUND `c ≤ 2.6106`, ON THE GENERAL SIDE.**
+
+`GrowthBounds.growth_le_2_6106` proves the same inequality for `fRLE`,
+the generator's own cost function.  With `fRow_60` — the generator's
+row 60 checked against the row equation and hence against `rowIter` —
+the bound becomes a statement about the cost function the artifact's
+general theorems are about, so the numerical upper bound and the
+structure theorems finally live on the same object.
+
+The Fekete step is the same integer inequality as before
+(`f_60 · 10000^59 ≤ 26106^59`, 261 digits, kernel `decide`, tight at
+four decimals); what is new is that `f_60` is now a value of `fRow`. -/
+theorem growth_le_2_6106 (hsub : Submult fRow) :
+    growth hsub pos_fRow ≤ 26106 / 10000 := by
+  refine growth_le_ratio hsub pos_fRow (m := 59) (p := 26106) (q := 10000)
+    (by omega) (by omega) ?_
+  have h : fRow (59 + 1) = 3864271883997196147394945 := fRow_60
+  rw [h]
+  exact RLEPebble.c_le_2_6106_witness
+
 end RevPebbling.GrowthCertified

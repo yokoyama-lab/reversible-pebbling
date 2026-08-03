@@ -59,8 +59,28 @@ theorem chain_sound (rows : Array RLERow) :
       rw [ih] at hfix
       exact eq_rowIter_of_mergeFix hfix
 
-/-- Σ value·length over runs. -/
-def runsSum (A : Runs) : Nat := (A.map (fun vc => vc.1 * vc.2)).sum
+/-- Σ value·length over runs, as a specification. -/
+def runsSumSpec : Runs → Nat
+  | [] => 0
+  | (v, c) :: A => v * c + runsSumSpec A
+
+/-- Σ value·length over runs, as it is evaluated.
+
+`List.sum` is `foldr`-based, and the compiler's specialisation of it
+escapes the tail-recursive `csimp` rewrite, so summing a 13 M-run row
+overflows the evaluator's stack; `foldl` is a loop. -/
+def runsSum (A : Runs) : Nat := A.foldl (fun acc vc => acc + vc.1 * vc.2) 0
+
+theorem runsSum_foldl : ∀ (A : Runs) (acc : Nat),
+    A.foldl (fun acc vc => acc + vc.1 * vc.2) acc = acc + runsSumSpec A
+  | [], acc => by simp [runsSumSpec]
+  | (v, c) :: A, acc => by
+      rw [List.foldl_cons, runsSum_foldl A (acc + v * c), runsSumSpec]
+      omega
+
+theorem runsSum_eq_spec (A : Runs) : runsSum A = runsSumSpec A := by
+  rw [runsSum, runsSum_foldl]
+  omega
 
 theorem sum_replicate (c v : Nat) : (List.replicate c v).sum = v * c := by
   induction c with
@@ -72,8 +92,8 @@ theorem sum_replicate (c v : Nat) : (List.replicate c v).sum = v * c := by
 theorem expand_sum : ∀ (A : Runs), (expand A).sum = runsSum A
   | [] => rfl
   | (v, c) :: A => by
-      rw [expand_cons, List.sum_append, sum_replicate, expand_sum A]
-      simp [runsSum]
+      rw [expand_cons, List.sum_append, sum_replicate, expand_sum A,
+        runsSum_eq_spec, runsSum_eq_spec, runsSumSpec]
 
 /-- **THE COST, READ OFF CERTIFIED RUNS.**  `f_S = 1 + 2·Σ δ` becomes a
 run-level computation on data the checker has already certified. -/
@@ -138,6 +158,22 @@ theorem fRow_50 : fRow 50 = 328129268250340571627 := by
     native_decide
   exact fRow_of_checkValue h
 
+set_option maxHeartbeats 0 in
+/-- **`f_60 = 3864271883997196147394945`, certified against `rowIter`.**
+
+This is the value behind the published bound `c ≤ 2.6106`, so this
+theorem is what moves that bound onto the general side (see
+`GrowthCertified.growth_le_2_6106`).
+
+Cost: 13.1 M runs, measured 8 min 26 s and 5.5 GB — deliberately over
+the usual per-theorem budget, for the same reason `RLEPebble.rle_f_60`
+is: it is the witness behind a published bound.  The checker runs on
+top of the generator, so this includes the generator's own 384 s. -/
+theorem fRow_60 : fRow 60 = 3864271883997196147394945 := by
+  have h : checkValue (rleRows 60) 58 3864271883997196147394945 = true := by
+    native_decide
+  exact fRow_of_checkValue h
+
 /-- **THE BRIDGE, level by level.**  The two cost functions of the
 artifact agree wherever the generator's output has been certified: the
 `native_decide` values of `RLEPebble` are values of `fRow`, hence
@@ -151,5 +187,8 @@ theorem fRLE_eq_fRow_30 : fRLE 30 = fRow 30 := by rw [rle_f_30, fRow_30]
 theorem fRLE_eq_fRow_40 : fRLE 40 = fRow 40 := by rw [rle_f_40, fRow_40]
 
 theorem fRLE_eq_fRow_50 : fRLE 50 = fRow 50 := by rw [rle_f_50, fRow_50]
+
+/-- At the level that carries the published bound. -/
+theorem fRLE_eq_fRow_60 : fRLE 60 = fRow 60 := by rw [rle_f_60, fRow_60]
 
 end RevPebbling.RLECertify

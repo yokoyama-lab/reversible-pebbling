@@ -194,16 +194,18 @@ def main() -> int:
                           "(c) BOUNDED: `chain_sound` + `native_decide` "
                           "certify the generator's rows level by level, "
                           "turning them into theorems about `rowIter`; "
-                          "f_10, f_20, f_30, f_40 and f_50 are now values "
-                          "of `fRow` (S = 50: 1.13 M runs, ~50 s), and "
-                          "`fRLE_eq_fRow_50` states the bridge explicitly.  "
-                          "`growth_le_2_6224` spends f_50 on the Fekete "
-                          "step, giving the first NUMERICAL bound on the "
-                          "growth rate of the row-based cost (the "
-                          "sharper 2.6106 still rests on f_60, which is "
-                          "not certified here).  The generator itself "
-                          "stays untrusted, as with an unverified solver's "
-                          "checked certificate."),
+                          "f_10 ... f_60 are now values of `fRow` "
+                          "(S = 50: 1.13 M runs, ~50 s; S = 60: 13.1 M "
+                          "runs, 8 min 26 s, 5.5 GB -- over the usual "
+                          "per-theorem budget on purpose, like "
+                          "RLEPebble.rle_f_60, because it carries the "
+                          "published bound), and `fRLE_eq_fRow_60` states "
+                          "the bridge explicitly.  `growth_le_2_6106` then "
+                          "puts THE PUBLISHED BOUND on the row-based cost: "
+                          "the numerical upper bound and the structure "
+                          "theorems finally speak about the same object.  "
+                          "The generator itself stays untrusted, as with "
+                          "an unverified solver's checked certificate."),
                 "theorems": [
                     "RevPebbling.MergeFixUnique.smerge_take_congr",
                     "RevPebbling.MergeFixUnique.zipWith_add_take",
@@ -230,8 +232,11 @@ def main() -> int:
                     "RevPebbling.RLECertify.fRow_30",
                     "RevPebbling.RLECertify.fRow_40",
                     "RevPebbling.RLECertify.fRow_50",
+                    "RevPebbling.RLECertify.fRow_60",
                     "RevPebbling.RLECertify.fRLE_eq_fRow_50",
+                    "RevPebbling.RLECertify.fRLE_eq_fRow_60",
                     "RevPebbling.GrowthCertified.growth_le_2_6224",
+                    "RevPebbling.GrowthCertified.growth_le_2_6106",
                 ],
             },
             "row_max_closed_form": {
@@ -387,9 +392,10 @@ def main() -> int:
                           "decimals.  These values live on `fRLE`, the "
                           "generator's own cost function; the stage "
                           "row_equation_certification links them to `fRow` "
-                          "(and so to `rowIter`) up to S = 50 by checking "
+                          "(and so to `rowIter`) up to S = 60 by checking "
                           "the row equation instead of verifying the "
-                          "generator."),
+                          "generator, so the published bound c <= 2.6106 "
+                          "now also holds for the row-based cost."),
                 "theorems": [
                     "RevPebbling.RLEPebble.rle_agrees_with_dp",
                     "RevPebbling.RLEPebble.rle_f_small",

@@ -144,10 +144,13 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   equation checkable on run-length data, and `mergeFix_of_checkFix` is
   the checker's soundness proof — all with kernel axioms only.  One
   `native_decide` per space level then turns the generator's rows into
-  theorems about `rowIter`, so `f_10` … `f_50` are now values of `fRow`,
-  and `GrowthCertified.growth_le_2_6224` is a numerical bound on the
-  growth rate of the row-based cost.  The generator stays untrusted,
-  like an unverified solver whose certificate is checked.
+  theorems about `rowIter`, so `f_10` … `f_60` are now values of `fRow`
+  — including the 13.1 M-run row 60 (8 min 26 s, 5.5 GB) behind the
+  published bound, so `GrowthCertified.growth_le_2_6106` states
+  **`c ≤ 2.6106` for the row-based cost**: the numerical upper bound and
+  the structure theorems finally speak about the same object.  The
+  generator stays untrusted, like an unverified solver whose certificate
+  is checked.
 * `RevPebbling/RowMax.lean` + `RevPebbling/GrowthClosedForm.lean` —
   the closed-form upper bound **`c ≤ 2√2`** (space-optimal time
   `O(n^{3/2+o(1)})`, improving Královič's published `O(n^{log₂ 3})`),
