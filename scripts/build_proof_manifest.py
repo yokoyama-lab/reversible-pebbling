@@ -168,6 +168,72 @@ def main() -> int:
                     "RevPebbling.GrowthBounds.growth_le_2_6106",
                 ],
             },
+            "row_equation_certification": {
+                "status": "general_framework_plus_certified_values",
+                "scope": ("LINK (3), the gap between the general theorems "
+                          "(about `rowIter`) and the machine-checked values "
+                          "(produced by the imperative RLE generator).  "
+                          "Closed by certification rather than by verifying "
+                          "the generator.  (a) UNBOUNDED, kernel axioms "
+                          "only: `mergeFix_unique` -- the self-referential "
+                          "row equation cur = 1 :: smerge prev (cur + prev) "
+                          "has AT MOST ONE solution (entry i depends only "
+                          "on entries < i, so a prefix induction pins the "
+                          "list down; no sortedness, positivity or length "
+                          "hypothesis), hence `eq_rowIter_of_mergeFix`: any "
+                          "list satisfying it IS the generated row.  "
+                          "(b) UNBOUNDED, kernel axioms only: the "
+                          "run-length simulation lemmas `expand_rleMerge` "
+                          "(a whole run may be emitted at once, the only "
+                          "place sortedness is used), `expand_rleZipAdd` "
+                          "and `expand_normRuns`, giving the sound checker "
+                          "`mergeFix_of_checkFix`.  The evaluated "
+                          "definitions are tail-recursive via proved "
+                          "`csimp` lemmas (rows have millions of runs), so "
+                          "no unverified `implemented_by` is involved.  "
+                          "(c) BOUNDED: `chain_sound` + `native_decide` "
+                          "certify the generator's rows level by level, "
+                          "turning them into theorems about `rowIter`; "
+                          "f_10, f_20, f_30, f_40 and f_50 are now values "
+                          "of `fRow` (S = 50: 1.13 M runs, ~50 s), and "
+                          "`fRLE_eq_fRow_50` states the bridge explicitly.  "
+                          "`growth_le_2_6224` spends f_50 on the Fekete "
+                          "step, giving the first NUMERICAL bound on the "
+                          "growth rate of the row-based cost (the "
+                          "sharper 2.6106 still rests on f_60, which is "
+                          "not certified here).  The generator itself "
+                          "stays untrusted, as with an unverified solver's "
+                          "checked certificate."),
+                "theorems": [
+                    "RevPebbling.MergeFixUnique.smerge_take_congr",
+                    "RevPebbling.MergeFixUnique.zipWith_add_take",
+                    "RevPebbling.MergeFixUnique.mergeFix_take",
+                    "RevPebbling.MergeFixUnique.mergeFix_unique",
+                    "RevPebbling.MergeFixUnique.mergeFix_length",
+                    "RevPebbling.MergeFixUnique.eq_rowIter_of_mergeFix",
+                    "RevPebbling.RLEFix.smerge_replicate_left",
+                    "RevPebbling.RLEFix.smerge_replicate_right",
+                    "RevPebbling.RLEFix.expand_rleMerge",
+                    "RevPebbling.RLEFix.expand_rleZipAdd",
+                    "RevPebbling.RLEFix.zipAdd_sorted",
+                    "RevPebbling.RLEFix.expand_normRuns",
+                    "RevPebbling.RLEFix.rleMerge_eq_fast",
+                    "RevPebbling.RLEFix.rleZipAdd_eq_fast",
+                    "RevPebbling.RLEFix.sorted_of_runsSortedB",
+                    "RevPebbling.RLEFix.mergeFix_of_checkFix",
+                    "RevPebbling.RLECertify.chain_sound",
+                    "RevPebbling.RLECertify.expand_sum",
+                    "RevPebbling.RLECertify.fRow_eq_of_chain",
+                    "RevPebbling.RLECertify.fRow_of_checkValue",
+                    "RevPebbling.RLECertify.fRow_10",
+                    "RevPebbling.RLECertify.fRow_20",
+                    "RevPebbling.RLECertify.fRow_30",
+                    "RevPebbling.RLECertify.fRow_40",
+                    "RevPebbling.RLECertify.fRow_50",
+                    "RevPebbling.RLECertify.fRLE_eq_fRow_50",
+                    "RevPebbling.GrowthCertified.growth_le_2_6224",
+                ],
+            },
             "row_max_closed_form": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED Nat side; the real-number conclusion "
@@ -318,7 +384,12 @@ def main() -> int:
                           "The Fekete step to that bound is itself checked "
                           "as an integer inequality "
                           "(f_60 * 10000^59 <= 26106^59), tight at four "
-                          "decimals."),
+                          "decimals.  These values live on `fRLE`, the "
+                          "generator's own cost function; the stage "
+                          "row_equation_certification links them to `fRow` "
+                          "(and so to `rowIter`) up to S = 50 by checking "
+                          "the row equation instead of verifying the "
+                          "generator."),
                 "theorems": [
                     "RevPebbling.RLEPebble.rle_agrees_with_dp",
                     "RevPebbling.RLEPebble.rle_f_small",

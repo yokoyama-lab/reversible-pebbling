@@ -132,6 +132,22 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   Pascal subsolution (Zone 0), and the transfer principle
   `subsolution_le` for the four-zone subsolution architecture toward
   `FrontExp(L) ≤ κ*`.
+* `RevPebbling/MergeFixUnique.lean` + `RevPebbling/RLEFix.lean` +
+  `RevPebbling/RLECertify.lean` — the link between the general theorems
+  (all about the generated row `rowIter`) and the machine-checked values
+  (all produced by the imperative run-length generator).  Instead of
+  verifying that generator, its output is **checked**: `mergeFix_unique`
+  proves that the self-referential row equation
+  `cur = 1 :: smerge prev (cur + prev)` has at most one solution, so any
+  row satisfying it *is* `rowIter`; the run-length simulation lemmas
+  (`expand_rleMerge`, `expand_rleZipAdd`, `expand_normRuns`) make the
+  equation checkable on run-length data, and `mergeFix_of_checkFix` is
+  the checker's soundness proof — all with kernel axioms only.  One
+  `native_decide` per space level then turns the generator's rows into
+  theorems about `rowIter`, so `f_10` … `f_50` are now values of `fRow`,
+  and `GrowthCertified.growth_le_2_6224` is a numerical bound on the
+  growth rate of the row-based cost.  The generator stays untrusted,
+  like an unverified solver whose certificate is checked.
 * `RevPebbling/RowMax.lean` + `RevPebbling/GrowthClosedForm.lean` —
   the closed-form upper bound **`c ≤ 2√2`** (space-optimal time
   `O(n^{3/2+o(1)})`, improving Královič's published `O(n^{log₂ 3})`),
