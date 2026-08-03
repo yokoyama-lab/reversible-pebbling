@@ -137,6 +137,36 @@ def main() -> int:
                     "RevPebbling.PebblingFoundations.reach_impossible_general",
                 ],
             },
+            "growth_rate_real": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, but RELATIVE TO submultiplicativity "
+                          "(`Submult`, Lemma 1 of the letter), which is "
+                          "carried as an explicit hypothesis and is not "
+                          "yet formalised in general.  Puts the growth "
+                          "rate c into Lean as a real number: a_k = log "
+                          "f_{k+1} is subadditive, so mathlib's Fekete "
+                          "lemma applies and c := exp(Subadditive.lim).  "
+                          "`growth_le` is the lim = inf phenomenon "
+                          "(c <= f_{m+1}^{1/m} for every finite m); "
+                          "`growth_le_ratio` turns an integer witness "
+                          "f_{m+1} * q^m <= p^m into c <= p/q, which is "
+                          "the form the artifact's witnesses take.  "
+                          "`growth_le_2_6106` instantiates this at "
+                          "m = 59 with rle_f_60 and c_le_2_6106_witness, "
+                          "so the published bound c <= 2.6106 is now a "
+                          "statement about a real number in Lean rather "
+                          "than a step taken on paper."),
+                "theorems": [
+                    "RevPebbling.GrowthRate.subadditive_logSeq",
+                    "RevPebbling.GrowthRate.bddBelow_logSeq",
+                    "RevPebbling.GrowthRate.growth_pos",
+                    "RevPebbling.GrowthRate.growth_le",
+                    "RevPebbling.GrowthRate.rpow_inv_le_of_le_pow",
+                    "RevPebbling.GrowthRate.growth_le_ratio",
+                    "RevPebbling.GrowthRate.tendsto_logSeq",
+                    "RevPebbling.GrowthBounds.growth_le_2_6106",
+                ],
+            },
             "knill_recursion_uniqueness": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED: Knill's recursion has a unique "

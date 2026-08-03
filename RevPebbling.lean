@@ -8,6 +8,8 @@ import RevPebbling.DispersionBound32b
 import RevPebbling.DispersionBound32c
 import RevPebbling.DispersionBound4731
 import RevPebbling.FrontDP
+import RevPebbling.GrowthBounds
+import RevPebbling.GrowthRate
 import RevPebbling.IntRoot
 import RevPebbling.KnillUnique
 import RevPebbling.DifferenceMergeProperty
