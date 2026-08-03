@@ -152,7 +152,8 @@ def main() -> int:
                           "f_{m+1} * q^m <= p^m into c <= p/q, which is "
                           "the form the artifact's witnesses take.  "
                           "`growth_le_2_6106` instantiates this at "
-                          "m = 59 with rle_f_60 and c_le_2_6106_witness, "
+                          "m = 59 with RLECertify.fRLE_60 and "
+                          "c_le_2_6106_witness, "
                           "so the published bound c <= 2.6106 is now a "
                           "statement about a real number in Lean rather "
                           "than a step taken on paper.  `growth_le_of_geometric` is the analytic half of the closed-form route: an envelope f_p <= C * B^p gives c <= B, the constant washing out in the Fekete quotient.  Its Nat-side input is supplied in full generality by the stage row_max_closed_form, which assembles c <= 2*sqrt 2."),
@@ -195,12 +196,17 @@ def main() -> int:
                           "certify the generator's rows level by level, "
                           "turning them into theorems about `rowIter`; "
                           "f_10 ... f_60 are now values of `fRow` "
-                          "(S = 50: 1.13 M runs, ~50 s; S = 60: 13.1 M "
-                          "runs, 8 min 26 s, 5.5 GB -- over the usual "
-                          "per-theorem budget on purpose, like "
-                          "RLEPebble.rle_f_60, because it carries the "
-                          "published bound), and `fRLE_eq_fRow_60` states "
-                          "the bridge explicitly.  `growth_le_2_6106` then "
+                          "(S = 50: 1.13 M runs, ~45 s; S = 60: 13.1 M "
+                          "runs, ~9 min, 5.6 GB -- over the usual "
+                          "per-theorem budget on purpose, as the old "
+                          "RLEPebble.rle_f_60 was, because it carries the "
+                          "published bound).  `checkValue` also reads off "
+                          "`fRLE` from the same run, so the generator's own "
+                          "values are DERIVED (`fRLE_10` ... `fRLE_60`) "
+                          "instead of recomputed: the 13.1 M-run row is "
+                          "generated once per build, not twice, and "
+                          "`fRLE_eq_fRow_60` states the bridge explicitly.  "
+                          "`growth_le_2_6106` then "
                           "puts THE PUBLISHED BOUND on the row-based cost: "
                           "the numerical upper bound and the structure "
                           "theorems finally speak about the same object.  "
@@ -233,6 +239,10 @@ def main() -> int:
                     "RevPebbling.RLECertify.fRow_40",
                     "RevPebbling.RLECertify.fRow_50",
                     "RevPebbling.RLECertify.fRow_60",
+                    "RevPebbling.RLECertify.rleF_of_checkValue",
+                    "RevPebbling.RLECertify.fRLE_10",
+                    "RevPebbling.RLECertify.fRLE_50",
+                    "RevPebbling.RLECertify.fRLE_60",
                     "RevPebbling.RLECertify.fRLE_eq_fRow_50",
                     "RevPebbling.RLECertify.fRLE_eq_fRow_60",
                     "RevPebbling.GrowthCertified.growth_le_2_6224",
@@ -379,13 +389,14 @@ def main() -> int:
                 "status": "proved_bounded",
                 "scope": ("run-length (RLE) row generator formalised; "
                           "agreement with the Array DP on S <= 8; exact "
-                          "space-optimal costs f_S certified by "
-                          "native_decide up to S = 60 (f_50 = "
-                          "328129268250340571627, f_60 = "
-                          "3864271883997196147394945; the f_60 theorem "
-                          "costs 384 s / 3.2 GB and deliberately exceeds "
-                          "the usual per-theorem budget because it is the "
-                          "witness behind the published bound c <= 2.6106). "
+                          "space-optimal costs f_S for S <= 7 "
+                          "(rle_f_small).  The large values f_10 ... f_60 "
+                          "are no longer computed here: they are certified "
+                          "against `rowIter` in the stage "
+                          "row_equation_certification, which reads BOTH "
+                          "cost functions off the same generator run, so "
+                          "the 13.1 M-run row 60 is generated once per "
+                          "build instead of twice. "
                           "The Fekete step to that bound is itself checked "
                           "as an integer inequality "
                           "(f_60 * 10000^59 <= 26106^59), tight at four "
@@ -399,12 +410,7 @@ def main() -> int:
                 "theorems": [
                     "RevPebbling.RLEPebble.rle_agrees_with_dp",
                     "RevPebbling.RLEPebble.rle_f_small",
-                    "RevPebbling.RLEPebble.rle_f_10",
-                    "RevPebbling.RLEPebble.rle_f_20",
-                    "RevPebbling.RLEPebble.rle_f_30",
-                    "RevPebbling.RLEPebble.rle_f_40",
-                    "RevPebbling.RLEPebble.rle_f_50",
-                    "RevPebbling.RLEPebble.rle_f_60",
+
                     "RevPebbling.RLEPebble.c_le_2_6106_witness",
                     "RevPebbling.RLEPebble.g_rle_small",
                     "RevPebbling.RLEPebble.f_logconcave_15_40",
