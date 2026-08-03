@@ -3,8 +3,7 @@
 Machine-checked (Lean 4) results on exact reversible pebbling of
 chains — the artifact accompanying the paper *"Exact Reversible
 Pebbling at Minimal Space: Machine-Checked Structure Theorems and the
-Growth Rate of Space-Optimal Simulation"* (submitted to IEICE Trans.
-Fundamentals A).
+Growth Rate of Space-Optimal Simulation"* (in preparation).
 
 To our knowledge this is the first machine-checked treatment of the
 reversible-pebbling literature (Knill 1995, Královič 2004,

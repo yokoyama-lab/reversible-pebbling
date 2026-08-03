@@ -29,10 +29,15 @@ Scope labels:
 * BOUNDED `rle_f_10` .. `rle_f_50`: large space-optimal costs via the
   RLE generator alone.  Included: f_10 = 10279, f_20 = 160198215,
   f_30 = 2156511484051 (< 1 s), f_40 = 27135538226996513 (≈ 4 s),
-  f_50 = 328129268250340571627 (≈ 32 s).  CUT: f_60 (13.1 M runs)
-  exceeds the 120 s/theorem budget (measured ≈ 360 s, peak 3.2 GB);
-  it was verified once in a full build
-  (f_60 = 3864271883997196147394945) but is not kept as a theorem.
+  f_50 = 328129268250340571627 (≈ 32 s), f_60 =
+  3864271883997196147394945 (13.1 M runs, measured 384 s, peak 3.2 GB).
+  `rle_f_60` deliberately exceeds the usual 120 s/theorem budget: it is
+  the witness behind the published bound c ≤ 2.6106, so keeping it as a
+  theorem is what makes that bound machine-checked rather than an
+  external computation.
+* BOUNDED `c_le_2_6106_witness`: the Fekete step turned into an integer
+  inequality, f_60 · 10000^59 ≤ 26106^59, i.e. f_60^{1/59} ≤ 2.6106.
+  The constant is tight at four decimals (2.6105 fails).
 -/
 
 namespace RevPebbling.RLEPebble
@@ -167,9 +172,32 @@ theorem rle_f_30 : fRLE 30 = 2156511484051 := by native_decide
 theorem rle_f_40 : fRLE 40 = 27135538226996513 := by native_decide
 
 /-- BOUNDED f_50 = 328129268250340571627 (≈ 1.13 M runs).  This is
-the largest instance under the 120 s/theorem budget; f_60 (≈ 360 s)
-is cut, see the file docstring. -/
+the largest instance under the 120 s/theorem budget. -/
 theorem rle_f_50 : fRLE 50 = 328129268250340571627 := by native_decide
+
+/-- BOUNDED f_60 = 3864271883997196147394945 (≈ 13.1 M runs, 384 s,
+peak 3.2 GB).  Over the usual per-theorem budget on purpose: this is
+the witness behind the published upper bound c ≤ 2.6106. -/
+theorem rle_f_60 : fRLE 60 = 3864271883997196147394945 := by native_decide
+
+/-- BOUNDED witness for the published bound **c ≤ 2.6106**.
+
+Theorem 2 gives c = inf_m f_{m+1}^{1/m}, so c ≤ f_60^{1/59}; taking
+59-th powers turns that into an inequality between integers, which is
+what is checked here.  Together with `rle_f_60` this makes the bound
+machine-checked end to end (previously the f_60 value came from an
+external computation).  The constant is tight at four decimals: the
+same inequality with 26105 in place of 26106 is false.
+
+Proved by `decide`, not `native_decide`: the kernel settles the
+261-digit comparison directly (GMP-backed `Nat`, 0.6 s).  `#print
+axioms` reports that this theorem depends on **no axioms at all** — in
+particular there is no compiler-trust assumption.  Only the `rle_f_60`
+value above rests on `native_decide`, so the split is clean: the
+computation is compiler-certified, the Fekete step is kernel-proved. -/
+theorem c_le_2_6106_witness :
+    3864271883997196147394945 * 10000 ^ 59 ≤ 26106 ^ 59 := by
+  decide
 
 
 -- ------------------------------------------------------------------

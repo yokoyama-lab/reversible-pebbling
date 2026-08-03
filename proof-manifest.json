@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "f6ba8bef767c7254546ec244b8a2fb50f7586cddca9ddb2f9663f5190aad5621",
+ "proof_bundle_sha256": "93e169d3d3fe668f237ac43ccee4c7a4a1b7e0bfcce731a06a946efc39043a86",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -23,7 +23,7 @@
   "RevPebbling/PebblingGame.lean": "559aa960515425e4ab3e645d2ee9eeb4a720311f1fe9bf5841a77eb7737a18db",
   "RevPebbling/PebblingTheory.lean": "1aef47f35d60bfb51f8237cc597cb13b163cf99e3acc4c830bb945d6afbe4718",
   "RevPebbling/Profile.lean": "d3950502767697dba1ecd7f3e81a19c5af2be2c3dfcc136ab3120d797914a996",
-  "RevPebbling/RLEPebble.lean": "9820aff494ef8cb964439461713b24b5d369502949239b386957f6fad383823a",
+  "RevPebbling/RLEPebble.lean": "95e07b7a9c8191baaf825012bf9646af6ae5326553e3b9580f3ef2292c773e99",
   "RevPebbling/RatioConvergence.lean": "7c445dee4137ce2dcb37d4e91640cf88c037f45638d769a92263bbe16fae5702",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling.lean": "2724c165cb04136dc1a7e7b6db5e00f28193f4fe8e3744b94ca86104034f606e"
@@ -71,7 +71,7 @@
   },
   "rle_pebble_values": {
    "status": "proved_bounded",
-   "scope": "run-length (RLE) row generator formalised; agreement with the Array DP on S <= 8; exact space-optimal costs f_S certified by native_decide up to S = 50 (f_50 = 328129268250340571627); f_60 verified once (516 s) but not kept as a theorem (build budget).",
+   "scope": "run-length (RLE) row generator formalised; agreement with the Array DP on S <= 8; exact space-optimal costs f_S certified by native_decide up to S = 60 (f_50 = 328129268250340571627, f_60 = 3864271883997196147394945; the f_60 theorem costs 384 s / 3.2 GB and deliberately exceeds the usual per-theorem budget because it is the witness behind the published bound c <= 2.6106). The Fekete step to that bound is itself checked as an integer inequality (f_60 * 10000^59 <= 26106^59), tight at four decimals.",
    "theorems": [
     "RevPebbling.RLEPebble.rle_agrees_with_dp",
     "RevPebbling.RLEPebble.rle_f_small",
@@ -80,6 +80,8 @@
     "RevPebbling.RLEPebble.rle_f_30",
     "RevPebbling.RLEPebble.rle_f_40",
     "RevPebbling.RLEPebble.rle_f_50",
+    "RevPebbling.RLEPebble.rle_f_60",
+    "RevPebbling.RLEPebble.c_le_2_6106_witness",
     "RevPebbling.RLEPebble.g_rle_small",
     "RevPebbling.RLEPebble.f_logconcave_15_40",
     "RevPebbling.RLEPebble.g_reduction_inequality_15_40"

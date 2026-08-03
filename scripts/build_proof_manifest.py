@@ -167,10 +167,16 @@ def main() -> int:
                 "scope": ("run-length (RLE) row generator formalised; "
                           "agreement with the Array DP on S <= 8; exact "
                           "space-optimal costs f_S certified by "
-                          "native_decide up to S = 50 (f_50 = "
-                          "328129268250340571627); f_60 verified once "
-                          "(516 s) but not kept as a theorem (build "
-                          "budget)."),
+                          "native_decide up to S = 60 (f_50 = "
+                          "328129268250340571627, f_60 = "
+                          "3864271883997196147394945; the f_60 theorem "
+                          "costs 384 s / 3.2 GB and deliberately exceeds "
+                          "the usual per-theorem budget because it is the "
+                          "witness behind the published bound c <= 2.6106). "
+                          "The Fekete step to that bound is itself checked "
+                          "as an integer inequality "
+                          "(f_60 * 10000^59 <= 26106^59), tight at four "
+                          "decimals."),
                 "theorems": [
                     "RevPebbling.RLEPebble.rle_agrees_with_dp",
                     "RevPebbling.RLEPebble.rle_f_small",
@@ -179,6 +185,8 @@ def main() -> int:
                     "RevPebbling.RLEPebble.rle_f_30",
                     "RevPebbling.RLEPebble.rle_f_40",
                     "RevPebbling.RLEPebble.rle_f_50",
+                    "RevPebbling.RLEPebble.rle_f_60",
+                    "RevPebbling.RLEPebble.c_le_2_6106_witness",
                     "RevPebbling.RLEPebble.g_rle_small",
                     "RevPebbling.RLEPebble.f_logconcave_15_40",
                     "RevPebbling.RLEPebble.g_reduction_inequality_15_40",
