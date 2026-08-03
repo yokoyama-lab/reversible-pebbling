@@ -129,6 +129,52 @@ theorem growth_le_ratio {f : ℕ → ℕ} (hsub : Submult f) (hpos : Pos f)
   refine le_trans (growth_le hsub hpos hm) ?_
   exact rpow_inv_le_of_le_pow (by positivity) (by positivity) (by omega) hpow
 
+/-- **From a geometric envelope to the rate.**  If `f_p ≤ C · B^p` for
+all `p`, then `c ≤ B`.
+
+Unlike `growth_le_ratio`, which uses one finite value, this consumes an
+asymptotic bound: the constant `C` is washed out because it enters the
+Fekete quotient divided by `k`.  This is the route by which a closed
+form for the row maxima gives a closed form for `c`. -/
+theorem growth_le_of_geometric {f : ℕ → ℕ} (hsub : Submult f) (hpos : Pos f)
+    {B C : ℝ} (hB : 0 < B) (hC : 0 < C)
+    (h : ∀ k : ℕ, (f (k + 1) : ℝ) ≤ C * B ^ (k + 1)) :
+    growth hsub hpos ≤ B := by
+  have key : ∀ k : ℕ, 1 ≤ k →
+      (subadditive_logSeq hsub hpos).lim
+        ≤ (Real.log C + Real.log B) / k + Real.log B := by
+    intro k hk
+    have hk0 : (k : ℝ) ≠ 0 := by
+      have : (0 : ℝ) < k := by exact_mod_cast hk
+      exact ne_of_gt this
+    have h1 :=
+      (subadditive_logSeq hsub hpos).lim_le_div (bddBelow_logSeq hpos)
+        (n := k) (by omega)
+    have hfk : (0 : ℝ) < f (k + 1) := by
+      exact_mod_cast Nat.lt_of_lt_of_le Nat.zero_lt_one (hpos (k + 1) (by omega))
+    have h2 : Real.log (f (k + 1)) ≤ Real.log C + (k + 1) * Real.log B := by
+      calc Real.log (f (k + 1))
+          ≤ Real.log (C * B ^ (k + 1)) := Real.log_le_log hfk (h k)
+        _ = Real.log C + (k + 1) * Real.log B := by
+            rw [Real.log_mul (ne_of_gt hC) (by positivity), Real.log_pow]
+            push_cast; ring
+    have h3 : logSeq f k / k ≤ (Real.log C + Real.log B) / k + Real.log B := by
+      simp only [logSeq]
+      rw [div_add' _ _ _ hk0, div_le_div_iff_of_pos_right
+        (by positivity : (0:ℝ) < (k:ℝ))]
+      nlinarith [h2]
+    exact le_trans h1 h3
+  have htend :
+      Tendsto (fun k : ℕ => (Real.log C + Real.log B) / k + Real.log B) atTop
+        (𝓝 (0 + Real.log B)) :=
+    (tendsto_const_div_atTop_nhds_zero_nat _).add tendsto_const_nhds
+  rw [zero_add] at htend
+  have hlim : (subadditive_logSeq hsub hpos).lim ≤ Real.log B :=
+    ge_of_tendsto htend (Filter.eventually_atTop.mpr ⟨1, key⟩)
+  calc growth hsub hpos = Real.exp ((subadditive_logSeq hsub hpos).lim) := rfl
+    _ ≤ Real.exp (Real.log B) := Real.exp_le_exp.mpr hlim
+    _ = B := Real.exp_log hB
+
 /-- **Convergence.**  `log f_{k+1} / k → log c`; equivalently
 `f_p^{1/(p-1)} → c`. -/
 theorem tendsto_logSeq {f : ℕ → ℕ} (hsub : Submult f) (hpos : Pos f) :

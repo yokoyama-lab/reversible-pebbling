@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "eb9ae4b452464514ee5fd43987e26bd7c85efdb571c358150ad9fd0a05ac1401",
+ "proof_bundle_sha256": "cffd81c51b49b48c790b781b611640ab82eb0c02a13d10e601b940e0ed476ed1",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -18,7 +18,7 @@
   "RevPebbling/DispersionBound4731.lean": "8ff9cc0a50182efe372d634acbf9f8881382ad6e6c638ff782fe7ddea068dfc4",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
   "RevPebbling/GrowthBounds.lean": "f901f4c2482433c8348b4b8308231f7f4f399a013c8c1e8e72a0af3bb7575cd7",
-  "RevPebbling/GrowthRate.lean": "311f48d931ad45e3d8d60652a6f180f8e12180ac7b6bcf15ea7003855ce7323d",
+  "RevPebbling/GrowthRate.lean": "4e63c74cec74165853845a2afca25e6a076902aa79b1fcbf0c15f2337afd0988",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
   "RevPebbling/KnillUnique.lean": "6a468f83ef019ab1f00ac482d35e3421bee209da8a4f2dadf6a071f292eeec81",
   "RevPebbling/MinimaxDuality.lean": "567264becafd13f421732b2b0f77f35e6c3afd2fa44524c839f31a010791186e",
@@ -59,7 +59,7 @@
   },
   "growth_rate_real": {
    "status": "proved_general",
-   "scope": "UNBOUNDED, but RELATIVE TO submultiplicativity (`Submult`, Lemma 1 of the letter), which is carried as an explicit hypothesis and is not yet formalised in general.  Puts the growth rate c into Lean as a real number: a_k = log f_{k+1} is subadditive, so mathlib's Fekete lemma applies and c := exp(Subadditive.lim).  `growth_le` is the lim = inf phenomenon (c <= f_{m+1}^{1/m} for every finite m); `growth_le_ratio` turns an integer witness f_{m+1} * q^m <= p^m into c <= p/q, which is the form the artifact's witnesses take.  `growth_le_2_6106` instantiates this at m = 59 with rle_f_60 and c_le_2_6106_witness, so the published bound c <= 2.6106 is now a statement about a real number in Lean rather than a step taken on paper.",
+   "scope": "UNBOUNDED, but RELATIVE TO submultiplicativity (`Submult`, Lemma 1 of the letter), which is carried as an explicit hypothesis and is not yet formalised in general.  Puts the growth rate c into Lean as a real number: a_k = log f_{k+1} is subadditive, so mathlib's Fekete lemma applies and c := exp(Subadditive.lim).  `growth_le` is the lim = inf phenomenon (c <= f_{m+1}^{1/m} for every finite m); `growth_le_ratio` turns an integer witness f_{m+1} * q^m <= p^m into c <= p/q, which is the form the artifact's witnesses take.  `growth_le_2_6106` instantiates this at m = 59 with rle_f_60 and c_le_2_6106_witness, so the published bound c <= 2.6106 is now a statement about a real number in Lean rather than a step taken on paper.  `growth_le_of_geometric` is the analytic half of the closed-form route: an envelope f_p <= C * B^p gives c <= B, the constant washing out in the Fekete quotient.  Its Nat-side input (M_S = sum of midpoints, f_S <= 2^S M_S) is not yet general, so c <= 2*sqrt 2 is not yet assembled.",
    "theorems": [
     "RevPebbling.GrowthRate.subadditive_logSeq",
     "RevPebbling.GrowthRate.bddBelow_logSeq",
@@ -67,6 +67,7 @@
     "RevPebbling.GrowthRate.growth_le",
     "RevPebbling.GrowthRate.rpow_inv_le_of_le_pow",
     "RevPebbling.GrowthRate.growth_le_ratio",
+    "RevPebbling.GrowthRate.growth_le_of_geometric",
     "RevPebbling.GrowthRate.tendsto_logSeq",
     "RevPebbling.GrowthBounds.growth_le_2_6106"
    ]

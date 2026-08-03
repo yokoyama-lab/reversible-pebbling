@@ -155,7 +155,7 @@ def main() -> int:
                           "m = 59 with rle_f_60 and c_le_2_6106_witness, "
                           "so the published bound c <= 2.6106 is now a "
                           "statement about a real number in Lean rather "
-                          "than a step taken on paper."),
+                          "than a step taken on paper.  `growth_le_of_geometric` is the analytic half of the closed-form route: an envelope f_p <= C * B^p gives c <= B, the constant washing out in the Fekete quotient.  Its Nat-side input (M_S = sum of midpoints, f_S <= 2^S M_S) is not yet general, so c <= 2*sqrt 2 is not yet assembled."),
                 "theorems": [
                     "RevPebbling.GrowthRate.subadditive_logSeq",
                     "RevPebbling.GrowthRate.bddBelow_logSeq",
@@ -163,6 +163,7 @@ def main() -> int:
                     "RevPebbling.GrowthRate.growth_le",
                     "RevPebbling.GrowthRate.rpow_inv_le_of_le_pow",
                     "RevPebbling.GrowthRate.growth_le_ratio",
+                    "RevPebbling.GrowthRate.growth_le_of_geometric",
                     "RevPebbling.GrowthRate.tendsto_logSeq",
                     "RevPebbling.GrowthBounds.growth_le_2_6106",
                 ],
