@@ -132,6 +132,19 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   Pascal subsolution (Zone 0), and the transfer principle
   `subsolution_le` for the four-zone subsolution architecture toward
   `FrontExp(L) ≤ κ*`.
+* `RevPebbling/RowMax.lean` + `RevPebbling/GrowthClosedForm.lean` —
+  the closed-form upper bound **`c ≤ 2√2`** (space-optimal time
+  `O(n^{3/2+o(1)})`, improving Královič's published `O(n^{log₂ 3})`),
+  now general in the space level.  `rowMax_succ` proves the
+  Merge-Lemma max decomposition `M_S = m_S + M_{S−1}` (previously a
+  bounded check for `S ≤ 8`), so the row maxima telescope into the sum
+  of the midpoint values; with the general midpoint bound
+  `m_S ≤ 2^{(S−2)/2}` and the trivial `f_S ≤ 2^S M_S` this gives a
+  geometric envelope of ratio `2√2`, which `growth_le_two_sqrt_two`
+  runs through `GrowthRate.growth_le_of_geometric`.  Unlike
+  `growth_le_2_6106` it consumes no computed value — kernel axioms
+  only, no `native_decide` — but like everything in that layer it is
+  stated relative to submultiplicativity.
 * `RevPebbling/ChordDeficit.lean` — the algebraic core of Zone I.  The
   dispersion exponent `f` is only *M*-semiconcave (`f'' > 0` for
   `q ≳ 0.5`), so Jensen runs the wrong way and the chord deficit

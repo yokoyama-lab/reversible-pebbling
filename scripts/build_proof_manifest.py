@@ -155,7 +155,7 @@ def main() -> int:
                           "m = 59 with rle_f_60 and c_le_2_6106_witness, "
                           "so the published bound c <= 2.6106 is now a "
                           "statement about a real number in Lean rather "
-                          "than a step taken on paper.  `growth_le_of_geometric` is the analytic half of the closed-form route: an envelope f_p <= C * B^p gives c <= B, the constant washing out in the Fekete quotient.  Its Nat-side input (M_S = sum of midpoints, f_S <= 2^S M_S) is not yet general, so c <= 2*sqrt 2 is not yet assembled."),
+                          "than a step taken on paper.  `growth_le_of_geometric` is the analytic half of the closed-form route: an envelope f_p <= C * B^p gives c <= B, the constant washing out in the Fekete quotient.  Its Nat-side input is supplied in full generality by the stage row_max_closed_form, which assembles c <= 2*sqrt 2."),
                 "theorems": [
                     "RevPebbling.GrowthRate.subadditive_logSeq",
                     "RevPebbling.GrowthRate.bddBelow_logSeq",
@@ -166,6 +166,60 @@ def main() -> int:
                     "RevPebbling.GrowthRate.growth_le_of_geometric",
                     "RevPebbling.GrowthRate.tendsto_logSeq",
                     "RevPebbling.GrowthBounds.growth_le_2_6106",
+                ],
+            },
+            "row_max_closed_form": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED Nat side; the real-number conclusion "
+                          "is RELATIVE TO submultiplicativity (`Submult`, "
+                          "as everywhere in Stage B2).  Closes the "
+                          "closed-form upper bound c <= 2*sqrt 2 of the "
+                          "letter (space-optimal time O(n^{3/2+o(1)}), "
+                          "improving Kralovic's published O(n^{log2 3})).  "
+                          "What was only a bounded check before "
+                          "(PebblingTheory.max_decomposition and the right "
+                          "half of c_eq_2d_sandwich, both S <= 8) is now "
+                          "general: `rowMax_succ` proves the Merge-Lemma "
+                          "max decomposition M_S = m_S + M_{S-1} (the "
+                          "maximum of the convolution term B_i = "
+                          "delta(i,S) + delta(i,S-1) is its last entry, "
+                          "and the previous row ends exactly at the index "
+                          "where the new row's midpoint sits), so the "
+                          "maxima telescope into the sum of the midpoint "
+                          "values.  Fed with the already-general midpoint "
+                          "bound m_S <= 2^{(S-2)/2} "
+                          "(CountRecursion.midpoint_bound_general) this "
+                          "gives `rowMax_envelope`, whose right-hand side "
+                          "is the exact value of sum_j 2^{floor(j/2)}; "
+                          "`fRow_le_two_pow_mul_rowMax` is the trivial "
+                          "f_S <= 2^S M_S (sum <= length * max), and "
+                          "`fRow_envelope` combines them into a geometric "
+                          "envelope of ratio 2*sqrt 2.  "
+                          "`growth_le_two_sqrt_two` runs it through "
+                          "GrowthRate.growth_le_of_geometric.  Unlike "
+                          "growth_le_2_6106 this consumes no computed "
+                          "value: kernel axioms only, no native_decide.  "
+                          "The cost function here is `fRow`, read off the "
+                          "generated row `rowIter`, so this bound lives on "
+                          "the same side of the artifact as the general "
+                          "structure theorems (fRLE, which carries the "
+                          "machine-checked f_60, is still unlinked)."),
+                "theorems": [
+                    "RevPebbling.RowMax.listMax_smerge",
+                    "RevPebbling.RowMax.listMax_eq_last",
+                    "RevPebbling.RowMax.listMax_zipWith_add",
+                    "RevPebbling.RowMax.sum_le_length_mul_listMax",
+                    "RevPebbling.RowMax.rowMax_pos",
+                    "RevPebbling.RowMax.rowMax_eq_getElem",
+                    "RevPebbling.RowMax.rowMax_succ",
+                    "RevPebbling.RowMax.midv_le",
+                    "RevPebbling.RowMax.rowMax_envelope",
+                    "RevPebbling.RowMax.fRow_pos",
+                    "RevPebbling.RowMax.fRow_le_two_pow_mul_rowMax",
+                    "RevPebbling.RowMax.fRow_envelope",
+                    "RevPebbling.GrowthClosedForm.two_pow_half_le_sqrt_two_pow",
+                    "RevPebbling.GrowthClosedForm.growth_le_two_sqrt_two",
+                    "RevPebbling.GrowthClosedForm.growth_le_2_8285",
                 ],
             },
             "lift_above_primitive": {

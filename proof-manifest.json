@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "8c7d7aca1b9626e69866c7abd116f46a851246c4c087c81604ad7307ee765855",
+ "proof_bundle_sha256": "d0cad1bf3a6f5e05f60bc5e0c201022525fcdf36831a873741d8cd3d442d0500",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -18,6 +18,7 @@
   "RevPebbling/DispersionBound4731.lean": "8ff9cc0a50182efe372d634acbf9f8881382ad6e6c638ff782fe7ddea068dfc4",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
   "RevPebbling/GrowthBounds.lean": "f901f4c2482433c8348b4b8308231f7f4f399a013c8c1e8e72a0af3bb7575cd7",
+  "RevPebbling/GrowthClosedForm.lean": "9e411c49017a9db6907865d7520fde394c34fe2ec99a20e57299ead54d5d62ee",
   "RevPebbling/GrowthRate.lean": "4e63c74cec74165853845a2afca25e6a076902aa79b1fcbf0c15f2337afd0988",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
   "RevPebbling/KnillUnique.lean": "6a468f83ef019ab1f00ac482d35e3421bee209da8a4f2dadf6a071f292eeec81",
@@ -29,8 +30,9 @@
   "RevPebbling/Profile.lean": "d3950502767697dba1ecd7f3e81a19c5af2be2c3dfcc136ab3120d797914a996",
   "RevPebbling/RLEPebble.lean": "95e07b7a9c8191baaf825012bf9646af6ae5326553e3b9580f3ef2292c773e99",
   "RevPebbling/RatioConvergence.lean": "7c445dee4137ce2dcb37d4e91640cf88c037f45638d769a92263bbe16fae5702",
+  "RevPebbling/RowMax.lean": "c94eb6e0fb81f47f81532ea697d7a137eff36ec8a78898966142a8f4d7d23d18",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
-  "RevPebbling.lean": "0931ced81bcba352f2750480e0849710de4ea7bac0fbcae202996ddbadb77759"
+  "RevPebbling.lean": "645dae4b5946d76ea6e1d3a40ea44ea515b39350de894809f6553a24284923f6"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -60,7 +62,7 @@
   },
   "growth_rate_real": {
    "status": "proved_general",
-   "scope": "UNBOUNDED, but RELATIVE TO submultiplicativity (`Submult`, Lemma 1 of the letter), which is carried as an explicit hypothesis and is not yet formalised in general.  Puts the growth rate c into Lean as a real number: a_k = log f_{k+1} is subadditive, so mathlib's Fekete lemma applies and c := exp(Subadditive.lim).  `growth_le` is the lim = inf phenomenon (c <= f_{m+1}^{1/m} for every finite m); `growth_le_ratio` turns an integer witness f_{m+1} * q^m <= p^m into c <= p/q, which is the form the artifact's witnesses take.  `growth_le_2_6106` instantiates this at m = 59 with rle_f_60 and c_le_2_6106_witness, so the published bound c <= 2.6106 is now a statement about a real number in Lean rather than a step taken on paper.  `growth_le_of_geometric` is the analytic half of the closed-form route: an envelope f_p <= C * B^p gives c <= B, the constant washing out in the Fekete quotient.  Its Nat-side input (M_S = sum of midpoints, f_S <= 2^S M_S) is not yet general, so c <= 2*sqrt 2 is not yet assembled.",
+   "scope": "UNBOUNDED, but RELATIVE TO submultiplicativity (`Submult`, Lemma 1 of the letter), which is carried as an explicit hypothesis and is not yet formalised in general.  Puts the growth rate c into Lean as a real number: a_k = log f_{k+1} is subadditive, so mathlib's Fekete lemma applies and c := exp(Subadditive.lim).  `growth_le` is the lim = inf phenomenon (c <= f_{m+1}^{1/m} for every finite m); `growth_le_ratio` turns an integer witness f_{m+1} * q^m <= p^m into c <= p/q, which is the form the artifact's witnesses take.  `growth_le_2_6106` instantiates this at m = 59 with rle_f_60 and c_le_2_6106_witness, so the published bound c <= 2.6106 is now a statement about a real number in Lean rather than a step taken on paper.  `growth_le_of_geometric` is the analytic half of the closed-form route: an envelope f_p <= C * B^p gives c <= B, the constant washing out in the Fekete quotient.  Its Nat-side input is supplied in full generality by the stage row_max_closed_form, which assembles c <= 2*sqrt 2.",
    "theorems": [
     "RevPebbling.GrowthRate.subadditive_logSeq",
     "RevPebbling.GrowthRate.bddBelow_logSeq",
@@ -71,6 +73,27 @@
     "RevPebbling.GrowthRate.growth_le_of_geometric",
     "RevPebbling.GrowthRate.tendsto_logSeq",
     "RevPebbling.GrowthBounds.growth_le_2_6106"
+   ]
+  },
+  "row_max_closed_form": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED Nat side; the real-number conclusion is RELATIVE TO submultiplicativity (`Submult`, as everywhere in Stage B2).  Closes the closed-form upper bound c <= 2*sqrt 2 of the letter (space-optimal time O(n^{3/2+o(1)}), improving Kralovic's published O(n^{log2 3})).  What was only a bounded check before (PebblingTheory.max_decomposition and the right half of c_eq_2d_sandwich, both S <= 8) is now general: `rowMax_succ` proves the Merge-Lemma max decomposition M_S = m_S + M_{S-1} (the maximum of the convolution term B_i = delta(i,S) + delta(i,S-1) is its last entry, and the previous row ends exactly at the index where the new row's midpoint sits), so the maxima telescope into the sum of the midpoint values.  Fed with the already-general midpoint bound m_S <= 2^{(S-2)/2} (CountRecursion.midpoint_bound_general) this gives `rowMax_envelope`, whose right-hand side is the exact value of sum_j 2^{floor(j/2)}; `fRow_le_two_pow_mul_rowMax` is the trivial f_S <= 2^S M_S (sum <= length * max), and `fRow_envelope` combines them into a geometric envelope of ratio 2*sqrt 2.  `growth_le_two_sqrt_two` runs it through GrowthRate.growth_le_of_geometric.  Unlike growth_le_2_6106 this consumes no computed value: kernel axioms only, no native_decide.  The cost function here is `fRow`, read off the generated row `rowIter`, so this bound lives on the same side of the artifact as the general structure theorems (fRLE, which carries the machine-checked f_60, is still unlinked).",
+   "theorems": [
+    "RevPebbling.RowMax.listMax_smerge",
+    "RevPebbling.RowMax.listMax_eq_last",
+    "RevPebbling.RowMax.listMax_zipWith_add",
+    "RevPebbling.RowMax.sum_le_length_mul_listMax",
+    "RevPebbling.RowMax.rowMax_pos",
+    "RevPebbling.RowMax.rowMax_eq_getElem",
+    "RevPebbling.RowMax.rowMax_succ",
+    "RevPebbling.RowMax.midv_le",
+    "RevPebbling.RowMax.rowMax_envelope",
+    "RevPebbling.RowMax.fRow_pos",
+    "RevPebbling.RowMax.fRow_le_two_pow_mul_rowMax",
+    "RevPebbling.RowMax.fRow_envelope",
+    "RevPebbling.GrowthClosedForm.two_pow_half_le_sqrt_two_pow",
+    "RevPebbling.GrowthClosedForm.growth_le_two_sqrt_two",
+    "RevPebbling.GrowthClosedForm.growth_le_2_8285"
    ]
   },
   "lift_above_primitive": {

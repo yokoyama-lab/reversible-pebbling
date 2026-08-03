@@ -9,6 +9,7 @@ import RevPebbling.DispersionBound32c
 import RevPebbling.DispersionBound4731
 import RevPebbling.FrontDP
 import RevPebbling.GrowthBounds
+import RevPebbling.GrowthClosedForm
 import RevPebbling.GrowthRate
 import RevPebbling.IntRoot
 import RevPebbling.KnillUnique
@@ -21,4 +22,5 @@ import RevPebbling.PebblingTheory
 import RevPebbling.Profile
 import RevPebbling.RLEPebble
 import RevPebbling.RatioConvergence
+import RevPebbling.RowMax
 import RevPebbling.SeamIdentity
