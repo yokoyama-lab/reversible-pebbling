@@ -37,27 +37,43 @@ def halve (A : Runs) : Runs := A.map (fun vc => (vc.1 / 2, vc.2))
 def rowRuns (rows : Array RLERow) (S : Nat) : Runs :=
   halve (rows[S - 1]!).toList
 
-/-- Check every level from the base row up to `S = k + 2`. -/
-def checkChainUpTo (rows : Array RLERow) : Nat → Bool
-  | 0 => rowRuns rows 2 == [(1, 1)]
+/-- Check every level from the base row up to `S = k + 2`, carrying
+the certified row forward so that each row is converted from the
+generator's `Array` exactly once. -/
+def checkChainOpt (rows : Array RLERow) : Nat → Option Runs
+  | 0 => if rowRuns rows 2 == [(1, 1)] then some (rowRuns rows 2) else none
   | k + 1 =>
-      checkChainUpTo rows k &&
-        checkFix (rowRuns rows (k + 2)) (rowRuns rows (k + 3))
+      match checkChainOpt rows k with
+      | none => none
+      | some prev =>
+          let cur := rowRuns rows (k + 3)
+          if checkFix prev cur then some cur else none
 
 /-- **SOUNDNESS OF THE CHAIN CHECK.**  If every level checks out, the
 generator's row *is* the generated row `rowIter k`. -/
 theorem chain_sound (rows : Array RLERow) :
-    ∀ k, checkChainUpTo rows k = true → expand (rowRuns rows (k + 2)) = rowIter k
-  | 0, h => by
-      rw [checkChainUpTo, beq_iff_eq] at h
-      rw [h]
-      rfl
-  | k + 1, h => by
-      rw [checkChainUpTo, Bool.and_eq_true] at h
-      have ih := chain_sound rows k h.1
-      have hfix := mergeFix_of_checkFix h.2
-      rw [ih] at hfix
-      exact eq_rowIter_of_mergeFix hfix
+    ∀ k r, checkChainOpt rows k = some r → expand r = rowIter k
+  | 0, r, h => by
+      rw [checkChainOpt] at h
+      by_cases hb : rowRuns rows 2 == [(1, 1)]
+      · rw [if_pos hb] at h
+        rw [← Option.some.inj h, beq_iff_eq.mp hb]
+        rfl
+      · rw [if_neg hb] at h; exact absurd h (by simp)
+  | k + 1, r, h => by
+      rw [checkChainOpt] at h
+      rcases hprev : checkChainOpt rows k with _ | prev
+      · rw [hprev] at h; exact absurd h (by simp)
+      · rw [hprev] at h
+        simp only at h
+        by_cases hc : checkFix prev (rowRuns rows (k + 3))
+        · rw [if_pos hc] at h
+          have ih := chain_sound rows k prev hprev
+          have hfix := mergeFix_of_checkFix hc
+          rw [ih] at hfix
+          rw [← Option.some.inj h]
+          exact eq_rowIter_of_mergeFix hfix
+        · rw [if_neg hc] at h; exact absurd h (by simp)
 
 /-- Σ value·length over runs, as a specification. -/
 def runsSumSpec : Runs → Nat
@@ -97,28 +113,34 @@ theorem expand_sum : ∀ (A : Runs), (expand A).sum = runsSum A
 
 /-- **THE COST, READ OFF CERTIFIED RUNS.**  `f_S = 1 + 2·Σ δ` becomes a
 run-level computation on data the checker has already certified. -/
-theorem fRow_eq_of_chain {rows : Array RLERow} {k : Nat}
-    (h : checkChainUpTo rows k = true) :
-    fRow (k + 2) = 1 + 2 * runsSum (rowRuns rows (k + 2)) := by
+theorem fRow_eq_of_chain {rows : Array RLERow} {k : Nat} {r : Runs}
+    (h : checkChainOpt rows k = some r) :
+    fRow (k + 2) = 1 + 2 * runsSum r := by
   show 1 + 2 * (rowIter k).sum = _
-  rw [← chain_sound rows k h, expand_sum]
+  rw [← chain_sound rows k r h, expand_sum]
 
 /-- Check the chain *and* read off the cost in one pass, so that one
 `native_decide` (hence one run of the generator) settles a value. -/
 def checkValue (rows : Array RLERow) (k target : Nat) : Bool :=
-  checkChainUpTo rows k && (1 + 2 * runsSum (rowRuns rows (k + 2)) == target)
+  match checkChainOpt rows k with
+  | none => false
+  | some r => 1 + 2 * runsSum r == target
 
 theorem fRow_of_checkValue {rows : Array RLERow} {k target : Nat}
     (h : checkValue rows k target = true) : fRow (k + 2) = target := by
-  rw [checkValue, Bool.and_eq_true, beq_iff_eq] at h
-  rw [fRow_eq_of_chain h.1, h.2]
+  rw [checkValue] at h
+  rcases hc : checkChainOpt rows k with _ | r
+  · rw [hc] at h; exact absurd h (by simp)
+  · rw [hc] at h
+    simp only [beq_iff_eq] at h
+    rw [fRow_eq_of_chain hc, h]
 
 -- ------------------------------------------------------------------
 -- Certified values: now statements about `fRow`, i.e. about `rowIter`
 -- ------------------------------------------------------------------
 
 /-- The base row and the first steps check out. -/
-example : checkChainUpTo (rleRows 6) 4 = true := by native_decide
+example : (checkChainOpt (rleRows 6) 4).isSome = true := by native_decide
 
 /-- Certified small values, matching `RLEPebble.rle_f_small` and
 `PebblingTheory.fval` — but now as statements about `fRow`. -/

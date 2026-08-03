@@ -486,11 +486,13 @@ theorem sorted_of_runsSortedB : ∀ {A : Runs}, runsSortedB A = true → RunsSor
 /-- **THE CHECKER.**  `checkFix prev cur` verifies, on run-length
 data, that `expand cur` satisfies the row equation over
 `expand prev`: it recomputes the right-hand side
-`1 :: smerge prev (cur + prev)` at run level and compares normal
-forms. -/
+`1 :: smerge prev (cur + prev)` at run level, normalises it, and
+compares with `cur` as data.  Only the recomputed side is normalised —
+soundness does not need `cur` to be normalised, and skipping it saves
+a full allocating pass over millions of runs. -/
 def checkFix (prev cur : Runs) : Bool :=
   runsSortedB prev && runsSortedB cur &&
-    (normRuns ((1, 1) :: rleMerge prev (rleZipAdd cur prev)) == normRuns cur)
+    (normRuns ((1, 1) :: rleMerge prev (rleZipAdd cur prev)) == cur)
 
 /-- **SOUNDNESS.**  A `true` answer proves the row equation. -/
 theorem mergeFix_of_checkFix {prev cur : Runs} (h : checkFix prev cur = true) :
@@ -501,11 +503,13 @@ theorem mergeFix_of_checkFix {prev cur : Runs} (h : checkFix prev cur = true) :
   have hc : RunsSorted cur := sorted_of_runsSortedB hsc
   -- the B-stream is sorted because both `cur` and `prev` are
   have hzs : RunsSorted (rleZipAdd cur prev) := zipAdd_sorted cur prev hc hp
-  -- the two normal forms are equal, so the two expansions are
+  -- the recomputed side normalises to `cur` itself, so the expansions agree
+  -- (only this direction is needed; `cur` is not normalised again, which
+  -- saves a full pass over millions of runs)
   have hnorm : expand ((1, 1) :: rleMerge prev (rleZipAdd cur prev))
       = expand cur := by
     rw [← expand_normRuns ((1, 1) :: rleMerge prev (rleZipAdd cur prev)),
-      ← expand_normRuns cur, beq_iff_eq.mp heq]
+      beq_iff_eq.mp heq]
   have key : expand ((1, 1) :: rleMerge prev (rleZipAdd cur prev))
       = 1 :: smerge (expand prev)
           (List.zipWith (· + ·) (expand cur) (expand prev)) := by
