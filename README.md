@@ -46,7 +46,7 @@ python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 272 theorems the
+the rest are general (unbounded) proofs.  Of the 323 theorems the
 manifest lists, **59 rest on a `native_decide` certificate and 8 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
@@ -54,7 +54,8 @@ per stage in `proof-manifest.json` (`native_decide_theorems`,
 `axiom_free_theorems`) — generated from `#print axioms`, so the prose
 in each stage's `scope` cannot drift away from what the kernel reports.
 
-A full build takes about nine minutes, nearly all of it the
+A full build takes about nine minutes (24 stages, 323 theorems),
+nearly all of it the
 certification of row 60 (13.1 M runs, ~5.6 GB), which carries the
 published bound `c ≤ 2.6106`.  `.github/workflows/build.yml` runs the
 same thing on a clean machine — build, re-audit, and check that the
@@ -145,6 +146,33 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   Pascal subsolution (Zone 0), and the transfer principle
   `subsolution_le` for the four-zone subsolution architecture toward
   `FrontExp(L) ≤ κ*`.
+* `RevPebbling/GameReach.lean` + `RevPebbling/GameKnill.lean` +
+  `RevPebbling/GameCost.lean` + `RevPebbling/GameEnvelope.lean` — the
+  pebble game's own cost.  `ReachIn n p t` says a chain of `n` cells can
+  be cleanly pebbled with peak `p` in `t` moves by a schedule staying
+  inside the chain; `reach_compose` proves the `≤` half of Knill's
+  Theorem 2.1 at the level of plays (reach the cut, stand on it and
+  play a *lifted* schedule, then retreat by running a schedule
+  *backwards*), and `reachIn_Fpre` runs that along the recursion, so the
+  cost this artifact computes from `rowIter` is **attained by an
+  explicit legal schedule**.  `gameF n S = sInf {t | ReachIn n S t}`
+  makes the optimum a function, and `gameF_envelope` bounds it by
+  `2^{S+1}·2^{⌊S/2⌋} ≤ 4√2·n^{3/2}` — an inequality between two concrete
+  naturals, so unlike every statement about the real number `c` it needs
+  neither submultiplicativity nor the `≥` half of Theorem 2.1 (the
+  latter is named `GameGap.GameOptimal`).  `ReachLimit` states Knill's
+  Theorem 2.3 as an iff about playability and generalises the corner
+  forcing; `CutAccounting` supplies the time accounting of a cut.
+* `RevPebbling/Sandwich.lean` + `RevPebbling/TwoD.lean` +
+  `RevPebbling/GrowthLower.lean` + `RevPebbling/DispersionGrowth.lean` +
+  `RevPebbling/Dispersion4731Growth.lean` — the growth rate from both
+  sides.  The sandwich `2^{S-1} m_S ≤ f_S ≤ 2^S M_S ≤ 2^S S m_S` (with
+  midpoint monotonicity `m_{S-1} ≤ m_S`) gives `c = 2d`
+  (`tendsto_rowMax_root : M_S^{1/(S-1)} → c/2`), and
+  `growth_ge_of_geometric` — the direction `GrowthRate` was missing —
+  turns geometric lower envelopes into lower bounds on `c`, so the
+  dispersion certificates finally speak about the same real number as
+  the upper bounds: **`2.51706472 ≤ c ≤ 2.6106`**.
 * `RevPebbling/MergeFixUnique.lean` + `RevPebbling/RLEFix.lean` +
   `RevPebbling/RLECertify.lean` — the link between the general theorems
   (all about the generated row `rowIter`) and the machine-checked values

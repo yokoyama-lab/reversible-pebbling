@@ -516,7 +516,22 @@ def main() -> int:
                           "(no play is shorter) is the remaining half of "
                           "link (1); with it gameF and fRow coincide and "
                           "the letter's `Submult` becomes provable by "
-                          "block simulation.  `ReachLimit` adds the reach "
+                          "block simulation.  `GameEnvelope.gameF_envelope` "
+                          "spends the achievability immediately: composed "
+                          "with RowMax.fRow_envelope it bounds the GAME's "
+                          "own optimum by 2^{S+1}*2^{floor(S/2)} <= "
+                          "4*sqrt(2)*n^{3/2} at n = 2^{S-1} -- an "
+                          "inequality between two concrete naturals, so "
+                          "unlike every statement about the real number c "
+                          "it needs neither `Submult` nor `GameOptimal`.  "
+                          "`CutAccounting` supplies the time side of the "
+                          "missing half: `keepBelow`/`shiftAbove` filter "
+                          "on complementary predicates and the "
+                          "re-indexing is a `map`, so a cut at a cell and "
+                          "a time partitions a play's moves exactly "
+                          "(`length_cut`, `length_cut3`) -- Knill's "
+                          "T(S) = T(S1)+T(S2)+T(S3), which the paper "
+                          "writes as obvious.  `ReachLimit` adds the reach "
                           "characterisation as an iff in the game's own "
                           "language ((exists t, ReachIn n S t) <-> "
                           "n <= 2^{S-1}, from reach_two_pow / "
@@ -539,6 +554,10 @@ def main() -> int:
                     "RevPebbling.ReachLimit.reachIn_iff",
                     "RevPebbling.ReachLimit.corner_split_forced",
                     "RevPebbling.GameGap.gameF_eq_fRow",
+                    "RevPebbling.GameEnvelope.gameF_envelope",
+                    "RevPebbling.GameEnvelope.reachIn_envelope",
+                    "RevPebbling.CutAccounting.length_cut",
+                    "RevPebbling.CutAccounting.length_cut3",
                 ],
             },
             "game_reach_composition": {

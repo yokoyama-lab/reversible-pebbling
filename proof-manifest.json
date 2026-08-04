@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "587b54ae939898200b58d60fcd904f2947f6f943c606e87b1872ce656c3cd0a3",
+ "proof_bundle_sha256": "efc82c965222f2f2ff58d912446eb489395651cb7d604b62292cb2a016e06f66",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -10,6 +10,7 @@
   "RevPebbling/CompositionAnchor.lean": "040c9eeff6088e4822c17045f7047d8e00e538b240f0344ff651ef13802fcbf9",
   "RevPebbling/CountRecursion.lean": "a55f80b113f1bf74166c21ad086f217fcd4786de5ee99c7d46eaeeb0539178ef",
   "RevPebbling/CrossingConcentration.lean": "f13df2ffc6c6f79234793874a3f4d527b75d5144c2e95562d85e557c9ab3c539",
+  "RevPebbling/CutAccounting.lean": "9b7c802614b3b981576302ff09a1f75a4249534dafca1d028d42ede9c63973f3",
   "RevPebbling/DifferenceMergeProperty.lean": "bc65c46cf8135e9fd1898e6176874eaabf0ecbf47720450dbff5aba00a4b4878",
   "RevPebbling/Dispersion4731Growth.lean": "71906524bafa2c065dd281583698a7941f50d55b1527b100bd36933f66054ce6",
   "RevPebbling/DispersionBound.lean": "12244572e35198d5d550403f2cb5664e9698c3cb0ed43c924887ca15ecdb4c89",
@@ -21,6 +22,7 @@
   "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
   "RevPebbling/GameCost.lean": "eb1a6bcd4650705b909551566c3baab5396efaf38ce3c860be81baa87edd962b",
+  "RevPebbling/GameEnvelope.lean": "45092f5cffe48848c9f225c017b071bd14e959acb0f841f3d15c0ce782a6f003",
   "RevPebbling/GameGap.lean": "faa33e7d42fe363b66193cd916b3d18c0e4d2e79dac07b5af3b4b797e7c5beff",
   "RevPebbling/GameKnill.lean": "980f63584bf06623b3a113321c59588d54d7d79e77d6e033bb76567ccf3da7f5",
   "RevPebbling/GameReach.lean": "cdc981f364617777dd1ebe8555dfdb7643fa0972e6297a994ec7dbeeb761afd9",
@@ -48,7 +50,7 @@
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
-  "RevPebbling.lean": "494d592303303f93c0aa9872e59970aba02860669b9a0e56d7107de9c827fbb8"
+  "RevPebbling.lean": "2a0dfc19945336ca74ddb6e290cc772534b392431716050ab60bfb7a45544f28"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -252,7 +254,7 @@
   },
   "game_cost_achievability": {
    "status": "proved_general",
-   "scope": "UNBOUNDED, kernel axioms only.  LINK (1) in numerical form: the cost the artifact computes from `rowIter` is achieved by an actual play.  `reachIn_Fpre` runs Knill's construction (game_reach_composition) along the recursion -- the attaining split of `gen_satisfies_knill` supplies the three sub-plays, one at the same space level on a shorter chain and two at one pebble less -- and concludes that for every space level S = s+2 and every chain length n up to the reach limit 2^{S-1} there is a legal play of length exactly Fpre (rowIter s) n.  `GameCost.gameF n S = sInf {t | ReachIn n S t}` makes the game optimum a total function and `gameF_le_fRow` reads the above as gameF (2^{S-1}) S <= f_S.  The converse (no play is shorter) is the remaining half of link (1); with it gameF and fRow coincide and the letter's `Submult` becomes provable by block simulation.  `ReachLimit` adds the reach characterisation as an iff in the game's own language ((exists t, ReachIn n S t) <-> n <= 2^{S-1}, from reach_two_pow / reach_impossible_general / reachIn_Fpre) and with it the CORNER FORCING in general (`corner_split_forced`, checked on 3 <= p <= 7 in PebblingTheory): at the reach limit both children are playable only for the midpoint split, so the recursion has no choice of cut there.",
+   "scope": "UNBOUNDED, kernel axioms only.  LINK (1) in numerical form: the cost the artifact computes from `rowIter` is achieved by an actual play.  `reachIn_Fpre` runs Knill's construction (game_reach_composition) along the recursion -- the attaining split of `gen_satisfies_knill` supplies the three sub-plays, one at the same space level on a shorter chain and two at one pebble less -- and concludes that for every space level S = s+2 and every chain length n up to the reach limit 2^{S-1} there is a legal play of length exactly Fpre (rowIter s) n.  `GameCost.gameF n S = sInf {t | ReachIn n S t}` makes the game optimum a total function and `gameF_le_fRow` reads the above as gameF (2^{S-1}) S <= f_S.  The converse (no play is shorter) is the remaining half of link (1); with it gameF and fRow coincide and the letter's `Submult` becomes provable by block simulation.  `GameEnvelope.gameF_envelope` spends the achievability immediately: composed with RowMax.fRow_envelope it bounds the GAME's own optimum by 2^{S+1}*2^{floor(S/2)} <= 4*sqrt(2)*n^{3/2} at n = 2^{S-1} -- an inequality between two concrete naturals, so unlike every statement about the real number c it needs neither `Submult` nor `GameOptimal`.  `CutAccounting` supplies the time side of the missing half: `keepBelow`/`shiftAbove` filter on complementary predicates and the re-indexing is a `map`, so a cut at a cell and a time partitions a play's moves exactly (`length_cut`, `length_cut3`) -- Knill's T(S) = T(S1)+T(S2)+T(S3), which the paper writes as obvious.  `ReachLimit` adds the reach characterisation as an iff in the game's own language ((exists t, ReachIn n S t) <-> n <= 2^{S-1}, from reach_two_pow / reach_impossible_general / reachIn_Fpre) and with it the CORNER FORCING in general (`corner_split_forced`, checked on 3 <= p <= 7 in PebblingTheory): at the reach limit both children are playable only for the midpoint split, so the recursion has no choice of cut there.",
    "theorems": [
     "RevPebbling.GameKnill.reachIn_one",
     "RevPebbling.GameKnill.reachIn_Fpre",
@@ -264,7 +266,11 @@
     "RevPebbling.ReachLimit.le_two_pow_of_reachIn",
     "RevPebbling.ReachLimit.reachIn_iff",
     "RevPebbling.ReachLimit.corner_split_forced",
-    "RevPebbling.GameGap.gameF_eq_fRow"
+    "RevPebbling.GameGap.gameF_eq_fRow",
+    "RevPebbling.GameEnvelope.gameF_envelope",
+    "RevPebbling.GameEnvelope.reachIn_envelope",
+    "RevPebbling.CutAccounting.length_cut",
+    "RevPebbling.CutAccounting.length_cut3"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": []
