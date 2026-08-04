@@ -16,6 +16,7 @@ import RevPebbling.DispersionBound4731
 import RevPebbling.DispersionGrowth
 import RevPebbling.DoublingLower
 import RevPebbling.FrontDP
+import RevPebbling.GameCompleteCost
 import RevPebbling.GameCost
 import RevPebbling.GameDecomposition
 import RevPebbling.GameEnvelope
