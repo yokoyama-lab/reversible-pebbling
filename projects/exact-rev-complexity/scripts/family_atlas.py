@@ -24,6 +24,7 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import csv
 import json
 import sys
@@ -172,6 +173,36 @@ def cmd_build(only: str | None) -> int:
 def read_rows() -> list[dict]:
     with CSV_PATH.open(encoding="utf-8", newline="") as fh:
         return list(csv.DictReader(fh))
+
+
+def placement_profile(
+    family: str, params: tuple[int, ...], p: int
+) -> tuple[collections.Counter[int], int, int]:
+    """証書から「各頂点が何回置かれたか」の分布を数える。
+
+    戻り値 `(分布, N, M*)`。分布は {置いた回数: その回数だけ置かれた頂点の個数}、
+    $N$ は祖先に制限したあとのペブル可能な頂点数、$M^*$ は台帳の値。
+
+    **留保**: $A$（置いた回数の総数）は $M^*$ から一意に決まる（$A=(M^*+1)/2$）が、
+    **分布はスケジュールに依存する**。ここが数えるのは
+    `exp01b_engine.schedule` が BFS の距離表から復元した正準な 1 本であり、
+    全ての最適スケジュールについての主張には使えない。
+    """
+    key = ":".join(map(str, params))
+    for row in read_rows():
+        if row["family"] == family and row["params"] == key and row["p"] == str(p):
+            if row["status"] != "exhaustive":
+                raise KeyError(f"{family}({key}) p={p} は {row['status']}")
+            certs = json.loads((CERT_DIR / row["cert"]).read_text(encoding="utf-8"))
+            counts = collections.Counter(
+                v for kind, v in certs[str(p)] if kind == "put"
+            )
+            return (
+                collections.Counter(counts.values()),
+                int(row["pebbleable"]),
+                int(row["mstar"]),
+            )
+    raise KeyError(f"台帳に無い行: {family}({key}) p={p}")
 
 
 def cmd_verify() -> int:
