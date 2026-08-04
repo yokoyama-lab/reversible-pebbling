@@ -170,6 +170,37 @@ def test_pmin_formula_for_width_two_cylinder() -> None:
     assert lb >= 0
 
 
+def test_bitrev_pmin_respects_de_rezende_et_al_upper_bound() -> None:
+    """文献の上界と突き合わせる（KF-28。arXiv:2001.02481 Theorem 4.26 item 1）。
+
+    「$2n$ 頂点のビット反転置換グラフの**可逆**ペブリング価は高々 $2\\log n+2$」。
+    我々の `bitrev(k)` は $2\\cdot2^k$ 頂点なので上界は $2k+2$。
+    実測は $p_{\\min}=2k+1$ で、**上界の 1 つ下**である（矛盾せず、かつ厳密なぶん鋭い）。
+
+    ⚠️ この族が**可逆側で未研究だと書かないこと**。空間の上界と時空トレードオフは
+    既にある。空白は厳密値の側だけである。
+    """
+    import csv
+
+    from family_atlas import CSV_PATH
+
+    checked = 0
+    with CSV_PATH.open(encoding="utf-8", newline="") as fh:
+        for row in csv.DictReader(fh):
+            if row["family"] != "bitrev" or row["status"] != "exhaustive":
+                continue
+            if row["p"] != row["pmin"]:
+                continue
+            k = int(row["params"])
+            pmin = int(row["pmin"])
+            assert pmin <= 2 * k + 2, (
+                f"BR_{k}: p_min={pmin} が文献の上界 {2 * k + 2} を超えた（実装かモデルが違う）"
+            )
+            assert pmin == 2 * k + 1, f"BR_{k}: p_min={pmin} が 2k+1 でない"
+            checked += 1
+    assert checked >= 4, f"検査した k が {checked} 個しかない"
+
+
 def test_A_is_determined_by_mstar() -> None:
     """$A=(M^*+1)/2$（$M^*=2A-1$ の言い換え）。分布に依らず成り立つ健全性検査。"""
     for k, p, hs in ARITHMETIC + BROKEN:

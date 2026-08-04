@@ -360,9 +360,20 @@ Prop 16(1)(2)(3) も満たす（$h=4$ の 6 は下界 $h+2$ にタイト）。
 
 ## U7d — ビット反転の既知性（U7b の積み残し）
 
-**状態: todo**
+**状態: done**（2026-08-05）
 
-完了条件: Lengauer–Tarjan 1982（JACM 29(4):1087–1130）の本文を入手する。
+Lengauer–Tarjan 1982 の PDF は入手できなかったが、**可逆側の後続で決着した**（KF-28）。
+de Rezende–Meir–Nordström–Robere, arXiv:2001.02481 の Definition 4.23 が我々の `bitrev` と
+同じ構成を定義し、**Theorem 4.26 item 1 が可逆ペブリング価の上界 $2\log n+2$**、
+item 2 が可逆の時空トレードオフを与えている。
+
+我々の実測 $p_{\min}=2k+1$ は上界 $2k+2$ の 1 つ下で矛盾しない。
+`tests/test_families_atlas.py` に回帰として固定し、`scripts/families.py` の
+「可逆版の厳密値は無い」という docstring も直した。
+
+→ **「ビット反転の可逆版は空白」と書いてはいけない。空白は厳密値の側だけ。**
+
+旧・完了条件: Lengauer–Tarjan 1982（JACM 29(4):1087–1130）の本文を入手する。
 入手できない場合は、可逆側の後続（Chan 2013、Chan–Lauria–Nordström–Vinyals FOCS 2015、
 de Rezende ら CCC 2019、および KF-25 の論文）の本文でビット反転グラフが
 扱われていないかを確認する。**入手できなければ `blocked` にして、
