@@ -7,7 +7,10 @@ Checks, in order:
   1. no proof holes (sorry/admit/axiom outside comments) in any source;
   2. `lake build` succeeds;
   3. every theorem listed in a stage exists and depends on nothing
-     beyond propext / Classical.choice / Quot.sound (#print axioms);
+     beyond propext / Classical.choice / Quot.sound (#print axioms),
+     and each stage records which of its theorems rest on a
+     native_decide certificate and which need no axiom at all — so the
+     prose in `scope` cannot drift away from what the kernel reports;
   4. sources are hashed (sha256) into a pinned bundle.
 """
 
@@ -912,19 +915,51 @@ def main() -> int:
                              capture_output=True, text=True)
         if res.returncode != 0:
             raise SystemExit("axiom audit failed:\n" + res.stdout + res.stderr)
+        # `#print axioms` wraps long lists over several lines, so the
+        # output has to be parsed as a whole; a line-based match would
+        # silently skip exactly the theorems with the most axioms.
+        axioms = {
+            name: {a.strip() for a in body.replace("\n", " ").split(",")
+                   if a.strip()}
+            for name, body in re.findall(
+                r"'([^']+)' depends on axioms: \[(.*?)\]", res.stdout, re.S)
+        }
+        for name in re.findall(r"'([^']+)' does not depend on any axioms",
+                               res.stdout):
+            axioms[name] = set()
+        unseen = [t for t in thms if t not in axioms]
+        if unseen:
+            raise SystemExit("axiom audit incomplete for: "
+                             + ", ".join(unseen))
         bad = []
-        for line in res.stdout.splitlines():
-            m = re.match(r"'([^']+)' depends on axioms: \[([^\]]*)\]", line)
-            if m:
-                used = {a.strip() for a in m.group(2).split(",") if a.strip()}
-                extra = {a for a in used if not axiom_allowed(a)}
-                if extra:
-                    bad.append(f"{m.group(1)}: {extra}")
+        for name, used in axioms.items():
+            extra = {a for a in used if not axiom_allowed(a)}
+            if extra:
+                bad.append(f"{name}: {extra}")
         if bad:
             raise SystemExit("disallowed axioms: " + "; ".join(bad))
+
+        # Machine-generated per-stage breakdown: which theorems actually
+        # rest on a native_decide certificate, and which need no axiom at
+        # all.  Recording it here keeps the prose in `scope` from drifting
+        # away from what the kernel reports.
+        def rests_on_native(name: str) -> bool:
+            return any("._native.native_decide.ax" in a or a in NATIVE_OK
+                       for a in axioms[name])
+
+        for stage in proved_stages.values():
+            stage["native_decide_theorems"] = sorted(
+                t for t in stage["theorems"] if rests_on_native(t))
+            stage["axiom_free_theorems"] = sorted(
+                t for t in stage["theorems"] if not axioms[t])
+        n_native = sum(len(s["native_decide_theorems"])
+                       for s in proved_stages.values())
+        n_free = sum(len(s["axiom_free_theorems"])
+                     for s in proved_stages.values())
         print(f"axiom audit OK: {len(thms)} theorems "
               f"(kernel axioms {sorted(ALLOWED_AXIOMS)}; native_decide "
-              f"axioms permitted for bounded certificates)")
+              f"axioms permitted for bounded certificates); "
+              f"{n_native} rest on native_decide, {n_free} need no axiom")
     finally:
         tmp.unlink(missing_ok=True)
 
