@@ -17,6 +17,7 @@ import RevPebbling.FrontDP
 import RevPebbling.GameCost
 import RevPebbling.GameDecomposition
 import RevPebbling.GameEnvelope
+import RevPebbling.GameLinearLower
 import RevPebbling.GameGap
 import RevPebbling.GameKnill
 import RevPebbling.GameReach
