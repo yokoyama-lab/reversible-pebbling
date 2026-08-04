@@ -249,6 +249,45 @@ def main() -> int:
                     "RevPebbling.GrowthCertified.growth_le_2_6106",
                 ],
             },
+            "sandwich_general": {
+                "status": "proved_unbounded",
+                "scope": ("UNBOUNDED, kernel axioms only.  The two "
+                          "inequalities of the letter's closed-form "
+                          "Proposition (c = 2d) that were still bounded "
+                          "checks (PebblingTheory.c_eq_2d_sandwich, "
+                          "S <= 8).  `two_pow_mul_midv_le_fRow`: "
+                          "2^{S-1} m_S <= f_S -- the midpoint sits at "
+                          "index 2^{S-2} - 2 of a row of length "
+                          "2^{S-1} - 1, so sortedness puts 2^{S-2} + 1 "
+                          "entries at or above m_S.  "
+                          "`rowMax_le_mul_midv`: M_S <= S * m_S -- the "
+                          "maxima telescope into the sum of the midpoint "
+                          "values (rowMax_succ) and the midpoints "
+                          "increase.  The latter needs MIDPOINT "
+                          "MONOTONICITY `midv_le_succ` (m_{S-1} <= m_S), "
+                          "proved here in general from the merge split "
+                          "C_S(v) = 1 + C_{S-1}(v) + #{B <= v} together "
+                          "with B_i >= delta(i,S-1): the count at the new "
+                          "midpoint gives C_{S-1}(m_S) >= 2^{S-2} - 1, "
+                          "which is the position-to-value criterion.  "
+                          "With RowMax.fRow_le_two_pow_mul_rowMax "
+                          "(f_S <= 2^S M_S) the sandwich "
+                          "2^{S-1} m_S <= f_S <= 2^S M_S <= 2^S S m_S is "
+                          "complete in Lean; the remaining step to "
+                          "c = 2d itself is the real-analytic one (the "
+                          "root limits), which is not formalised."),
+                "theorems": [
+                    "RevPebbling.Sandwich.length_mul_le_sum",
+                    "RevPebbling.Sandwich.sum_drop_le",
+                    "RevPebbling.Sandwich.le_of_mem_drop",
+                    "RevPebbling.Sandwich.tail_mul_getElem_le_sum",
+                    "RevPebbling.Sandwich.two_pow_mul_midv_le_fRow",
+                    "RevPebbling.Sandwich.countLe_zipAdd_le",
+                    "RevPebbling.Sandwich.midv_le_succ",
+                    "RevPebbling.Sandwich.rowMax_le_succ_mul_midv",
+                    "RevPebbling.Sandwich.rowMax_le_mul_midv",
+                ],
+            },
             "row_max_closed_form": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED Nat side; the real-number conclusion "

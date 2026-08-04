@@ -27,4 +27,5 @@ import RevPebbling.RLEFix
 import RevPebbling.RLEPebble
 import RevPebbling.RatioConvergence
 import RevPebbling.RowMax
+import RevPebbling.Sandwich
 import RevPebbling.SeamIdentity
