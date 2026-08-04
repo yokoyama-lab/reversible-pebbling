@@ -302,9 +302,27 @@ $BR_k$ の数値は新規と書けない。Crossref は KF-19 の罠で空振り
 
 ## U7b — Lengauer–Tarjan 1982 を入手してビット反転の既知性を決着させる
 
-**状態: todo**
+**状態: done**（2026-08-05・当初の目的は未達、代わりに**もっと重要な訂正**が出た）
 
-完了条件: Lengauer–Tarjan, *Asymptotically tight bounds on time-space trade-offs in a
+Lengauer–Tarjan 1982 の PDF は**入手できていない**（ビット反転の既知性は依然未決）。
+代わりに **arXiv 全文検索 1 回**で直撃の後続文献が 2 本出て、**U7 の判定を 2 つ訂正した**。
+
+**KF-25（訂正）**: Komarath–Sarma–Sawlani, arXiv:1604.05510（COCOON 2015）が
+「根つき有向木の可逆ペブル数 = 台の無向木の edge rank coloring number + 1」を示している。
+一般 DAG では PSPACE 困難なのに**木では多項式時間で決まる**。
+→ **§3.6 の $k$ 分木 $p_{\min}$ 表は既知の多項式時間量の実例で、値は新規ではない。**
+
+**KF-26（訂正）**: 同論文は**歩数**も扱う（完全二分木 $n^{O(\log\log n)}$ 歩など）。
+→ 「木の手数は文献に無い」は誤り。正しくは
+**「漸近的な上界・トレードオフはあるが厳密値の表は無い」**。取り分は厳密値の側だけ。
+
+**KF-27（注意）**: Blocki–Holman–Lee, arXiv:2110.04191 が **parallel** reversible pebbling
+（1 段で複数手＝別ゲーム）で Argon2i-A/B・DRSample を解析。円筒の近傍にある。
+
+**方法の教訓**: 一次資料 2 本を精読しても**前方引用を辿らなければ空白判定は外れる**。
+決め手は Crossref でも S2 でもなく arXiv 全文検索だった。**検索先を 1 つで諦めない。**
+
+旧・完了条件: Lengauer–Tarjan, *Asymptotically tight bounds on time-space trade-offs in a
 pebble game*, JACM 29(4):1087–1130, 1982 の本文を入手し、
 (a) ビット反転グラフの定義が我々の `bitrev` と一致するか、
 (b) **可逆**ペブリングの手数について何か言っているか（言っていないはず。標準ペブリングの
@@ -313,6 +331,29 @@ pebble game*, JACM 29(4):1087–1130, 1982 の本文を入手し、
 併せて可逆側の後続（Chan 2013、Chan–Lauria–Nordström–Vinyals FOCS 2015、
 de Rezende ら CCC 2019）の**前方引用**を辿り、ビット反転の可逆ペブリング値が
 どこかで計算されていないかを見る。**アブストラクトだけで決めない**（`docs/00_overview.md` §2.2）。
+
+## U7c — KF-25/KF-26 の本文を読み、$k$ 分木の結果の位置づけを確定させる
+
+**状態: todo**
+
+完了条件: arXiv:1604.05510 の**本文 PDF** を読み、
+(a) edge rank coloring number + 1 の定義が我々の $p_{\min}$ と厳密に一致するか
+（KF-07 型の取り違えが無いか）を確認し、
+(b) 完全 $k$ 分木の edge ranking の値を文献の式で計算して**我々の表と突き合わせる**
+（一致すれば §3.6 の $p_{\min}$ 表は既知として降格、食い違えばどちらかにバグ）、
+(c) 歩数側で**厳密値**が与えられていないことを本文で確認する。
+
+これが済むまで **$k$ 分木の結果を成果として書かない**。
+
+## U7d — ビット反転の既知性（U7b の積み残し）
+
+**状態: todo**
+
+完了条件: Lengauer–Tarjan 1982（JACM 29(4):1087–1130）の本文を入手する。
+入手できない場合は、可逆側の後続（Chan 2013、Chan–Lauria–Nordström–Vinyals FOCS 2015、
+de Rezende ら CCC 2019、および KF-25 の論文）の本文でビット反転グラフが
+扱われていないかを確認する。**入手できなければ `blocked` にして、
+findings に「ビット反転の既知性は未決」と残したままにする**（新規と書かない）。
 
 ## U8 — 最大セルの最適性を CP-SAT で独立に確認する
 
