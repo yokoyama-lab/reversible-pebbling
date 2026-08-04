@@ -78,7 +78,8 @@
     "RevPebbling.PebblingFoundations.reach_impossible_general"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "growth_rate_real": {
    "status": "proved_general",
@@ -97,7 +98,18 @@
    "native_decide_theorems": [
     "RevPebbling.GrowthBounds.growth_le_2_6106"
    ],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {
+    "Submult": [
+     "RevPebbling.GrowthBounds.growth_le_2_6106",
+     "RevPebbling.GrowthRate.growth_le",
+     "RevPebbling.GrowthRate.growth_le_of_geometric",
+     "RevPebbling.GrowthRate.growth_le_ratio",
+     "RevPebbling.GrowthRate.growth_pos",
+     "RevPebbling.GrowthRate.subadditive_logSeq",
+     "RevPebbling.GrowthRate.tendsto_logSeq"
+    ]
+   }
   },
   "row_equation_certification": {
    "status": "general_framework_plus_certified_values",
@@ -153,7 +165,13 @@
     "RevPebbling.RLECertify.fRow_50",
     "RevPebbling.RLECertify.fRow_60"
    ],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {
+    "Submult": [
+     "RevPebbling.GrowthCertified.growth_le_2_6106",
+     "RevPebbling.GrowthCertified.growth_le_2_6224"
+    ]
+   }
   },
   "dispersion_on_growth": {
    "status": "proved_general",
@@ -168,7 +186,14 @@
     "RevPebbling.Dispersion4731Growth.growth_ge_2_51706472"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {
+    "Submult": [
+     "RevPebbling.Dispersion4731Growth.growth_ge_2_51706472",
+     "RevPebbling.DispersionGrowth.growth_ge_32_13",
+     "RevPebbling.DispersionGrowth.growth_ge_of_midv_geometric"
+    ]
+   }
   },
   "two_d_closed_form": {
    "status": "proved_general",
@@ -181,7 +206,13 @@
     "RevPebbling.TwoD.tendsto_rowMax_root"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {
+    "Submult": [
+     "RevPebbling.TwoD.tendsto_log_rowMax",
+     "RevPebbling.TwoD.tendsto_rowMax_root"
+    ]
+   }
   },
   "growth_lower_bound": {
    "status": "proved_general",
@@ -196,7 +227,13 @@
     "RevPebbling.GrowthLower.growth_ge_two"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {
+    "Submult": [
+     "RevPebbling.GrowthLower.growth_ge_of_geometric",
+     "RevPebbling.GrowthLower.growth_ge_two"
+    ]
+   }
   },
   "sandwich_general": {
    "status": "proved_unbounded",
@@ -213,7 +250,8 @@
     "RevPebbling.Sandwich.rowMax_le_mul_midv"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "row_max_closed_form": {
    "status": "proved_general",
@@ -236,7 +274,13 @@
     "RevPebbling.GrowthClosedForm.growth_le_2_8285"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {
+    "Submult": [
+     "RevPebbling.GrowthClosedForm.growth_le_2_8285",
+     "RevPebbling.GrowthClosedForm.growth_le_two_sqrt_two"
+    ]
+   }
   },
   "knill_observations_general": {
    "status": "proved_unbounded",
@@ -250,7 +294,8 @@
     "RevPebbling.KnillObs.fRow_corner_recurrence"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "game_cost_achievability": {
    "status": "proved_general",
@@ -273,7 +318,12 @@
     "RevPebbling.CutAccounting.length_cut3"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {
+    "GameOptimal": [
+     "RevPebbling.GameGap.gameF_eq_fRow"
+    ]
+   }
   },
   "game_reach_composition": {
    "status": "proved_general",
@@ -292,7 +342,8 @@
     "RevPebbling.GameReach.reach_two"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "lift_above_primitive": {
    "status": "proved_general",
@@ -311,7 +362,8 @@
     "RevPebbling.LiftAbove.maxOnes_liftAbove"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "knill_recursion_uniqueness": {
    "status": "proved_general",
@@ -322,7 +374,8 @@
     "RevPebbling.KnillUnique.solves_eq_gen"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "difference_merge_property_general_core": {
    "status": "proved_unbounded",
@@ -339,7 +392,8 @@
     "RevPebbling.DifferenceMergeProperty.gen_satisfies_knill"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "rle_pebble_values": {
    "status": "proved_bounded",
@@ -361,7 +415,8 @@
    ],
    "axiom_free_theorems": [
     "RevPebbling.RLEPebble.c_le_2_6106_witness"
-   ]
+   ],
+   "carried_hypotheses": {}
   },
   "count_recursion_general": {
    "status": "proved_unbounded",
@@ -386,7 +441,8 @@
     "RevPebbling.CountRecursion.count_recursion_minmax"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "composition_anchor": {
    "status": "proved_unbounded",
@@ -405,7 +461,8 @@
    "native_decide_theorems": [
     "RevPebbling.CompositionAnchor.midpoint_anchor_44"
    ],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "minimax_duality": {
    "status": "proved_unbounded",
@@ -424,7 +481,8 @@
    "native_decide_theorems": [],
    "axiom_free_theorems": [
     "RevPebbling.MinimaxDuality.cross_spec"
-   ]
+   ],
+   "carried_hypotheses": {}
   },
   "dispersion_bound": {
    "status": "proved_unbounded",
@@ -473,7 +531,8 @@
     "RevPebbling.DispersionBound32b.dispersion32b_admissible",
     "RevPebbling.DispersionBound32c.dispersion32c_admissible",
     "RevPebbling.DispersionBound4731.dispersion4731_admissible"
-   ]
+   ],
+   "carried_hypotheses": {}
   },
   "crossing_concentration": {
    "status": "proved_unbounded",
@@ -489,7 +548,8 @@
     "RevPebbling.CrossingConcentration.count_recursion_lower_via_cross"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "ratio_convergence_phase01": {
    "status": "proved_unbounded",
@@ -500,7 +560,8 @@
     "RevPebbling.RatioConvergence.ratio_cauchy_of_eventually_logconcave"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "pebbling_theory_verification": {
    "status": "general_closed_forms_plus_bounded_checks",
@@ -590,7 +651,8 @@
     "RevPebbling.PebblingTheory.tail_invariance_base",
     "RevPebbling.PebblingTheory.tail_invariance_step12"
    ],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "seam_identity_core": {
    "status": "proved_unbounded",
@@ -618,7 +680,8 @@
     "RevPebbling.Seam.supermult_closed"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {}
   },
   "front_dp_subsolution_framework": {
    "status": "proved_unbounded",
@@ -641,7 +704,14 @@
     "RevPebbling.Profile.profile_concave_rat"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": []
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {
+    "Superadd": [
+     "RevPebbling.Profile.profile_concave_rat",
+     "RevPebbling.Profile.subadditive_shifted",
+     "RevPebbling.Profile.tendsto_profile"
+    ]
+   }
   }
  }
 }

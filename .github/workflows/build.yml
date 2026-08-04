@@ -40,3 +40,6 @@ jobs:
 
       - name: The committed manifest must match the rebuilt one
         run: git diff --exit-code proof-manifest.json
+
+      - name: The documents must claim what the manifest records
+        run: python3 scripts/check_claims.py

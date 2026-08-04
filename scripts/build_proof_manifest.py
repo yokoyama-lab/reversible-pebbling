@@ -11,6 +11,9 @@ Checks, in order:
      and each stage records which of its theorems rest on a
      native_decide certificate and which need no axiom at all — so the
      prose in `scope` cannot drift away from what the kernel reports;
+  3b. each stage records which of its theorems carry an unproved
+     hypothesis (Submult / GameOptimal / Superadd), read off the
+     statements with #check — so "relative to X" cannot drift either;
   4. sources are hashed (sha256) into a pinned bundle.
 """
 
@@ -31,6 +34,11 @@ ALLOWED_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
 # discipline: general proofs where feasible, native_decide checks
 # elsewhere, recorded per stage)
 NATIVE_OK = ("Lean.ofReduceBool", "Lean.trustCompiler")
+# hypotheses this development carries rather than proves; a theorem is
+# "relative to" one exactly when its statement mentions it, which is
+# read off the statements (see the statement audit) instead of being
+# asserted in prose
+CARRIED_HYPOTHESES = ("Submult", "GameOptimal", "Superadd")
 
 
 def axiom_allowed(a: str) -> bool:
@@ -1222,6 +1230,51 @@ def main() -> int:
               f"(kernel axioms {sorted(ALLOWED_AXIOMS)}; native_decide "
               f"axioms permitted for bounded certificates); "
               f"{n_native} rest on native_decide, {n_free} need no axiom")
+    finally:
+        tmp.unlink(missing_ok=True)
+
+    # ---- which theorems carry which unproved hypothesis ---------------
+    # Read off the statements themselves rather than from the prose: a
+    # theorem "relative to submultiplicativity" is exactly one whose type
+    # mentions `Submult`, and likewise for the other hypotheses this
+    # development carries.  Recording it here means the `scope` text
+    # cannot claim more (or less) than the statements do.
+    with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT,
+                                     delete=False) as fh:
+        fh.write("import RevPebbling\n")
+        for t in thms:
+            fh.write(f"#check @{t}\n")
+        tmp = Path(fh.name)  # `#check` prints "Name : type", wrapped lines indented
+    try:
+        res = subprocess.run(["lake", "env", "lean", str(tmp)], cwd=ROOT,
+                             capture_output=True, text=True)
+        if res.returncode != 0:
+            raise SystemExit("statement audit failed:\n"
+                             + res.stdout + res.stderr)
+        # `#check` prints `Name : type` (with a leading `@` when the
+        # statement has implicit arguments), continuation lines indented,
+        # so a block starts at every unindented line
+        types = {}
+        for block in re.split(r"(?m)^(?=\S)", res.stdout):
+            m = re.match(r"@?([^\s:]+)\s*:\s*(.*)", block, re.S)
+            if m:
+                types[m.group(1)] = " ".join(m.group(2).split())
+        unseen = [t for t in thms if t not in types]
+        if unseen:
+            raise SystemExit("statement audit incomplete for: "
+                             + ", ".join(unseen))
+        for stage in proved_stages.values():
+            carried = {}
+            for hyp in CARRIED_HYPOTHESES:
+                hit = sorted(t for t in stage["theorems"] if hyp in types[t])
+                if hit:
+                    carried[hyp] = hit
+            stage["carried_hypotheses"] = carried
+        totals = {h: sum(len(s["carried_hypotheses"].get(h, []))
+                         for s in proved_stages.values())
+                  for h in CARRIED_HYPOTHESES}
+        print("statement audit OK: hypotheses carried — "
+              + ", ".join(f"{h}: {n}" for h, n in totals.items()))
     finally:
         tmp.unlink(missing_ok=True)
 
