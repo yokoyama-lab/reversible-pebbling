@@ -31,6 +31,7 @@ import RevPebbling.MergeFixUnique
 import RevPebbling.MinimaxDuality
 import RevPebbling.PebblingFoundations
 import RevPebbling.PebblingGame
+import RevPebbling.PeakRestriction
 import RevPebbling.PebblingTheory
 import RevPebbling.Profile
 import RevPebbling.RLECertify
