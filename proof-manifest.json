@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "defba22fdd9e7e7246f0325ccd6e664644cb7e965124d24c67d203f0bb557cbe",
+ "proof_bundle_sha256": "e98d3a99187d80332a87ddecef99638fdf8a3639f299fb54d648ce690faea390",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -16,10 +16,12 @@
   "RevPebbling/DispersionBound32b.lean": "68ef986d04f83a2efd2afb6fdfde4185cddbe3f166177ac78219b21819859731",
   "RevPebbling/DispersionBound32c.lean": "398bb340689fb3b61f10c24f553068fd38ea646a99ea4a33c860f05f701e0669",
   "RevPebbling/DispersionBound4731.lean": "8ff9cc0a50182efe372d634acbf9f8881382ad6e6c638ff782fe7ddea068dfc4",
+  "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
   "RevPebbling/GrowthBounds.lean": "e8b8fa2de95abcf6910da3cc3b8e747df4d8777967acc0e32f325973bfa02bf5",
   "RevPebbling/GrowthCertified.lean": "b70914c7d8ed0b84102e46cbc0789cf86e208780f2c5c8d3bb8022d31e1504c6",
   "RevPebbling/GrowthClosedForm.lean": "9e411c49017a9db6907865d7520fde394c34fe2ec99a20e57299ead54d5d62ee",
+  "RevPebbling/GrowthLower.lean": "15332a5a8e23d4dcbb72557042b898a66d59e9821f3a33dfefe603f48b09e797",
   "RevPebbling/GrowthRate.lean": "4e63c74cec74165853845a2afca25e6a076902aa79b1fcbf0c15f2337afd0988",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
   "RevPebbling/KnillUnique.lean": "6a468f83ef019ab1f00ac482d35e3421bee209da8a4f2dadf6a071f292eeec81",
@@ -37,7 +39,7 @@
   "RevPebbling/RowMax.lean": "c94eb6e0fb81f47f81532ea697d7a137eff36ec8a78898966142a8f4d7d23d18",
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
-  "RevPebbling.lean": "af5058f2e3380855c552942714e662ae254693bbb0ebdf4a70b4036cf8c96411"
+  "RevPebbling.lean": "a0174f4153964a060e0e0d3daad1b81c947c31c331c7c10734c2f8ec74586c38"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -140,6 +142,21 @@
     "RevPebbling.RLECertify.fRow_50",
     "RevPebbling.RLECertify.fRow_60"
    ],
+   "axiom_free_theorems": []
+  },
+  "growth_lower_bound": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, but RELATIVE TO submultiplicativity (as everywhere the real number `c` appears, since `growth` is defined as the Fekete limit).  Fills a structural gap: `GrowthRate` had only upper-bound machinery, so every lower bound in this development (the entropy bound 2.4518, the dispersion family up to 2.5170647) was stated about counts and midpoints and was never a statement about `c` itself.  The asymmetry is real -- the Fekete limit IS an infimum, so one finite value bounds c from above but says nothing from below -- and `growth_ge_of_geometric` supplies the missing direction from an envelope C*B^p <= f_p valid at every level, proved through the convergence `tendsto_logSeq` rather than through lim = inf.  Its input is the general doubling bound `two_mul_fRow_le` (2 f_{S-1} <= f_S, sharper than the bounded-grid PebblingTheory.fval_lower_doubling, which checks f_S >= 2 f_{S-1} - 1 for S <= 7): the merge representation gives row total = 1 + total(prev) + total(B) with B entrywise at least prev, so the total more than doubles at every level, whence 2^{S-1} + 1 <= f_S and `growth_ge_two`: 2 <= c, the growth-rate form of Kralovic's Omega(n log n).  Kernel axioms only.",
+   "theorems": [
+    "RevPebbling.DoublingLower.smerge_sum",
+    "RevPebbling.DoublingLower.sum_le_zipWith_add",
+    "RevPebbling.DoublingLower.two_mul_fRow_le",
+    "RevPebbling.DoublingLower.fRow_lower_doubling",
+    "RevPebbling.DoublingLower.two_pow_le_fRow",
+    "RevPebbling.GrowthLower.growth_ge_of_geometric",
+    "RevPebbling.GrowthLower.growth_ge_two"
+   ],
+   "native_decide_theorems": [],
    "axiom_free_theorems": []
   },
   "sandwich_general": {

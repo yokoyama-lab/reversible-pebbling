@@ -8,10 +8,12 @@ import RevPebbling.DispersionBound32
 import RevPebbling.DispersionBound32b
 import RevPebbling.DispersionBound32c
 import RevPebbling.DispersionBound4731
+import RevPebbling.DoublingLower
 import RevPebbling.FrontDP
 import RevPebbling.GrowthBounds
 import RevPebbling.GrowthCertified
 import RevPebbling.GrowthClosedForm
+import RevPebbling.GrowthLower
 import RevPebbling.GrowthRate
 import RevPebbling.IntRoot
 import RevPebbling.KnillUnique

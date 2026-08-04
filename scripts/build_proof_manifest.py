@@ -252,6 +252,46 @@ def main() -> int:
                     "RevPebbling.GrowthCertified.growth_le_2_6106",
                 ],
             },
+            "growth_lower_bound": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, but RELATIVE TO submultiplicativity "
+                          "(as everywhere the real number `c` appears, "
+                          "since `growth` is defined as the Fekete limit).  "
+                          "Fills a structural gap: `GrowthRate` had only "
+                          "upper-bound machinery, so every lower bound in "
+                          "this development (the entropy bound 2.4518, the "
+                          "dispersion family up to 2.5170647) was stated "
+                          "about counts and midpoints and was never a "
+                          "statement about `c` itself.  The asymmetry is "
+                          "real -- the Fekete limit IS an infimum, so one "
+                          "finite value bounds c from above but says "
+                          "nothing from below -- and "
+                          "`growth_ge_of_geometric` supplies the missing "
+                          "direction from an envelope C*B^p <= f_p valid at "
+                          "every level, proved through the convergence "
+                          "`tendsto_logSeq` rather than through lim = inf.  "
+                          "Its input is the general doubling bound "
+                          "`two_mul_fRow_le` (2 f_{S-1} <= f_S, sharper "
+                          "than the bounded-grid "
+                          "PebblingTheory.fval_lower_doubling, which "
+                          "checks f_S >= 2 f_{S-1} - 1 for S <= 7): the "
+                          "merge representation gives row total = "
+                          "1 + total(prev) + total(B) with B entrywise at "
+                          "least prev, so the total more than doubles at "
+                          "every level, whence 2^{S-1} + 1 <= f_S and "
+                          "`growth_ge_two`: 2 <= c, the growth-rate form "
+                          "of Kralovic's Omega(n log n).  Kernel axioms "
+                          "only."),
+                "theorems": [
+                    "RevPebbling.DoublingLower.smerge_sum",
+                    "RevPebbling.DoublingLower.sum_le_zipWith_add",
+                    "RevPebbling.DoublingLower.two_mul_fRow_le",
+                    "RevPebbling.DoublingLower.fRow_lower_doubling",
+                    "RevPebbling.DoublingLower.two_pow_le_fRow",
+                    "RevPebbling.GrowthLower.growth_ge_of_geometric",
+                    "RevPebbling.GrowthLower.growth_ge_two",
+                ],
+            },
             "sandwich_general": {
                 "status": "proved_unbounded",
                 "scope": ("UNBOUNDED, kernel axioms only.  The two "
