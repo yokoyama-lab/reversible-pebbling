@@ -178,7 +178,9 @@ FAMILIES: tuple[tuple[str, object, tuple[tuple[int, ...], ...]], ...] = (
     # 「完全二分木の可逆ペブル空間は $h+\Theta(\lg^* h)$」の基準線が同じ表に並ぶ。
     ("kary_tree", kary_tree,
      tuple((k, h) for k in (2, 3, 4, 5, 6) for h in range(1, 5))),
-    ("bitrev", bitrev, ((1,), (2,), (3,))),
+    # ペブル可能な頂点数は $2^{k+1}-1$（3, 7, 15, 31, 63）。$k=5$ は確実に届かないが、
+    # 単調な打ち切りが `skipped` の行を残すので、上限だけ書いておく。
+    ("bitrev", bitrev, ((1,), (2,), (3,), (4,), (5,))),
 )
 
 

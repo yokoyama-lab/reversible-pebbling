@@ -76,20 +76,28 @@ def measure(family: str, params: tuple[int, ...]) -> tuple[list[dict], dict]:
     t0 = time.monotonic()
     # p_min の探索にも上限を効かせる（`fast.pmin_mask` は cap を取らないので自前で回す）。
     # 到達不能な p でも状態空間は全部展開されるため、ここを無防備にすると死ぬ。
+    # 打ち切られた場合でも**下界は残る**: cap に当たった $p$ より小さい $p$ は
+    # すべて全探索が完了して到達不能だったので、$p_{\min}\ge p$ が証明されている。
+    # これを `status: pmin_lb`・`pmin` 欄にその $p$、として記録する
+    # （`timeout` で捨てると「何も分からない」になってしまう）。
     pmin: int | None = None
+    lower_bound: int | None = None
     for p in range(1, 41):
         try:
             if fast.mstar(ga, t, p, cap=STATE_CAP) is not None:
                 pmin = p
                 break
         except RuntimeError:
+            lower_bound = p
             break
     if pmin is None:
         rows.append({
             "family": family, "params": ":".join(map(str, params)),
             "n": g.n, "anc_n": ga.n, "pebbleable": nb,
-            "pmin": "", "p": "", "mstar": "", "methods": "mask",
-            "status": "timeout", "cert": "", "seconds": f"{time.monotonic() - t0:.2f}",
+            "pmin": "" if lower_bound is None else lower_bound,
+            "p": "", "mstar": "", "methods": "mask",
+            "status": "timeout" if lower_bound is None else "pmin_lb",
+            "cert": "", "seconds": f"{time.monotonic() - t0:.2f}",
         })
         return rows, certs
 
@@ -149,7 +157,7 @@ def cmd_build(only: str | None) -> int:
                 print(f"{family}({':'.join(map(str, params))}) [skipped]", flush=True)
                 continue
             r, certs = measure(family, params)
-            if any(x["status"] == "timeout" for x in r) and r[0]["pmin"] == "":
+            if r[0]["status"] in ("timeout", "pmin_lb"):
                 gave_up.add(params[:-1])
             rows.extend(r)
             if certs:
@@ -214,7 +222,7 @@ def cmd_verify() -> int:
     checked = 0
     for row in read_rows():
         tag = f"{row['family']}({row['params']}) p={row['p']}"
-        if row["status"] in ("timeout", "skipped"):
+        if row["status"] in ("timeout", "skipped", "pmin_lb"):
             continue
         params = tuple(int(x) for x in row["params"].split(":"))
         g = build(row["family"], params)
