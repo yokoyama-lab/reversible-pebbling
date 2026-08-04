@@ -345,7 +345,17 @@
   可逆ペブル数の決定は PSPACE 困難（KF-09）だが、**木では多項式時間で計算できる**。
 - **出典**: Komarath, Sarma, Sawlani, *Pebbling Meets Coloring: Reversible Pebble Game
   On Trees*, arXiv:1604.05510（会議版は COCOON 2015）
-- **一次確認**: 済（2026-08-05・U7b。要旨を一次で確認。**本文 PDF は未読**）
+- **一次確認**: 済（2026-08-05・**U7c で本文 PDF を精読**）
+- **本文で確かめたこと**:
+  - **Definition 1 が我々のゲームと同一**（$P_1=\emptyset$・$P_m=\{r\}$・1 手 1 トグル・
+    先行点が全てペブル済み）。彼らの **persistent** reversible pebbling number $R_\bullet$ が
+    我々の $p_{\min}$ に当たる。
+  - **対応**: 我々の `kary_tree(2,h)`（葉が free）= 彼らの $Bt_h$（$2^h-1$ 頂点・全ペブル）。
+  - **Proposition 16(2) が $R_\bullet(Bt_3)=5$ を明示**。**我々の実測 5 と一致**。
+    同 (1) $R_\bullet(Bt_h)\ge R_\bullet(Bt_{h-1})+1$、(2) $R_\bullet(Bt_h)\ge h+2$（$h\ge3$）も
+    我々の 1,3,5,6 が満たす（$h=4$ で 6 = 下界にタイト）。(3) $R_\bullet(Ch_n)\le\lceil\log_2 n\rceil+1$ は KF-04。
+  - **⚠️ visiting $R_\phi$ と persistent $R_\bullet$ を区別している**（$R_\phi\le R_\bullet\le R_\phi+1$）。
+    引用時に取り違えないこと（KF-07 と同型の罠）。
 - **含意**: **$k$ 分木の $p_{\min}$ 表（`data/families/findings.md` §3.6）は
   既知の多項式時間量の実例であり、値そのものは新規ではない。**
   §3.6.1 の「$p_{\min}=(h-1)k+1$ が $k=2,h=4$ で破れる」も、
@@ -362,7 +372,8 @@
   有界次数の木族が $O(n^\varepsilon)$ ペブル・$O(n)$ 歩でできること（Královič 2001 の鎖の
   結果の一般化）を示している。**完全二分木が多項式歩数でペブルできるかは未解決**と明記。
 - **出典**: 同上
-- **一次確認**: 済（要旨。**本文 PDF は未読**）
+- **一次確認**: 済（2026-08-05・**U7c で本文精読**。Theorem 17 の証明まで確認し、
+  与えられているのは**漸近上界のみで厳密値の表は無い**ことを確かめた）
 - **含意**: 「木の手数は文献に無い」は**誤り**。正しくは
   「**漸近的な上界・トレードオフはあるが、厳密値の表は無い**」。
   `docs/20_prior_art.md` §3 と KF-06 の書き方を直すこと。

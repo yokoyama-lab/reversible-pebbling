@@ -334,9 +334,22 @@ de Rezende ら CCC 2019）の**前方引用**を辿り、ビット反転の可�
 
 ## U7c — KF-25/KF-26 の本文を読み、$k$ 分木の結果の位置づけを確定させる
 
-**状態: todo**
+**状態: done**（2026-08-05）
 
-完了条件: arXiv:1604.05510 の**本文 PDF** を読み、
+(a) **ゲームは同一**。Definition 1 が我々のゲームと字義通り一致し、彼らの persistent
+$R_\bullet$ が我々の $p_{\min}$。対応は `kary_tree(2,h)`（葉 free）= $Bt_h$（$2^h-1$ 頂点）。
+⚠️ visiting $R_\phi$ と persistent $R_\bullet$ の区別あり（$R_\phi\le R_\bullet\le R_\phi+1$）。取り違え注意。
+
+(b) **数値が一致**。Prop 16(2) の $R_\bullet(Bt_3)=5$ に対し我々の実測も 5。
+Prop 16(1)(2)(3) も満たす（$h=4$ の 6 は下界 $h+2$ にタイト）。
+`tests/test_families.py::test_matches_komarath_sarma_sawlani_tree_results` で固定した。
+→ **$k$ 分木の $p_{\min}$ 表は降格が確定**（Thm 12 + Cor 13 で原理的に既知）。
+§3.6.1 の「$(h-1)k+1$ が破れる」も主張として立てない。
+
+(c) **歩数は漸近だけ**。Theorem 17 の証明まで読み、$n^{O(\log\log n)}$ の上界のみで
+**厳密値の表は無い**ことを確認した。$M^*$ の厳密値の空白は残る。
+
+旧・完了条件: arXiv:1604.05510 の**本文 PDF** を読み、
 (a) edge rank coloring number + 1 の定義が我々の $p_{\min}$ と厳密に一致するか
 （KF-07 型の取り違えが無いか）を確認し、
 (b) 完全 $k$ 分木の edge ranking の値を文献の式で計算して**我々の表と突き合わせる**

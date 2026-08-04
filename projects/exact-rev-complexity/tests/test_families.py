@@ -193,6 +193,38 @@ def _naive_vs_fast(g: rp.Dag, pmax: int = 12) -> None:
         assert a == b, f"{g.name} p={p}: 素朴 {a} != 高速 {b}"
 
 
+def test_matches_komarath_sarma_sawlani_tree_results() -> None:
+    """文献の値と突き合わせる（KF-25/KF-26。arXiv:1604.05510 本文）。
+
+    対応: **我々の `kary_tree(2,h)`（葉が free）= 彼らの $Bt_h$**（$2^h-1$ 頂点・全ペブル）。
+    彼らの Definition 1（$P_1=\\emptyset$, $P_m=\\{r\\}$, 1 手 1 トグル）は我々のゲームと同一で、
+    彼らの persistent reversible pebbling number $R_\\bullet$ が我々の $p_{\\min}$ に当たる。
+
+    本文から取れる検査:
+      - Proposition 16(2): **$R_\\bullet(Bt_3)=5$**（明示の厳密値）
+      - Proposition 16(1): $R_\\bullet(Bt_h) \\ge R_\\bullet(Bt_{h-1})+1$
+      - Proposition 16(2): $R_\\bullet(Bt_h) \\ge h+2$（$h\\ge3$）
+      - Proposition 16(3): $R_\\bullet(Ch_n) \\le \\lceil\\log_2 n\\rceil+1$（KF-04 と同じ）
+
+    ⚠️ 彼らは **visiting** $R_\\phi$ と **persistent** $R_\\bullet$ を区別し
+    $R_\\phi \\le R_\\bullet \\le R_\\phi+1$ としている。我々の $p_{\\min}$ は $R_\\bullet$ のほう。
+    引用時に取り違えないこと（KF-07 と同型の罠）。
+    """
+    import math
+
+    pmin_bt = {h: fast.pmin(kary_tree(2, h), top_of(kary_tree(2, h))) for h in (1, 2, 3, 4)}
+    assert pmin_bt[3] == 5, f"R_bullet(Bt_3) は本文で 5、実測 {pmin_bt[3]}"
+    for h in (2, 3, 4):
+        assert pmin_bt[h] >= pmin_bt[h - 1] + 1, f"Prop 16(1) に反する（h={h}）"
+    for h in (3, 4):
+        assert pmin_bt[h] >= h + 2, f"Prop 16(2) に反する（h={h}）"
+    # Prop 16(3): 鎖の上界（我々の chain(n) は入力源が free なので n 頂点がペブル対象）
+    for n in (2, 4, 8, 12):
+        g = cylinder(1, n)  # = chain(n)
+        p = fast.pmin(g, top_of(g))
+        assert p <= math.ceil(math.log2(n)) + 1, f"Prop 16(3) に反する（n={n}, p_min={p}）"
+
+
 def test_agrees_with_naive_bfs() -> None:
     for g in (cylinder(2, 2), cylinder(3, 2), cylinder(3, 3), cylinder(2, 4)):
         _naive_vs_fast(g, pmax=8)
