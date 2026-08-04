@@ -44,7 +44,9 @@ CERT_DIR = OUT / "certs"
 #: 素朴実装（frozenset BFS）で照合する上限。これを超えると高速版のみ。
 NAIVE_LIMIT = 13
 #: 高速実装が訪問してよい状態数の上限。超えたら `timeout` として台帳に残す。
-STATE_CAP = 12_000_000
+#: 状態は Python の dict/set に入るので 1 状態あたり ~100 バイト見当。
+#: 4M で ~0.5GB。これ以上は探索時間よりメモリで死ぬので、ここで切る。
+STATE_CAP = 4_000_000
 #: 各インスタンスで測る p の範囲（p_min から数えて）。
 P_EXTRA = 2
 
@@ -71,10 +73,16 @@ def measure(family: str, params: tuple[int, ...]) -> tuple[list[dict], dict]:
     certs: dict[str, list[list]] = {}
 
     t0 = time.monotonic()
-    try:
-        pmin = fast.pmin_mask(ga, 1 << t, pmax=40)
-    except RuntimeError:
-        pmin = None
+    # p_min の探索にも上限を効かせる（`fast.pmin_mask` は cap を取らないので自前で回す）。
+    # 到達不能な p でも状態空間は全部展開されるため、ここを無防備にすると死ぬ。
+    pmin: int | None = None
+    for p in range(1, 41):
+        try:
+            if fast.mstar(ga, t, p, cap=STATE_CAP) is not None:
+                pmin = p
+                break
+        except RuntimeError:
+            break
     if pmin is None:
         rows.append({
             "family": family, "params": ":".join(map(str, params)),
@@ -123,8 +131,25 @@ def cmd_build(only: str | None) -> int:
     for family, _fn, params_list in FAMILIES:
         if only and family != only:
             continue
+        # 単調な打ち切り: 最後のパラメタ（サイズ）を上げるほど状態空間は増える一方なので、
+        # 一度 timeout したら同じ接頭辞のより大きいものは走らせない。
+        # **黙って落とさず `skipped` の行を残す**（手順書の禁止事項）。
+        gave_up: set[tuple[int, ...]] = set()
         for params in params_list:
+            if params[:-1] in gave_up:
+                g = build(family, params)
+                ga, _t = anc(g)
+                rows.append({
+                    "family": family, "params": ":".join(map(str, params)),
+                    "n": g.n, "anc_n": ga.n, "pebbleable": _pebbleable(ga),
+                    "pmin": "", "p": "", "mstar": "", "methods": "",
+                    "status": "skipped", "cert": "", "seconds": "0.00",
+                })
+                print(f"{family}({':'.join(map(str, params))}) [skipped]", flush=True)
+                continue
             r, certs = measure(family, params)
+            if any(x["status"] == "timeout" for x in r) and r[0]["pmin"] == "":
+                gave_up.add(params[:-1])
             rows.extend(r)
             if certs:
                 _cert_path(family, params).write_text(
@@ -158,7 +183,7 @@ def cmd_verify() -> int:
     checked = 0
     for row in read_rows():
         tag = f"{row['family']}({row['params']}) p={row['p']}"
-        if row["status"] == "timeout":
+        if row["status"] in ("timeout", "skipped"):
             continue
         params = tuple(int(x) for x in row["params"].split(":"))
         g = build(row["family"], params)

@@ -142,7 +142,8 @@ def anc(g: Dag) -> tuple[Dag, int]:
 
 #: 台帳生成と回帰テストが共有する族の登録簿。(表示名, 構築関数, パラメタ列)
 FAMILIES: tuple[tuple[str, object, tuple[tuple[int, ...], ...]], ...] = (
-    ("cylinder", cylinder, tuple((k, h) for k in (2, 3, 4, 5) for h in (2, 3, 4, 5, 6))),
+    ("cylinder", cylinder,
+     tuple((k, h) for k in (2, 3, 4, 5, 6, 7) for h in range(2, 11))),
     ("kary_tree", kary_tree, ((3, 1), (3, 2), (3, 3), (4, 1), (4, 2), (5, 1), (5, 2))),
     ("bitrev", bitrev, ((1,), (2,), (3,))),
 )
