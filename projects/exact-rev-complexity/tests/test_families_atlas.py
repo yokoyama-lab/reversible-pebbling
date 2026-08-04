@@ -125,6 +125,46 @@ def test_closed_form_holds_on_every_qualifying_row_of_the_ledger() -> None:
     assert checked >= 131, f"検査した行が {checked} 件しかない（131 件以上のはず）"
 
 
+def test_pmin_formula_for_width_two_cylinder() -> None:
+    """$p_{\\min}(\\mathrm{cyl}(2,h)) = 2\\lfloor\\log_2(h-1)\\rfloor+3$（`findings.md` §3.8.1）。
+
+    **これは予想であって定理ではない。** ここが固定するのは
+    「台帳の $k=2$ の行がこの式と矛盾しない」ことだけである:
+
+      - `exhaustive` の行では**等号**を要求する（15 点）
+      - `pmin_lb` の行では**下界が式を超えない**ことだけを要求する
+        （$h=17$ で $p_{\\min}\\ge11$ が証明されており、式の予言も 11。
+        ただし上界は取れていないので真値が 12 以上の可能性は残る）
+
+    式が破れたらこのテストが落ちる。それがこのテストの役目である。
+    """
+    import csv
+    import math
+    from family_atlas import CSV_PATH
+
+    exact = lb = 0
+    with CSV_PATH.open(encoding="utf-8", newline="") as fh:
+        for row in csv.DictReader(fh):
+            if row["family"] != "cylinder":
+                continue
+            k, h = (int(x) for x in row["params"].split(":"))
+            if k != 2 or h < 2:
+                continue
+            pred = 2 * int(math.log2(h - 1)) + 3
+            if row["status"] == "exhaustive" and row["p"] == row["pmin"]:
+                assert int(row["pmin"]) == pred, (
+                    f"cyl(2,{h}): p_min={row['pmin']} != 予想 {pred}"
+                )
+                exact += 1
+            elif row["status"] == "pmin_lb":
+                assert int(row["pmin"]) <= pred, (
+                    f"cyl(2,{h}): 下界 {row['pmin']} が予想 {pred} を超えた（式が偽）"
+                )
+                lb += 1
+    assert exact >= 15, f"等号で確認した点が {exact} 個しかない"
+    assert lb >= 1, "下界で確認した点が無い"
+
+
 def test_A_is_determined_by_mstar() -> None:
     """$A=(M^*+1)/2$（$M^*=2A-1$ の言い換え）。分布に依らず成り立つ健全性検査。"""
     for k, p, hs in ARITHMETIC + BROKEN:
