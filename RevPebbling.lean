@@ -21,6 +21,7 @@ import RevPebbling.GameLinearLower
 import RevPebbling.GameGap
 import RevPebbling.GameKnill
 import RevPebbling.GameReach
+import RevPebbling.GameStructure
 import RevPebbling.GrowthBounds
 import RevPebbling.GrowthCertified
 import RevPebbling.GrowthClosedForm
