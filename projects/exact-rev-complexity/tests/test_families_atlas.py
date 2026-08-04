@@ -161,8 +161,13 @@ def test_pmin_formula_for_width_two_cylinder() -> None:
                     f"cyl(2,{h}): 下界 {row['pmin']} が予想 {pred} を超えた（式が偽）"
                 )
                 lb += 1
-    assert exact >= 15, f"等号で確認した点が {exact} 個しかない"
-    assert lb >= 1, "下界で確認した点が無い"
+    assert exact >= 17, f"等号で確認した点が {exact} 個しかない"
+    # **`lb` の個数は要求しない。** U5b 時点では下界行が 1 つあり
+    # `assert lb >= 1` と書いたが、U6b で cap を上げたら $h=17,18$ が
+    # 等号で確定して下界行が消え、この検査だけが落ちた。
+    # 下界行は「まだ届いていない」ことの記録であって、**減るのは前進**である。
+    # 数学的な主張（等号・不等号）は上の 2 つの assert が持っている。
+    assert lb >= 0
 
 
 def test_A_is_determined_by_mstar() -> None:
