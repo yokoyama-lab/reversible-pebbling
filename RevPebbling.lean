@@ -13,6 +13,7 @@ import RevPebbling.DispersionGrowth
 import RevPebbling.DoublingLower
 import RevPebbling.FrontDP
 import RevPebbling.GameCost
+import RevPebbling.GameGap
 import RevPebbling.GameKnill
 import RevPebbling.GameReach
 import RevPebbling.GrowthBounds
