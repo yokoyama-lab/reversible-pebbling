@@ -252,6 +252,37 @@ def main() -> int:
                     "RevPebbling.GrowthCertified.growth_le_2_6106",
                 ],
             },
+            "two_d_closed_form": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, relative to submultiplicativity (as "
+                          "everywhere `c` appears).  **c = 2d**, the "
+                          "letter's closed-form Proposition, as a "
+                          "statement about real numbers: "
+                          "`tendsto_rowMax_root` says the row maxima "
+                          "satisfy M_S^{1/(S-1)} -> c/2, i.e. the limit d "
+                          "exists and c = 2d.  Its only combinatorial "
+                          "input is the sandwich of the stages "
+                          "sandwich_general and row_max_closed_form "
+                          "(2^{S-1} m_S <= f_S <= 2^S M_S and M_S <= S m_S, "
+                          "giving f_S/2^S <= M_S <= S f_S/2^{S-1}); the "
+                          "polynomial factor S washes out under the "
+                          "(S-1)-st root because log S/(S-1) -> 0 "
+                          "(`tendsto_log_div_succ`).  The proof is a "
+                          "squeeze in logarithms around the Fekete "
+                          "convergence `tendsto_logSeq`, which avoids "
+                          "manipulating roots directly.  Kernel axioms "
+                          "only.  This is what makes the row maxima -- the "
+                          "object every structure theorem of this "
+                          "artifact is about -- carry the growth rate "
+                          "itself."),
+                "theorems": [
+                    "RevPebbling.TwoD.log_rowMax_lower",
+                    "RevPebbling.TwoD.log_rowMax_upper",
+                    "RevPebbling.TwoD.tendsto_log_div_succ",
+                    "RevPebbling.TwoD.tendsto_log_rowMax",
+                    "RevPebbling.TwoD.tendsto_rowMax_root",
+                ],
+            },
             "growth_lower_bound": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED, but RELATIVE TO submultiplicativity "

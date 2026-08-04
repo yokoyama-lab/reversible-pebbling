@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "e98d3a99187d80332a87ddecef99638fdf8a3639f299fb54d648ce690faea390",
+ "proof_bundle_sha256": "c7a299866af5769efa448707ecdfa07af14354d81ba3888f6602f2c5180588a0",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -39,7 +39,8 @@
   "RevPebbling/RowMax.lean": "c94eb6e0fb81f47f81532ea697d7a137eff36ec8a78898966142a8f4d7d23d18",
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
-  "RevPebbling.lean": "a0174f4153964a060e0e0d3daad1b81c947c31c331c7c10734c2f8ec74586c38"
+  "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
+  "RevPebbling.lean": "edf5393c475aaaeaf1fd398f6e85b749a28e11cd94c08755eae72ed5e56660fb"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -142,6 +143,19 @@
     "RevPebbling.RLECertify.fRow_50",
     "RevPebbling.RLECertify.fRow_60"
    ],
+   "axiom_free_theorems": []
+  },
+  "two_d_closed_form": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, relative to submultiplicativity (as everywhere `c` appears).  **c = 2d**, the letter's closed-form Proposition, as a statement about real numbers: `tendsto_rowMax_root` says the row maxima satisfy M_S^{1/(S-1)} -> c/2, i.e. the limit d exists and c = 2d.  Its only combinatorial input is the sandwich of the stages sandwich_general and row_max_closed_form (2^{S-1} m_S <= f_S <= 2^S M_S and M_S <= S m_S, giving f_S/2^S <= M_S <= S f_S/2^{S-1}); the polynomial factor S washes out under the (S-1)-st root because log S/(S-1) -> 0 (`tendsto_log_div_succ`).  The proof is a squeeze in logarithms around the Fekete convergence `tendsto_logSeq`, which avoids manipulating roots directly.  Kernel axioms only.  This is what makes the row maxima -- the object every structure theorem of this artifact is about -- carry the growth rate itself.",
+   "theorems": [
+    "RevPebbling.TwoD.log_rowMax_lower",
+    "RevPebbling.TwoD.log_rowMax_upper",
+    "RevPebbling.TwoD.tendsto_log_div_succ",
+    "RevPebbling.TwoD.tendsto_log_rowMax",
+    "RevPebbling.TwoD.tendsto_rowMax_root"
+   ],
+   "native_decide_theorems": [],
    "axiom_free_theorems": []
   },
   "growth_lower_bound": {
