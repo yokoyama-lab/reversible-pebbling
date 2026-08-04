@@ -462,6 +462,39 @@ def main() -> int:
                     "RevPebbling.GrowthClosedForm.growth_le_2_8285",
                 ],
             },
+            "knill_observations_general": {
+                "status": "proved_unbounded",
+                "scope": ("UNBOUNDED, kernel axioms only.  Knill 1995's "
+                          "Observation 2.2 and the corner recurrence, "
+                          "which PebblingTheory can only check on bounded "
+                          "grids because its `F` is a lookup into a fixed "
+                          "64 x 24 table.  On the general row they are "
+                          "theorems: `Fpre_linear` -- Obs 2.2(i), "
+                          "F(n,S) = 2n - 1 for n <= S, STRICTLY STRONGER "
+                          "than the bounded check, which only covers the "
+                          "diagonal S = n; `Fpre_antitone_space` -- Obs "
+                          "2.2(ii), F is nonincreasing in the space (from "
+                          "the pointwise domination gen_pointwise_dom, "
+                          "valid up to the smaller space's reach limit); "
+                          "`midv_succ_le_two_mul` -- the right half of the "
+                          "midpoint sandwich m_S <= 2 m_{S-1} (the left "
+                          "half is Sandwich.midv_le_succ), from the lower "
+                          "counting recursion seeing the previous row at "
+                          "both v and v/2; and `fRow_corner_recurrence` -- "
+                          "f_S = F(2^{S-2},S) + 2 f_{S-1} at the reach "
+                          "limit, where the split is forced not by "
+                          "finiteness but by LENGTH: with n = 2|prev| + 2 "
+                          "and both parts bounded by |prev| the midpoint "
+                          "is the only feasible cut."),
+                "theorems": [
+                    "RevPebbling.KnillObs.sum_take_le_of_dom",
+                    "RevPebbling.KnillObs.succ_le_two_pow",
+                    "RevPebbling.KnillObs.Fpre_linear",
+                    "RevPebbling.KnillObs.Fpre_antitone_space",
+                    "RevPebbling.KnillObs.midv_succ_le_two_mul",
+                    "RevPebbling.KnillObs.fRow_corner_recurrence",
+                ],
+            },
             "game_cost_achievability": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED, kernel axioms only.  LINK (1) in "
@@ -505,6 +538,7 @@ def main() -> int:
                     "RevPebbling.ReachLimit.le_two_pow_of_reachIn",
                     "RevPebbling.ReachLimit.reachIn_iff",
                     "RevPebbling.ReachLimit.corner_split_forced",
+                    "RevPebbling.GameGap.gameF_eq_fRow",
                 ],
             },
             "game_reach_composition": {
