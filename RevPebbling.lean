@@ -1,5 +1,6 @@
 import RevPebbling.ChordDeficit
 import RevPebbling.CompleteCost
+import RevPebbling.CompleteReach
 import RevPebbling.CompositionAnchor
 import RevPebbling.CountRecursion
 import RevPebbling.CrossingConcentration
