@@ -174,7 +174,10 @@ FAMILIES: tuple[tuple[str, object, tuple[tuple[int, ...], ...]], ...] = (
     ("cylinder", cylinder,
      tuple((k, h) for k in (2, 3) for h in range(2, 19))
      + tuple((k, h) for k in (4, 5, 6, 7) for h in range(2, 11))),
-    ("kary_tree", kary_tree, ((3, 1), (3, 2), (3, 3), (4, 1), (4, 2), (5, 1), (5, 2))),
+    # $k=2$ も入れる。`complete_binary_tree` と同じ族なので、Královič の
+    # 「完全二分木の可逆ペブル空間は $h+\Theta(\lg^* h)$」の基準線が同じ表に並ぶ。
+    ("kary_tree", kary_tree,
+     tuple((k, h) for k in (2, 3, 4, 5, 6) for h in range(1, 5))),
     ("bitrev", bitrev, ((1,), (2,), (3,))),
 )
 

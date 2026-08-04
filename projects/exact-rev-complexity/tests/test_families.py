@@ -165,8 +165,10 @@ def test_game_signature_ignores_free_identity() -> None:
 
 def test_kary_k2_is_complete_binary_tree() -> None:
     """2 分木は既存の `complete_binary_tree` と厳密値が一致する。"""
-    known_mstar = {1: 1, 2: 5, 3: 17}  # 葉 free 流儀（exp01 §2 のレベルずれに注意）
-    for h in (1, 2, 3):
+    # 葉 free 流儀。exp01 の all-pebbled 流儀の表 5, 17, 53 と**レベルが 1 ずれる**
+    # （`data/exp01_findings.md` §2「2 つの正規化は1レベルずれるだけ」）。
+    known_mstar = {1: 1, 2: 5, 3: 17, 4: 53}
+    for h in (1, 2, 3, 4):
         g = kary_tree(2, h)
         t = top_of(g)
         gb = rp.complete_binary_tree(h)
