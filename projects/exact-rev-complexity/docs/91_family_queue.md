@@ -76,9 +76,16 @@ $p=9$ で 57 へ**落差 36**。`cylinder(5,6)` も 103→63。
 
 ## U3b — 「$k\ge h$ で円筒 = ピラミッド」を構造の帰結に昇格させる
 
-**状態: todo**
+**状態: done**（2026-08-05）
 
-完了条件: `families.py` に「**非 free 頂点と、その非 free 先行点だけ**」を取り出す
+結果: `game_signature(g)` = 「非 free 頂点と、その非 free 先行点だけ」を取り出す商。
+$h\in[2,6]$・$k\in\{h,h+1,h+2\}$ の 15 通りで
+`game_signature(anc(cylinder(k,h))) == game_signature(pyramid(h))` を確認。
+$k=h-1$ では**一致しない**ことも固定した（$h\in[3,6]$）。
+→ **$k\ge h$ の一致は測定ではなく構造の帰結**になった。新規測定の領域は $k\le h-1$ である。
+テストは 10 件 → 13 件。
+
+旧・完了条件: `families.py` に「**非 free 頂点と、その非 free 先行点だけ**」を取り出す
 署名関数 `game_signature(g)` を書き、`tests/test_families.py` で
 
   `game_signature(anc(cylinder(k,h))) == game_signature(pyramid(h))`  （$k\ge h$）

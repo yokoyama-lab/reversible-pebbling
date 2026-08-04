@@ -131,6 +131,33 @@ def top_of(g: Dag) -> int:
     return t
 
 
+def game_signature(g: Dag) -> tuple[frozenset[int], ...]:
+    """**ゲームを決める情報だけ**を取り出す（非 free 頂点と、その非 free 先行点）。
+
+    可逆ペブリングでは `free` 頂点は常時可用でペブル数にも数えないので、
+    **どの free 頂点かはゲームに一切効かない**。したがって
+
+      - free 頂点を 2 つ同一視しても
+      - free 頂点を先行点から落としても
+
+    ゲームは変わらない。ここではその商を取る。署名が一致する 2 つの DAG は
+    $p_{\\min}$ も $M^*$ も（$p$ ごとに）等しい。
+
+    番号は非 free 頂点をトポロジカル順に 0 から振り直したもの。
+    したがって**同じ番号づけの流儀で作った族どうし**の比較に使う
+    （一般のグラフ同型判定ではない。それが要るときは nauty を使う）。
+    """
+    idx: dict[int, int] = {}
+    for v in range(g.n):
+        if v not in g.free:
+            idx[v] = len(idx)
+    return tuple(
+        frozenset(idx[u] for u in g.preds[v] if u not in g.free)
+        for v in range(g.n)
+        if v not in g.free
+    )
+
+
 def anc(g: Dag) -> tuple[Dag, int]:
     """終端の祖先だけに制限した DAG と、付け替えた終端番号。
 

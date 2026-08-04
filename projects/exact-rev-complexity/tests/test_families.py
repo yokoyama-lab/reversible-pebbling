@@ -28,6 +28,7 @@ from families import (  # noqa: E402
     anc,
     bitrev,
     cylinder,
+    game_signature,
     kary_tree,
     top_of,
 )
@@ -123,6 +124,43 @@ def test_cylinder_wide_is_pyramid() -> None:
         assert fast.mstar(gc, tc, pc) == fast.mstar(gp, tp, pp), (
             f"cylinder({k},{h}) と pyr({h}) の M* が違う"
         )
+
+
+def test_cylinder_k_ge_h_has_the_same_game_as_pyramid() -> None:
+    """**$k\\ge h$ なら円筒はピラミッドと同じゲームである**（測定ではなく構造の帰結）。
+
+    退化の補題が保証するのは $k\\ge h+1$ までだが、測定では $k=h$ でも
+    $p_{\\min}$・$M^*$ が一致した（`data/families/findings.md` §3.2）。理由は
+    **$k=h$ で衝突するのがレベル 0（`free`）の 2 頂点だけ**だからである。
+    ゲームは free 頂点の同一視に影響されない（先行点が free なら常に可用なので、
+    どの free かは効かない）。したがって**非 free 頂点とその非 free 先行点だけ**の
+    署名が一致すれば、厳密値の一致は測定に依らず従う。
+    """
+    for h in (2, 3, 4, 5, 6):
+        want = game_signature(rp.pyramid(h))
+        for k in (h, h + 1, h + 2):
+            got = game_signature(anc(cylinder(k, h))[0])
+            assert got == want, f"cylinder({k},{h}) の署名がピラミッド({h}) と違う"
+
+
+def test_cylinder_k_lt_h_is_a_different_game() -> None:
+    """$k\\le h-1$ では巻きが**非 free 頂点**に届くので、署名が一致しなくなる。
+
+    効き始めの位置を型で押さえておく（ここから先が新規測定の領域である）。
+    """
+    for h in (3, 4, 5, 6):
+        want = game_signature(rp.pyramid(h))
+        got = game_signature(anc(cylinder(h - 1, h))[0])
+        assert got != want, f"cylinder({h - 1},{h}) の署名がピラミッド({h}) と同じ"
+
+
+def test_game_signature_ignores_free_identity() -> None:
+    """署名が「free 頂点の個数」に依らないこと（同じゲームを別の入力源で書いても同じ）。"""
+    g = cylinder(3, 3)
+    ga, _ = anc(g)
+    sig = game_signature(ga)
+    assert len(sig) == ga.n - len(ga.free), "署名の長さは非 free 頂点の個数"
+    assert all(all(0 <= u < len(sig) for u in ps) for ps in sig), "番号が範囲外"
 
 
 def test_kary_k2_is_complete_binary_tree() -> None:
