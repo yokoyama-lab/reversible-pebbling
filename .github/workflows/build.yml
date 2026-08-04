@@ -1,0 +1,42 @@
+name: build
+
+# The artifact's own integrity check: a clean machine must be able to
+# rebuild every proof and reproduce `proof-manifest.json` byte for byte
+# (the manifest pins source hashes and re-runs the axiom audit, so a
+# matching file certifies that the recorded scope really is what the
+# kernel accepted).
+#
+# Expect ~30 minutes: the certification of row 60 (`RLECertify.fRow_60`,
+# 13.1 M runs) is deliberately over the usual per-theorem budget because
+# it carries the published bound c <= 2.6106.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Sundays 18:00 UTC (Mondays 03:00 JST) — catches toolchain rot
+    - cron: '0 18 * * 0'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build all proofs
+        uses: leanprover/lean-action@v1
+        with:
+          use-mathlib-cache: true
+
+      - name: Reproduce the proof manifest
+        run: python3 scripts/build_proof_manifest.py
+
+      - name: The committed manifest must match the rebuilt one
+        run: git diff --exit-code proof-manifest.json

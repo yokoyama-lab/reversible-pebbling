@@ -40,12 +40,25 @@ bit while running ~600x faster; `base_check_T3000_eps001.txt` and
 ## Build
 
 ```
-lake build     # Lean 4 (see lean-toolchain); no external dependencies
+lake build                              # Lean 4 (see lean-toolchain)
+python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
 ```
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.
+the rest are general (unbounded) proofs.  Of the 272 theorems the
+manifest lists, **59 rest on a `native_decide` certificate and 8 need
+no axiom at all**; the rest use only `propext` / `Quot.sound` /
+`Classical.choice`.  Which theorems fall in which class is recorded
+per stage in `proof-manifest.json` (`native_decide_theorems`,
+`axiom_free_theorems`) — generated from `#print axioms`, so the prose
+in each stage's `scope` cannot drift away from what the kernel reports.
+
+A full build takes about nine minutes, nearly all of it the
+certification of row 60 (13.1 M runs, ~5.6 GB), which carries the
+published bound `c ≤ 2.6106`.  `.github/workflows/build.yml` runs the
+same thing on a clean machine — build, re-audit, and check that the
+committed `proof-manifest.json` is reproduced byte for byte.
 
 ## Contents
 
