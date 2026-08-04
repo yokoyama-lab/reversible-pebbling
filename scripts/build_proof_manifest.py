@@ -252,6 +252,37 @@ def main() -> int:
                     "RevPebbling.GrowthCertified.growth_le_2_6106",
                 ],
             },
+            "dispersion_on_growth": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, relative to submultiplicativity.  "
+                          "Connects the dispersion lower bounds to the "
+                          "real number `c` for the first time: they were "
+                          "certified in the language of counts and "
+                          "midpoints (`dispersion_midpoint_16` etc.) and "
+                          "the step 'hence c >= ...' was taken on paper.  "
+                          "`growth_ge_of_midv_geometric` is the general "
+                          "bridge -- a geometric lower bound K*B^S <= m_S "
+                          "on the midpoints becomes (K/2B^2)*(2B)^S <= f_S "
+                          "through Sandwich.two_pow_mul_midv_le_fRow, and "
+                          "GrowthLower.growth_ge_of_geometric reads that "
+                          "as 2B <= c (the side condition K <= B only "
+                          "serves the base level f_1 = 1).  "
+                          "`growth_ge_32_13` applies it to the q = 1 "
+                          "instance: 32/13 = 2.4615... <= c, the first "
+                          "machine-checked improvement over the "
+                          "elementary 2 <= c.  The sharper instances "
+                          "(DispersionBound32*, DispersionBound4731, up to "
+                          "2.5170647241) fit the same bridge but their "
+                          "midpoint bounds carry fractional exponents "
+                          "(q = 3/2, 47/31), so extracting K*B^S <= m_S "
+                          "from them needs `rpow` arithmetic that is not "
+                          "done here.  Kernel axioms only."),
+                "theorems": [
+                    "RevPebbling.DispersionGrowth.midv_ge_geometric",
+                    "RevPebbling.DispersionGrowth.growth_ge_of_midv_geometric",
+                    "RevPebbling.DispersionGrowth.growth_ge_32_13",
+                ],
+            },
             "two_d_closed_form": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED, relative to submultiplicativity (as "

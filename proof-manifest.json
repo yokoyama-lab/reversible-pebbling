@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "c7a299866af5769efa448707ecdfa07af14354d81ba3888f6602f2c5180588a0",
+ "proof_bundle_sha256": "dd5ce9004a9c0b02b8e9af5d79ecb4c5c840b7a171f73e43de2edb0017436f7a",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -16,6 +16,7 @@
   "RevPebbling/DispersionBound32b.lean": "68ef986d04f83a2efd2afb6fdfde4185cddbe3f166177ac78219b21819859731",
   "RevPebbling/DispersionBound32c.lean": "398bb340689fb3b61f10c24f553068fd38ea646a99ea4a33c860f05f701e0669",
   "RevPebbling/DispersionBound4731.lean": "8ff9cc0a50182efe372d634acbf9f8881382ad6e6c638ff782fe7ddea068dfc4",
+  "RevPebbling/DispersionGrowth.lean": "8dd94eb2f5abcd332644859a55822e875205ee2cfbd70879be928f434c1a55bf",
   "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
   "RevPebbling/GrowthBounds.lean": "e8b8fa2de95abcf6910da3cc3b8e747df4d8777967acc0e32f325973bfa02bf5",
@@ -40,7 +41,7 @@
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
-  "RevPebbling.lean": "edf5393c475aaaeaf1fd398f6e85b749a28e11cd94c08755eae72ed5e56660fb"
+  "RevPebbling.lean": "0e919f4fb65d98d926f770eea2c83c6578d44569e45bfc06d4819ece6b0709ff"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -143,6 +144,17 @@
     "RevPebbling.RLECertify.fRow_50",
     "RevPebbling.RLECertify.fRow_60"
    ],
+   "axiom_free_theorems": []
+  },
+  "dispersion_on_growth": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, relative to submultiplicativity.  Connects the dispersion lower bounds to the real number `c` for the first time: they were certified in the language of counts and midpoints (`dispersion_midpoint_16` etc.) and the step 'hence c >= ...' was taken on paper.  `growth_ge_of_midv_geometric` is the general bridge -- a geometric lower bound K*B^S <= m_S on the midpoints becomes (K/2B^2)*(2B)^S <= f_S through Sandwich.two_pow_mul_midv_le_fRow, and GrowthLower.growth_ge_of_geometric reads that as 2B <= c (the side condition K <= B only serves the base level f_1 = 1).  `growth_ge_32_13` applies it to the q = 1 instance: 32/13 = 2.4615... <= c, the first machine-checked improvement over the elementary 2 <= c.  The sharper instances (DispersionBound32*, DispersionBound4731, up to 2.5170647241) fit the same bridge but their midpoint bounds carry fractional exponents (q = 3/2, 47/31), so extracting K*B^S <= m_S from them needs `rpow` arithmetic that is not done here.  Kernel axioms only.",
+   "theorems": [
+    "RevPebbling.DispersionGrowth.midv_ge_geometric",
+    "RevPebbling.DispersionGrowth.growth_ge_of_midv_geometric",
+    "RevPebbling.DispersionGrowth.growth_ge_32_13"
+   ],
+   "native_decide_theorems": [],
    "axiom_free_theorems": []
   },
   "two_d_closed_form": {
