@@ -462,6 +462,38 @@ def main() -> int:
                     "RevPebbling.GrowthClosedForm.growth_le_2_8285",
                 ],
             },
+            "game_cost_achievability": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, kernel axioms only.  LINK (1) in "
+                          "numerical form: the cost the artifact computes "
+                          "from `rowIter` is achieved by an actual play.  "
+                          "`reachIn_Fpre` runs Knill's construction "
+                          "(game_reach_composition) along the recursion -- "
+                          "the attaining split of `gen_satisfies_knill` "
+                          "supplies the three sub-plays, one at the same "
+                          "space level on a shorter chain and two at one "
+                          "pebble less -- and concludes that for every "
+                          "space level S = s+2 and every chain length n up "
+                          "to the reach limit 2^{S-1} there is a legal "
+                          "play of length exactly Fpre (rowIter s) n.  "
+                          "`GameCost.gameF n S = sInf {t | ReachIn n S t}` "
+                          "makes the game optimum a total function and "
+                          "`gameF_le_fRow` reads the above as "
+                          "gameF (2^{S-1}) S <= f_S.  The converse "
+                          "(no play is shorter) is the remaining half of "
+                          "link (1); with it gameF and fRow coincide and "
+                          "the letter's `Submult` becomes provable by "
+                          "block simulation."),
+                "theorems": [
+                    "RevPebbling.GameKnill.reachIn_one",
+                    "RevPebbling.GameKnill.reachIn_Fpre",
+                    "RevPebbling.GameCost.gameF_le",
+                    "RevPebbling.GameCost.reachIn_gameF",
+                    "RevPebbling.GameCost.gameF_le_Fpre",
+                    "RevPebbling.GameCost.Fpre_reach_limit",
+                    "RevPebbling.GameCost.gameF_le_fRow",
+                ],
+            },
             "game_reach_composition": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED, kernel axioms only.  LINK (1), the "

@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "f804d47eff66758e16ebd4e134f91228c66aa203d65a1fe14d832646b0188340",
+ "proof_bundle_sha256": "812fb813f6077b9c54511068ec5c28de8e2bf36546267ed73d21ae8fed72c903",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -20,6 +20,8 @@
   "RevPebbling/DispersionGrowth.lean": "8dd94eb2f5abcd332644859a55822e875205ee2cfbd70879be928f434c1a55bf",
   "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
+  "RevPebbling/GameCost.lean": "eb1a6bcd4650705b909551566c3baab5396efaf38ce3c860be81baa87edd962b",
+  "RevPebbling/GameKnill.lean": "980f63584bf06623b3a113321c59588d54d7d79e77d6e033bb76567ccf3da7f5",
   "RevPebbling/GameReach.lean": "cdc981f364617777dd1ebe8555dfdb7643fa0972e6297a994ec7dbeeb761afd9",
   "RevPebbling/GrowthBounds.lean": "e8b8fa2de95abcf6910da3cc3b8e747df4d8777967acc0e32f325973bfa02bf5",
   "RevPebbling/GrowthCertified.lean": "b70914c7d8ed0b84102e46cbc0789cf86e208780f2c5c8d3bb8022d31e1504c6",
@@ -43,7 +45,7 @@
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
-  "RevPebbling.lean": "1318448d1c07b9546e8b68e2b4d4c8c0e3b3e1b9462bda296f0d9a2cb1f51f49"
+  "RevPebbling.lean": "0d273129b9c851bf27f4dfd7cf6ae79964ca357b868c6c90629bb0ede7b474fa"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -227,6 +229,21 @@
     "RevPebbling.GrowthClosedForm.two_pow_half_le_sqrt_two_pow",
     "RevPebbling.GrowthClosedForm.growth_le_two_sqrt_two",
     "RevPebbling.GrowthClosedForm.growth_le_2_8285"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": []
+  },
+  "game_cost_achievability": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, kernel axioms only.  LINK (1) in numerical form: the cost the artifact computes from `rowIter` is achieved by an actual play.  `reachIn_Fpre` runs Knill's construction (game_reach_composition) along the recursion -- the attaining split of `gen_satisfies_knill` supplies the three sub-plays, one at the same space level on a shorter chain and two at one pebble less -- and concludes that for every space level S = s+2 and every chain length n up to the reach limit 2^{S-1} there is a legal play of length exactly Fpre (rowIter s) n.  `GameCost.gameF n S = sInf {t | ReachIn n S t}` makes the game optimum a total function and `gameF_le_fRow` reads the above as gameF (2^{S-1}) S <= f_S.  The converse (no play is shorter) is the remaining half of link (1); with it gameF and fRow coincide and the letter's `Submult` becomes provable by block simulation.",
+   "theorems": [
+    "RevPebbling.GameKnill.reachIn_one",
+    "RevPebbling.GameKnill.reachIn_Fpre",
+    "RevPebbling.GameCost.gameF_le",
+    "RevPebbling.GameCost.reachIn_gameF",
+    "RevPebbling.GameCost.gameF_le_Fpre",
+    "RevPebbling.GameCost.Fpre_reach_limit",
+    "RevPebbling.GameCost.gameF_le_fRow"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": []
