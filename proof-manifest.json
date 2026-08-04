@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "812fb813f6077b9c54511068ec5c28de8e2bf36546267ed73d21ae8fed72c903",
+ "proof_bundle_sha256": "fce5aa2297f17062cc7ecfc82258b593140e3e71a31d0e087c6117bf886ffe71",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -41,11 +41,12 @@
   "RevPebbling/RLEFix.lean": "7c426cfb6d0dec633bdb4e463081ef174eb70ff3b650579a2bd1119d08f84f5b",
   "RevPebbling/RLEPebble.lean": "d2c19e83dc1e8fc4be15935a62e8f6ac7762900705aedaeac86acc286e1ac54b",
   "RevPebbling/RatioConvergence.lean": "7c445dee4137ce2dcb37d4e91640cf88c037f45638d769a92263bbe16fae5702",
+  "RevPebbling/ReachLimit.lean": "a715900c598e2d351f3d0cc699a50912c22e71b1c9e5c617f7f20bf50051cd32",
   "RevPebbling/RowMax.lean": "c94eb6e0fb81f47f81532ea697d7a137eff36ec8a78898966142a8f4d7d23d18",
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
-  "RevPebbling.lean": "0d273129b9c851bf27f4dfd7cf6ae79964ca357b868c6c90629bb0ede7b474fa"
+  "RevPebbling.lean": "65858eb856fb3e0aa5a621dbbe62f35d07a0306a19aa30dc9e7e5ef430b369af"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -235,7 +236,7 @@
   },
   "game_cost_achievability": {
    "status": "proved_general",
-   "scope": "UNBOUNDED, kernel axioms only.  LINK (1) in numerical form: the cost the artifact computes from `rowIter` is achieved by an actual play.  `reachIn_Fpre` runs Knill's construction (game_reach_composition) along the recursion -- the attaining split of `gen_satisfies_knill` supplies the three sub-plays, one at the same space level on a shorter chain and two at one pebble less -- and concludes that for every space level S = s+2 and every chain length n up to the reach limit 2^{S-1} there is a legal play of length exactly Fpre (rowIter s) n.  `GameCost.gameF n S = sInf {t | ReachIn n S t}` makes the game optimum a total function and `gameF_le_fRow` reads the above as gameF (2^{S-1}) S <= f_S.  The converse (no play is shorter) is the remaining half of link (1); with it gameF and fRow coincide and the letter's `Submult` becomes provable by block simulation.",
+   "scope": "UNBOUNDED, kernel axioms only.  LINK (1) in numerical form: the cost the artifact computes from `rowIter` is achieved by an actual play.  `reachIn_Fpre` runs Knill's construction (game_reach_composition) along the recursion -- the attaining split of `gen_satisfies_knill` supplies the three sub-plays, one at the same space level on a shorter chain and two at one pebble less -- and concludes that for every space level S = s+2 and every chain length n up to the reach limit 2^{S-1} there is a legal play of length exactly Fpre (rowIter s) n.  `GameCost.gameF n S = sInf {t | ReachIn n S t}` makes the game optimum a total function and `gameF_le_fRow` reads the above as gameF (2^{S-1}) S <= f_S.  The converse (no play is shorter) is the remaining half of link (1); with it gameF and fRow coincide and the letter's `Submult` becomes provable by block simulation.  `ReachLimit` adds the reach characterisation as an iff in the game's own language ((exists t, ReachIn n S t) <-> n <= 2^{S-1}, from reach_two_pow / reach_impossible_general / reachIn_Fpre) and with it the CORNER FORCING in general (`corner_split_forced`, checked on 3 <= p <= 7 in PebblingTheory): at the reach limit both children are playable only for the midpoint split, so the recursion has no choice of cut there.",
    "theorems": [
     "RevPebbling.GameKnill.reachIn_one",
     "RevPebbling.GameKnill.reachIn_Fpre",
@@ -243,7 +244,10 @@
     "RevPebbling.GameCost.reachIn_gameF",
     "RevPebbling.GameCost.gameF_le_Fpre",
     "RevPebbling.GameCost.Fpre_reach_limit",
-    "RevPebbling.GameCost.gameF_le_fRow"
+    "RevPebbling.GameCost.gameF_le_fRow",
+    "RevPebbling.ReachLimit.le_two_pow_of_reachIn",
+    "RevPebbling.ReachLimit.reachIn_iff",
+    "RevPebbling.ReachLimit.corner_split_forced"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": []

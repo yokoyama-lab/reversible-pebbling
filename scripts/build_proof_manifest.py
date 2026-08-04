@@ -483,7 +483,17 @@ def main() -> int:
                           "(no play is shorter) is the remaining half of "
                           "link (1); with it gameF and fRow coincide and "
                           "the letter's `Submult` becomes provable by "
-                          "block simulation."),
+                          "block simulation.  `ReachLimit` adds the reach "
+                          "characterisation as an iff in the game's own "
+                          "language ((exists t, ReachIn n S t) <-> "
+                          "n <= 2^{S-1}, from reach_two_pow / "
+                          "reach_impossible_general / reachIn_Fpre) and "
+                          "with it the CORNER FORCING in general "
+                          "(`corner_split_forced`, checked on 3 <= p <= 7 "
+                          "in PebblingTheory): at the reach limit both "
+                          "children are playable only for the midpoint "
+                          "split, so the recursion has no choice of cut "
+                          "there."),
                 "theorems": [
                     "RevPebbling.GameKnill.reachIn_one",
                     "RevPebbling.GameKnill.reachIn_Fpre",
@@ -492,6 +502,9 @@ def main() -> int:
                     "RevPebbling.GameCost.gameF_le_Fpre",
                     "RevPebbling.GameCost.Fpre_reach_limit",
                     "RevPebbling.GameCost.gameF_le_fRow",
+                    "RevPebbling.ReachLimit.le_two_pow_of_reachIn",
+                    "RevPebbling.ReachLimit.reachIn_iff",
+                    "RevPebbling.ReachLimit.corner_split_forced",
                 ],
             },
             "game_reach_composition": {
