@@ -381,9 +381,24 @@ findings に「ビット反転の既知性は未決」と残したままにす�
 
 ## U8 — 最大セルの最適性を CP-SAT で独立に確認する
 
-**状態: todo**
+**状態: done**（2026-08-05）
 
-完了条件: 台帳の各族の最大セル（BFS が届いた最大の $h$/$k$）について
+`pebbleable <= 21` の $p=p_{\min}$ 行 54 件を 1 セル 20 秒で実行（`scripts/family_cpsat.py`、
+生データ `data/families/cpsat.csv`）。**値を返した 39 行すべてが BFS と一致。不一致ゼロ。**
+
+内訳: `OPTIMAL`+$C$ に余裕あり **18 行（清潔な独立確認）**／`OPTIMAL`+`cap_tight` 12 行／
+`FEASIBLE` 9 行（上界のみ）／`UNKNOWN` 15 行。最大は $N=11$。
+
+**`cap_tight` の 12 行は単独では真の最適の証書にならない**（$C$ 制限モデル内の最適）。
+BFS と一致したことで「$C$ の制限で失っていない」が従うだけである。誇張しない。
+
+住み分けは `data/cpsat_interval_findings.md` §4 の予測どおり（$e=0$ の超線形領域は
+BFS が強い）。$N\ge12$ から `UNKNOWN` が出て、BFS は $N=33$ まで届いている。
+**CP-SAT の失敗ではない。**
+
+`tools/loopcheck.sh` に `--verify`（矛盾検査のみ）を組み込んだ。
+
+旧・完了条件: 台帳の各族の最大セル（BFS が届いた最大の $h$/$k$）について
 `scripts/cpsat_interval.py` を回し、`status=OPTIMAL` と BFS の値が一致することを確認する。
 一致しなければ**どちらかにバグがある**ので、その反復は失敗として理由を書く。
 台帳に `methods` として `cpsat` を足す。
