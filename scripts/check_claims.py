@@ -40,6 +40,9 @@ CONSTANT_ALLOW = {
                  "outside the prover (see data/anchor_T98500_m11.txt)",
     "2.5174406519": "the same bound at full precision",
     "2.924": "the bound f_4 = 25 gives on paper, quoted for comparison",
+    "2.551": "quoted FROM the letter, where it is unbacked: the artifact "
+             "has no f_59, so the ratio cannot be checked (this entry "
+             "exists to record the finding, not to bless the number)",
 }
 
 
