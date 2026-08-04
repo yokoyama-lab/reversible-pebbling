@@ -3,6 +3,7 @@ import RevPebbling.CompositionAnchor
 import RevPebbling.CountRecursion
 import RevPebbling.CrossingConcentration
 import RevPebbling.DifferenceMergeProperty
+import RevPebbling.Dispersion4731Growth
 import RevPebbling.DispersionBound
 import RevPebbling.DispersionBound32
 import RevPebbling.DispersionBound32b

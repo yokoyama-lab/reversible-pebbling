@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "dd5ce9004a9c0b02b8e9af5d79ecb4c5c840b7a171f73e43de2edb0017436f7a",
+ "proof_bundle_sha256": "d6f3a551a515d14bdb2ff76fad631f5c64bdf14569a012910ebcfd03b7d47f70",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -11,6 +11,7 @@
   "RevPebbling/CountRecursion.lean": "a55f80b113f1bf74166c21ad086f217fcd4786de5ee99c7d46eaeeb0539178ef",
   "RevPebbling/CrossingConcentration.lean": "f13df2ffc6c6f79234793874a3f4d527b75d5144c2e95562d85e557c9ab3c539",
   "RevPebbling/DifferenceMergeProperty.lean": "bc65c46cf8135e9fd1898e6176874eaabf0ecbf47720450dbff5aba00a4b4878",
+  "RevPebbling/Dispersion4731Growth.lean": "71906524bafa2c065dd281583698a7941f50d55b1527b100bd36933f66054ce6",
   "RevPebbling/DispersionBound.lean": "12244572e35198d5d550403f2cb5664e9698c3cb0ed43c924887ca15ecdb4c89",
   "RevPebbling/DispersionBound32.lean": "432ccb527df7f4c06263d2ae5fd1e5f3a008bc677fee7814fade06973e06de63",
   "RevPebbling/DispersionBound32b.lean": "68ef986d04f83a2efd2afb6fdfde4185cddbe3f166177ac78219b21819859731",
@@ -41,7 +42,7 @@
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
-  "RevPebbling.lean": "0e919f4fb65d98d926f770eea2c83c6578d44569e45bfc06d4819ece6b0709ff"
+  "RevPebbling.lean": "09b9dba0afa40d7109d57993f29f6a84d10c1d4dd5474655940d3e271a2ce75d"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -148,11 +149,15 @@
   },
   "dispersion_on_growth": {
    "status": "proved_general",
-   "scope": "UNBOUNDED, relative to submultiplicativity.  Connects the dispersion lower bounds to the real number `c` for the first time: they were certified in the language of counts and midpoints (`dispersion_midpoint_16` etc.) and the step 'hence c >= ...' was taken on paper.  `growth_ge_of_midv_geometric` is the general bridge -- a geometric lower bound K*B^S <= m_S on the midpoints becomes (K/2B^2)*(2B)^S <= f_S through Sandwich.two_pow_mul_midv_le_fRow, and GrowthLower.growth_ge_of_geometric reads that as 2B <= c (the side condition K <= B only serves the base level f_1 = 1).  `growth_ge_32_13` applies it to the q = 1 instance: 32/13 = 2.4615... <= c, the first machine-checked improvement over the elementary 2 <= c.  The sharper instances (DispersionBound32*, DispersionBound4731, up to 2.5170647241) fit the same bridge but their midpoint bounds carry fractional exponents (q = 3/2, 47/31), so extracting K*B^S <= m_S from them needs `rpow` arithmetic that is not done here.  Kernel axioms only.",
+   "scope": "UNBOUNDED, relative to submultiplicativity.  Connects the dispersion lower bounds to the real number `c` for the first time: they were certified in the language of counts and midpoints (`dispersion_midpoint_16` etc.) and the step 'hence c >= ...' was taken on paper.  `growth_ge_of_midv_geometric` is the general bridge -- a geometric lower bound K*B^S <= m_S on the midpoints becomes (K/2B^2)*(2B)^S <= f_S through Sandwich.two_pow_mul_midv_le_fRow, and GrowthLower.growth_ge_of_geometric reads that as 2B <= c (the side condition K <= B only serves the base level f_1 = 1).  `growth_ge_32_13` applies it to the q = 1 instance: 32/13 = 2.4615... <= c, the first machine-checked improvement over the elementary 2 <= c.  The sharper instances (DispersionBound32*, DispersionBound4731, up to 2.5170647241) fit the same bridge but their midpoint bounds carry fractional exponents (q = 3/2, 47/31) carry fractional exponents, but the CONCLUSION does not: fixing a rational lambda0 below the true ratio turns the whole extraction into Nat arithmetic over one integer comparison (`Dispersion4731Growth.master`, lambda0^47 <= ((2D)/L)^31 cleared of denominators, about 13500 digits, settled by `decide` in a second and depending on NO axiom beyond propext).  `growth_ge_2_51706472` delivers 2.51706472 <= c, within 1.5e-8 of the value the q = 47/31 certificate carries, so the development's sharpest lower bound and its upper bounds now speak about the same real number.  Kernel axioms only.",
    "theorems": [
     "RevPebbling.DispersionGrowth.midv_ge_geometric",
     "RevPebbling.DispersionGrowth.growth_ge_of_midv_geometric",
-    "RevPebbling.DispersionGrowth.growth_ge_32_13"
+    "RevPebbling.DispersionGrowth.growth_ge_32_13",
+    "RevPebbling.Dispersion4731Growth.master",
+    "RevPebbling.Dispersion4731Growth.midv_ge_nat",
+    "RevPebbling.Dispersion4731Growth.midv_ge_real",
+    "RevPebbling.Dispersion4731Growth.growth_ge_2_51706472"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": []

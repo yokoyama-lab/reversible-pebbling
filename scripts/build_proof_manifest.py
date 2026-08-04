@@ -274,13 +274,28 @@ def main() -> int:
                           "(DispersionBound32*, DispersionBound4731, up to "
                           "2.5170647241) fit the same bridge but their "
                           "midpoint bounds carry fractional exponents "
-                          "(q = 3/2, 47/31), so extracting K*B^S <= m_S "
-                          "from them needs `rpow` arithmetic that is not "
-                          "done here.  Kernel axioms only."),
+                          "(q = 3/2, 47/31) carry fractional exponents, "
+                          "but the CONCLUSION does not: fixing a rational "
+                          "lambda0 below the true ratio turns the whole "
+                          "extraction into Nat arithmetic over one integer "
+                          "comparison (`Dispersion4731Growth.master`, "
+                          "lambda0^47 <= ((2D)/L)^31 cleared of "
+                          "denominators, about 13500 digits, settled by "
+                          "`decide` in a second and depending on NO axiom "
+                          "beyond propext).  `growth_ge_2_51706472` "
+                          "delivers 2.51706472 <= c, within 1.5e-8 of the "
+                          "value the q = 47/31 certificate carries, so the "
+                          "development's sharpest lower bound and its "
+                          "upper bounds now speak about the same real "
+                          "number.  Kernel axioms only."),
                 "theorems": [
                     "RevPebbling.DispersionGrowth.midv_ge_geometric",
                     "RevPebbling.DispersionGrowth.growth_ge_of_midv_geometric",
                     "RevPebbling.DispersionGrowth.growth_ge_32_13",
+                    "RevPebbling.Dispersion4731Growth.master",
+                    "RevPebbling.Dispersion4731Growth.midv_ge_nat",
+                    "RevPebbling.Dispersion4731Growth.midv_ge_real",
+                    "RevPebbling.Dispersion4731Growth.growth_ge_2_51706472",
                 ],
             },
             "two_d_closed_form": {
