@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "d6f3a551a515d14bdb2ff76fad631f5c64bdf14569a012910ebcfd03b7d47f70",
+ "proof_bundle_sha256": "f804d47eff66758e16ebd4e134f91228c66aa203d65a1fe14d832646b0188340",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -20,6 +20,7 @@
   "RevPebbling/DispersionGrowth.lean": "8dd94eb2f5abcd332644859a55822e875205ee2cfbd70879be928f434c1a55bf",
   "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
+  "RevPebbling/GameReach.lean": "cdc981f364617777dd1ebe8555dfdb7643fa0972e6297a994ec7dbeeb761afd9",
   "RevPebbling/GrowthBounds.lean": "e8b8fa2de95abcf6910da3cc3b8e747df4d8777967acc0e32f325973bfa02bf5",
   "RevPebbling/GrowthCertified.lean": "b70914c7d8ed0b84102e46cbc0789cf86e208780f2c5c8d3bb8022d31e1504c6",
   "RevPebbling/GrowthClosedForm.lean": "9e411c49017a9db6907865d7520fde394c34fe2ec99a20e57299ead54d5d62ee",
@@ -42,7 +43,7 @@
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
-  "RevPebbling.lean": "09b9dba0afa40d7109d57993f29f6a84d10c1d4dd5474655940d3e271a2ce75d"
+  "RevPebbling.lean": "1318448d1c07b9546e8b68e2b4d4c8c0e3b3e1b9462bda296f0d9a2cb1f51f49"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -226,6 +227,25 @@
     "RevPebbling.GrowthClosedForm.two_pow_half_le_sqrt_two_pow",
     "RevPebbling.GrowthClosedForm.growth_le_two_sqrt_two",
     "RevPebbling.GrowthClosedForm.growth_le_2_8285"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": []
+  },
+  "game_reach_composition": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, kernel axioms only.  LINK (1), the constructive half.  Introduces the game-side cost as an object: `ReachIn n p t` says the chain of n cells can be cleanly pebbled (empty board to a single pebble on the last cell) with peak <= p in <= t moves by a schedule that stays inside the chain.  The bounded moves are part of the definition on purpose: they make a schedule transportable between boards of different widths, which is the content of the padding lemmas `execB_pad`, `legalB_pad`, `maxOnes_pad` (a play does not notice cells beyond its reach; the peak grows only by the padding's own pebbles).  With those and the four lifting laws of lift_above_primitive, `reach_compose` proves KNILL 1995 Thm 2.1's `<=` half at the level of plays: reach cell m-1 with S, stand on it and reach the far end with S-1 by a LIFTED play, then remove the foundation by running a play that reaches m with S-1 BACKWARDS (legal_reverse / exec_reverse_cancel / maxOnes_reverse).  The peak never exceeds S because each later phase carries exactly one pebble from another phase.  In cost terms this is F(n,S) <= F(m,S) + F(n-m,S-1) + F(m,S-1), the recursion whose solution knill_recursion_uniqueness identifies with `rowIter`.  What remains of link (1) is the `>=` half (the decomposition of an optimal solution matrix, the heavy direction) and the definition of the game optimum as a minimum over plays.",
+   "theorems": [
+    "RevPebbling.GameReach.nth_append_left",
+    "RevPebbling.GameReach.toggle_append_left",
+    "RevPebbling.GameReach.execB_pad",
+    "RevPebbling.GameReach.legalB_pad",
+    "RevPebbling.GameReach.maxOnes_pad",
+    "RevPebbling.GameReach.reach_pad",
+    "RevPebbling.GameReach.doneBoard_succ",
+    "RevPebbling.GameReach.emptyBoard_append_doneBoard",
+    "RevPebbling.GameReach.reach_compose",
+    "RevPebbling.GameReach.reach_one",
+    "RevPebbling.GameReach.reach_two"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": []

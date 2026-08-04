@@ -12,6 +12,7 @@ import RevPebbling.DispersionBound4731
 import RevPebbling.DispersionGrowth
 import RevPebbling.DoublingLower
 import RevPebbling.FrontDP
+import RevPebbling.GameReach
 import RevPebbling.GrowthBounds
 import RevPebbling.GrowthCertified
 import RevPebbling.GrowthClosedForm

@@ -462,6 +462,53 @@ def main() -> int:
                     "RevPebbling.GrowthClosedForm.growth_le_2_8285",
                 ],
             },
+            "game_reach_composition": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, kernel axioms only.  LINK (1), the "
+                          "constructive half.  Introduces the game-side "
+                          "cost as an object: `ReachIn n p t` says the "
+                          "chain of n cells can be cleanly pebbled (empty "
+                          "board to a single pebble on the last cell) with "
+                          "peak <= p in <= t moves by a schedule that "
+                          "stays inside the chain.  The bounded moves are "
+                          "part of the definition on purpose: they make a "
+                          "schedule transportable between boards of "
+                          "different widths, which is the content of the "
+                          "padding lemmas `execB_pad`, `legalB_pad`, "
+                          "`maxOnes_pad` (a play does not notice cells "
+                          "beyond its reach; the peak grows only by the "
+                          "padding's own pebbles).  With those and the "
+                          "four lifting laws of lift_above_primitive, "
+                          "`reach_compose` proves KNILL 1995 Thm 2.1's `<=` "
+                          "half at the level of plays: reach cell m-1 with "
+                          "S, stand on it and reach the far end with S-1 "
+                          "by a LIFTED play, then remove the foundation by "
+                          "running a play that reaches m with S-1 "
+                          "BACKWARDS (legal_reverse / exec_reverse_cancel / "
+                          "maxOnes_reverse).  The peak never exceeds S "
+                          "because each later phase carries exactly one "
+                          "pebble from another phase.  In cost terms this "
+                          "is F(n,S) <= F(m,S) + F(n-m,S-1) + F(m,S-1), the "
+                          "recursion whose solution knill_recursion_"
+                          "uniqueness identifies with `rowIter`.  What "
+                          "remains of link (1) is the `>=` half (the "
+                          "decomposition of an optimal solution matrix, "
+                          "the heavy direction) and the definition of the "
+                          "game optimum as a minimum over plays."),
+                "theorems": [
+                    "RevPebbling.GameReach.nth_append_left",
+                    "RevPebbling.GameReach.toggle_append_left",
+                    "RevPebbling.GameReach.execB_pad",
+                    "RevPebbling.GameReach.legalB_pad",
+                    "RevPebbling.GameReach.maxOnes_pad",
+                    "RevPebbling.GameReach.reach_pad",
+                    "RevPebbling.GameReach.doneBoard_succ",
+                    "RevPebbling.GameReach.emptyBoard_append_doneBoard",
+                    "RevPebbling.GameReach.reach_compose",
+                    "RevPebbling.GameReach.reach_one",
+                    "RevPebbling.GameReach.reach_two",
+                ],
+            },
             "lift_above_primitive": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED, route beta (game-side).  Knill's "
