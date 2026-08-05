@@ -12,6 +12,7 @@ import RevPebbling.CutSum
 import RevPebbling.CutUpper
 import RevPebbling.CutUpperFix
 import RevPebbling.CutVocabulary
+import RevPebbling.UpperPeak
 import RevPebbling.DifferenceMergeProperty
 import RevPebbling.Dispersion4731Growth
 import RevPebbling.DispersionBound
