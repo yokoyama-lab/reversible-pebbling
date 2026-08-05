@@ -46,26 +46,33 @@ python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 474 theorems the
+the rest are general (unbounded) proofs.  Of the 485 theorems the
 manifest lists, **59 rest on a `native_decide` certificate and 9 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
 `axiom_free_theorems`) — generated from `#print axioms`, so the prose
 in each stage's `scope` cannot drift away from what the kernel reports.
-The same file records, per stage, which theorems carry an *unproved
-hypothesis* (`carried_hypotheses`): submultiplicativity of the cost
-(`Submult`, 18 theorems), the `≥` half of Knill's Theorem 2.1
-(`GameOptimal`, 2; `GameAttain`, 3; `LowerRowExact`, 2) and
-superadditivity of the count profile (`Superadd`, 3).  That is read off the statements with `#check`, not
-asserted in prose, so "relative to X" cannot drift either.
+The same file records, per stage, which theorems carry a hypothesis
+(`carried_hypotheses`) and which theorems *prove* one
+(`proves_hypotheses`), with the verdict per hypothesis in the top-level
+`hypotheses` field.  Two remain unproved: submultiplicativity of the
+cost (`Submult`, carried by 18 theorems) and superadditivity of the
+count profile (`Superadd`, 3).  The three that state the `≥` half of
+Knill's Theorem 2.1 — `GameOptimal`, `GameAttain` and `LowerRowExact` —
+are now **theorems** (`RowExact.gameOptimal_holds`,
+`RowExact.gameAttain_holds`, `RowExact.lowerRowExact_all`); the
+statements that still take them as arguments are the ones written before
+they were proved.  All of this is read off the statements with `#check`,
+splitting each type at its conclusion, not asserted in prose, so
+"relative to X" cannot drift either.
 
 `scripts/check_claims.py` additionally checks that what this README
 says — the counts above, the constants it quotes, the file paths and
 theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
-A full build takes about nine minutes (30 stages, 474 theorems),
+A full build takes about nine minutes (31 stages, 485 theorems),
 nearly all of it the
 certification of row 60 (13.1 M runs, ~5.6 GB), which carries the
 published bound `c ≤ 2.6106`.  `.github/workflows/build.yml` runs the
@@ -173,6 +180,22 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   latter is named `GameGap.GameOptimal`).  `ReachLimit` states Knill's
   Theorem 2.3 as an iff about playability and generalises the corner
   forcing; `CutAccounting` supplies the time accounting of a cut.
+* `RevPebbling/UpperPersist.lean` + `RevPebbling/HpkResolved.lean` +
+  `RevPebbling/RowExact.lean` — the `≥` half of Knill's Theorem 2.1,
+  **proved**.  An optimal play is cut at `CutFull.cutFull`; the three
+  parts are accounted for separately, and the one claim about plays that
+  the accounting needed — that the region above the cut never empties
+  once it has been used — follows from an exchange argument, since moves
+  below the cut never consult the cells above them
+  (`upper_nonempty_of_optimal`).  That makes the recursion an equality
+  for the game optimum (`gameF_recursion_eq_final`), and an induction on
+  the number of pebbles identifies the optimum with the generated row on
+  the whole reach range (`gameF_eq_row`), so `gameF (2^{S-1}) S = f_S`
+  unconditionally.  The values it predicts were checked against a
+  breadth-first search written outside Lean.  The published proof of
+  this direction (Knill 1995, p. 5) has a gap at the step that bounds the
+  middle part; the three-part decomposition follows Královič
+  (RAIRO-ITA **38** (2004) 137–161, proof of Thm 3.4).
 * `RevPebbling/Sandwich.lean` + `RevPebbling/TwoD.lean` +
   `RevPebbling/GrowthLower.lean` + `RevPebbling/DispersionGrowth.lean` +
   `RevPebbling/Dispersion4731Growth.lean` — the growth rate from both

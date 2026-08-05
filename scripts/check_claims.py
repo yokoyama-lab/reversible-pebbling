@@ -70,6 +70,7 @@ def main() -> int:
     for s in stages.values():
         for hyp, thms in s.get("carried_hypotheses", {}).items():
             carried[hyp] = carried.get(hyp, 0) + len(thms)
+    hyp_status = manifest.get("hypotheses", {})
 
     docs = [ROOT / "README.md"]
     claude = ROOT / "CLAUDE.md"
@@ -81,7 +82,8 @@ def main() -> int:
     # names that live in the manifest rather than in the sources
     known_names = set(stages) | {
         "native_decide_theorems", "axiom_free_theorems",
-        "carried_hypotheses", "proof_bundle_sha256", "source_sha256",
+        "carried_hypotheses", "proves_hypotheses", "hypotheses",
+        "proof_bundle_sha256", "source_sha256",
         "proved_stages", "schema_version", "task_id",
         "implemented_by", "lean_lib", "precompileModules",
     }
@@ -145,6 +147,19 @@ def main() -> int:
             where = problems if rel == "README.md" else warnings
             for ident in unknown:
                 where.append(f"{rel}: `{ident}` occurs in no source file")
+        # a hypothesis the manifest reports as proved must not still be
+        # described as open; this is the drift that matters most, since
+        # every "relative to X" claim in the paper turns on it
+        stale = ("unproved", "not proved", "still open", "remaining gap",
+                 "未証明", "仮説のまま", "残る仮説", "担いでいる仮説")
+        for hyp, info in hyp_status.items():
+            if info["status"] != "proved":
+                continue
+            for lineno, line in enumerate(text.splitlines(), 1):
+                if hyp in line and any(m in line for m in stale):
+                    problems.append(
+                        f"{rel}:{lineno}: `{hyp}` is proved "
+                        f"({info['proved_by'][0]}) but the line calls it open")
 
     print(f"manifest: {counts['theorems']} theorems in {counts['stages']} "
           f"stages; {counts['native']} rest on native_decide, "
@@ -152,6 +167,10 @@ def main() -> int:
     if carried:
         print("carried hypotheses: "
               + ", ".join(f"{h} ({n})" for h, n in sorted(carried.items())))
+    if hyp_status:
+        print("hypothesis status: "
+              + ", ".join(f"{h} {v['status']}"
+                          for h, v in sorted(hyp_status.items())))
     if warnings:
         print(f"\n{len(warnings)} note(s) in working documents:")
         for w in warnings:

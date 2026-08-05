@@ -41,6 +41,47 @@ NATIVE_OK = ("Lean.ofReduceBool", "Lean.trustCompiler")
 CARRIED_HYPOTHESES = ("Submult", "GameOptimal", "GameAttain", "LowerRowExact", "Superadd")
 
 
+def split_conclusion(ty: str) -> tuple:
+    """Split a flattened Lean type into (hypotheses, conclusion).
+
+    Needed because a theorem whose *conclusion* is one of the carried
+    hypotheses is discharging it, not carrying it — the opposite reading.
+    Leading `∀`-binders are dropped and the type is cut at its last
+    top-level `→`; arrows inside brackets are not top level.
+    """
+    s, binders = ty, []
+    while True:
+        st = s.lstrip()
+        if not st.startswith("∀"):
+            break
+        depth, cut = 0, None
+        for i, ch in enumerate(st):
+            if ch in "([{":
+                depth += 1
+            elif ch in ")]}":
+                depth -= 1
+            elif ch == "," and depth == 0:
+                cut = i
+                break
+        if cut is None:
+            break
+        # `#check @f` puts every argument in the binder group, so this is
+        # where the hypotheses are — keep it rather than discarding it
+        binders.append(st[:cut])
+        s = st[cut + 1:]
+    depth, cut = 0, None
+    for i, ch in enumerate(s):
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            depth -= 1
+        elif ch == "→" and depth == 0:
+            cut = i
+    if cut is None:
+        return " ".join(binders), s
+    return " ".join(binders + [s[:cut]]), s[cut + 1:]
+
+
 def axiom_allowed(a: str) -> bool:
     return (a in ALLOWED_AXIOMS or a in NATIVE_OK
             or "._native.native_decide.ax" in a)
@@ -1453,6 +1494,45 @@ def main() -> int:
                     "RevPebbling.UpperPersist.upper_nonempty_of_optimal",
                 ],
             },
+            "link1_ge_row_exact": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-05): LINK (1) IS CLOSED. "
+                          "LowerRowExact - the outer induction hypothesis on the "
+                          "number of pebbles, and the last hypothesis of link (1) - "
+                          "is proved for every level (lowerRowExact_all), so the game "
+                          "optimum IS the generated row on the whole reach range "
+                          "(gameF_eq_row). The induction on s has the '<=' half free "
+                          "(GameCost.gameF_le_Fpre) and the '>=' half by strong "
+                          "induction on the chain length: m = 1 is trivial, m <= s+3 "
+                          "is the linear regime (both sides 2m-1, no recursion "
+                          "needed), and otherwise an optimal play either has peak at "
+                          "most s+2 - a witness one level down, closed by "
+                          "KnillObs.Fpre_antitone_space - or peak exactly s+3, where "
+                          "HpkResolved.gameF_recursion_ge_final applies with nothing "
+                          "carried. The two reach bounds the induction needs come "
+                          "from the plays the lower terms are built from "
+                          "(reachIn_lower_suffix, reachIn_upper) via "
+                          "ReachLimit.reachIn_iff. Consequently GameGap.GameOptimal "
+                          "and GameDecomposition.GameAttain are THEOREMS "
+                          "(gameOptimal_holds, gameAttain_holds), and "
+                          "gameF (2^(S-1)) S = f_S unconditionally. Checked against "
+                          "breadth-first search outside Lean: gameF 4 3 = 9, "
+                          "gameF 8 4 = 25, gameF 16 5 = 71, gameF 5 5 = 9, "
+                          "gameF 12 5 = 39. "),
+                "theorems": [
+                    "RevPebbling.RowExact.gameAttain_holds",
+                    "RevPebbling.RowExact.gameF_eq_fRow_all",
+                    "RevPebbling.RowExact.gameF_eq_row",
+                    "RevPebbling.RowExact.gameF_eq_row_sum_all",
+                    "RevPebbling.RowExact.gameOptimal_holds",
+                    "RevPebbling.RowExact.ge_row_of_lower",
+                    "RevPebbling.RowExact.lowerRowExact_all",
+                    "RevPebbling.RowExact.lowerRowExact_succ",
+                    "RevPebbling.RowExact.lowerRowExact_zero",
+                    "RevPebbling.RowExact.reachIn_lower_suffix",
+                    "RevPebbling.RowExact.reachIn_upper",
+                ],
+            },
     }
 
     # ---- axiom audit for every listed theorem -----------------------
@@ -1546,18 +1626,38 @@ def main() -> int:
         if unseen:
             raise SystemExit("statement audit incomplete for: "
                              + ", ".join(unseen))
+        parts = {t: split_conclusion(ty) for t, ty in types.items()}
         for stage in proved_stages.values():
-            carried = {}
+            carried, proves = {}, {}
             for hyp in CARRIED_HYPOTHESES:
-                hit = sorted(t for t in stage["theorems"] if hyp in types[t])
+                hit = sorted(t for t in stage["theorems"] if hyp in parts[t][0])
                 if hit:
                     carried[hyp] = hit
+                # a theorem proves the hypothesis outright only if it
+                # concludes it while assuming none of the carried ones —
+                # `GameAttain → GameOptimal` must not count as a proof
+                got = sorted(t for t in stage["theorems"]
+                             if hyp in parts[t][1]
+                             and not any(h in parts[t][0]
+                                         for h in CARRIED_HYPOTHESES))
+                if got:
+                    proves[hyp] = got
             stage["carried_hypotheses"] = carried
+            stage["proves_hypotheses"] = proves
         totals = {h: sum(len(s["carried_hypotheses"].get(h, []))
                          for s in proved_stages.values())
                   for h in CARRIED_HYPOTHESES}
-        print("statement audit OK: hypotheses carried — "
-              + ", ".join(f"{h}: {n}" for h, n in totals.items()))
+        proved_by = {h: sorted(t for s in proved_stages.values()
+                               for t in s["proves_hypotheses"].get(h, []))
+                     for h in CARRIED_HYPOTHESES}
+        hyp_status = {h: {"status": "proved" if proved_by[h] else "carried",
+                          "carried_by": totals[h], "proved_by": proved_by[h]}
+                      for h in CARRIED_HYPOTHESES}
+        print("statement audit OK: hypotheses — "
+              + ", ".join(
+                  f"{h}: {totals[h]} carried"
+                  + (f", PROVED by {proved_by[h][0]}" if proved_by[h] else "")
+                  for h in CARRIED_HYPOTHESES))
     finally:
         tmp.unlink(missing_ok=True)
 
@@ -1577,6 +1677,7 @@ def main() -> int:
         "prover": lean_version,
         "proof_bundle_sha256": bundle.hexdigest(),
         "source_sha256": hashed,
+        "hypotheses": hyp_status,
         "proved_stages": proved_stages,
     }
     OUTPUT.write_text(json.dumps(manifest, indent=1, ensure_ascii=False)

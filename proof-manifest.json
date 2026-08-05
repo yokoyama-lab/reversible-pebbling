@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "45e29a4b33f58bf26d7cc9322b3ac4c2a175fd0118101329ce80e92495837add",
+ "proof_bundle_sha256": "31f7f9680d55a38c4be708d565fc4d7d678bb759c257e20b93001998ef98ab56",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -70,13 +70,48 @@
   "RevPebbling/RLEPebble.lean": "d2c19e83dc1e8fc4be15935a62e8f6ac7762900705aedaeac86acc286e1ac54b",
   "RevPebbling/RatioConvergence.lean": "7c445dee4137ce2dcb37d4e91640cf88c037f45638d769a92263bbe16fae5702",
   "RevPebbling/ReachLimit.lean": "a715900c598e2d351f3d0cc699a50912c22e71b1c9e5c617f7f20bf50051cd32",
+  "RevPebbling/RowExact.lean": "05cc7997b5688d1274a136007ab09fcd46cdacb307299bf02f4af27ef669979c",
   "RevPebbling/RowMax.lean": "c94eb6e0fb81f47f81532ea697d7a137eff36ec8a78898966142a8f4d7d23d18",
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "8e8dc6d317652d660d928e1f6071ee2a7e06a1f45c737a250f9ee0c15ece2a0e"
+  "RevPebbling.lean": "96faf055502549d44f220c7403a040960b3897b0cfcbcad3ab45da29c4a3ea03"
+ },
+ "hypotheses": {
+  "Submult": {
+   "status": "carried",
+   "carried_by": 18,
+   "proved_by": []
+  },
+  "GameOptimal": {
+   "status": "proved",
+   "carried_by": 1,
+   "proved_by": [
+    "RevPebbling.RowExact.gameOptimal_holds"
+   ]
+  },
+  "GameAttain": {
+   "status": "proved",
+   "carried_by": 3,
+   "proved_by": [
+    "RevPebbling.RowExact.gameAttain_holds"
+   ]
+  },
+  "LowerRowExact": {
+   "status": "proved",
+   "carried_by": 4,
+   "proved_by": [
+    "RevPebbling.RowExact.lowerRowExact_all",
+    "RevPebbling.RowExact.lowerRowExact_zero"
+   ]
+  },
+  "Superadd": {
+   "status": "carried",
+   "carried_by": 3,
+   "proved_by": []
+  }
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -105,7 +140,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "growth_rate_real": {
    "status": "proved_general",
@@ -135,7 +171,8 @@
      "RevPebbling.GrowthRate.subadditive_logSeq",
      "RevPebbling.GrowthRate.tendsto_logSeq"
     ]
-   }
+   },
+   "proves_hypotheses": {}
   },
   "row_equation_certification": {
    "status": "general_framework_plus_certified_values",
@@ -197,7 +234,8 @@
      "RevPebbling.GrowthCertified.growth_le_2_6106",
      "RevPebbling.GrowthCertified.growth_le_2_6224"
     ]
-   }
+   },
+   "proves_hypotheses": {}
   },
   "dispersion_on_growth": {
    "status": "proved_general",
@@ -219,7 +257,8 @@
      "RevPebbling.DispersionGrowth.growth_ge_32_13",
      "RevPebbling.DispersionGrowth.growth_ge_of_midv_geometric"
     ]
-   }
+   },
+   "proves_hypotheses": {}
   },
   "two_d_closed_form": {
    "status": "proved_general",
@@ -238,7 +277,8 @@
      "RevPebbling.TwoD.tendsto_log_rowMax",
      "RevPebbling.TwoD.tendsto_rowMax_root"
     ]
-   }
+   },
+   "proves_hypotheses": {}
   },
   "growth_lower_bound": {
    "status": "proved_general",
@@ -259,7 +299,8 @@
      "RevPebbling.GrowthLower.growth_ge_of_geometric",
      "RevPebbling.GrowthLower.growth_ge_two"
     ]
-   }
+   },
+   "proves_hypotheses": {}
   },
   "sandwich_general": {
    "status": "proved_unbounded",
@@ -277,7 +318,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "row_max_closed_form": {
    "status": "proved_general",
@@ -306,7 +348,8 @@
      "RevPebbling.GrowthClosedForm.growth_le_2_8285",
      "RevPebbling.GrowthClosedForm.growth_le_two_sqrt_two"
     ]
-   }
+   },
+   "proves_hypotheses": {}
   },
   "knill_observations_general": {
    "status": "proved_unbounded",
@@ -321,7 +364,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "game_cost_achievability": {
    "status": "proved_general",
@@ -349,7 +393,8 @@
     "GameOptimal": [
      "RevPebbling.GameGap.gameF_eq_fRow"
     ]
-   }
+   },
+   "proves_hypotheses": {}
   },
   "game_reach_composition": {
    "status": "proved_general",
@@ -369,7 +414,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "lift_above_primitive": {
    "status": "proved_general",
@@ -389,7 +435,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "knill_recursion_uniqueness": {
    "status": "proved_general",
@@ -401,7 +448,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "difference_merge_property_general_core": {
    "status": "proved_unbounded",
@@ -419,7 +467,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "rle_pebble_values": {
    "status": "proved_bounded",
@@ -442,7 +491,8 @@
    "axiom_free_theorems": [
     "RevPebbling.RLEPebble.c_le_2_6106_witness"
    ],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "count_recursion_general": {
    "status": "proved_unbounded",
@@ -468,7 +518,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "composition_anchor": {
    "status": "proved_unbounded",
@@ -488,7 +539,8 @@
     "RevPebbling.CompositionAnchor.midpoint_anchor_44"
    ],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "minimax_duality": {
    "status": "proved_unbounded",
@@ -508,7 +560,8 @@
    "axiom_free_theorems": [
     "RevPebbling.MinimaxDuality.cross_spec"
    ],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "dispersion_bound": {
    "status": "proved_unbounded",
@@ -558,7 +611,8 @@
     "RevPebbling.DispersionBound32c.dispersion32c_admissible",
     "RevPebbling.DispersionBound4731.dispersion4731_admissible"
    ],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "crossing_concentration": {
    "status": "proved_unbounded",
@@ -575,7 +629,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "ratio_convergence_phase01": {
    "status": "proved_unbounded",
@@ -587,7 +642,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "pebbling_theory_verification": {
    "status": "general_closed_forms_plus_bounded_checks",
@@ -678,7 +734,8 @@
     "RevPebbling.PebblingTheory.tail_invariance_step12"
    ],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "seam_identity_core": {
    "status": "proved_unbounded",
@@ -707,7 +764,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "front_dp_subsolution_framework": {
    "status": "proved_unbounded",
@@ -737,7 +795,8 @@
      "RevPebbling.Profile.subadditive_shifted",
      "RevPebbling.Profile.tendsto_profile"
     ]
-   }
+   },
+   "proves_hypotheses": {}
   },
   "link1_ge_cut_machinery": {
    "status": "proved_general",
@@ -770,7 +829,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "link1_ge_optimal_normalisation": {
    "status": "proved_general",
@@ -786,7 +846,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "link1_ge_three_terms": {
    "status": "proved_general",
@@ -825,7 +886,8 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "link1_ge_assembly": {
    "status": "proved_general",
@@ -856,9 +918,6 @@
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "GameOptimal": [
-     "RevPebbling.GameDecomposition.gameOptimal_of_attain"
-    ],
     "GameAttain": [
      "RevPebbling.GameDecomposition.gameF_eq_Fpre",
      "RevPebbling.GameDecomposition.gameOptimal_of_attain",
@@ -868,7 +927,8 @@
      "RevPebbling.AttainSplit.attain_split_cutFull",
      "RevPebbling.AttainSplit.attain_split_of_recursion"
     ]
-   }
+   },
+   "proves_hypotheses": {}
   },
   "game_side_general_theorems": {
    "status": "proved_general",
@@ -938,7 +998,8 @@
    "axiom_free_theorems": [
     "RevPebbling.FactorialBound.fact_eq_factorial"
    ],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "link1_ge_hpk_resolved": {
    "status": "proved_general",
@@ -957,7 +1018,45 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {}
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "link1_ge_row_exact": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (this work, 2026-08-05): LINK (1) IS CLOSED. LowerRowExact - the outer induction hypothesis on the number of pebbles, and the last hypothesis of link (1) - is proved for every level (lowerRowExact_all), so the game optimum IS the generated row on the whole reach range (gameF_eq_row). The induction on s has the '<=' half free (GameCost.gameF_le_Fpre) and the '>=' half by strong induction on the chain length: m = 1 is trivial, m <= s+3 is the linear regime (both sides 2m-1, no recursion needed), and otherwise an optimal play either has peak at most s+2 - a witness one level down, closed by KnillObs.Fpre_antitone_space - or peak exactly s+3, where HpkResolved.gameF_recursion_ge_final applies with nothing carried. The two reach bounds the induction needs come from the plays the lower terms are built from (reachIn_lower_suffix, reachIn_upper) via ReachLimit.reachIn_iff. Consequently GameGap.GameOptimal and GameDecomposition.GameAttain are THEOREMS (gameOptimal_holds, gameAttain_holds), and gameF (2^(S-1)) S = f_S unconditionally. Checked against breadth-first search outside Lean: gameF 4 3 = 9, gameF 8 4 = 25, gameF 16 5 = 71, gameF 5 5 = 9, gameF 12 5 = 39. ",
+   "theorems": [
+    "RevPebbling.RowExact.gameAttain_holds",
+    "RevPebbling.RowExact.gameF_eq_fRow_all",
+    "RevPebbling.RowExact.gameF_eq_row",
+    "RevPebbling.RowExact.gameF_eq_row_sum_all",
+    "RevPebbling.RowExact.gameOptimal_holds",
+    "RevPebbling.RowExact.ge_row_of_lower",
+    "RevPebbling.RowExact.lowerRowExact_all",
+    "RevPebbling.RowExact.lowerRowExact_succ",
+    "RevPebbling.RowExact.lowerRowExact_zero",
+    "RevPebbling.RowExact.reachIn_lower_suffix",
+    "RevPebbling.RowExact.reachIn_upper"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {
+    "LowerRowExact": [
+     "RevPebbling.RowExact.ge_row_of_lower",
+     "RevPebbling.RowExact.lowerRowExact_succ"
+    ]
+   },
+   "proves_hypotheses": {
+    "GameOptimal": [
+     "RevPebbling.RowExact.gameOptimal_holds"
+    ],
+    "GameAttain": [
+     "RevPebbling.RowExact.gameAttain_holds"
+    ],
+    "LowerRowExact": [
+     "RevPebbling.RowExact.lowerRowExact_all",
+     "RevPebbling.RowExact.lowerRowExact_zero"
+    ]
+   }
   }
  }
 }
