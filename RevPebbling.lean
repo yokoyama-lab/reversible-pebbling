@@ -5,6 +5,7 @@ import RevPebbling.CompositionAnchor
 import RevPebbling.CountRecursion
 import RevPebbling.CrossingConcentration
 import RevPebbling.CutAccounting
+import RevPebbling.CutOptimal
 import RevPebbling.CutPlays
 import RevPebbling.CutVocabulary
 import RevPebbling.DifferenceMergeProperty
