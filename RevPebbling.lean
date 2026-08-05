@@ -44,6 +44,7 @@ import RevPebbling.GrowthCertified
 import RevPebbling.GrowthClosedForm
 import RevPebbling.GrowthLower
 import RevPebbling.GrowthRate
+import RevPebbling.HpkResolved
 import RevPebbling.IntRoot
 import RevPebbling.KnillObs
 import RevPebbling.KnillRecursion
@@ -67,3 +68,4 @@ import RevPebbling.RowMax
 import RevPebbling.Sandwich
 import RevPebbling.SeamIdentity
 import RevPebbling.TwoD
+import RevPebbling.UpperPersist
