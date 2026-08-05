@@ -320,3 +320,29 @@ def test_cyl2_construction_verifies_and_bounds_pmin() -> None:
             assert r["peak"] >= ledger[h], f"h={h}: 構成が実測の p_min を下回った"
         checked += 1
     assert checked == 23, f"検査した h が {checked} 個"
+
+
+def test_at_most_p_vertices_are_placed_once() -> None:
+    """**どの合法スケジュールでも、ちょうど 1 回だけ置かれる頂点は高々 $p$ 個**（P1 の言い換え）。
+
+    $A=\\sum_v(\\text{置いた回数}) \\ge N + (N-r) = 2N-r$（$r$=1 回組の個数、等号は
+    3 回以上が無いとき）なので、$A^*\\ge 2N-\\min(p,N)$ は **$r\\le\\min(p,N)$** と同値である。
+    $r\\le N$ は自明なので、内容は **$r\\le p$** のほうにある。
+
+    ここでは台帳の証書についてこれを固定する。DAG 一般の検査は
+    `scripts/dag_bound.py`（$n\\le6$ の非同型 DAG 全数・46287 行・反例ゼロ）が持つ。
+    """
+    from family_atlas import read_rows
+
+    checked = 0
+    for row in read_rows():
+        if row["status"] != "exhaustive":
+            continue
+        params = tuple(int(x) for x in row["params"].split(":"))
+        p = int(row["p"])
+        prof, n, _m = placement_profile(row["family"], params, p)
+        assert prof[1] <= min(p, n), (
+            f"{row['family']}{params} p={p}: 1 回組が {prof[1]} 個で min(p,N)={min(p, n)} を超えた"
+        )
+        checked += 1
+    assert checked >= 203, f"検査した行が {checked} 件"
