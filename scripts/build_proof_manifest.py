@@ -1417,6 +1417,42 @@ def main() -> int:
                     "RevPebbling.HalvedDifference.sum_take_succ",
                 ],
             },
+            "link1_ge_hpk_resolved": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-05): the last claim about plays "
+                          "that the '>=' side needed, PROVED. Moves below the cut never "
+                          "consult the cells above it, so if an optimal play empties the "
+                          "region above the cut after having moved there, the earlier "
+                          "moves above the cut can be deleted: the lower trace is "
+                          "untouched, the later upper moves resume from the same empty "
+                          "region, the final board and the peak are unchanged, and the "
+                          "play is strictly shorter - contradicting optimality "
+                          "(upper_nonempty_of_optimal). At the cut time of "
+                          "CutTime.cutFull_attained the board is full and its lowest "
+                          "pebble is the cut, so one pebble is below and S are above "
+                          "(upper_ones_at_full_cut); hence a move above the cut has "
+                          "happened and the region above never empties again, which is "
+                          "exactly the hypothesis LowerSuffixPeak.hpk_of_upper_nonempty "
+                          "consumes. So hpk_at_full_cut is 'hpk', and "
+                          "gameF_recursion_ge_final is the '>=' direction of Knill's "
+                          "recursion CARRYING NOTHING; with CutSum.gameF_split_le it "
+                          "becomes the equality gameF_recursion_eq_final. The three-part "
+                          "decomposition is Kralovic's (RAIRO-ITA 38 (2004) 137-161, "
+                          "doi:10.1051/ita:2004008, proof of Thm 3.4); the exchange "
+                          "argument replacing his bounded interval is this work. "),
+                "theorems": [
+                    "RevPebbling.HpkResolved.gameF_recursion_eq_final",
+                    "RevPebbling.HpkResolved.gameF_recursion_ge_final",
+                    "RevPebbling.HpkResolved.hpk_at_full_cut",
+                    "RevPebbling.HpkResolved.shiftAbove_ne_nil_of_mem",
+                    "RevPebbling.HpkResolved.upper_empty_of_no_move",
+                    "RevPebbling.HpkResolved.upper_ones_at_full_cut",
+                    "RevPebbling.UpperPersist.eq_emptyBoard_of_ones_zero",
+                    "RevPebbling.UpperPersist.exec_keepBelow_prefix",
+                    "RevPebbling.UpperPersist.keepBelow_lt",
+                    "RevPebbling.UpperPersist.upper_nonempty_of_optimal",
+                ],
+            },
     }
 
     # ---- axiom audit for every listed theorem -----------------------

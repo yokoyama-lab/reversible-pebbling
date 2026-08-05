@@ -46,7 +46,7 @@ python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 464 theorems the
+the rest are general (unbounded) proofs.  Of the 474 theorems the
 manifest lists, **59 rest on a `native_decide` certificate and 9 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
@@ -65,7 +65,7 @@ says — the counts above, the constants it quotes, the file paths and
 theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
-A full build takes about nine minutes (29 stages, 464 theorems),
+A full build takes about nine minutes (30 stages, 474 theorems),
 nearly all of it the
 certification of row 60 (13.1 M runs, ~5.6 GB), which carries the
 published bound `c ≤ 2.6106`.  `.github/workflows/build.yml` runs the

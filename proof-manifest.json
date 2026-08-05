@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "736b5f392e658c76a12b1d9afdf11cd5092c9af7f376fb15be7752daee789767",
+ "proof_bundle_sha256": "45e29a4b33f58bf26d7cc9322b3ac4c2a175fd0118101329ce80e92495837add",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -50,6 +50,7 @@
   "RevPebbling/GrowthLower.lean": "15332a5a8e23d4dcbb72557042b898a66d59e9821f3a33dfefe603f48b09e797",
   "RevPebbling/GrowthRate.lean": "4e63c74cec74165853845a2afca25e6a076902aa79b1fcbf0c15f2337afd0988",
   "RevPebbling/HalvedDifference.lean": "2ba5f839c8a603897aee353b911e59aa99cfeb6a95ff4da810a15300a2076df1",
+  "RevPebbling/HpkResolved.lean": "83ac206c2061c6fbe321cfed135bdcaacc78ab36f59900c59e3762bb65697dba",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
   "RevPebbling/KnillObs.lean": "561e280c41c9995298119896f7134331762bfebc69b0d584886a8332c7ca1cad",
   "RevPebbling/KnillRecursion.lean": "552bc5bdeaf8628a2461ad8aa738ad6bbe095fa8f9a24eba9fd23e700c25faff",
@@ -74,7 +75,8 @@
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
-  "RevPebbling.lean": "bec5ad9fff480bb579d7160903fe5d9cc8395a12bfca5d482fb53aeb17c242c6"
+  "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
+  "RevPebbling.lean": "8e8dc6d317652d660d928e1f6071ee2a7e06a1f45c737a250f9ee0c15ece2a0e"
  },
  "proved_stages": {
   "pebbling_general_foundations": {
@@ -936,6 +938,25 @@
    "axiom_free_theorems": [
     "RevPebbling.FactorialBound.fact_eq_factorial"
    ],
+   "carried_hypotheses": {}
+  },
+  "link1_ge_hpk_resolved": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (this work, 2026-08-05): the last claim about plays that the '>=' side needed, PROVED. Moves below the cut never consult the cells above it, so if an optimal play empties the region above the cut after having moved there, the earlier moves above the cut can be deleted: the lower trace is untouched, the later upper moves resume from the same empty region, the final board and the peak are unchanged, and the play is strictly shorter - contradicting optimality (upper_nonempty_of_optimal). At the cut time of CutTime.cutFull_attained the board is full and its lowest pebble is the cut, so one pebble is below and S are above (upper_ones_at_full_cut); hence a move above the cut has happened and the region above never empties again, which is exactly the hypothesis LowerSuffixPeak.hpk_of_upper_nonempty consumes. So hpk_at_full_cut is 'hpk', and gameF_recursion_ge_final is the '>=' direction of Knill's recursion CARRYING NOTHING; with CutSum.gameF_split_le it becomes the equality gameF_recursion_eq_final. The three-part decomposition is Kralovic's (RAIRO-ITA 38 (2004) 137-161, doi:10.1051/ita:2004008, proof of Thm 3.4); the exchange argument replacing his bounded interval is this work. ",
+   "theorems": [
+    "RevPebbling.HpkResolved.gameF_recursion_eq_final",
+    "RevPebbling.HpkResolved.gameF_recursion_ge_final",
+    "RevPebbling.HpkResolved.hpk_at_full_cut",
+    "RevPebbling.HpkResolved.shiftAbove_ne_nil_of_mem",
+    "RevPebbling.HpkResolved.upper_empty_of_no_move",
+    "RevPebbling.HpkResolved.upper_ones_at_full_cut",
+    "RevPebbling.UpperPersist.eq_emptyBoard_of_ones_zero",
+    "RevPebbling.UpperPersist.exec_keepBelow_prefix",
+    "RevPebbling.UpperPersist.keepBelow_lt",
+    "RevPebbling.UpperPersist.upper_nonempty_of_optimal"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
    "carried_hypotheses": {}
   }
  }
