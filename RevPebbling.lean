@@ -49,6 +49,7 @@ import RevPebbling.KnillObs
 import RevPebbling.KnillRecursion
 import RevPebbling.KnillUnique
 import RevPebbling.LiftAbove
+import RevPebbling.LowerSuffixPeak
 import RevPebbling.MergeFixUnique
 import RevPebbling.MinimaxDuality
 import RevPebbling.PebblingFoundations
