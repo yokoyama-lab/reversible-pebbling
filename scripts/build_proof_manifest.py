@@ -38,7 +38,7 @@ NATIVE_OK = ("Lean.ofReduceBool", "Lean.trustCompiler")
 # "relative to" one exactly when its statement mentions it, which is
 # read off the statements (see the statement audit) instead of being
 # asserted in prose
-CARRIED_HYPOTHESES = ("Submult", "GameOptimal", "GameAttain", "Superadd")
+CARRIED_HYPOTHESES = ("Submult", "GameOptimal", "GameAttain", "LowerRowExact", "Superadd")
 
 
 def axiom_allowed(a: str) -> bool:
