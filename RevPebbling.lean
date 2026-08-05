@@ -8,6 +8,7 @@ import RevPebbling.CutAccounting
 import RevPebbling.CutLower
 import RevPebbling.CutOptimal
 import RevPebbling.CutPlays
+import RevPebbling.CutSum
 import RevPebbling.CutUpper
 import RevPebbling.CutVocabulary
 import RevPebbling.DifferenceMergeProperty
