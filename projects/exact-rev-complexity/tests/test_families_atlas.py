@@ -201,6 +201,65 @@ def test_bitrev_pmin_respects_de_rezende_et_al_upper_bound() -> None:
     assert checked >= 4, f"検査した k が {checked} 個しかない"
 
 
+def test_excess_is_zero_exactly_when_no_vertex_is_placed_three_times() -> None:
+    """**超過 $E$ が 0 になるのは「どの頂点も高々 2 回」のとき、そのときに限る**（U10）。
+
+    $$E := \\frac{M^* - (4N - 2\\min(p,N) - 1)}{2}$$
+
+    は「2 回ずつの予算を超えて置いた回数」である（$M^*=2A-1$ より
+    $E = A - (2N-\\min(p,N))$）。台帳の**全 `exhaustive` 行**で
+
+        $E = 0 \\iff$ 正準な最適スケジュールの最大配置回数 $\\le 2$
+
+    が成り立つ（反例ゼロ）。$p$ を 1 上げたときの $M^*$ の落差は、
+    **この $E$ が減る量そのもの**である（`findings.md` §3.17）。
+
+    ⚠️ 分布はスケジュール依存なので、固定されるのは
+    「BFS の距離表から復元した正準な 1 本について」である。
+    $M^*$ と $E$ のほうはスケジュールに依らない。
+    """
+    from family_atlas import read_rows
+
+    checked = 0
+    for row in read_rows():
+        if row["status"] != "exhaustive":
+            continue
+        params = tuple(int(x) for x in row["params"].split(":"))
+        p = int(row["p"])
+        prof, n, m = placement_profile(row["family"], params, p)
+        excess = (m - (4 * n - 2 * min(p, n) - 1)) // 2
+        assert (excess == 0) == (max(prof) <= 2), (
+            f"{row['family']}{params} p={p}: 超過 E={excess} だが最大回数 {max(prof)}"
+        )
+        assert excess >= 0, f"{row['family']}{params} p={p}: E={excess} が負（床を割った）"
+        checked += 1
+    assert checked >= 203, f"検査した行が {checked} 件しかない"
+
+
+def test_once_count_equals_min_p_n_only_inside_the_regime() -> None:
+    """$r=\\min(p,N)$ は**$\\le2$ 領域の性質**であって、領域外では破れうる（U10 の精密化）。
+
+    U3d は $\\le2$ 領域で $r=\\min(p,N)$ を固定した。台帳全体で見ると
+    203 行中 193 行で成り立ち、**破れる 10 行はすべて最大配置回数 $\\ge3$** である。
+    つまり「$r=\\min(p,N)$ は領域内では常に成り立ち、領域外では保証されない」。
+    """
+    from family_atlas import read_rows
+
+    outside_and_broken = 0
+    for row in read_rows():
+        if row["status"] != "exhaustive":
+            continue
+        params = tuple(int(x) for x in row["params"].split(":"))
+        p = int(row["p"])
+        prof, n, _m = placement_profile(row["family"], params, p)
+        if prof[1] != min(p, n):
+            assert max(prof) >= 3, (
+                f"{row['family']}{params} p={p}: 高々 2 回なのに r={prof[1]} != min(p,N)={min(p, n)}"
+            )
+            outside_and_broken += 1
+    assert outside_and_broken >= 10, f"破れた行が {outside_and_broken} 件しかない"
+
+
 def test_A_is_determined_by_mstar() -> None:
     """$A=(M^*+1)/2$（$M^*=2A-1$ の言い換え）。分布に依らず成り立つ健全性検査。"""
     for k, p, hs in ARITHMETIC + BROKEN:
