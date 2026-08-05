@@ -2,11 +2,12 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "31f7f9680d55a38c4be708d565fc4d7d678bb759c257e20b93001998ef98ab56",
+ "proof_bundle_sha256": "692cd91d97e13d101504d9e01b322217c564f17955d4a223aa4efc3b4d3d6a44",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
   "RevPebbling/AttainSplit.lean": "70de32bf8c96007c556af976d8a10874478830776fb53971fe1e02a858a42dc9",
+  "RevPebbling/BlockSim.lean": "7ed8bae1be394d12696428ac01438878ef0e6f0bbc6f2bc63d5e024ebcd56ce1",
   "RevPebbling/ChordDeficit.lean": "3ece7a7e581f5bfc8802892724c51521d98a04ad9b218945d83a54663c8ccd24",
   "RevPebbling/CompleteCost.lean": "7cd96f10dca18d6158eead8cd2fcf83d6d8fb55b4ec4deabcd3574f9eca4af75",
   "RevPebbling/CompleteReach.lean": "8d3dc0ac5b5506db6369c53a06349e4359c0986de7f58f702015976616558c31",
@@ -77,13 +78,15 @@
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "96faf055502549d44f220c7403a040960b3897b0cfcbcad3ab45da29c4a3ea03"
+  "RevPebbling.lean": "406f3e89666c2108047ed2e553afc900f88c8a8c32e4e2dcb143a2c8a948d366"
  },
  "hypotheses": {
   "Submult": {
-   "status": "carried",
+   "status": "proved",
    "carried_by": 18,
-   "proved_by": []
+   "proved_by": [
+    "RevPebbling.BlockSim.submult_fRow"
+   ]
   },
   "GameOptimal": {
    "status": "proved",
@@ -1055,6 +1058,35 @@
     "LowerRowExact": [
      "RevPebbling.RowExact.lowerRowExact_all",
      "RevPebbling.RowExact.lowerRowExact_zero"
+    ]
+   }
+  },
+  "submultiplicativity_block_simulation": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (this work, 2026-08-05): SUBMULTIPLICATIVITY, the letter's Lemma 1, PROVED (submult_fRow). Read a chain of N*L cells as N blocks of L: every move of an outer play on super-cell i becomes a whole inner play, lifted to block i - forwards to build the block, backwards to clear it (dirPlay, expand). Four laws by induction along the outer play: the lengths multiply (length_expand); the composite lands on the blow-up of wherever the outer play lands (exec_expand); it is legal, because the foundation of block i is the top cell of block i-1, which is what the outer okMove supplies (legal_expand); and THE PEAKS ADD MINUS ONE (maxOnes_expand) - while the inner play runs in block i the other blocks hold one pebble each and there are at most (outer peak) - 1 of them, since the configuration with i on is one of those the outer peak ranges over. With N = 2^(p-1) and L = 2^(q-1) this is a play on 2^(p+q-2) cells - the reach limit for p+q-1 pebbles - of length f_p * f_q, and RowExact.gameF_eq_fRow_all turns it into Submult fRow. Consequently the growth rate c is a real number with no hypothesis attached and 2.51706472 <= c <= 2.6106, c <= 2*sqrt 2 hold outright (c_ge_2_51706472, c_le_2_6106, c_le_two_sqrt_two). The four laws were checked outside Lean on 3500 random triples and the construction reproduces f_p * f_q exactly on every optimal pair with p+q-1 <= 6; the bound is tight at p = q = 2, where f_3 = 9 = 3*3. ",
+   "theorems": [
+    "RevPebbling.BlockSim.blow_doneBoard",
+    "RevPebbling.BlockSim.blow_emptyBoard",
+    "RevPebbling.BlockSim.c_ge_2_51706472",
+    "RevPebbling.BlockSim.c_le_2_6106",
+    "RevPebbling.BlockSim.c_le_two_sqrt_two",
+    "RevPebbling.BlockSim.exec_expand",
+    "RevPebbling.BlockSim.gameF_block",
+    "RevPebbling.BlockSim.legal_expand",
+    "RevPebbling.BlockSim.length_expand",
+    "RevPebbling.BlockSim.maxOnes_expand",
+    "RevPebbling.BlockSim.nth_blow_top",
+    "RevPebbling.BlockSim.reachIn_block",
+    "RevPebbling.BlockSim.submult_fRow"
+   ],
+   "native_decide_theorems": [
+    "RevPebbling.BlockSim.c_le_2_6106"
+   ],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {
+    "Submult": [
+     "RevPebbling.BlockSim.submult_fRow"
     ]
    }
   }

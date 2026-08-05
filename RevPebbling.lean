@@ -1,4 +1,5 @@
 import RevPebbling.AttainSplit
+import RevPebbling.BlockSim
 import RevPebbling.ChordDeficit
 import RevPebbling.CompleteCost
 import RevPebbling.CompleteReach

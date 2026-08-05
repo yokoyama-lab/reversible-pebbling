@@ -46,8 +46,8 @@ python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 485 theorems the
-manifest lists, **59 rest on a `native_decide` certificate and 9 need
+the rest are general (unbounded) proofs.  Of the 498 theorems the
+manifest lists, **60 rest on a `native_decide` certificate and 9 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -56,23 +56,23 @@ in each stage's `scope` cannot drift away from what the kernel reports.
 The same file records, per stage, which theorems carry a hypothesis
 (`carried_hypotheses`) and which theorems *prove* one
 (`proves_hypotheses`), with the verdict per hypothesis in the top-level
-`hypotheses` field.  Two remain unproved: submultiplicativity of the
-cost (`Submult`, carried by 18 theorems) and superadditivity of the
-count profile (`Superadd`, 3).  The three that state the `≥` half of
-Knill's Theorem 2.1 — `GameOptimal`, `GameAttain` and `LowerRowExact` —
-are now **theorems** (`RowExact.gameOptimal_holds`,
-`RowExact.gameAttain_holds`, `RowExact.lowerRowExact_all`); the
-statements that still take them as arguments are the ones written before
-they were proved.  All of this is read off the statements with `#check`,
-splitting each type at its conclusion, not asserted in prose, so
-"relative to X" cannot drift either.
+`hypotheses` field.  **One remains unproved**: superadditivity of the
+count profile (`Superadd`, carried by 3 theorems in the front-DP layer).
+The four the growth rate used to rest on are now **theorems** —
+submultiplicativity (`BlockSim.submult_fRow`, the letter's Lemma 1) and
+the `≥` half of Knill's Theorem 2.1 (`RowExact.gameOptimal_holds`,
+`RowExact.gameAttain_holds`, `RowExact.lowerRowExact_all`).  Statements
+that still take them as arguments are the ones written before they were
+proved.  All of this is read off the statements with `#check`, splitting
+each type at its conclusion, not asserted in prose, so "relative to X"
+cannot drift either.
 
 `scripts/check_claims.py` additionally checks that what this README
 says — the counts above, the constants it quotes, the file paths and
 theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
-A full build takes about nine minutes (31 stages, 485 theorems),
+A full build takes about nine minutes (32 stages, 498 theorems),
 nearly all of it the
 certification of row 60 (13.1 M runs, ~5.6 GB), which carries the
 published bound `c ≤ 2.6106`.  `.github/workflows/build.yml` runs the
@@ -196,6 +196,18 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   this direction (Knill 1995, p. 5) has a gap at the step that bounds the
   middle part; the three-part decomposition follows Královič
   (RAIRO-ITA **38** (2004) 137–161, proof of Thm 3.4).
+* `RevPebbling/BlockSim.lean` — **submultiplicativity**,
+  `f_{p+q-1} ≤ f_p · f_q`, proved by block simulation.  A chain of
+  `N · L` cells is read as `N` blocks of `L`; each move of an outer play
+  becomes a whole inner play lifted to the block it acts on, forwards to
+  build it and backwards to clear it.  The lengths multiply and **the
+  peaks add minus one**, because while the inner play runs in one block
+  the others hold one pebble each and there are at most
+  `(outer peak) − 1` of them.  With `N = 2^{p−1}` and `L = 2^{q−1}` that
+  is a play on the reach limit for `p + q − 1` pebbles costing
+  `f_p · f_q`.  Since this was the last hypothesis the growth rate
+  rested on, `c` is now a real number with nothing attached and
+  `c_ge_2_51706472`, `c_le_2_6106`, `c_le_two_sqrt_two` hold outright.
 * `RevPebbling/Sandwich.lean` + `RevPebbling/TwoD.lean` +
   `RevPebbling/GrowthLower.lean` + `RevPebbling/DispersionGrowth.lean` +
   `RevPebbling/Dispersion4731Growth.lean` — the growth rate from both

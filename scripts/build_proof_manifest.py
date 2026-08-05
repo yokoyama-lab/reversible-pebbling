@@ -1533,6 +1533,50 @@ def main() -> int:
                     "RevPebbling.RowExact.reachIn_upper",
                 ],
             },
+            "submultiplicativity_block_simulation": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-05): SUBMULTIPLICATIVITY, "
+                          "the letter's Lemma 1, PROVED (submult_fRow). Read a chain "
+                          "of N*L cells as N blocks of L: every move of an outer play "
+                          "on super-cell i becomes a whole inner play, lifted to block "
+                          "i - forwards to build the block, backwards to clear it "
+                          "(dirPlay, expand). Four laws by induction along the outer "
+                          "play: the lengths multiply (length_expand); the composite "
+                          "lands on the blow-up of wherever the outer play lands "
+                          "(exec_expand); it is legal, because the foundation of block "
+                          "i is the top cell of block i-1, which is what the outer "
+                          "okMove supplies (legal_expand); and THE PEAKS ADD MINUS ONE "
+                          "(maxOnes_expand) - while the inner play runs in block i the "
+                          "other blocks hold one pebble each and there are at most "
+                          "(outer peak) - 1 of them, since the configuration with i on "
+                          "is one of those the outer peak ranges over. With "
+                          "N = 2^(p-1) and L = 2^(q-1) this is a play on 2^(p+q-2) "
+                          "cells - the reach limit for p+q-1 pebbles - of length "
+                          "f_p * f_q, and RowExact.gameF_eq_fRow_all turns it into "
+                          "Submult fRow. Consequently the growth rate c is a real "
+                          "number with no hypothesis attached and "
+                          "2.51706472 <= c <= 2.6106, c <= 2*sqrt 2 hold outright "
+                          "(c_ge_2_51706472, c_le_2_6106, c_le_two_sqrt_two). The four "
+                          "laws were checked outside Lean on 3500 random triples and "
+                          "the construction reproduces f_p * f_q exactly on every "
+                          "optimal pair with p+q-1 <= 6; the bound is tight at "
+                          "p = q = 2, where f_3 = 9 = 3*3. "),
+                "theorems": [
+                    "RevPebbling.BlockSim.blow_doneBoard",
+                    "RevPebbling.BlockSim.blow_emptyBoard",
+                    "RevPebbling.BlockSim.c_ge_2_51706472",
+                    "RevPebbling.BlockSim.c_le_2_6106",
+                    "RevPebbling.BlockSim.c_le_two_sqrt_two",
+                    "RevPebbling.BlockSim.exec_expand",
+                    "RevPebbling.BlockSim.gameF_block",
+                    "RevPebbling.BlockSim.legal_expand",
+                    "RevPebbling.BlockSim.length_expand",
+                    "RevPebbling.BlockSim.maxOnes_expand",
+                    "RevPebbling.BlockSim.nth_blow_top",
+                    "RevPebbling.BlockSim.reachIn_block",
+                    "RevPebbling.BlockSim.submult_fRow",
+                ],
+            },
     }
 
     # ---- axiom audit for every listed theorem -----------------------
