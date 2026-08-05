@@ -45,6 +45,7 @@ import RevPebbling.GrowthLower
 import RevPebbling.GrowthRate
 import RevPebbling.IntRoot
 import RevPebbling.KnillObs
+import RevPebbling.KnillRecursion
 import RevPebbling.KnillUnique
 import RevPebbling.LiftAbove
 import RevPebbling.MergeFixUnique
