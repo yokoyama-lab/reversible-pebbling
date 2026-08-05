@@ -84,7 +84,7 @@ theorem fact_eq_factorial : ∀ n, PebblingTheory.fact n = n.factorial
       rw [fact_eq_factorial n]
 
 /-- Restated exactly as the bounded check phrases it. -/
-theorem pesu_prop36_general' (k : Nat) (hk : 1 ≤ k) :
+theorem pesu_prop36_general_fact (k : Nat) (hk : 1 ≤ k) :
     2 ^ (k - 1) * PebblingTheory.fact k ≤ k ^ k := by
   rw [fact_eq_factorial]
   exact pesu_prop36_general k hk

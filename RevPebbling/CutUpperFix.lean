@@ -33,7 +33,7 @@ What the upper part actually needs is its own peak bound, not domination:
 
 That hypothesis is **satisfiable** — it is a plain bound on the peak of an
 actual restriction, which is at most `S + 1` unconditionally; its content
-is only the drop from `S + 1` to `S`.  `three_way_sum_le'` is the
+is only the drop from `S + 1` to `S`.  `three_way_sum_le_peak` is the
 corrected sum, and `CutLower`'s `hpk` was of this satisfiable shape
 already, so it needed no change.
 
@@ -120,7 +120,7 @@ theorem gameF_le_upper_of_peak {n S x : Nat} {s : List Nat}
 
 /-- **THE REPAIRED SUM.**  Same as `CutSum.three_way_sum_le`, with the
 vacuous domination replaced by the satisfiable peak bound. -/
-theorem three_way_sum_le' {n S a x : Nat} {s : List Nat}
+theorem three_way_sum_le_peak {n S a x : Nat} {s : List Nat}
     (hx : x + 1 < n)
     (hr : ∀ i ∈ s, i < n)
     (hleg : legalB (emptyBoard n) s = true)
@@ -140,7 +140,7 @@ theorem three_way_sum_le' {n S a x : Nat} {s : List Nat}
   omega
 
 /-- The optimum form of the repaired sum. -/
-theorem gameF_recursion_ge' {n S a x : Nat} {s : List Nat}
+theorem gameF_recursion_ge_peak {n S a x : Nat} {s : List Nat}
     (hx : x + 1 < n)
     (hr : ∀ i ∈ s, i < n)
     (hleg : legalB (emptyBoard n) s = true)
@@ -153,6 +153,6 @@ theorem gameF_recursion_ge' {n S a x : Nat} {s : List Nat}
     gameF (x + 1) (S + 1) + gameF (x + 1) S + gameF (n - (x + 1)) S
       ≤ gameF n (S + 1) :=
   Nat.le_trans
-    (three_way_sum_le' hx hr hleg hex hpeak hfirst hupk hpk) hopt
+    (three_way_sum_le_peak hx hr hleg hex hpeak hfirst hupk hpk) hopt
 
 end RevPebbling.CutUpperFix

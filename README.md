@@ -46,8 +46,8 @@ python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 323 theorems the
-manifest lists, **59 rest on a `native_decide` certificate and 8 need
+the rest are general (unbounded) proofs.  Of the 464 theorems the
+manifest lists, **59 rest on a `native_decide` certificate and 9 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -56,8 +56,8 @@ in each stage's `scope` cannot drift away from what the kernel reports.
 The same file records, per stage, which theorems carry an *unproved
 hypothesis* (`carried_hypotheses`): submultiplicativity of the cost
 (`Submult`, 18 theorems), the `≥` half of Knill's Theorem 2.1
-(`GameOptimal`, 1) and superadditivity of the count profile
-(`Superadd`, 3).  That is read off the statements with `#check`, not
+(`GameOptimal`, 2; `GameAttain`, 3; `LowerRowExact`, 2) and
+superadditivity of the count profile (`Superadd`, 3).  That is read off the statements with `#check`, not
 asserted in prose, so "relative to X" cannot drift either.
 
 `scripts/check_claims.py` additionally checks that what this README
@@ -65,7 +65,7 @@ says — the counts above, the constants it quotes, the file paths and
 theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
-A full build takes about nine minutes (24 stages, 323 theorems),
+A full build takes about nine minutes (29 stages, 464 theorems),
 nearly all of it the
 certification of row 60 (13.1 M runs, ~5.6 GB), which carries the
 published bound `c ≤ 2.6106`.  `.github/workflows/build.yml` runs the

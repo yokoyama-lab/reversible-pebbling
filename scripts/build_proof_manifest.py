@@ -1170,6 +1170,253 @@ def main() -> int:
                     "RevPebbling.Profile.profile_concave_rat",
                 ],
             },
+            "link1_ge_cut_machinery": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-05): the mechanics of Knill's "
+                          "three-way cut, as statements about plays. Time accounting "
+                          "(length_cut, length_cut3: a cut splits a play's moves exactly, "
+                          "losing none and double-counting none); the peak restriction "
+                          "generalised away from midX to any dominating cell and to a "
+                          "time window (maxOnes_shiftAbove_le, _le_window); the "
+                          "vocabulary of a trajectory (loAt = Knill's m(S,t), window, "
+                          "cutAt = Knill's m, cutTime = t_m) with cutAt_dominates / "
+                          "cutAt_mono / cutAt_lt / cutAt_univ (over the whole trace cutAt "
+                          "IS midX); and cut_at_time, which packages them: cutting any "
+                          "legal play at time a and at the constructed cell gives two "
+                          "legal plays, the lower within the original budget and the "
+                          "upper within one less, whose move counts sum to the original's "
+                          "exactly. NO OPTIMALITY ASSUMED. "),
+                "theorems": [
+                    "RevPebbling.CutAccounting.keepBelow_append",
+                    "RevPebbling.CutAccounting.length_cut",
+                    "RevPebbling.CutAccounting.length_cut3",
+                    "RevPebbling.CutAccounting.shiftAbove_append",
+                    "RevPebbling.CutPlays.cut_at_time",
+                    "RevPebbling.CutPlays.cut_three_way",
+                    "RevPebbling.CutPlays.maxOnes_keepBelow_le",
+                    "RevPebbling.CutVocabulary.cutAt_attained",
+                    "RevPebbling.CutVocabulary.cutAt_dominates",
+                    "RevPebbling.CutVocabulary.cutAt_lt",
+                    "RevPebbling.CutVocabulary.cutAt_mono",
+                    "RevPebbling.CutVocabulary.cutAt_univ",
+                    "RevPebbling.CutVocabulary.cutTime_spec",
+                    "RevPebbling.CutVocabulary.execB_length",
+                    "RevPebbling.CutVocabulary.loAt_le_cutAt",
+                    "RevPebbling.CutVocabulary.loAt_lt",
+                    "RevPebbling.CutVocabulary.maxOnes_shiftAbove_cutAt",
+                    "RevPebbling.CutVocabulary.mem_window",
+                    "RevPebbling.CutVocabulary.natMax_lt",
+                    "RevPebbling.CutVocabulary.toggle_length",
+                    "RevPebbling.PeakRestriction.cfg_take",
+                    "RevPebbling.PeakRestriction.maxOnes_shiftAbove_le",
+                    "RevPebbling.PeakRestriction.maxOnes_shiftAbove_le_window",
+                    "RevPebbling.PeakRestriction.maxOnes_shiftAbove_midX",
+                ],
+            },
+            "link1_ge_optimal_normalisation": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-05): two of the three lemmas the "
+                          "project notes name as the repair for the gap in Knill 1995 "
+                          "p.5. Splicing (legal_splice / exec_splice / maxOnes_splice): a "
+                          "segment that returns the board to where it started can be "
+                          "deleted, keeping legality and the final board and not raising "
+                          "the peak. Hence no_repeat_cfg: in a play of minimum length no "
+                          "configuration occurs twice. And freeze_above / no_move_above: "
+                          "if the cells above a cut are empty and the cut cell stays "
+                          "empty, the play never goes above the cut. The third lemma of "
+                          "the repair is NOT proved. "),
+                "theorems": [
+                    "RevPebbling.OptimalNormal.exec_loop",
+                    "RevPebbling.OptimalNormal.exec_splice",
+                    "RevPebbling.OptimalNormal.freeze_above",
+                    "RevPebbling.OptimalNormal.legal_splice",
+                    "RevPebbling.OptimalNormal.maxOnes_splice",
+                    "RevPebbling.OptimalNormal.no_move_above",
+                    "RevPebbling.OptimalNormal.no_repeat_cfg",
+                ],
+            },
+            "link1_ge_three_terms": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-05): the three terms of the "
+                          "decomposition, as plays. First term (gameF_le_lower_prefix) NO "
+                          "HYPOTHESIS. Second term (CutFull.gameF_le_upper_cutFull) NO "
+                          "HYPOTHESIS, via the cut CutFull.cutFull built from the FULL "
+                          "configurations: hfull_cutFull (a full board's lowest pebble is "
+                          "at or below the cut) and cutFull_lt (the cut is strictly "
+                          "inside the board, since two pebbles cannot both sit on the top "
+                          "cell) are both unconditional. Third term "
+                          "(CutLower.gameF_le_lower_suffix) carries one peak hypothesis. "
+                          "Cut time (CutTime.cut_time_exists) NO HYPOTHESIS when the play "
+                          "uses its whole budget. ALSO RECORDED HERE, DELIBERATELY: "
+                          "CutUpperFix.dom_impossible proves that the global domination "
+                          "hypothesis used in an earlier attempt is UNSATISFIABLE (a "
+                          "finished play's lowest pebble is n-1), so "
+                          "RevPebbling.CutUpper.gameF_le_upper and "
+                          "RevPebbling.CutSum.three_way_sum_le / gameF_recursion_ge are "
+                          "VACUOUS and are excluded from this manifest; and "
+                          "FullWindow.hfull_fails is a machine-checked counterexample "
+                          "showing the successor hypothesis is FALSE for an arbitrary "
+                          "cut. "),
+                "theorems": [
+                    "RevPebbling.CutFull.cutFull_lt",
+                    "RevPebbling.CutFull.firstOn_lt_pred_of_two_le",
+                    "RevPebbling.CutFull.gameF_le_upper_cutFull",
+                    "RevPebbling.CutFull.hfull_cutFull",
+                    "RevPebbling.CutFull.loAt_clip",
+                    "RevPebbling.CutFull.loAt_le_cutFull",
+                    "RevPebbling.CutFull.mem_fullTimes",
+                    "RevPebbling.CutFull.ones_take_zero",
+                    "RevPebbling.CutLower.doneBoard_take",
+                    "RevPebbling.CutLower.gameF_le_lower_suffix",
+                    "RevPebbling.CutOptimal.board_ext",
+                    "RevPebbling.CutOptimal.gameF_le_lower_prefix",
+                    "RevPebbling.CutOptimal.lower_cfg_eq_doneBoard",
+                    "RevPebbling.CutTime.cutFull_attained",
+                    "RevPebbling.CutTime.cut_time_exists",
+                    "RevPebbling.CutTime.exists_full_time",
+                    "RevPebbling.CutUpperFix.dom_impossible",
+                    "RevPebbling.CutUpperFix.firstOn_doneBoard",
+                    "RevPebbling.CutUpperFix.gameF_le_upper_of_peak",
+                    "RevPebbling.CutUpperFix.gameF_recursion_ge_peak",
+                    "RevPebbling.CutUpperFix.three_way_sum_le_peak",
+                    "RevPebbling.FullWindow.exists_firstOn_of_ones_pos",
+                    "RevPebbling.FullWindow.hfull_fails",
+                    "RevPebbling.FullWindow.hfull_in_window",
+                    "RevPebbling.FullWindow.hfull_of_full_in_window",
+                    "RevPebbling.FullWindow.ones_take_pos_of_le",
+                    "RevPebbling.UpperPeak.final_not_full",
+                    "RevPebbling.UpperPeak.gameF_le_upper_of_full",
+                    "RevPebbling.UpperPeak.three_way_sum_le_of_full",
+                    "RevPebbling.UpperPeak.upper_peak_le",
+                ],
+            },
+            "link1_ge_assembly": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-05): Knill's recursion for the "
+                          "game optimum. gameF_split_le is the '<=' direction, "
+                          "unconditional (compose the three sub-optimal plays). "
+                          "gameF_recursion_ge_cutFull is the '>=' direction at the "
+                          "constructed cut, carrying ONE hypothesis (hpk: the lower part "
+                          "after the cut time fits in S pebbles); gameF_recursion_eq puts "
+                          "them together as an equality. attain_split_of_recursion "
+                          "bridges to GameDecomposition.GameAttain given "
+                          "AttainSplit.LowerRowExact (the identification of the level "
+                          "below with the generated row = GameOptimal one level down = "
+                          "the outer induction hypothesis; its '<=' half is already a "
+                          "theorem, lowerRowExact_le). LowerSuffixPeak reduces hpk to 'a "
+                          "pebble stays above the cut' and CHECKS BY DECIDE that hpk is "
+                          "satisfiable on a concrete play, so it is a real proof "
+                          "obligation, not vacuous. GameDecomposition supplies the "
+                          "unconditional halves of Knill's recursion for gameF (base "
+                          "value, every feasible split is an upper bound) and the base "
+                          "level S = 2. "),
+                "theorems": [
+                    "RevPebbling.AttainSplit.attain_split_cutFull",
+                    "RevPebbling.AttainSplit.attain_split_of_recursion",
+                    "RevPebbling.AttainSplit.lowerRowExact_le",
+                    "RevPebbling.CutSum.gameF_recursion_ge",
+                    "RevPebbling.CutSum.gameF_split_le",
+                    "RevPebbling.CutSum.three_way_sum_le",
+                    "RevPebbling.GameDecomposition.gameF_eq_Fpre",
+                    "RevPebbling.GameDecomposition.gameF_knill_le",
+                    "RevPebbling.GameDecomposition.gameF_one",
+                    "RevPebbling.GameDecomposition.gameOptimal_of_attain",
+                    "RevPebbling.GameDecomposition.solvesKnill_of_attain",
+                    "RevPebbling.GameDecomposition.three_le_gameF_two",
+                    "RevPebbling.KnillRecursion.gameF_recursion_eq",
+                    "RevPebbling.KnillRecursion.gameF_recursion_ge_cutFull",
+                    "RevPebbling.KnillRecursion.gameF_recursion_ge_opt",
+                    "RevPebbling.LowerSuffixPeak.example_play_cut",
+                    "RevPebbling.LowerSuffixPeak.example_play_legal",
+                    "RevPebbling.LowerSuffixPeak.example_play_peak",
+                    "RevPebbling.LowerSuffixPeak.example_play_reaches",
+                    "RevPebbling.LowerSuffixPeak.hpk_holds_on_example",
+                    "RevPebbling.LowerSuffixPeak.hpk_of_upper_nonempty",
+                ],
+            },
+            "game_side_general_theorems": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-05): general theorems about the "
+                          "GAME, generalising bounded checks of PebblingTheory. "
+                          "two_mul_sub_one_le_gameF: no play pebbles a chain of n cells "
+                          "in fewer than 2n-1 moves, whatever its pebble budget - the "
+                          "artifact's first unconditional lower bound on the game itself; "
+                          "gameF_linear pins the linear regime exactly. "
+                          "length_odd_of_reach / gameT_even: a reaching play has odd "
+                          "length, a complete one even. gameF_antitone_space: more "
+                          "pebbles never cost more (the playability hypothesis is "
+                          "necessary, since gameF is a sInf and sInf of the empty set is "
+                          "0). CompleteReach: KRALOVIC THM 3.1 FOR EVERY n AND p "
+                          "(CompleteIn n p iff n <= 2^p - 1), the achievability "
+                          "construction being new here. CompleteCost: a complete "
+                          "computation costs at least 2n and the up-and-down walk "
+                          "achieves it, so T = F + 1 throughout n <= S. HalvedDifference: "
+                          "the halved difference row IS rowIter, which connects "
+                          "delta_even / delta_sorted / delta_merge_representation to "
+                          "existing general theorems. FactorialBound: Pesu-Phillips Prop "
+                          "3.6 for every k. "),
+                "theorems": [
+                    "RevPebbling.CompleteCost.complete_ge_reach_succ",
+                    "RevPebbling.CompleteCost.complete_linear",
+                    "RevPebbling.CompleteCost.complete_walk",
+                    "RevPebbling.CompleteCost.count_even_of_complete",
+                    "RevPebbling.CompleteCost.exec_range_walk",
+                    "RevPebbling.CompleteCost.legal_range_walk",
+                    "RevPebbling.CompleteCost.length_even_of_complete",
+                    "RevPebbling.CompleteCost.maxOnes_range_walk",
+                    "RevPebbling.CompleteCost.mem_of_everOn",
+                    "RevPebbling.CompleteCost.nth_walkBoard",
+                    "RevPebbling.CompleteCost.ones_walkBoard",
+                    "RevPebbling.CompleteCost.set_walkBoard",
+                    "RevPebbling.CompleteCost.two_mul_le_length_of_complete",
+                    "RevPebbling.CompleteReach.completeIn_compose",
+                    "RevPebbling.CompleteReach.completeIn_iff",
+                    "RevPebbling.CompleteReach.completeIn_of_le",
+                    "RevPebbling.CompleteReach.completeIn_of_reachIn",
+                    "RevPebbling.CompleteReach.covers_of_top",
+                    "RevPebbling.CompleteReach.everOn_append_right",
+                    "RevPebbling.CompleteReach.everOn_liftAbove",
+                    "RevPebbling.CompleteReach.le_two_pow_sub_one_of_completeIn",
+                    "RevPebbling.FactorialBound.fact_eq_factorial",
+                    "RevPebbling.FactorialBound.pesu_prop36_general",
+                    "RevPebbling.FactorialBound.pesu_prop36_general_fact",
+                    "RevPebbling.FactorialBound.pow_succ_ge",
+                    "RevPebbling.FactorialBound.two_mul_pow_le",
+                    "RevPebbling.FactorialBound.two_pow_mul_factorial_le",
+                    "RevPebbling.GameCompleteCost.completeInAt_gameT",
+                    "RevPebbling.GameCompleteCost.completeIn_iff_exists",
+                    "RevPebbling.GameCompleteCost.gameT_antitone_space",
+                    "RevPebbling.GameCompleteCost.gameT_even",
+                    "RevPebbling.GameCompleteCost.gameT_feasible_iff",
+                    "RevPebbling.GameCompleteCost.gameT_le",
+                    "RevPebbling.GameCompleteCost.gameT_le_two_mul_gameF",
+                    "RevPebbling.GameCompleteCost.gameT_linear",
+                    "RevPebbling.GameCompleteCost.two_mul_le_gameT",
+                    "RevPebbling.GameLinearLower.gameF_linear",
+                    "RevPebbling.GameLinearLower.length_filter_succ",
+                    "RevPebbling.GameLinearLower.not_mem_above",
+                    "RevPebbling.GameLinearLower.not_mem_succ",
+                    "RevPebbling.GameLinearLower.nth_emptyBoard",
+                    "RevPebbling.GameLinearLower.nth_execB_parity",
+                    "RevPebbling.GameLinearLower.nth_toggle_ne",
+                    "RevPebbling.GameLinearLower.nth_toggle_self",
+                    "RevPebbling.GameLinearLower.two_mul_le_length_filter",
+                    "RevPebbling.GameLinearLower.two_mul_sub_one_le_gameF",
+                    "RevPebbling.GameLinearLower.two_mul_sub_one_le_length",
+                    "RevPebbling.GameStructure.gameF_antitone_space",
+                    "RevPebbling.GameStructure.gameF_antitone_space_of_reach",
+                    "RevPebbling.GameStructure.gameF_odd",
+                    "RevPebbling.GameStructure.length_filter_even",
+                    "RevPebbling.GameStructure.length_odd_of_reach",
+                    "RevPebbling.GameStructure.reachIn_mono_space",
+                    "RevPebbling.HalvedDifference.Fpre_diff_even",
+                    "RevPebbling.HalvedDifference.Fpre_step",
+                    "RevPebbling.HalvedDifference.halved_diff_eq",
+                    "RevPebbling.HalvedDifference.halved_diff_merge_rep",
+                    "RevPebbling.HalvedDifference.halved_diff_nondecreasing",
+                    "RevPebbling.HalvedDifference.sum_take_succ",
+                ],
+            },
     }
 
     # ---- axiom audit for every listed theorem -----------------------

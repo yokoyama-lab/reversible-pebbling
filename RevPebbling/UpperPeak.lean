@@ -113,6 +113,6 @@ theorem three_way_sum_le_of_full {n S a x : Nat} {s : List Nat}
     (hpk : maxOnes (doneBoard (x + 1)) (keepBelow (x + 1) (s.drop a)) ≤ S) :
     gameF (x + 1) (S + 1) + gameF (x + 1) S + gameF (n - (x + 1)) S
       ≤ s.length :=
-  three_way_sum_le' hx hr hleg hex hpeak hfirst (upper_peak_le hpeak hfull) hpk
+  three_way_sum_le_peak hx hr hleg hex hpeak hfirst (upper_peak_le hpeak hfull) hpk
 
 end RevPebbling.UpperPeak
