@@ -5,6 +5,7 @@ import RevPebbling.CompositionAnchor
 import RevPebbling.CountRecursion
 import RevPebbling.CrossingConcentration
 import RevPebbling.CutAccounting
+import RevPebbling.CutFull
 import RevPebbling.CutLower
 import RevPebbling.CutOptimal
 import RevPebbling.CutPlays
