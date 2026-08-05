@@ -24,6 +24,7 @@ import RevPebbling.DispersionGrowth
 import RevPebbling.DoublingLower
 import RevPebbling.FactorialBound
 import RevPebbling.FrontDP
+import RevPebbling.FullWindow
 import RevPebbling.GameCompleteCost
 import RevPebbling.GameCost
 import RevPebbling.GameDecomposition
