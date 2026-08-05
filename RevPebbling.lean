@@ -7,6 +7,7 @@ import RevPebbling.CrossingConcentration
 import RevPebbling.CutAccounting
 import RevPebbling.CutOptimal
 import RevPebbling.CutPlays
+import RevPebbling.CutUpper
 import RevPebbling.CutVocabulary
 import RevPebbling.DifferenceMergeProperty
 import RevPebbling.Dispersion4731Growth
