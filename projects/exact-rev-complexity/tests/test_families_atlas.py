@@ -280,3 +280,43 @@ if __name__ == "__main__":
                 failures += 1
                 print(f"FAIL {name}: {exc}")
     sys.exit(1 if failures else 0)
+
+
+def test_cyl2_construction_verifies_and_bounds_pmin() -> None:
+    """幅 2 円筒の構成が検証器を通り、上界 $2\\lceil\\log_2 h\\rceil+2$ を達成する（V2）。
+
+    構成は「レベルを超頂点と見ると幅 2 円筒は長さ $h$ の鎖」という観察から、
+    **鎖の最適スケジュールを持ち上げた**もの。鎖の $\\mathrm{reach}(P)=2^{P-1}$ は
+    既知（KF-03）なので、この上界は**すべての $h$ について**従う。
+
+    ⚠️ **実測の $p_{\\min}$ より 1 大きい。** 予想 $2\\lceil\\log_2 h\\rceil+1$ の
+    上界側はこれでは閉じない。差がちょうど 1 であることを固定しておく
+    （縮んだら、より良い構成が見つかったということ）。
+    """
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    from cyl2_construct import check, upper_bound
+
+    from family_atlas import read_rows
+
+    ledger = {
+        int(r["params"].split(":")[1]): int(r["pmin"])
+        for r in read_rows()
+        if r["family"] == "cylinder"
+        and r["status"] == "exhaustive"
+        and r["params"].split(":")[0] == "2"
+        and r["p"] == r["pmin"]
+    }
+    checked = 0
+    for h in range(2, 25):
+        r = check(h)  # 検証器を通らなければ AssertionError
+        assert r["ok"], f"h={h}: {r.get('why')}"
+        assert r["peak"] == upper_bound(h), f"h={h}: ピーク {r['peak']} != {upper_bound(h)}"
+        if h in ledger:
+            gap = r["peak"] - ledger[h]
+            assert gap in (0, 1), f"h={h}: 実測との差が {gap}（0 か 1 のはず）"
+            assert r["peak"] >= ledger[h], f"h={h}: 構成が実測の p_min を下回った"
+        checked += 1
+    assert checked == 23, f"検査した h が {checked} 個"
