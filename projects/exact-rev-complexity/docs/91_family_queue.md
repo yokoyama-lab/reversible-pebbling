@@ -405,9 +405,25 @@ BFS が強い）。$N\ge12$ から `UNKNOWN` が出て、BFS は $N=33$ まで�
 
 ## U9 — 下界を CaDiCaL の UNSAT で固める
 
-**状態: todo**
+**状態: done**（2026-08-05）
 
-完了条件: 各族の 1 セルについて `scripts/sat_lower_bound.py` で
+`scripts/family_sat.py`／`data/families/sat.csv`。候補 62 行中
+**50 行が `UNSATISFIABLE` かつ drat-trim `VERIFIED`**（円筒 39・$k$ 分木 8・ビット反転 3）。
+**`SATISFIABLE` はゼロ**＝台帳の $M^*$ が最適でない行は無かった。最大は $M^*=109$
+（`cyl(2,14)`、46521 変数を 65 秒）。証明の総量 約 1.8 GB。
+未達 4 行（600 秒）＋未着手 8 行（全体の時間上限）は行として残してある。
+
+$M^*-2$ の UNSAT 1 本で $M^*$ 未満すべてが排除できる（到達可能な手数は 2 刻みで
+上に閉じているため。証明は `family_sat.py` の docstring）。
+
+**SAT の難しさは $M^*$ ではなく幅で決まる**: $M^*=109$ の幅 2 円筒が 65 秒、
+$M^*=65$ の 4 分木が 600 秒で未達。BFS 側の到達限界（§3.6.3）と同じ方向である。
+
+**回し方の失敗 2 件を findings §3.16.3 に記録した**（書き出しが最後の 1 回だけで
+50 分の結果を失った／バックグラウンド起動の相対パスで空振り）。
+`tools/loopcheck.sh` に `family_sat.py --verify` を組み込んだ。
+
+旧・完了条件: 各族の 1 セルについて `scripts/sat_lower_bound.py` で
 「$M^*-2$ 手で可能か」を CNF にし、CaDiCaL が UNSAT を返すこと（可能なら DRAT 証明つき）を
 確認する。`data/families/findings.md` に記録し、その行の `status` を `unsat_lb` にする。
 これが**下界側に再生可能な根拠が付く唯一の単位**である。

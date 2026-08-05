@@ -5,3 +5,4 @@ __pycache__/
 *.olean
 .lake/
 lean/.lake/
+data/families/sat_work/
