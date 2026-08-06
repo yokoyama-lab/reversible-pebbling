@@ -33,6 +33,7 @@ out=$("$PY" scripts/family_cpsat.py --verify 2>&1) || fail "family_cpsat --verif
 out=$("$PY" scripts/family_sat.py --verify 2>&1) || fail "family_sat --verify" "$out"
 out=$("$PY" scripts/dag_bound.py --verify 2>&1) || fail "dag_bound --verify" "$out"
 out=$("$PY" scripts/once_at_target.py --verify 2>&1) || fail "once_at_target --verify" "$out"
+out=$("$PY" scripts/max_once.py --verify 2>&1) || fail "max_once --verify" "$out"
 
 if [ "$fast" -eq 0 ]; then
   # 台帳が乗っているエンジンそのものの回帰（族を足しても壊れていないこと）
