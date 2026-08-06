@@ -195,15 +195,45 @@ appendix's `S_λ` mollifies — and it comes straight out of the `κ*`
 enclosure, so that work is not an island.  `E_lower_ratio` needs **no
 interval arithmetic at all** and loses half a percent at `β = κ*`.
 
+## `RhoDeriv.v` — `ρ_c` as a function, and the partials of `g`
+
+The measurement above says the tangency is needed, and a derivative
+needs a *function*, so this file finally constructs one.  `IVT_interv`
+already returns a `sig`, so `root_sig` loses nothing and
+
+```
+rhoc q = proj1_sig (root_sig q H)   for q > 0,   1 otherwise.
+```
+
+| theorem | content |
+|---|---|
+| `rhoc_spec` | `0 < q → 1 < rhoc q ∧ g q (rhoc q) = 0` |
+| `rhoc_unique` | `g q r = 0 → r = rhoc q` — strict monotonicity leaves no room |
+| `rhoc_in` | every enclosure proved over roots transfers to `rhoc` |
+| `rhoc_continuous` | squeeze the root between two levels whose strict signs survive a small move in `q` |
+| `derive_g_q` | `∂g/∂q = −ln r·r^(−q) − ln(1+r)·(1+r)^(−q)` |
+| `derive_g_r` | `∂g/∂r = −q·r^(−q)/r − q·(1+r)^(−q)/(1+r)` |
+| `derive_g_r_neg` | that partial is **strictly negative** — the nondegeneracy the implicit function theorem needs |
+
+`Rpower` has no derivative lemma in Rocq's standard library, so both
+partials are built from `exp` and `ln` by the chain rule
+(`derive_Rpower_q`, `derive_Rpower_r`).
+
+**Not yet done:** the implicit function theorem itself — the limit
+argument that turns these partials into
+`is_derive rhoc q (−∂_q g / ∂_r g)`.  All its ingredients are in place:
+the function, its continuity, both partials, and the nonvanishing
+denominator.
+
 ## Building
 
 Needs Rocq ≥ 9 and CoqInterval:
 
 ```sh
 opam install coq-interval        # 4.11.4 here
-make                             # ≈ 22 s
+make                             # ≈ 25 s
 make check                       # Print Assumptions on the main theorems
 ```
 
 This is deliberately **not** wired into CI: installing CoqInterval takes
-about twenty minutes, against twenty-two seconds to check the proofs.
+about twenty minutes, against twenty-five seconds to check the proofs.
