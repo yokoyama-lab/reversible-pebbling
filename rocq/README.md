@@ -151,15 +151,43 @@ softmin weights and the chord deficit into the ledger inside Rocq, and
 covering the whole `q₁` range.  Every ingredient is now an explicit
 expression in enclosed quantities; none of them needs a derivative.
 
+## `EnvelopeE.v` — the E-branch of the profile
+
+Both zones are built on the Legendre transform
+
+```
+E(β) = min_{q>0} ( qβ + f(q) ),    f(q) = q log₂ ρ_c(q).
+```
+
+The two global bounds it needs are **already theorems**, rewritten:
+
+| bound | is | rewriting of |
+|---|---|---|
+| `f_ge_global` | `1 − q·KHI ≤ f(q)` | `kappa_upper` with the quotient cleared |
+| `f_le_one` | `f(q) ≤ 1` | `g_at_top` — every root is below `2^(1/q)` |
+
+From `1 − q·κ* ≤ f(q) ≤ 1`, with no new numerics:
+
+| theorem | content |
+|---|---|
+| `E_ge_one` | `β ≥ κ* → E(β) ≥ 1` — past `κ*` the E-branch is **at the ceiling** |
+| `E_le_one_plus` | …and 1 is approached, so that bound is sharp |
+| `E_lower_ratio` | `0 < β ≤ κ* → E(β) ≥ 3β` — split the family at `q = 3`; `1 − 3κ* = 0.0048 > 0` makes both branches clear `3β` |
+
+`E_ge_one` is why the profile is `min(E, 1)` past `κ*` — the cap the
+appendix's `S_λ` mollifies — and it comes straight out of the `κ*`
+enclosure, so that work is not an island.  `E_lower_ratio` needs **no
+interval arithmetic at all** and loses half a percent at `β = κ*`.
+
 ## Building
 
 Needs Rocq ≥ 9 and CoqInterval:
 
 ```sh
 opam install coq-interval        # 4.11.4 here
-make                             # ≈ 17 s
+make                             # ≈ 22 s
 make check                       # Print Assumptions on the main theorems
 ```
 
 This is deliberately **not** wired into CI: installing CoqInterval takes
-about twenty minutes, against seventeen seconds to check the proofs.
+about twenty minutes, against twenty-two seconds to check the proofs.
