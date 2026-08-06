@@ -132,24 +132,40 @@ Both endpoints are *values* of `f`, which `RhoEnclose` already encloses.
 | `beta_bracket` | the two-sided bound above, from minimality alone |
 | `bracket_at_1_5` | worked: `q₁ = 3/2`, `h = 1/100` ⟹ `b ∈ [0.33361, 0.33601]`; the true `−f'(3/2) = 0.334769` |
 
-**Measured before building this.** A probe over Zone I
-(`scripts/probe_brw/m40_ledgerA_explicit.py` in the paper repository,
-and the `track3` variant) put the bracket at width ≈ `2·10⁻⁴` for
-`h = 10⁻³`, and the ledger's minimum over *every* `β` in *every* bracket
-came out `0.011749` against `0.011758` for the derivative-based
-version — a loss of 0.07%.  **The implicit function theorem is not
-needed.**
+**Measured before building this.** A probe over Zone I put the bracket
+at width ≈ `2·10⁻⁴` for `h = 10⁻³`, and the ledger's minimum over
+*every* `β` in *every* bracket came out `0.011749` against `0.011758`
+for the derivative-based version — a loss of 0.07% **at a point**.
 
-That probe also records the two reformulations that got the ledger this
-far: parameterising by `q₁` (which removes the inner minimisation of the
-Legendre transform) and using the true chord deficit
-`w₁f(q₁) + w₂f(q₂) − f(q̃)` instead of `M = sup f''` (which removes the
-second derivative outright, and is 1.45× less lossy).
+**Corrected (measured afterwards).** That 0.07% is the pointwise loss.
+A machine-checked Zone I proof must cover *windows* of `q₁`, and there
+the derivative-free bracket is not enough:
 
-**Still open** for a Zone I proof: assembling `q₂`, `S_λ`, `G`, the
-softmin weights and the chord deficit into the ledger inside Rocq, and
-covering the whole `q₁` range.  Every ingredient is now an explicit
-expression in enclosed quantities; none of them needs a derivative.
+- `w₁ = 1/(1 + 2^(−μ(S_λ − E)))` with `μ = 30`, so an uncertainty `db`
+  in `β` becomes ≈ `20·db` in `w₁`; and the ledger is **not** uniform in
+  `w₁` (at `q₁ = 3.0` it is `+0.021` at the true `w₁ = 0.939` but
+  reaches `−0.015` at `w₁ = 0.5`).  So `β` must be pinned to ≈ `3·10⁻⁴`.
+- Over a window of width `W` the difference-quotient bracket costs
+  `|f''|h/2` intrinsically and amplifies the window's own `f`-width by
+  `1/h`, giving ≈ `0.26√W` — the **square root** of the window width.
+  With the tangency instead it is `|f''|W`, **linear**.  Measured at
+  `q₁ = 2.4`: `W = 10⁻³` → `2.09·10⁻²` versus `1.26·10⁻⁴` (166×);
+  `W = 10⁻⁶` → `6.55·10⁻⁴` versus `1.26·10⁻⁷` (5185×).
+- To reach `3·10⁻⁴`: derivative-free needs `W ≈ 10⁻⁷`, about **30
+  million windows** over `[0.35, 3.2]`; with `f'`, `W ≈ 2·10⁻³`, about
+  **1400**.
+
+So `beta_bracket` is sound and stays useful, but a window-based Zone I
+proof needs the implicit function theorem for `ρ_c` after all — not for
+correctness, for tightness.  Details in
+`scripts/probe_brw/m43_zone1_windows.py` in the paper repository.
+
+**Still open** for a Zone I proof, in order: (i) `f'` by the implicit
+function theorem, giving `β` linearly in the window width; (ii)
+assembling `q₂`, `S_λ`, `G`, the softmin weight and the chord deficit
+into the ledger; (iii) covering `[0.35, 3.2]` at `W ≈ 2·10⁻³`.  Every
+ingredient other than `f'` is already an explicit expression in
+enclosed quantities.
 
 ## `EnvelopeE.v` — the E-branch of the profile
 
