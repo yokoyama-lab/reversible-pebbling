@@ -1744,37 +1744,54 @@ def main() -> int:
             raise SystemExit("statement audit incomplete for: "
                              + ", ".join(unseen))
         parts = {t: split_conclusion(ty) for t, ty in types.items()}
+
+        def instances(text: str) -> set:
+            """The carried hypotheses occurring in `text`, WITH their argument.
+
+            `Submult fRow` and `Submult fRLE` are different assumptions —
+            only the first is a theorem — so matching the bare name would
+            report the second as discharged when it is not."""
+            out = set()
+            for hyp in CARRIED_HYPOTHESES:
+                for m in re.finditer(
+                        rf"\b{hyp}\b\s*(\(?[A-Za-z_][\w.]*)?", text):
+                    arg = (m.group(1) or "").lstrip("(")
+                    out.add(f"{hyp} {arg}".strip())
+            return out
+
+        carried_all, proved_all = {}, {}
         for stage in proved_stages.values():
             carried, proves = {}, {}
-            for hyp in CARRIED_HYPOTHESES:
-                hit = sorted(t for t in stage["theorems"] if hyp in parts[t][0])
-                if hit:
-                    carried[hyp] = hit
-                # a theorem proves the hypothesis outright only if it
-                # concludes it while assuming none of the carried ones —
+            for t in stage["theorems"]:
+                hyp_part, concl = parts[t]
+                inh = instances(hyp_part)
+                for k in sorted(inh):
+                    carried.setdefault(k, []).append(t)
+                    carried_all.setdefault(k, []).append(t)
+                # a theorem proves a hypothesis outright only if it
+                # concludes it while assuming none of them —
                 # `GameAttain → GameOptimal` must not count as a proof
-                got = sorted(t for t in stage["theorems"]
-                             if hyp in parts[t][1]
-                             and not any(h in parts[t][0]
-                                         for h in CARRIED_HYPOTHESES))
-                if got:
-                    proves[hyp] = got
+                if not inh:
+                    for k in sorted(instances(concl)):
+                        proves.setdefault(k, []).append(t)
+                        proved_all.setdefault(k, []).append(t)
+            for d in (carried, proves):
+                for k in d:
+                    d[k] = sorted(d[k])
             stage["carried_hypotheses"] = carried
             stage["proves_hypotheses"] = proves
-        totals = {h: sum(len(s["carried_hypotheses"].get(h, []))
-                         for s in proved_stages.values())
-                  for h in CARRIED_HYPOTHESES}
-        proved_by = {h: sorted(t for s in proved_stages.values()
-                               for t in s["proves_hypotheses"].get(h, []))
-                     for h in CARRIED_HYPOTHESES}
-        hyp_status = {h: {"status": "proved" if proved_by[h] else "carried",
-                          "carried_by": totals[h], "proved_by": proved_by[h]}
-                      for h in CARRIED_HYPOTHESES}
+        keys = sorted(set(carried_all) | set(proved_all))
+        hyp_status = {
+            k: {"status": "proved" if proved_all.get(k) else "carried",
+                "carried_by": len(carried_all.get(k, [])),
+                "proved_by": sorted(proved_all.get(k, []))}
+            for k in keys}
         print("statement audit OK: hypotheses — "
               + ", ".join(
-                  f"{h}: {totals[h]} carried"
-                  + (f", PROVED by {proved_by[h][0]}" if proved_by[h] else "")
-                  for h in CARRIED_HYPOTHESES))
+                  f"{k}: {hyp_status[k]['carried_by']} carried"
+                  + (f", PROVED by {hyp_status[k]['proved_by'][0]}"
+                     if hyp_status[k]['proved_by'] else "")
+                  for k in keys))
     finally:
         tmp.unlink(missing_ok=True)
 

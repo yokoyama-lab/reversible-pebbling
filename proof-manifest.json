@@ -86,11 +86,11 @@
   "RevPebbling.lean": "66fd40fa1fca4efcb5cbc3c3a7325ddf00d4ddc8815f7a28c6db39e9fec666d0"
  },
  "hypotheses": {
-  "Submult": {
+  "GameAttain": {
    "status": "proved",
-   "carried_by": 20,
+   "carried_by": 3,
    "proved_by": [
-    "RevPebbling.BlockSim.submult_fRow"
+    "RevPebbling.RowExact.gameAttain_holds"
    ]
   },
   "GameOptimal": {
@@ -100,22 +100,38 @@
     "RevPebbling.RowExact.gameOptimal_holds"
    ]
   },
-  "GameAttain": {
-   "status": "proved",
-   "carried_by": 3,
-   "proved_by": [
-    "RevPebbling.RowExact.gameAttain_holds"
-   ]
-  },
   "LowerRowExact": {
    "status": "proved",
-   "carried_by": 4,
+   "carried_by": 0,
    "proved_by": [
-    "RevPebbling.RowExact.lowerRowExact_all",
     "RevPebbling.RowExact.lowerRowExact_zero"
    ]
   },
-  "Superadd": {
+  "LowerRowExact s": {
+   "status": "proved",
+   "carried_by": 4,
+   "proved_by": [
+    "RevPebbling.RowExact.lowerRowExact_all"
+   ]
+  },
+  "Submult RevPebbling.RLEPebble.fRLE": {
+   "status": "carried",
+   "carried_by": 1,
+   "proved_by": []
+  },
+  "Submult RevPebbling.RowMax.fRow": {
+   "status": "proved",
+   "carried_by": 12,
+   "proved_by": [
+    "RevPebbling.BlockSim.submult_fRow"
+   ]
+  },
+  "Submult f": {
+   "status": "carried",
+   "carried_by": 7,
+   "proved_by": []
+  },
+  "Superadd f": {
    "status": "carried",
    "carried_by": 3,
    "proved_by": []
@@ -170,14 +186,16 @@
    ],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "Submult": [
-     "RevPebbling.GrowthBounds.growth_le_2_6106",
+    "Submult f": [
      "RevPebbling.GrowthRate.growth_le",
      "RevPebbling.GrowthRate.growth_le_of_geometric",
      "RevPebbling.GrowthRate.growth_le_ratio",
      "RevPebbling.GrowthRate.growth_pos",
      "RevPebbling.GrowthRate.subadditive_logSeq",
      "RevPebbling.GrowthRate.tendsto_logSeq"
+    ],
+    "Submult RevPebbling.RLEPebble.fRLE": [
+     "RevPebbling.GrowthBounds.growth_le_2_6106"
     ]
    },
    "proves_hypotheses": {}
@@ -238,7 +256,7 @@
    ],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "Submult": [
+    "Submult RevPebbling.RowMax.fRow": [
      "RevPebbling.GrowthCertified.growth_le_2_6106",
      "RevPebbling.GrowthCertified.growth_le_2_6224"
     ]
@@ -260,7 +278,7 @@
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "Submult": [
+    "Submult RevPebbling.RowMax.fRow": [
      "RevPebbling.Dispersion4731Growth.growth_ge_2_51706472",
      "RevPebbling.DispersionGrowth.growth_ge_32_13",
      "RevPebbling.DispersionGrowth.growth_ge_of_midv_geometric"
@@ -281,7 +299,7 @@
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "Submult": [
+    "Submult RevPebbling.RowMax.fRow": [
      "RevPebbling.TwoD.tendsto_log_rowMax",
      "RevPebbling.TwoD.tendsto_rowMax_root"
     ]
@@ -303,8 +321,10 @@
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "Submult": [
-     "RevPebbling.GrowthLower.growth_ge_of_geometric",
+    "Submult f": [
+     "RevPebbling.GrowthLower.growth_ge_of_geometric"
+    ],
+    "Submult RevPebbling.RowMax.fRow": [
      "RevPebbling.GrowthLower.growth_ge_two"
     ]
    },
@@ -352,7 +372,7 @@
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "Submult": [
+    "Submult RevPebbling.RowMax.fRow": [
      "RevPebbling.GrowthClosedForm.growth_le_2_8285",
      "RevPebbling.GrowthClosedForm.growth_le_two_sqrt_two"
     ]
@@ -798,7 +818,7 @@
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "Superadd": [
+    "Superadd f": [
      "RevPebbling.Profile.profile_concave_rat",
      "RevPebbling.Profile.subadditive_shifted",
      "RevPebbling.Profile.tendsto_profile"
@@ -926,14 +946,14 @@
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
+    "LowerRowExact s": [
+     "RevPebbling.AttainSplit.attain_split_cutFull",
+     "RevPebbling.AttainSplit.attain_split_of_recursion"
+    ],
     "GameAttain": [
      "RevPebbling.GameDecomposition.gameF_eq_Fpre",
      "RevPebbling.GameDecomposition.gameOptimal_of_attain",
      "RevPebbling.GameDecomposition.solvesKnill_of_attain"
-    ],
-    "LowerRowExact": [
-     "RevPebbling.AttainSplit.attain_split_cutFull",
-     "RevPebbling.AttainSplit.attain_split_of_recursion"
     ]
    },
    "proves_hypotheses": {}
@@ -1048,20 +1068,22 @@
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "LowerRowExact": [
+    "LowerRowExact s": [
      "RevPebbling.RowExact.ge_row_of_lower",
      "RevPebbling.RowExact.lowerRowExact_succ"
     ]
    },
    "proves_hypotheses": {
-    "GameOptimal": [
-     "RevPebbling.RowExact.gameOptimal_holds"
-    ],
     "GameAttain": [
      "RevPebbling.RowExact.gameAttain_holds"
     ],
+    "GameOptimal": [
+     "RevPebbling.RowExact.gameOptimal_holds"
+    ],
+    "LowerRowExact s": [
+     "RevPebbling.RowExact.lowerRowExact_all"
+    ],
     "LowerRowExact": [
-     "RevPebbling.RowExact.lowerRowExact_all",
      "RevPebbling.RowExact.lowerRowExact_zero"
     ]
    }
@@ -1107,7 +1129,7 @@
    ],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
-    "Submult": [
+    "Submult RevPebbling.RowMax.fRow": [
      "RevPebbling.AnchorGrowth.growth_le_of_anchor",
      "RevPebbling.AnchorGrowth.growth_le_of_midv_geometric"
     ]
@@ -1138,7 +1160,7 @@
    "axiom_free_theorems": [],
    "carried_hypotheses": {},
    "proves_hypotheses": {
-    "Submult": [
+    "Submult RevPebbling.RowMax.fRow": [
      "RevPebbling.BlockSim.submult_fRow"
     ]
    }
