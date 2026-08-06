@@ -1,4 +1,4 @@
-# `rocq/` — the enclosure of `κ*`, inside a prover
+# `rocq/` — `κ*` and `ρ_c`, inside a prover
 
 `data/kappa_enclosure_certified.txt` records a 23-digit enclosure of
 
@@ -82,15 +82,48 @@ compiled program printed" kind (the Lean side's `native_decide`).  The
 float axioms state the IEEE-754 semantics of the hardware operations;
 the interval algorithm built on top of them is proof-checked.
 
+## `RhoEnclose.v` — the value layer
+
+`KappaStar.v` needs `ρ_c` only through a sign test, so it never says what
+`ρ_c(q)` *is*.  Zone I of the one-step appendix does need values: its
+ledger is built from `f(q) = q log₂ ρ_c(q)` at three slopes.
+`RhoEnclose.v` supplies
+
+```
+rho_in : q ∈ [qlo,qhi] ∧ g q r = 0  →  a ≤ r ≤ b
+```
+
+from two sign tests at the corners.  The mechanism is that `g` is
+antitone in **both** arguments — in `ρ` that is `g_decr`, in `q` it holds
+as soon as `r > 1` (both bases exceed 1), and every root does exceed 1
+(`root_gt_1`).  So monotonicity in `q` replaces interval Newton and
+Krawczyk here as well.
+
+| corollary | content |
+|---|---|
+| `rho_window_qstar` | `q ∈ [1.5, 1.53] → ρ ∈ [1.249, 1.262]` |
+| `rho_window_zoneI` | `q ∈ [0.35, 3.2] → ρ ∈ [1.034, 6.77]` |
+| `f_window_qstar` | `q ∈ [1.5, 1.53] → f ∈ [0.481, 0.515]` |
+| `rho_c_at_1` | `g 1 r = 0 → r² = r + 1` — `ρ_c(1)` is the golden ratio, in closed form |
+
+**Scope.** This is the value layer only.  Lemma A's ledger also uses
+`f'(q)`; its closed form comes from the implicit function theorem, and
+formalising that derivative is separate work that is **not** done here.
+See `scripts/probe_brw/m40_ledgerA_explicit.py` in the paper repository
+for the ledger written out explicitly — parameterised by the E-branch
+slope `q₁` (which removes the inner minimisation) and using the true
+chord deficit instead of `M = sup f''` (which removes the second
+derivative of an implicit function).
+
 ## Building
 
 Needs Rocq ≥ 9 and CoqInterval:
 
 ```sh
 opam install coq-interval        # 4.11.4 here
-make                             # ≈ 14 s
-make check                       # Print Assumptions on the three theorems
+make                             # ≈ 19 s
+make check                       # Print Assumptions on the main theorems
 ```
 
 This is deliberately **not** wired into CI: installing CoqInterval takes
-about twenty minutes, against fourteen seconds to check the proof.
+about twenty minutes, against twenty seconds to check the proofs.
