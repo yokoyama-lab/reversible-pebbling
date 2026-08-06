@@ -439,4 +439,62 @@ theorem gval_rdIndex_le (M : Nat) {i j : Nat} (h : j < i) :
   rw [hfac]
   exact norm_le M _ _ hApos
 
+
+-- ------------------------------------------------------------------
+-- Compiled forms: shifts instead of `2 ^ k`
+-- ------------------------------------------------------------------
+
+/-! As in `AnchorKey`: the definitions above keep their arithmetic form
+for the proofs, and `@[csimp]` swaps in shift-based code for evaluation.
+`2 ^ k` is a `Nat.pow` loop, and the DP calls it several times per cell. -/
+
+def gvalFast (M i : Nat) : Nat :=
+  let t := i + 1
+  if t < 1 <<< (M + 1) then t
+  else
+    let b := (t >>> M) - 1
+    (t - (b <<< M)) <<< b
+
+@[csimp] theorem gval_eq_fast : @gval = @gvalFast := by
+  funext M i
+  unfold gval gvalFast
+  simp only [Nat.shiftLeft_eq, Nat.shiftRight_eq_div_pow, Nat.one_mul]
+
+def gpairFast (M i : Nat) : Nat × Nat :=
+  let t := i + 1
+  if t < 1 <<< (M + 1) then (t, 0)
+  else
+    let b := (t >>> M) - 1
+    (t - (b <<< M), b)
+
+@[csimp] theorem gpair_eq_fast : @gpair = @gpairFast := by
+  funext M i
+  unfold gpair gpairFast
+  simp only [Nat.shiftLeft_eq, Nat.shiftRight_eq_div_pow, Nat.one_mul]
+
+def normFast (M A b : Nat) : Nat :=
+  if Nat.log2 A + 1 ≤ M + 1 then
+    if M + 1 - (Nat.log2 A + 1) ≤ b then
+      ((b - (M + 1 - (Nat.log2 A + 1))) <<< M)
+        + (A <<< (M + 1 - (Nat.log2 A + 1))) - 1
+    else (A <<< b) - 1
+  else
+    ((b + (Nat.log2 A + 1 - (M + 1))) <<< M)
+      + (A >>> (Nat.log2 A + 1 - (M + 1))) - 1
+
+@[csimp] theorem norm_eq_fast : @norm = @normFast := by
+  funext M A b
+  unfold norm normFast
+  simp only [Nat.shiftLeft_eq, Nat.shiftRight_eq_div_pow]
+
+def rdIndexFast (M i j : Nat) : Nat :=
+  let p1 := gpair M i
+  let p2 := gpair M j
+  norm M ((p1.1 <<< (p1.2 - p2.2)) - p2.1) p2.2
+
+@[csimp] theorem rdIndex_eq_fast : @rdIndex = @rdIndexFast := by
+  funext M i j
+  unfold rdIndex rdIndexFast
+  simp only [Nat.shiftLeft_eq]
+
 end RevPebbling.AnchorGrid

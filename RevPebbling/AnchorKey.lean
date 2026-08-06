@@ -306,4 +306,58 @@ theorem wf_flPow2 (k : Nat) : wf (flPow2 k) := by
     right
     rw [kmant_mkKey (by rw [two32_eq]; exact Nat.pow_lt_pow_right (by omega) (by omega))]
 
+
+-- ------------------------------------------------------------------
+-- Compiled forms: the same functions with shifts instead of `2 ^ k`
+-- ------------------------------------------------------------------
+
+/-! `2 ^ k` elaborates to `Nat.pow`, which the evaluator runs as a loop;
+in a DP with tens of millions of cells that dominates.  The definitions
+above stay in arithmetic form (so the proofs read naturally) and
+`@[csimp]` swaps in shift-based code for evaluation only. -/
+
+def kexpFast (k : Nat) : Nat := k >>> 32
+def kmantFast (k : Nat) : Nat := k &&& 4294967295
+def mkKeyFast (e m : Nat) : Nat := (e <<< 32) + m
+
+@[csimp] theorem kexp_eq_fast : @kexp = @kexpFast := by
+  funext k; show k / TWO32 = k >>> 32
+  rw [Nat.shiftRight_eq_div_pow]; rfl
+
+@[csimp] theorem kmant_eq_fast : @kmant = @kmantFast := by
+  funext k; show k % TWO32 = k &&& 4294967295
+  rw [show (4294967295 : Nat) = 2 ^ 32 - 1 from rfl, Nat.and_two_pow_sub_one_eq_mod]
+  rfl
+
+@[csimp] theorem mkKey_eq_fast : @mkKey = @mkKeyFast := by
+  funext e m; show e * TWO32 + m = (e <<< 32) + m
+  rw [Nat.shiftLeft_eq]; rfl
+
+def flAddFast (x y : Nat) : Nat :=
+  let hi := if x < y then y else x
+  let lo := if x < y then x else y
+  let ex := kexp hi
+  let d := ex - kexp lo
+  if 32 ≤ d then hi
+  else
+    let s := kmant hi + (kmant lo >>> d)
+    if TWO32 ≤ s then mkKey (ex + 1) (s >>> 1) else mkKey ex s
+
+@[csimp] theorem flAdd_eq_fast : @flAdd = @flAddFast := by
+  funext x y
+  unfold flAdd flAddFast
+  simp only [Nat.shiftRight_eq_div_pow, Nat.pow_one]
+
+def flPow2Fast (k : Nat) : Nat :=
+  if k ≤ 31 then 1 <<< k else mkKey (k - 31) (1 <<< 31)
+
+@[csimp] theorem flPow2_eq_fast : @flPow2 = @flPow2Fast := by
+  funext k
+  unfold flPow2 flPow2Fast
+  simp only [Nat.shiftLeft_eq, Nat.one_mul]
+  split
+  · show mkKey 0 (2 ^ k) = 2 ^ k
+    simp [mkKey]
+  · rfl
+
 end RevPebbling.AnchorKey
