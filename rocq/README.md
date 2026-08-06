@@ -1,4 +1,4 @@
-# `rocq/` — `κ*` and `ρ_c`, inside a prover
+# `rocq/` — `κ*`, `ρ_c`, and Lemma A's ledger, inside a prover
 
 `data/kappa_enclosure_certified.txt` records a 23-digit enclosure of
 
@@ -68,7 +68,7 @@ about `8·10⁻¹⁸` at `q* ≈ 1.5154`, where the constraint is tangent.
 
 ## Trust base
 
-`Print Assumptions` on the three theorems lists only:
+`Print Assumptions` on the main theorems lists only:
 
 - `ClassicalDedekindReals.*`, `Classical_Prop.*`, `FunctionalExtensionality.*`
   — the axioms of Rocq's classical reals, unavoidable for `R`;
@@ -106,14 +106,50 @@ Krawczyk here as well.
 | `f_window_qstar` | `q ∈ [1.5, 1.53] → f ∈ [0.481, 0.515]` |
 | `rho_c_at_1` | `g 1 r = 0 → r² = r + 1` — `ρ_c(1)` is the golden ratio, in closed form |
 
-**Scope.** This is the value layer only.  Lemma A's ledger also uses
-`f'(q)`; its closed form comes from the implicit function theorem, and
-formalising that derivative is separate work that is **not** done here.
-See `scripts/probe_brw/m40_ledgerA_explicit.py` in the paper repository
-for the ledger written out explicitly — parameterised by the E-branch
-slope `q₁` (which removes the inner minimisation) and using the true
-chord deficit instead of `M = sup f''` (which removes the second
-derivative of an implicit function).
+## `LedgerParam.v` — `β` without a derivative
+
+Lemma A's ledger sits at a point where the E-branch slope is `q₁`, and
+`β` is tied to `q₁` by the tangency `f'(q₁) = ε − β`.  That equation was
+the **only** place a derivative entered, and formalising it would need
+the implicit function theorem for `ρ_c`.
+
+It is avoidable.  The tangency is a consequence of a derivative-free
+fact: `E` is the lower envelope of the lines `q ↦ q b + f(q)`, so `q₁`
+minimises that family at `b = β − ε`.  Minimality alone brackets `b` by
+**difference quotients of `f`**:
+
+```
+q = q₁ + h :  q₁b + f(q₁) ≤ (q₁+h)b + f(q₁+h)  ⟹  b ≥ (f(q₁) − f(q₁+h))/h
+q = q₁ − h :  q₁b + f(q₁) ≤ (q₁−h)b + f(q₁−h)  ⟹  b ≤ (f(q₁−h) − f(q₁))/h
+```
+
+Both endpoints are *values* of `f`, which `RhoEnclose` already encloses.
+
+| theorem | content |
+|---|---|
+| `root_exists` | `0 < q → ∃ r, 1 < r ∧ g q r = 0` — a root at **every** slope, by IVT between `1` and `2^(1/q)` |
+| `EminRel` | minimality of the `q₁`-line, stated over roots (no constructed `ρ_c`) |
+| `beta_bracket` | the two-sided bound above, from minimality alone |
+| `bracket_at_1_5` | worked: `q₁ = 3/2`, `h = 1/100` ⟹ `b ∈ [0.33361, 0.33601]`; the true `−f'(3/2) = 0.334769` |
+
+**Measured before building this.** A probe over Zone I
+(`scripts/probe_brw/m40_ledgerA_explicit.py` in the paper repository,
+and the `track3` variant) put the bracket at width ≈ `2·10⁻⁴` for
+`h = 10⁻³`, and the ledger's minimum over *every* `β` in *every* bracket
+came out `0.011749` against `0.011758` for the derivative-based
+version — a loss of 0.07%.  **The implicit function theorem is not
+needed.**
+
+That probe also records the two reformulations that got the ledger this
+far: parameterising by `q₁` (which removes the inner minimisation of the
+Legendre transform) and using the true chord deficit
+`w₁f(q₁) + w₂f(q₂) − f(q̃)` instead of `M = sup f''` (which removes the
+second derivative outright, and is 1.45× less lossy).
+
+**Still open** for a Zone I proof: assembling `q₂`, `S_λ`, `G`, the
+softmin weights and the chord deficit into the ledger inside Rocq, and
+covering the whole `q₁` range.  Every ingredient is now an explicit
+expression in enclosed quantities; none of them needs a derivative.
 
 ## Building
 
@@ -121,9 +157,9 @@ Needs Rocq ≥ 9 and CoqInterval:
 
 ```sh
 opam install coq-interval        # 4.11.4 here
-make                             # ≈ 19 s
+make                             # ≈ 17 s
 make check                       # Print Assumptions on the main theorems
 ```
 
 This is deliberately **not** wired into CI: installing CoqInterval takes
-about twenty minutes, against twenty seconds to check the proofs.
+about twenty minutes, against seventeen seconds to check the proofs.
