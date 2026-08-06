@@ -71,7 +71,10 @@ about `8·10⁻¹⁸` at `q* ≈ 1.5154`, where the constraint is tangent.
 `Print Assumptions` on the main theorems lists only:
 
 - `ClassicalDedekindReals.*`, `Classical_Prop.*`, `FunctionalExtensionality.*`
-  — the axioms of Rocq's classical reals, unavoidable for `R`;
+  — the axioms of Rocq's classical reals, unavoidable for `R`.
+  (`Classical_Prop.classic` is also used *directly*, once, in
+  `EminExists.v`: to turn "`m − eps` is not an upper bound" into a
+  witness.  It was already in the trust base, so this adds nothing.);
 - `PrimInt63`/`Uint63Axioms`/`Sint63Axioms`, `PrimFloat`/`FloatAxioms`,
   `PrimArray` — Rocq's *primitive* machine integers, IEEE-754 floats and
   arrays, axiomatised by their specifications.  CoqInterval computes its
@@ -129,7 +132,9 @@ Both endpoints are *values* of `f`, which `RhoEnclose` already encloses.
 |---|---|
 | `root_exists` | `0 < q → ∃ r, 1 < r ∧ g q r = 0` — a root at **every** slope, by IVT between `1` and `2^(1/q)` |
 | `EminRel` | minimality of the `q₁`-line, stated over roots (no constructed `ρ_c`) |
+| `EminEps` | the same, **to within `eps`** — the version that can be discharged |
 | `beta_bracket` | the two-sided bound above, from minimality alone |
+| `beta_bracket_eps` | the same under `EminEps`: each side loses exactly `eps/h` |
 | `bracket_at_1_5` | worked: `q₁ = 3/2`, `h = 1/100` ⟹ `b ∈ [0.33361, 0.33601]`; the true `−f'(3/2) = 0.334769` |
 
 **Measured before building this.** A probe over Zone I put the bracket
@@ -166,6 +171,53 @@ assembling `q₂`, `S_λ`, `G`, the softmin weight and the chord deficit
 into the ledger; (iii) covering `[0.35, 3.2]` at `W ≈ 2·10⁻³`.  Every
 ingredient other than `f'` is already an explicit expression in
 enclosed quantities.
+
+## `EminExists.v` — the hypothesis, discharged
+
+Every theorem above carried `EminRel b q₁ f₁`, "`q₁` minimises
+`q ↦ q·b + f(q)` **exactly**", and nothing produced such a `q₁`.  An
+exact minimiser of a family over an unbounded index set needs
+compactness of an effective range plus continuity of `ρ_c`; until it is
+produced, nothing rules out that the hypothesis is unsatisfiable and
+every theorem carrying it vacuous.
+
+**Weaken it to `eps`-minimality and the existence is free.**
+
+```
+EminEps eps b q₁ f₁  :=  ∀ q r, 0<q → 0<r → g q r = 0 →
+                           q₁b + f₁ ≤ qb + f(q) + eps
+```
+
+An `eps`-minimiser exists for **any** family bounded below, straight
+from the definition of an infimum:
+
+| step | why |
+|---|---|
+| the family `Φ = { qb + f(q,r) : q>0, r>0, g q r = 0 }` is non-empty | `root_exists 1` |
+| … and bounded below by `0` | `qb > 0`, and `f > 0` by `EnvelopeE.f_pos` (next section; every root exceeds 1) |
+| so `inf Φ` exists | `completeness` of `R` |
+| and some member is within `eps` of it | otherwise `inf Φ + eps` bounds `Φ` above, contradicting *least* |
+
+| theorem | content |
+|---|---|
+| **`emin_eps_exists`** | **`0 < b → 0 < eps → ∃ q₁ r₁, 0<q₁ ∧ 0<r₁ ∧ g q₁ r₁ = 0 ∧ EminEps eps b q₁ (fq q₁ r₁)`** |
+| `emin_eps_exists_all` | the same with the slope quantified |
+| `EminEps_inhabited` | the non-vacuity restated: the class of `eps`-minimisers is inhabited at every slope |
+| `bracket_of_some_minimiser` | `beta_bracket_eps` applied to a slope now **known** to exist |
+
+No compactness, no continuity, no derivative — and **no `ρ_c`**: the
+statement quantifies over *roots* of `g`, and the infimum hands back a
+root, so this file does not touch `RhoDeriv`.  The one classical step is
+extracting a witness from "`m − eps` is not an upper bound", which is
+`Classical_Prop.classic`, already in the trust base.
+
+**What this does and does not discharge.**  It discharges the direction
+*given a slope `b`, produce a minimising `q₁`* — which is how Zone I uses
+the hypothesis (fix `β`, ask for the E-branch slope).  It does **not**
+discharge the converse, *given a `q`, produce the `b` that `q` minimises
+at*: that is a statement about `f` being on its own lower convex
+envelope at `q`, it is genuinely false for `q ≲ 0.5`, and the cover's
+node hypotheses are of that converse form.  See the cover section.
 
 ## `EnvelopeE.v` — the E-branch of the profile
 
@@ -252,7 +304,23 @@ monotone comparative statics, two applications of the hypothesis and one
 |---|---|
 | `topkis` | `(q₁ − q₂)(b₁ − b₂) ≤ 0` between any two minimisers |
 | `slope_window` | `qa < q₁ < qb` ⟹ `b(qb) ≤ b(q₁) ≤ b(qa)` |
+| `topkis_eps` | `(q₁ − q₂)(b₁ − b₂) ≤ 2·eps` between any two `eps`-minimisers |
+| `slope_window_eps` | `b(qb) − 2eps/(qb−q₁) ≤ b(q₁) ≤ b(qa) + 2eps/(q₁−qa)` |
 | `slope_in_24_26` | worked: every minimiser in `(2.4, 2.6)` has slope in `[0.163568, 0.187434]`, width **0.0239** — against **0.116** for the across-the-window bracket |
+
+**The `eps`-form's honest defect.**  Adding the two `eps`-statements
+against each other leaves an `eps` on each side, so Topkis's product
+bound loses `2·eps`; and dividing that by the gap is the only thing
+Topkis permits, so the transported bound **blows up as `q₁` approaches
+either node**.  `slope_window_eps` states exactly that and no more.
+
+A cover cannot pay it: its windows are as narrow as `4·10⁻⁷` and their
+endpoints *are* grid points, shared with the neighbouring window.  What
+the cover uses instead is `CoverGlue.slope_hi_eps` / `slope_lo_eps`,
+which anchor the transport on the node's own difference-quotient step
+`h` rather than on the gap and lose `2·eps/h` **uniformly** over the
+closed window — endpoints included, so the endpoint case split of
+`slope_closed` disappears too.  Derivation in the next section.
 
 Measured widths at `q = 2.4` with endpoint brackets at `h = 10⁻⁸`:
 `W = 10⁻²` → `1.26·10⁻³`; `W = 10⁻³` → `1.26·10⁻⁴`; `W = 10⁻⁴` →
@@ -274,6 +342,16 @@ ceiling, where `E_ge_one` takes over.  Details in
 nondegeneracy) are proved and kept — they are the natural interface if
 the implicit function theorem is ever wanted — but Zone I no longer
 needs them.
+
+**And discharging the minimality hypothesis did not put it back on**, as
+was expected it would.  An *exact* minimiser would have needed `rhoc` as
+a function (to have a family to be compact over) plus its continuity;
+the `eps`-minimiser of `EminExists.v` needs neither, because the
+infimum of the values is taken over the *pairs* `(q, r)` with
+`g q r = 0` and hands back such a pair directly.  `rhoc` never appears.
+What *would* put `RhoDeriv` back on the critical path is the converse
+direction — producing, for a given `q`, the slope that `q` minimises at
+— which is what the cover's node hypotheses still ask for.
 
 ## `LedgerA.v` — the ledger, assembled and closed on a window
 
@@ -319,38 +397,73 @@ and the three `f` values.
 **The cover is now done** — see the next section.  (This section's
 estimate of 3700 windows assumed a uniform `W = 5·10⁻⁴`.  Measurement
 says the ledger's slack varies by an order of magnitude across the
-range, so an adaptive grid needs **925**.)
+range, so an adaptive grid needs **932**.)
 
 ## `CoverGlue.v` + `LedgerCoverP*.v` + `LedgerCover.v` — the cover
 
 `window_24` on a grid, generated by `gen/gencover.py`, and **stronger
-than `window_24` in one respect**: the slope bracket is no longer
-assumed.  At every node it is derived from three point enclosures of `f`
-(`slope_upper` / `slope_lower`, on top of `LedgerParam.beta_bracket`)
-and transported to the window by Topkis monotonicity (`slope_closed`).
+than `window_24` in two respects**.  The slope bracket is no longer
+assumed: at every node it is derived from three point enclosures of `f`
+(`slope_upper_eps` / `slope_lower_eps`, on top of
+`LedgerParam.beta_bracket_eps`) and transported to the closed window by
+`slope_hi_eps` / `slope_lo_eps`.  And it assumes only
+**`eps`-minimality** of the slope — the version `EminExists` proves to
+exist — rather than exact minimality, which nothing produces.
+
+The exact-minimality lemmas (`slope_upper`, `slope_lower`,
+`slope_closed`, on top of `beta_bracket` and `topkis`) are kept: they
+are the `eps = 0` case and the cover was built on them first.
+
+**Note on the two `eps`.**  `LedgerA.EPS = 1/100` is the trial profile's
+design constant, untouched.  The `eps` quantified in each window is the
+*minimality slack*, bounded by `CoverGlue.EPSB = 10⁻¹¹`.  They are
+unrelated.
 
 | theorem | content |
 |---|---|
 | `slope_upper` / `slope_lower` | the two halves of the slope bracket at a node; the neighbour that does not constrain the side being proved is filled with the free bound `f_le_one` |
 | `slope_closed` | the node brackets transported to the **closed** window |
+| `EPSB` | the largest `eps` the cover is proved for, `10⁻¹¹` |
+| `slope_upper_eps` / `slope_lower_eps` | the same node bracket under `EminEps`; each side loses `eps/h` |
+| **`slope_hi_eps` / `slope_lo_eps`** | the node bracket transported to the closed window, losing `2·eps/h` **uniformly** |
 | `ledger_window` | the glue of `window_24` with all 23 constants abstracted |
-| `LedgerCoverP<k>.window_<i>` | one window, `i = 0 … 924` |
+| `LedgerCoverP<k>.window_<i>` | one window, `i = 0 … 931` |
 
 ```
-q₁ ∈ [1.45, 3.25]      925 closed windows, 926 nodes, 24 parts
-window widths          4·10⁻⁷ … 3.45·10⁻²   (adaptive)
-ledger ≥               0.002057   at the tightest window
+q₁ ∈ [1.45, 3.25]      932 closed windows, 933 nodes, 24 parts
+window widths          2·10⁻⁷ … 3.65·10⁻²   (adaptive)
+ledger ≥               0.002047   at the tightest window
 ```
 
 Consecutive windows share a node, so the union is the closed interval —
 not a union of open windows that misses its own grid points.
-`slope_window` needs `q₁` *strictly* inside, which is why `slope_closed`
-splits on the endpoint case instead.
 
-**Why `slope_closed` and not `slope_window`.**  Topkis needs strictness
-only in order to divide by `q₁ − qₐ`; at an endpoint the node's own
-bracket applies to `b₁` directly.  Splitting on that case costs one
-`destruct` and closes the gaps.
+**How the `eps`-transport avoids dividing by the window width.**  With
+`u = q₁ − qa ≥ 0` and `qm = qa − h`, two applications of `eps`-minimality
+
+```
+at q₁, tested at qm :  (u + h) b₁ ≤ f(qm) − f(q₁) + eps
+at qa, tested at q₁ :  f(qa) − f(q₁) ≤ u·ba + eps
+────────────────────────────────────────────────────────
+(u + h) b₁ ≤ (f(qm) − f(qa)) + u·ba + 2·eps
+```
+
+The node's own constant already bounds `f(qm) − f(qa)` by `h(bnd − C)`
+and `ba` by `bnd`, so with `2·eps ≤ h·C` the right-hand side is at most
+`(u + h)·bnd` and `u` **cancels**: `b₁ ≤ bnd`, for every `q₁` in the
+closed window.  The whole `eps` cost is folded into the node constant,
+widened by `C = 2·eps/h` before the outward rounding.  No division by
+`q₁ − qa`, and no endpoint case split — `slope_hi_eps` covers `q₁ = qa`
+by the same inequality.
+
+**Measured before building it** (`gen/` numerics on the previous
+925-window grid, `mp.dps = 40`): every window still closes for
+`C ≤ 3.987·10⁻⁵`, i.e. `eps ≤ 1.99·10⁻¹⁰`; the binding window is the one
+at `q₁ ∈ [2.1178979, 2.1190230]`.  `EPSB = 10⁻¹¹` (so `C = 2·10⁻⁶`) sits
+a factor **20** inside that, and costs the tightest window about 2% of
+its margin: `0.002058 → 0.002015` on the fixed grid.  Re-running the
+adaptive grid with the widened brackets needs **932** windows instead of
+925.
 
 **On `G`.** `interval` evaluates `G = (q*/λ)(sp z − z·σ(z))` with the two
 terms decoupled, which widens it by **13.9×** — measured on the
@@ -367,9 +480,31 @@ from `w₁`, which comes from `E = q₁b + f₁`.
 **What the cover does not do.**  It certifies the ledger's positivity on
 Zone I's slope range.  The appendix's reduction of Zone I *to* that
 positivity is not formalised, and neither are Zone 0, Zone II, or the
-base row.  And the slope hypothesis is still a hypothesis: each window
-speaks about a `q₁` that *is* a minimiser of the line family, and assumes
-minimiser slopes exist at the window's two nodes.
+base row.
+
+**What is now unconditional, and what is not.**
+
+| | status |
+|---|---|
+| `EminEps eps b q₁ f₁` is **satisfiable at every slope** | **proved** — `EminExists.emin_eps_exists`, unconditional |
+| `EminRel b q₁ f₁` (exact minimality) is satisfiable | **open** — no theorem here produces an exact minimiser |
+| the 932 windows carry `EminRel` | **no** — they carry `EminEps eps` with `0 < eps ≤ EPSB` |
+| the 932 windows are hypothesis-free | **no** — each still assumes that an `eps`-minimiser *slope* exists at its two nodes |
+
+The remaining hypothesis is the **converse** of what `EminExists`
+proves.  `emin_eps_exists` goes *slope → minimising `q`*; a node asks
+*`q` → the slope it minimises at*, i.e. that `f` sits on its own lower
+convex envelope at that `q`.  That is not free — it is false for
+`q ≲ 0.5`, where the node bracket comes out empty (which is why
+`gen/check_tiling.py` checks non-emptiness) — and proving it on
+`[1.45, 3.25]` would need convexity of `f` there, hence `f''`, hence the
+implicit function theorem for `ρ_c` twice over.  It is not attempted
+here.
+
+So the `eps` weakening buys exactly this: the class of slopes the
+windows speak about is now **known to be inhabited** at every `b`,
+where before the whole chain rested on a hypothesis that might have been
+empty.  It does not make a window unconditional.
 
 **What checks the claim that the windows cover.**  Rocq checks each
 window; nothing in Rocq checks their union.  `gen/check_tiling.py` reads
@@ -380,20 +515,25 @@ values and **non-empty slope brackets** — an empty bracket would make
 happens below `q ≈ 0.5` where `f` is concave.  `gen/spotcheck.py`
 recomputes `−f'` at window midpoints and checks the brackets contain it.
 
+The `eps`-widening makes non-emptiness *easier* — the narrowest bracket
+went from `4.10·10⁻⁶` to `8.10·10⁻⁶`, the extra `4·10⁻⁶` being exactly
+`2C` — so `check_tiling.py` alone is a weaker guard than it was, and
+`spotcheck.py`'s containment test is the one that still has teeth.
+
 ## Building
 
 Needs Rocq ≥ 9 and CoqInterval:
 
 ```sh
 opam install coq-interval        # 4.11.4 here
-make -j8                         # from clean: 3 min 21 s wall, 1301 s CPU
+make -j8                         # from clean: 3 min 56 s wall, 1547 s CPU
 make check                       # Print Assumptions on the main theorems
-sh check_axioms.sh               # …on every one of the 925 windows (4 min)
+sh check_axioms.sh               # …on every one of the 932 windows (4 min)
 make cover                       # regenerate LedgerCover*.v (needs mpmath)
 ```
 
-Without the cover the seven original files take ≈ 22 s.  The cover's 24
-parts are mutually independent, hence `-j`; each costs about 1.1 GB of
+Without the cover the nine hand-written files take ≈ 35 s.  The cover's
+24 parts are mutually independent, hence `-j`; each costs about 1.1 GB of
 prover memory, so do not raise the job count much above 8.
 
 `make check` samples the cover (three windows); `check_axioms.sh` runs

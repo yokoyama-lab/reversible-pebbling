@@ -25,7 +25,7 @@ Needs `mpmath`.
 | file | contents |
 |---|---|
 | `ledger.py` | the numerics: `ρ_c`, `f`, outward rounding, an interval class, and `window()` which returns every constant one window needs |
-| `emit.py` | the Rocq text: `emit_node` (three point enclosures of `f` plus the two halves of a slope bracket), `emit_window` (nine enclosures plus one application of `ledger_window`) |
+| `emit.py` | the Rocq text: `emit_node` (three point enclosures of `f` plus the two halves of a slope bracket), `emit_window` (nine enclosures plus one application of `ledger_window`).  Also holds `EPSB` and `CBAR` — see below |
 | `gencover.py` | the driver: picks the grid, splits into parts, writes the index |
 | `prologue.v` | the source of `rocq/CoverGlue.v` (kept here so the generated and hand-written halves live together; `CoverGlue.v` is the copy the build uses) |
 | `check_tiling.py` | re-derives the coverage claim from the *emitted theorems* |
@@ -33,7 +33,7 @@ Needs `mpmath`.
 
 ## Checking the claim the prover does not check
 
-Rocq checks each of the 925 windows.  Nothing in Rocq checks that their
+Rocq checks each of the 932 windows.  Nothing in Rocq checks that their
 *union* is `[1.45, 3.25]`, or that any of them says something non-vacuous.
 Two scripts do, both reading the generated `.v` files rather than the
 generator's own bookkeeping:
@@ -56,15 +56,58 @@ minimiser; it is what happens below `q ≈ 0.5`, where `f` is concave.)
 where the true slope never goes.  It recomputes `−f'` at window midpoints
 and checks containment.
 
+The eps-widening makes non-emptiness *easier* — the narrowest bracket
+went from `4.10·10⁻⁶` to `8.10·10⁻⁶`, the extra `4·10⁻⁶` being exactly
+`2·CBAR`.  So `check_tiling.py` alone is a weaker guard than it was, and
+`spotcheck.py`'s containment test is the one that still has teeth.
+
 Current output:
 
 ```
-925 windows, union [1.45, 3.25]
-widths  4.000e-07 .. 3.453e-02
-ledger  >= 0.002057 (smallest certified value)
-slope brackets: 925, widths 4.104e-06 .. 2.592e-03, all non-empty
+932 windows, union [1.45, 3.25]
+widths  2.000e-07 .. 3.651e-02
+ledger  >= 0.002047 (smallest certified value)
+slope brackets: 932, widths 8.104e-06 .. 2.714e-03, all non-empty
 TILING OK
 ```
+
+## The eps-form
+
+The windows assume only **eps-minimality** of the slope
+(`LedgerParam.EminEps`), because that is the version
+`EminExists.emin_eps_exists` proves to exist at every slope; exact
+minimality was never shown satisfiable at all.
+
+Two constants in `emit.py` carry it:
+
+| constant | value | meaning |
+|---|---|---|
+| `EPSB` | `1e-11` | the largest `eps` the cover is proved for; **must equal `CoverGlue.EPSB`** |
+| `CBAR` | `2e-6` | the slope-bracket widening, `>= 2*EPSB/H`; handed to `CoverGlue.slope_hi_eps` / `slope_lo_eps` |
+
+`node_data` adds `CBAR` to `bhi` and subtracts it from `blo` **before**
+the outward rounding, so a node constant absorbs both the `eps/h` the
+difference quotient loses and the further `eps/h` the transport to the
+window's interior loses.  Nothing else in the pipeline changes: the
+widened bracket propagates through `window()` exactly as a wider slope
+bracket would.
+
+**Measured before it was built.**  Rerunning `window()` on the previous
+925-window grid with the bracket widened by `C`, the smallest certified
+ledger value goes
+
+| `C` | `eps = C·h/2` | min ledger | binding window |
+|---|---|---|---|
+| `0` | `0` | `0.0020580` | 740 |
+| `1e-6` | `5e-12` | `0.0020152` | 740 |
+| `1e-5` | `5e-11` | `0.0016094` | 683 |
+| `3.987e-5` | `1.99e-10` | `~0` | 522, `q₁ ∈ [2.11790, 2.11902]` |
+| `1e-4` | `5e-10` | `-0.0039247` | 366 |
+
+so `eps = 1.99e-10` is the cliff and `EPSB = 1e-11` is a factor 20
+inside it.  Re-running the adaptive grid with the widened brackets needs
+932 windows instead of 925 — the extra ones sit where the bracket was
+narrowest.
 
 ## The rule every constant obeys
 
