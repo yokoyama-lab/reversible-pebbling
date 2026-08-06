@@ -122,7 +122,8 @@ def main():
             for i in range(w0, w1 + 2):          # nodes, boundary repeated
                 f.write(E.emit_node(i, nodes[i], pfx=pfx))
             for i in range(w0, w1 + 1):
-                f.write(E.emit_window(i, wins[i], pfx=pfx))
+                f.write(E.emit_window(i, wins[i], nodes[i], nodes[i + 1],
+                                      pfx=pfx))
 
     with open(os.path.join(outdir, 'LedgerCover.v'), 'w') as f:
         f.write(TOP % dict(
@@ -156,12 +157,16 @@ TOP = '''(** * The Zone I ledger cover  (Rocq + CoqInterval)  -- GENERATED INDEX
     q1 in (2.4, 2.4005), with the slope bracket [BLO,BHI] ASSUMED.  This
     cover replicates that across a grid and strengthens it: the slope
     bracket is DERIVED at every node from three point enclosures of f
-    ([CoverGlue.slope_upper] / [slope_lower], on top of
-    [LedgerParam.beta_bracket]) and transported to the CLOSED window by
-    Topkis monotonicity ([CoverGlue.slope_closed], on top of
-    [SlopeWindow.topkis]).  Consecutive windows share a node, so the
-    union is a closed interval with no gaps -- not a union of open
-    windows that misses its own grid points.
+    ([CoverGlue.slope_upper_eps] / [slope_lower_eps], on top of
+    [LedgerParam.beta_bracket_eps]) and transported to the CLOSED window
+    by [CoverGlue.slope_hi_eps] / [slope_lo_eps].  Consecutive windows
+    share a node, so the union is a closed interval with no gaps -- not a
+    union of open windows that misses its own grid points.
+
+    NOTE ON THE TWO eps.  [LedgerA.EPS = 1/100] is the trial profile's
+    design constant, unchanged.  The [eps] quantified in each window
+    below is the MINIMALITY SLACK, bounded by [CoverGlue.EPSB = 1e-11].
+    They are unrelated.
 
     ** WHAT IS COVERED
 
@@ -176,21 +181,44 @@ TOP = '''(** * The Zone I ledger cover  (Rocq + CoqInterval)  -- GENERATED INDEX
 
     ** WHAT EACH WINDOW SAYS
 
-    [window_i q1 b1 ... : qa <= q1 <= qb -> ... -> val <= ledger ...]
-    for every q1 in the window, every minimiser slope b1 there, and every
-    root of g at the three slopes involved.  The hypotheses are exactly
+    [window_i eps q1 b1 ... : 0 < eps -> eps <= EPSB ->
+                              qa <= q1 <= qb -> ... -> val <= ledger ...]
+    for every q1 in the window, every eps-minimiser slope b1 there, and
+    every root of g at the three slopes involved.  The hypotheses are
     those of [window_24] MINUS the assumed slope bracket, PLUS the
-    existence of minimiser slopes at the window's two nodes (needed by
-    Topkis, and the same assumption [SlopeWindow.slope_in_24_26] makes).
+    existence of eps-minimiser slopes at the window's two nodes.
+
+    ** eps-MINIMALITY, NOT EXACT MINIMALITY
+
+    [EminEps eps b q1 f1] asks only that the q1-line be lowest to within
+    eps.  That is the version [EminExists.emin_eps_exists] PRODUCES: for
+    every slope b > 0 and every eps > 0 an eps-minimiser exists, straight
+    from the completeness of R -- no compactness, no continuity of rho_c.
+    Exact minimality (the old [EminRel]) was never shown satisfiable at
+    all.
+
+    The price is that each node's slope bracket widens by C = 2 eps / h
+    on each side, and [CoverGlue.slope_hi_eps]/[slope_lo_eps] carry that
+    same C uniformly across the closed window -- no division by the
+    window width, so the narrowest windows pay no more than the widest.
+    MEASURED (on the previous, 925-window grid): every window still
+    closes up to C = 3.987e-5, i.e. eps = 1.99e-10, the binding window
+    being the one at q1 ~ 2.1179.  EPSB is a factor 20 inside that.
 
     ** WHAT IS NOT PROVED HERE
 
     That the ledger being positive implies Zone I's one-step inequality:
     that reduction is the appendix's, and is not formalised.  Zone 0
     (beta <= 0.12), Zone II (qtilde < 0.3) and the transfer principle are
-    elsewhere.  And the design constants eps, lam, mu and qstar of the
+    elsewhere.  And the design constants EPS, LAM, MU and QS of the
     trial profile are constants of the ansatz, not objects that this
     development characterises.
+
+    Nor is the node hypothesis discharged.  [EminExists] produces, for a
+    GIVEN SLOPE, a q that eps-minimises there; a node needs the converse
+    -- for a GIVEN q, a slope that q eps-minimises at -- which says f is
+    on its own lower convex envelope at that q.  That is false below
+    q ~ 0.5 and is not proved here for [1.45, 3.25].
 
     ** THE PARTS
 

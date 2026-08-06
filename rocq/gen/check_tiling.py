@@ -2,7 +2,7 @@
 """Check that the cover really covers, by reading the EMITTED theorems.
 
 The claim "q1 in [1.45, 3.25] is covered" is a statement about the union
-of 925 separately-proved theorems, and nothing in Rocq checks it.  This
+of 932 separately-proved theorems, and nothing in Rocq checks it.  This
 script re-derives it from the generated .v files -- not from the
 generator's own bookkeeping -- by parsing each [window_i]'s hypothesis
 [qa <= q1 <= qb] and its conclusion [val <= ledger ...], and verifying
