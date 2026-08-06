@@ -1,5 +1,6 @@
-(** Trust-base report for the five developments.  See README.md. *)
-From RevPebblingRocq Require Import KappaStar RhoEnclose LedgerParam EnvelopeE RhoDeriv.
+(** Trust-base report for the six developments.  See README.md. *)
+From RevPebblingRocq Require Import
+  KappaStar RhoEnclose LedgerParam EnvelopeE RhoDeriv SlopeWindow.
 
 Print Assumptions kappa_upper.
 Print Assumptions kappa_lower.
@@ -16,5 +17,7 @@ Print Assumptions rhoc_spec.
 Print Assumptions rhoc_unique.
 Print Assumptions rhoc_continuous.
 Print Assumptions derive_g_q.
-Print Assumptions derive_g_r.
 Print Assumptions derive_g_r_neg.
+Print Assumptions topkis.
+Print Assumptions slope_window.
+Print Assumptions slope_in_24_26.

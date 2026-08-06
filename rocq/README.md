@@ -225,6 +225,56 @@ argument that turns these partials into
 the function, its continuity, both partials, and the nonvanishing
 denominator.
 
+## `SlopeWindow.v` — the window slope, still without differentiating
+
+**The measurement above was right about the arithmetic and wrong about
+the remedy.**  The `1/h` amplification comes from evaluating `f` over the
+*whole* window and then dividing.  Bracket at the two **endpoints**
+instead — single points, where `f` is known to interval precision, so
+the amplified term is ≈ `10⁻²⁵/h ≈ 0` — and transport to the interior by
+monotonicity.
+
+The monotonicity is free.  Adding two minimality statements against each
+other,
+
+```
+q₁b₁ + f(q₁) ≤ q₂b₁ + f(q₂)
+q₂b₂ + f(q₂) ≤ q₁b₂ + f(q₁)
+───────────────────────────
+(q₁ − q₂)(b₁ − b₂) ≤ 0
+```
+
+so the optimal slope is **antitone in the minimiser** — Topkis's
+monotone comparative statics, two applications of the hypothesis and one
+`nra`.  No derivative, no convexity, no smoothness.
+
+| theorem | content |
+|---|---|
+| `topkis` | `(q₁ − q₂)(b₁ − b₂) ≤ 0` between any two minimisers |
+| `slope_window` | `qa < q₁ < qb` ⟹ `b(qb) ≤ b(q₁) ≤ b(qa)` |
+| `slope_in_24_26` | worked: every minimiser in `(2.4, 2.6)` has slope in `[0.163568, 0.187434]`, width **0.0239** — against **0.116** for the across-the-window bracket |
+
+Measured widths at `q = 2.4` with endpoint brackets at `h = 10⁻⁸`:
+`W = 10⁻²` → `1.26·10⁻³`; `W = 10⁻³` → `1.26·10⁻⁴`; `W = 10⁻⁴` →
+`1.26·10⁻⁵`.  **Linear in `W`**, matching what the derivative gives, so
+`W ≈ 2·10⁻³` and about **1400 windows** — the figure the previous
+section attributed to the derivative route.
+
+**Range.** Antitonicity holds between genuine *minimisers*.  Where `f`
+is concave (`q ≲ 0.5`) a `q` is not a minimiser, and the point bracket
+there comes out **empty** (at `q = 0.6, h = 10⁻⁴` its lower end exceeds
+its upper by `2.4·10⁻⁵`) — a machine-checkable certificate rather than a
+gap.  The slopes that actually occur in Zone I are `q ∈ [1.42, 3.25]`,
+matching the appendix; and past `β = κ* + ε` the E-branch is above the
+ceiling, where `E_ge_one` takes over.  Details in
+`scripts/probe_brw/m44_slope_window.py`.
+
+**`RhoDeriv.v` is therefore off the critical path.**  Its contents
+(`rhoc` as a function, uniqueness, continuity, both partials of `g`,
+nondegeneracy) are proved and kept — they are the natural interface if
+the implicit function theorem is ever wanted — but Zone I no longer
+needs them.
+
 ## Building
 
 Needs Rocq ≥ 9 and CoqInterval:

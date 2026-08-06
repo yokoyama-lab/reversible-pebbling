@@ -1,10 +1,11 @@
-# kappa*, the rho_c value layer, the derivative-free beta bracket, the
-# E-branch, and rho_c as a differentiable function (Rocq + CoqInterval).
-# See README.md.
+# kappa*, the rho_c value layer, the beta bracket, the E-branch, rho_c as
+# a differentiable function, and the window slope enclosure
+# (Rocq + CoqInterval).  See README.md.
 ROCQ ?= rocq
 FLAGS = -Q . RevPebblingRocq
 
-all: KappaStar.vo RhoEnclose.vo LedgerParam.vo EnvelopeE.vo RhoDeriv.vo
+all: KappaStar.vo RhoEnclose.vo LedgerParam.vo EnvelopeE.vo RhoDeriv.vo \
+     SlopeWindow.vo
 
 KappaStar.vo: KappaStar.v
 	$(ROCQ) c $(FLAGS) $<
@@ -19,6 +20,9 @@ EnvelopeE.vo: EnvelopeE.v LedgerParam.vo
 	$(ROCQ) c $(FLAGS) $<
 
 RhoDeriv.vo: RhoDeriv.v LedgerParam.vo
+	$(ROCQ) c $(FLAGS) $<
+
+SlopeWindow.vo: SlopeWindow.v EnvelopeE.vo
 	$(ROCQ) c $(FLAGS) $<
 
 check: all
