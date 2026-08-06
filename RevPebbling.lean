@@ -31,6 +31,8 @@ import RevPebbling.DispersionBound32
 import RevPebbling.DispersionBound32b
 import RevPebbling.DispersionBound32c
 import RevPebbling.DispersionBound4731
+import RevPebbling.DispersionGeneral
+import RevPebbling.DispersionRecover
 import RevPebbling.DispersionGrowth
 import RevPebbling.DoublingLower
 import RevPebbling.FactorialBound
