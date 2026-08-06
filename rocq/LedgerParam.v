@@ -113,6 +113,63 @@ Proof.
     lra.
 Qed.
 
+(** ** eps-MINIMALITY: the same hypothesis, weakened until it is free
+
+    [EminRel] asks q1 to minimise the family EXACTLY.  Nothing in this
+    development produces such a q1, and producing one is not cheap: an
+    exact minimiser needs compactness of the range plus continuity of
+    rho_c, so every theorem carrying [EminRel] was conditional on a
+    hypothesis nobody had shown to be satisfiable at all.
+
+    An eps-MINIMISER, by contrast, exists for ANY family bounded below,
+    straight from the definition of an infimum -- no compactness, no
+    continuity, no derivative.  [EminExists.emin_eps_exists] proves it.
+
+    Everything downstream degrades only LINEARLY in eps:
+      - the bracket below loosens by eps/h on each side;
+      - [SlopeWindow.topkis_eps] becomes (q1-q2)(b1-b2) <= 2 eps;
+      - the node-to-window transport ([CoverGlue.slope_hi_eps]) loosens
+        by 2 eps/h, UNIFORMLY -- no division by the window width. *)
+
+Definition EminEps (eps b q1 f1 : R) : Prop :=
+  forall q r, 0 < q -> 0 < r -> g q r = 0 -> q1 * b + f1 <= q * b + fq q r + eps.
+
+(** Exact minimality is the eps = 0 case, in both directions. *)
+
+Lemma EminRel_eps (eps b q1 f1 : R) :
+  0 <= eps -> EminRel b q1 f1 -> EminEps eps b q1 f1.
+Proof. intros He H q r Hq Hr Hg. specialize (H q r Hq Hr Hg). lra. Qed.
+
+Lemma EminEps_exact (b q1 f1 : R) : EminEps 0 b q1 f1 -> EminRel b q1 f1.
+Proof. intros H q r Hq Hr Hg. specialize (H q r Hq Hr Hg). lra. Qed.
+
+Lemma EminEps_mono (e1 e2 b q1 f1 : R) :
+  e1 <= e2 -> EminEps e1 b q1 f1 -> EminEps e2 b q1 f1.
+Proof. intros He H q r Hq Hr Hg. specialize (H q r Hq Hr Hg). lra. Qed.
+
+(** **THE BRACKET, eps-VERSION.**  Each side loses exactly [eps/h]. *)
+Theorem beta_bracket_eps (eps b q1 f1 h fp fm : R) :
+  0 < q1 -> 0 < h -> h < q1 -> 0 <= eps -> EminEps eps b q1 f1 ->
+  (forall r, 0 < r -> g (q1 + h) r = 0 -> fq (q1 + h) r <= fp) ->
+  (forall r, 0 < r -> g (q1 - h) r = 0 -> fq (q1 - h) r <= fm) ->
+  (f1 - fp - eps) / h <= b <= (fm - f1 + eps) / h.
+Proof.
+  intros Hq1 Hh Hhq Heps Hmin Hp Hm.
+  destruct (root_exists (q1 + h) ltac:(lra)) as [rp [Hrp1 Hrp]].
+  destruct (root_exists (q1 - h) ltac:(lra)) as [rm [Hrm1 Hrm]].
+  assert (Hfp : fq (q1 + h) rp <= fp) by (apply Hp; [lra | exact Hrp]).
+  assert (Hfm : fq (q1 - h) rm <= fm) by (apply Hm; [lra | exact Hrm]).
+  assert (Hup := Hmin (q1 + h) rp ltac:(lra) ltac:(lra) Hrp).
+  assert (Hdn := Hmin (q1 - h) rm ltac:(lra) ltac:(lra) Hrm).
+  split.
+  - apply Rmult_le_reg_r with (r := h); [lra|].
+    replace ((f1 - fp - eps) / h * h) with (f1 - fp - eps) by (field; lra).
+    lra.
+  - apply Rmult_le_reg_r with (r := h); [lra|].
+    replace ((fm - f1 + eps) / h * h) with (fm - f1 + eps) by (field; lra).
+    lra.
+Qed.
+
 (** ** A worked bracket
 
     At q1 = 3/2 with h = 1/100 the three values of f involved are pinned

@@ -11,8 +11,9 @@ FLAGS = -Q . RevPebblingRocq
 COVER_V  := $(sort $(wildcard LedgerCoverP*.v))
 COVER_VO := $(COVER_V:.v=.vo)
 
-all: KappaStar.vo RhoEnclose.vo LedgerParam.vo EnvelopeE.vo RhoDeriv.vo \
-     SlopeWindow.vo LedgerA.vo CoverGlue.vo $(COVER_VO) LedgerCover.vo
+all: KappaStar.vo RhoEnclose.vo LedgerParam.vo EnvelopeE.vo EminExists.vo \
+     RhoDeriv.vo SlopeWindow.vo LedgerA.vo CoverGlue.vo $(COVER_VO) \
+     LedgerCover.vo
 
 KappaStar.vo: KappaStar.v
 	$(ROCQ) c $(FLAGS) $<
@@ -24,6 +25,9 @@ LedgerParam.vo: LedgerParam.v RhoEnclose.vo
 	$(ROCQ) c $(FLAGS) $<
 
 EnvelopeE.vo: EnvelopeE.v LedgerParam.vo
+	$(ROCQ) c $(FLAGS) $<
+
+EminExists.vo: EminExists.v EnvelopeE.vo
 	$(ROCQ) c $(FLAGS) $<
 
 RhoDeriv.vo: RhoDeriv.v LedgerParam.vo

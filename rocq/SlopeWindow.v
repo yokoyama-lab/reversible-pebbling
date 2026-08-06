@@ -88,6 +88,70 @@ Proof.
     nra.
 Qed.
 
+(** ** The same two facts under eps-minimality
+
+    [LedgerParam.EminEps] replaces exact minimality by minimality to
+    within eps -- the version that [EminExists.emin_eps_exists] actually
+    produces.  Adding the two eps-statements against each other leaves an
+    eps on each side, so Topkis's inequality loses exactly [2 eps]. *)
+
+Theorem topkis_eps (eps b1 b2 q1 q2 r1 r2 : R) :
+  0 < q1 -> 0 < q2 -> 0 < r1 -> 0 < r2 ->
+  g q1 r1 = 0 -> g q2 r2 = 0 ->
+  EminEps eps b1 q1 (fq q1 r1) -> EminEps eps b2 q2 (fq q2 r2) ->
+  (q1 - q2) * (b1 - b2) <= 2 * eps.
+Proof.
+  intros Hq1 Hq2 Hr1 Hr2 Hg1 Hg2 H1 H2.
+  assert (A := H1 q2 r2 Hq2 Hr2 Hg2).
+  assert (B := H2 q1 r1 Hq1 Hr1 Hg1).
+  nra.
+Qed.
+
+(** **THE WINDOW, eps-VERSION -- AND ITS HONEST DEFECT.**
+
+    Dividing the product bound by the gap is the only thing Topkis
+    permits, so the loss is [2 eps / (q1 - qa)] on the upper side and
+    [2 eps / (qb - q1)] on the lower: it BLOWS UP as [q1] approaches
+    either node.  The statement below says exactly that, and no more.
+
+    A cover cannot use this form -- its windows are as narrow as
+    4e-7, and the endpoints are grid points shared with the neighbouring
+    window.  What the cover uses instead is
+    [CoverGlue.slope_hi_eps]/[slope_lo_eps], which anchors the transport
+    on the node's own difference-quotient step [h] rather than on the
+    gap, and loses [2 eps / h] UNIFORMLY over the closed window,
+    endpoints included. *)
+
+Theorem slope_window_eps (eps qa qb q1 ba bb b1 ra rb r1 : R) :
+  0 < qa -> qa < q1 -> q1 < qb ->
+  0 < ra -> 0 < rb -> 0 < r1 ->
+  g qa ra = 0 -> g qb rb = 0 -> g q1 r1 = 0 ->
+  EminEps eps ba qa (fq qa ra) -> EminEps eps bb qb (fq qb rb) ->
+  EminEps eps b1 q1 (fq q1 r1) ->
+  bb - 2 * eps / (qb - q1) <= b1 <= ba + 2 * eps / (q1 - qa).
+Proof.
+  intros Hqa Hab Hbq Hra Hrb Hr1 Hga Hgb Hg1 Ha Hb H1.
+  assert (Hq1 : 0 < q1) by lra.
+  assert (Hqb : 0 < qb) by lra.
+  split.
+  - assert (T := topkis_eps eps b1 bb q1 qb r1 rb Hq1 Hqb Hr1 Hrb Hg1 Hgb H1 Hb).
+    (* (q1 - qb)(b1 - bb) <= 2 eps  with  q1 - qb < 0 *)
+    apply Rplus_le_reg_r with (r := - bb).
+    replace (bb - 2 * eps / (qb - q1) + - bb) with (- (2 * eps / (qb - q1)))
+      by ring.
+    apply Ropp_le_cancel. rewrite Ropp_involutive.
+    apply Rmult_le_reg_r with (r := qb - q1); [lra|].
+    replace (2 * eps / (qb - q1) * (qb - q1)) with (2 * eps) by (field; lra).
+    nra.
+  - assert (T := topkis_eps eps b1 ba q1 qa r1 ra Hq1 Hqa Hr1 Hra Hg1 Hga H1 Ha).
+    apply Rplus_le_reg_r with (r := - ba).
+    apply Rmult_le_reg_r with (r := q1 - qa); [lra|].
+    replace (ba + 2 * eps / (q1 - qa) + - ba) with (2 * eps / (q1 - qa))
+      by ring.
+    replace (2 * eps / (q1 - qa) * (q1 - qa)) with (2 * eps) by (field; lra).
+    nra.
+Qed.
+
 (** ** A worked window: (2.4, 2.6)
 
     The two endpoint brackets use [h = 1/1000] and enclose rho to

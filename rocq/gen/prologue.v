@@ -85,6 +85,145 @@ Proof.
     + rewrite <- Heq in Hg1, Hm1. exact (Hhi b1 r1 Hr1 Hg1 Hm1).
 Qed.
 
+(** *** eps-MINIMALITY: the same scaffolding, with the hypothesis that
+        [EminExists.emin_eps_exists] can actually produce
+
+    [EPSB] is the largest eps this cover is proved for.  MEASURED: with
+    the node step [h = 1e-5] the slope bracket widens by [C = 2 eps / h]
+    on each side, and every window of the cover still closes for
+    [C <= 3.987e-5], i.e. [eps <= 1.99e-10] -- the binding window being
+    the one at q1 ~ 2.1179.  [EPSB = 1e-11] is a factor 20 inside that,
+    and costs the tightest window about 2% of its margin. *)
+
+Definition EPSB : R := 1/100000000000.
+
+(** **** The slope at a node, from eps-minimality
+
+    [beta_bracket_eps] loses exactly [eps/h] on each side; the emitted
+    node constant absorbs it (it is widened by [C >= 2 eps / h]). *)
+
+Lemma slope_upper_eps (eps q h qm f1 fm bnd b r : R) :
+  0 < q -> 0 < h -> h < q -> qm = q - h -> 0 <= eps ->
+  0 < r -> g q r = 0 -> EminEps eps b q (fq q r) ->
+  f1 <= fq q r ->
+  (forall y, 0 < y -> g qm y = 0 -> fq qm y <= fm) ->
+  (fm - f1 + eps) / h <= bnd ->
+  b <= bnd.
+Proof.
+  intros Hq Hh Hhq Hqm Heps Hr Hg Hmin Hf1 Hm Hbnd. subst qm.
+  assert (Hp : forall y, 0 < y -> g (q + h) y = 0 -> fq (q + h) y <= 1)
+    by (intros y Hy Hgy; apply (f_le_one (q + h) y); [lra | exact Hy | exact Hgy]).
+  destruct (beta_bracket_eps eps b q (fq q r) h 1 fm Hq Hh Hhq Heps Hmin Hp Hm)
+    as [_ Hhi].
+  apply Rle_trans with (r2 := (fm - fq q r + eps) / h); [exact Hhi |].
+  apply Rle_trans with (r2 := (fm - f1 + eps) / h); [| exact Hbnd].
+  unfold Rdiv. apply Rmult_le_compat_r; [left; apply Rinv_0_lt_compat; lra | lra].
+Qed.
+
+Lemma slope_lower_eps (eps q h qp f1 fp bnd b r : R) :
+  0 < q -> 0 < h -> h < q -> qp = q + h -> 0 <= eps ->
+  0 < r -> g q r = 0 -> EminEps eps b q (fq q r) ->
+  f1 <= fq q r ->
+  (forall y, 0 < y -> g qp y = 0 -> fq qp y <= fp) ->
+  bnd <= (f1 - fp - eps) / h ->
+  bnd <= b.
+Proof.
+  intros Hq Hh Hhq Hqp Heps Hr Hg Hmin Hf1 Hp Hbnd. subst qp.
+  assert (Hm : forall y, 0 < y -> g (q - h) y = 0 -> fq (q - h) y <= 1)
+    by (intros y Hy Hgy; apply (f_le_one (q - h) y); [lra | exact Hy | exact Hgy]).
+  destruct (beta_bracket_eps eps b q (fq q r) h fp 1 Hq Hh Hhq Heps Hmin Hp Hm)
+    as [Hlo _].
+  apply Rle_trans with (r2 := (fq q r - fp - eps) / h); [| exact Hlo].
+  apply Rle_trans with (r2 := (f1 - fp - eps) / h); [exact Hbnd |].
+  unfold Rdiv. apply Rmult_le_compat_r; [left; apply Rinv_0_lt_compat; lra | lra].
+Qed.
+
+(** **** From the node to the CLOSED window, WITHOUT dividing by the gap
+
+    [SlopeWindow.slope_window_eps] is the direct Topkis transport, and it
+    loses [2 eps / (q1 - qa)] -- unbounded as [q1] approaches the node.
+    A cover cannot pay that: its windows are as narrow as 4e-7 and their
+    endpoints ARE grid points.
+
+    Anchor the transport on the node's own difference-quotient step [h]
+    instead.  With [u = q1 - qa >= 0] and [qm = qa - h], two applications
+    of eps-minimality --
+
+      at q1, tested at qm :  (u + h) b1 <= f(qm) - f(q1) + eps
+      at qa, tested at q1 :  f(qa) - f(q1) <= u ba + eps
+
+    -- combine to
+
+      (u + h) b1 <= (f(qm) - f(qa)) + u ba + 2 eps.
+
+    The node's own constant already bounds the first term by [h (bnd - C)]
+    and [ba] by [bnd], so with [2 eps <= h C] the right-hand side is at
+    most [(u + h) bnd] and [u] cancels.  The loss is [C = 2 eps / h],
+    UNIFORM over the closed window -- endpoints included, so no case
+    split on [q1 = qa] is needed either. *)
+
+Lemma slope_hi_eps (eps h C qa qm q1 fa fm bnd ba b1 ra r1 : R) :
+  0 < h -> 0 < eps -> 2 * eps <= h * C ->
+  qm = qa - h -> 0 < qm -> qa <= q1 ->
+  0 < ra -> g qa ra = 0 -> EminEps eps ba qa (fq qa ra) -> ba <= bnd ->
+  0 < r1 -> g q1 r1 = 0 -> EminEps eps b1 q1 (fq q1 r1) ->
+  fa <= fq qa ra ->
+  (forall y, 0 < y -> g qm y = 0 -> fq qm y <= fm) ->
+  (fm - fa) / h + C <= bnd ->
+  b1 <= bnd.
+Proof.
+  intros Hh Heps HC Hqm Hqmp Hq1a Hra Hga Hma Hban Hr1 Hg1 Hm1 Hfa Hfm Hbnd.
+  subst qm.
+  assert (Hqa : 0 < qa) by lra.
+  assert (Hq1 : 0 < q1) by lra.
+  destruct (root_exists (qa - h) Hqmp) as [rm [Hrm1 Hgm]].
+  assert (HfM : fq (qa - h) rm <= fm) by (apply Hfm; [lra | exact Hgm]).
+  assert (H1 := Hm1 (qa - h) rm Hqmp ltac:(lra) Hgm).
+  assert (Ha := Hma q1 r1 Hq1 Hr1 Hg1).
+  (* the combined inequality, linear in the monomials *)
+  assert (Hkey : (q1 - qa + h) * b1 <= (fm - fa) + (q1 - qa) * ba + 2 * eps)
+    by nra.
+  (* the node constant absorbs the first term *)
+  assert (Hfd : (fm - fa) / h <= bnd - C) by lra.
+  assert (Hstep1 : fm - fa <= (bnd - C) * h).
+  { replace (fm - fa) with ((fm - fa) / h * h) by (field; lra).
+    apply Rmult_le_compat_r; lra. }
+  assert (Hstep2 : (q1 - qa) * ba <= (q1 - qa) * bnd)
+    by (apply Rmult_le_compat_l; lra).
+  assert (Hfin : (q1 - qa + h) * b1 <= (q1 - qa + h) * bnd) by nra.
+  apply Rmult_le_reg_l with (r := q1 - qa + h); [lra | exact Hfin].
+Qed.
+
+Lemma slope_lo_eps (eps h C qb qp q1 fb fp bnd bb b1 rb r1 : R) :
+  0 < h -> 0 < eps -> 2 * eps <= h * C ->
+  qp = qb + h -> 0 < q1 -> q1 <= qb ->
+  0 < rb -> g qb rb = 0 -> EminEps eps bb qb (fq qb rb) -> bnd <= bb ->
+  0 < r1 -> g q1 r1 = 0 -> EminEps eps b1 q1 (fq q1 r1) ->
+  fb <= fq qb rb ->
+  (forall y, 0 < y -> g qp y = 0 -> fq qp y <= fp) ->
+  bnd <= (fb - fp) / h - C ->
+  bnd <= b1.
+Proof.
+  intros Hh Heps HC Hqp Hq1 Hq1b Hrb Hgb Hmb Hbnb Hr1 Hg1 Hm1 Hfb Hfp Hbnd.
+  subst qp.
+  assert (Hqb : 0 < qb) by lra.
+  assert (Hqpp : 0 < qb + h) by lra.
+  destruct (root_exists (qb + h) Hqpp) as [rp [Hrp1 Hgp]].
+  assert (HfP : fq (qb + h) rp <= fp) by (apply Hfp; [lra | exact Hgp]).
+  assert (H1 := Hm1 (qb + h) rp Hqpp ltac:(lra) Hgp).
+  assert (Hb := Hmb q1 r1 Hq1 Hr1 Hg1).
+  assert (Hkey : (fb - fp) + (qb - q1) * bb - 2 * eps <= (qb - q1 + h) * b1)
+    by nra.
+  assert (Hfd : bnd + C <= (fb - fp) / h) by lra.
+  assert (Hstep1 : (bnd + C) * h <= fb - fp).
+  { replace (fb - fp) with ((fb - fp) / h * h) by (field; lra).
+    apply Rmult_le_compat_r; lra. }
+  assert (Hstep2 : (qb - q1) * bnd <= (qb - q1) * bb)
+    by (apply Rmult_le_compat_l; lra).
+  assert (Hfin : (qb - q1 + h) * bnd <= (qb - q1 + h) * b1) by nra.
+  apply Rmult_le_reg_l with (r := qb - q1 + h); [lra | exact Hfin].
+Qed.
+
 (** *** The ledger on a window, from its nine enclosures
 
     The glue of [LedgerA.window_24], with every constant abstracted.  A
