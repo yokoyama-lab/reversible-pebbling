@@ -367,7 +367,18 @@ from `w₁`, which comes from `E = q₁b + f₁`.
 **What the cover does not do.**  It certifies the ledger's positivity on
 Zone I's slope range.  The appendix's reduction of Zone I *to* that
 positivity is not formalised, and neither are Zone 0, Zone II, or the
-base row.
+base row.  And the slope hypothesis is still a hypothesis: each window
+speaks about a `q₁` that *is* a minimiser of the line family, and assumes
+minimiser slopes exist at the window's two nodes.
+
+**What checks the claim that the windows cover.**  Rocq checks each
+window; nothing in Rocq checks their union.  `gen/check_tiling.py` reads
+the *emitted theorems* back and verifies that the windows are
+consecutive, share endpoints exactly, run end to end, and have positive
+values and **non-empty slope brackets** — an empty bracket would make
+`hz_i` trivially true and the window vacuous, which is precisely what
+happens below `q ≈ 0.5` where `f` is concave.  `gen/spotcheck.py`
+recomputes `−f'` at window midpoints and checks the brackets contain it.
 
 ## Building
 

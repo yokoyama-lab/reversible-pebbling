@@ -28,6 +28,43 @@ Needs `mpmath`.
 | `emit.py` | the Rocq text: `emit_node` (three point enclosures of `f` plus the two halves of a slope bracket), `emit_window` (nine enclosures plus one application of `ledger_window`) |
 | `gencover.py` | the driver: picks the grid, splits into parts, writes the index |
 | `prologue.v` | the source of `rocq/CoverGlue.v` (kept here so the generated and hand-written halves live together; `CoverGlue.v` is the copy the build uses) |
+| `check_tiling.py` | re-derives the coverage claim from the *emitted theorems* |
+| `spotcheck.py` | checks that each sampled window's slope bracket really contains `−f'(q₁)` |
+
+## Checking the claim the prover does not check
+
+Rocq checks each of the 925 windows.  Nothing in Rocq checks that their
+*union* is `[1.45, 3.25]`, or that any of them says something non-vacuous.
+Two scripts do, both reading the generated `.v` files rather than the
+generator's own bookkeeping:
+
+```sh
+python3 check_tiling.py .. 1.45 3.25   # stdlib only
+python3 spotcheck.py .. 60             # needs mpmath
+```
+
+`check_tiling.py` parses each `window_i`'s hypothesis `qa ≤ q1 ≤ qb` and
+its conclusion `val ≤ ledger …`, and verifies that the windows are
+consecutive, that consecutive ones share an endpoint *exactly*, that the
+union runs from end to end, that every `val` is positive, and that every
+**slope bracket is non-empty** — `hz_i` is trivially provable when
+`blo > bhi`, so an empty bracket would make a whole window say nothing.
+(An empty bracket is exactly the signature of a `q` that is not a
+minimiser; it is what happens below `q ≈ 0.5`, where `f` is concave.)
+
+`spotcheck.py` rules out the subtler vacuity: a non-empty bracket sitting
+where the true slope never goes.  It recomputes `−f'` at window midpoints
+and checks containment.
+
+Current output:
+
+```
+925 windows, union [1.45, 3.25]
+widths  4.000e-07 .. 3.453e-02
+ledger  >= 0.002057 (smallest certified value)
+slope brackets: 925, widths 4.104e-06 .. 2.592e-03, all non-empty
+TILING OK
+```
 
 ## The rule every constant obeys
 
