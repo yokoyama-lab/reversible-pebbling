@@ -319,4 +319,124 @@ theorem le_gidx {M v r : Nat} (hv : 1 ≤ v) (h : gval M r ≤ v) : r ≤ gidx M
   refine le_norm (b := 0) hv ?_
   simpa using h
 
+
+-- ------------------------------------------------------------------
+-- The index arithmetic the DP actually performs
+-- ------------------------------------------------------------------
+
+/-- The `(mantissa, exponent)` pair of a grid index. -/
+def gpair (M i : Nat) : Nat × Nat :=
+  if i + 1 < 2 ^ (M + 1) then (i + 1, 0)
+  else ((i + 1) - ((i + 1) / 2 ^ M - 1) * 2 ^ M, (i + 1) / 2 ^ M - 1)
+
+theorem gval_gpair (M i : Nat) : gval M i = (gpair M i).1 * 2 ^ (gpair M i).2 := by
+  unfold gval gpair
+  by_cases h : i + 1 < 2 ^ (M + 1) <;> simp [h]
+
+theorem gpair_pos (M i : Nat) : 1 ≤ (gpair M i).1 := by
+  have hM : 0 < 2 ^ M := Nat.two_pow_pos _
+  unfold gpair
+  by_cases h : i + 1 < 2 ^ (M + 1)
+  · simp [h]
+  · simp only [h, if_false]
+    have hd : 2 ^ M * ((i + 1) / 2 ^ M) + (i + 1) % 2 ^ M = i + 1 :=
+      Nat.div_add_mod (i + 1) (2 ^ M)
+    have hshift : ((i + 1) / 2 ^ M - 1) * 2 ^ M
+        = 2 ^ M * ((i + 1) / 2 ^ M) - 2 ^ M := by
+      rw [Nat.sub_mul, Nat.one_mul, Nat.mul_comm]
+    have hq2 : 2 ≤ (i + 1) / 2 ^ M := by
+      rw [Nat.le_div_iff_mul_le hM]
+      have := two_pow_succ M; omega
+    omega
+
+theorem gpair_lt (M i : Nat) : (gpair M i).1 < 2 ^ (M + 1) := by
+  have hM : 0 < 2 ^ M := Nat.two_pow_pos _
+  have hsucc := two_pow_succ M
+  unfold gpair
+  by_cases h : i + 1 < 2 ^ (M + 1)
+  · simp [h]
+  · simp only [h, if_false]
+    have hd : 2 ^ M * ((i + 1) / 2 ^ M) + (i + 1) % 2 ^ M = i + 1 :=
+      Nat.div_add_mod (i + 1) (2 ^ M)
+    have hlt := Nat.mod_lt (i + 1) hM
+    have hshift : ((i + 1) / 2 ^ M - 1) * 2 ^ M
+        = 2 ^ M * ((i + 1) / 2 ^ M) - 2 ^ M := by
+      rw [Nat.sub_mul, Nat.one_mul, Nat.mul_comm]
+    have hq2 : 2 ≤ (i + 1) / 2 ^ M := by
+      rw [Nat.le_div_iff_mul_le hM]; omega
+    omega
+
+theorem gpair_normalised (M i : Nat) (h : 1 ≤ (gpair M i).2) :
+    2 ^ M ≤ (gpair M i).1 := by
+  have hM : 0 < 2 ^ M := Nat.two_pow_pos _
+  have hsucc := two_pow_succ M
+  unfold gpair at h ⊢
+  by_cases hs : i + 1 < 2 ^ (M + 1)
+  · simp [hs] at h
+  · simp only [hs, if_false] at h ⊢
+    have hd : 2 ^ M * ((i + 1) / 2 ^ M) + (i + 1) % 2 ^ M = i + 1 :=
+      Nat.div_add_mod (i + 1) (2 ^ M)
+    have hlt := Nat.mod_lt (i + 1) hM
+    have hshift : ((i + 1) / 2 ^ M - 1) * 2 ^ M
+        = 2 ^ M * ((i + 1) / 2 ^ M) - 2 ^ M := by
+      rw [Nat.sub_mul, Nat.one_mul, Nat.mul_comm]
+    have hq2 : 2 ≤ (i + 1) / 2 ^ M := by
+      rw [Nat.le_div_iff_mul_le hM]; omega
+    omega
+
+/-- A smaller grid point cannot have a larger exponent. -/
+theorem gpair_exp_mono (M : Nat) {i j : Nat} (h : j < i) :
+    (gpair M j).2 ≤ (gpair M i).2 := by
+  by_contra hc
+  have hb : 1 ≤ (gpair M j).2 := by omega
+  have h1 : 2 ^ M ≤ (gpair M j).1 := gpair_normalised M j hb
+  have h2 : (gpair M i).1 < 2 ^ (M + 1) := gpair_lt M i
+  have hlt : gval M j < gval M i := gval_lt_of_lt M h
+  rw [gval_gpair, gval_gpair] at hlt
+  have hstep : (gpair M i).2 + 1 ≤ (gpair M j).2 := by omega
+  have : (gpair M i).1 * 2 ^ (gpair M i).2 < 2 ^ M * 2 ^ (gpair M j).2 := by
+    calc (gpair M i).1 * 2 ^ (gpair M i).2
+        < 2 ^ (M + 1) * 2 ^ (gpair M i).2 :=
+          (Nat.mul_lt_mul_right (Nat.two_pow_pos _)).mpr h2
+      _ = 2 ^ M * 2 ^ ((gpair M i).2 + 1) := by
+          rw [← Nat.pow_add, ← Nat.pow_add]; congr 1; omega
+      _ ≤ 2 ^ M * 2 ^ (gpair M j).2 :=
+          Nat.mul_le_mul_left _ (Nat.pow_le_pow_right (by omega) hstep)
+  have : 2 ^ M * 2 ^ (gpair M j).2 ≤ (gpair M j).1 * 2 ^ (gpair M j).2 :=
+    Nat.mul_le_mul_right _ h1
+  omega
+
+/-- **THE INDEX OF `gval i - gval j`, ROUNDED DOWN.**  This is the Lean
+counterpart of `rd_index`; unlike the C it needs no shortcut for a large
+exponent gap (measured: dropping the shortcut costs nothing). -/
+def rdIndex (M i j : Nat) : Nat :=
+  norm M ((gpair M i).1 * 2 ^ ((gpair M i).2 - (gpair M j).2) - (gpair M j).1)
+    (gpair M j).2
+
+/-- **THE ROUNDING IS SOUND.** -/
+theorem gval_rdIndex_le (M : Nat) {i j : Nat} (h : j < i) :
+    gval M (rdIndex M i j) ≤ gval M i - gval M j := by
+  have hlt : gval M j < gval M i := gval_lt_of_lt M h
+  have hb := gpair_exp_mono M h
+  set a1 := (gpair M i).1 with ha1
+  set b1 := (gpair M i).2 with hb1
+  set a2 := (gpair M j).1 with ha2
+  set b2 := (gpair M j).2 with hb2
+  have hgi : gval M i = a1 * 2 ^ b1 := gval_gpair M i
+  have hgj : gval M j = a2 * 2 ^ b2 := gval_gpair M j
+  have hpow : 2 ^ b1 = 2 ^ (b1 - b2) * 2 ^ b2 := by
+    rw [← Nat.pow_add]; congr 1; omega
+  -- the difference, factored at the smaller exponent
+  have hfac : gval M i - gval M j = (a1 * 2 ^ (b1 - b2) - a2) * 2 ^ b2 := by
+    rw [hgi, hgj, hpow, Nat.sub_mul, Nat.mul_assoc]
+  have hApos : 1 ≤ a1 * 2 ^ (b1 - b2) - a2 := by
+    by_contra hc
+    have : a1 * 2 ^ (b1 - b2) ≤ a2 := by omega
+    have : a1 * 2 ^ b1 ≤ a2 * 2 ^ b2 := by
+      calc a1 * 2 ^ b1 = a1 * 2 ^ (b1 - b2) * 2 ^ b2 := by rw [hpow, Nat.mul_assoc]
+        _ ≤ a2 * 2 ^ b2 := Nat.mul_le_mul_right _ this
+    omega
+  rw [hfac]
+  exact norm_le M _ _ hApos
+
 end RevPebbling.AnchorGrid
