@@ -28,7 +28,7 @@ Two facts are all the arithmetic the soundness argument needs:
 normalised region.
 -/
 
-namespace RevPebbling.AnchorKey
+namespace RevPebbling.AnchorPacked
 
 -- A value is packed as `exponent * 2^32 + mantissa`.  (`Nat` is used
 -- throughout rather than a type synonym: `omega` does not see through an
@@ -360,4 +360,4 @@ def flPow2Fast (k : Nat) : Nat :=
     simp [mkKey]
   · rfl
 
-end RevPebbling.AnchorKey
+end RevPebbling.AnchorPacked

@@ -440,11 +440,37 @@ theorem gval_rdIndex_le (M : Nat) {i j : Nat} (h : j < i) :
   exact norm_le M _ _ hApos
 
 
+
+theorem gval_pos (M i : Nat) : 1 ≤ gval M i := by
+  rw [gval_gpair]
+  have h1 := gpair_pos M i
+  have h2 := Nat.two_pow_pos (gpair M i).2
+  calc 1 = 1 * 1 := rfl
+    _ ≤ (gpair M i).1 * 2 ^ (gpair M i).2 := Nat.mul_le_mul (by omega) (by omega)
+
+/-- `gidx` inverts `gval`. -/
+theorem gidx_gval (M i : Nat) : gidx M (gval M i) = i := by
+  have h1 : gval M (gidx M (gval M i)) ≤ gval M i := gval_gidx_le M _ (gval_pos M i)
+  have h2 : i ≤ gidx M (gval M i) := le_gidx (gval_pos M i) (Nat.le_refl _)
+  by_contra hc
+  have hlt : i < gidx M (gval M i) := by omega
+  have := gval_lt_of_lt M hlt
+  omega
+
+/-- Everything inside the grid's range has an index inside the grid. -/
+theorem gidx_lt {M v N : Nat} (hN : 1 ≤ N) (hv : 1 ≤ v)
+    (h : v ≤ gval M (N - 1)) : gidx M v < N := by
+  have h1 : gval M (gidx M v) ≤ v := gval_gidx_le M v hv
+  by_contra hc
+  have hlt : N - 1 < gidx M v := by omega
+  have := gval_lt_of_lt M hlt
+  omega
+
 -- ------------------------------------------------------------------
 -- Compiled forms: shifts instead of `2 ^ k`
 -- ------------------------------------------------------------------
 
-/-! As in `AnchorKey`: the definitions above keep their arithmetic form
+/-! As in `AnchorPacked`: the definitions above keep their arithmetic form
 for the proofs, and `@[csimp]` swaps in shift-based code for evaluation.
 `2 ^ k` is a `Nat.pow` loop, and the DP calls it several times per cell. -/
 

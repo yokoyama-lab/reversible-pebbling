@@ -46,8 +46,8 @@ python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 498 theorems the
-manifest lists, **60 rest on a `native_decide` certificate and 9 need
+the rest are general (unbounded) proofs.  Of the 518 theorems the
+manifest lists, **65 rest on a `native_decide` certificate and 9 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -72,10 +72,11 @@ says — the counts above, the constants it quotes, the file paths and
 theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
-A full build takes about nine minutes (32 stages, 498 theorems),
-nearly all of it the
-certification of row 60 (13.1 M runs, ~5.6 GB), which carries the
-published bound `c ≤ 2.6106`.  `.github/workflows/build.yml` runs the
+A full build takes about sixteen minutes (33 stages, 518 theorems),
+nearly all of it two checks: the certification of row 60 (13.1 M runs,
+~5.6 GB, 384 s), which carries the published bound `c ≤ 2.6106`, and the
+composition anchor at `T₀ = 1200` (1.8 M cells, ~1.8 GB, 364 s), which
+carries `c ≤ 2.5368`.  `.github/workflows/build.yml` runs the
 same thing on a clean machine — build, re-audit, and check that the
 committed `proof-manifest.json` is reproduced byte for byte.
 
@@ -196,6 +197,22 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   this direction (Knill 1995, p. 5) has a gap at the step that bounds the
   middle part; the three-part decomposition follows Královič
   (RAIRO-ITA **38** (2004) 137–161, proof of Thm 3.4).
+* `RevPebbling/AnchorPacked.lean` + `RevPebbling/AnchorGrid.lean` +
+  `RevPebbling/AnchorDP.lean` + `RevPebbling/AnchorCertify.lean` — the
+  **composition anchor, run inside the prover**.  `CompositionAnchor`
+  recorded that the large anchors came from a C computation ("their
+  Lean-internal replay is future work"); `anchor_1198` replays
+  `T₀ = 1200`, giving `m_{S+1198} ≤ m_S · 62·2^405` for every space
+  level — arithmetically `c ≤ 2.5368`, against the `c ≤ 3.21` of the
+  previous in-Lean anchor `midpoint_anchor_44`.  Values are carried as
+  `exponent · 2^32 + mantissa` so that each cell stays in machine
+  arithmetic and every representable value is an exact natural number;
+  addition and the grid both round **down** (`kval_flAdd_le`,
+  `norm_le`), which is the only direction a lower-bound certificate can
+  afford.  The DP's two-pointer needs no optimality proof: the recursion
+  asks only for *some* split, so `step` returns the split it chose and a
+  `Bool` checker confirms each cell's shape — a worse split would weaken
+  the certificate, never break it.
 * `RevPebbling/BlockSim.lean` — **submultiplicativity**,
   `f_{p+q-1} ≤ f_p · f_q`, proved by block simulation.  A chain of
   `N · L` cells is read as `N` blocks of `L`; each move of an outer play

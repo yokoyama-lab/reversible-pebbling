@@ -2,10 +2,14 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "692cd91d97e13d101504d9e01b322217c564f17955d4a223aa4efc3b4d3d6a44",
+ "proof_bundle_sha256": "2a65e9f4cb3ebe8f8c165b1545c2ed35ff22c9f62ee085492e2701477aec4958",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+  "RevPebbling/AnchorCertify.lean": "658fc26cb24ca9bf77d565899c3fad23a83b03d2abce2a792dde7ed97de9d1e6",
+  "RevPebbling/AnchorDP.lean": "782df7f9944c51738ae7d2f2a0e38d01a3ebf448a97bfd448c54e8b72440ab03",
+  "RevPebbling/AnchorGrid.lean": "832b0cb70c58a2945e16341a2d69f31b57beb91f6fe89687217e45eee35d4fd7",
+  "RevPebbling/AnchorPacked.lean": "5cf88cbf524f3811c06374b8d650fe40c368fdda0ac44c5ec703826e1a0ff8cb",
   "RevPebbling/AttainSplit.lean": "70de32bf8c96007c556af976d8a10874478830776fb53971fe1e02a858a42dc9",
   "RevPebbling/BlockSim.lean": "7ed8bae1be394d12696428ac01438878ef0e6f0bbc6f2bc63d5e024ebcd56ce1",
   "RevPebbling/ChordDeficit.lean": "3ece7a7e581f5bfc8802892724c51521d98a04ad9b218945d83a54663c8ccd24",
@@ -78,7 +82,7 @@
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "406f3e89666c2108047ed2e553afc900f88c8a8c32e4e2dcb143a2c8a948d366"
+  "RevPebbling.lean": "ef510927d08f6aac5d817548138bf0acd215b08de7269391a0c52abb815f49ac"
  },
  "hypotheses": {
   "Submult": {
@@ -1060,6 +1064,42 @@
      "RevPebbling.RowExact.lowerRowExact_zero"
     ]
    }
+  },
+  "anchor_internal_replay": {
+   "status": "general_framework_plus_certified_values",
+   "scope": "UNBOUNDED framework + BOUNDED certificate (this work, 2026-08-06): the composition anchor, RUN INSIDE LEAN. CompositionAnchor recorded that the large anchors were computed outside the prover ('their Lean-internal replay is future work'); this replays T0 = 1200. The DP of scripts/m33_anchor_c.c runs on the geometric grid of AnchorGrid with the packed values of AnchorPacked. Unlike the C, the exponent is a Nat, so every representable value is an exact natural number - which is what lets it feed midpoint_composition, whose certificate function is Nat-valued. UNBOUNDED, kernel axioms only: kval_flAdd_le (addition rounds down, no invariant needed), kval_mono (on normalised keys the order on keys is the order on values), norm_le / le_norm (the grid rounds down and norm is the largest index that fits), gval_rdIndex_le, and midv_le_of_verify - 'the checker passed implies m_{S+K} <= m_S * v* for every S'. BOUNDED: verify_1198 and cert_1198 (native_decide, 1198 x 14976 = 1.8e7 cells, 364 s, 1.8 GB - the artifact's second deliberate over-budget check after RLECertify.fRow_60's 384 s). Result: anchor_1198 : m_{S+1198} <= m_S * 62*2^405, whose arithmetic consequence is c <= 2.5368418, against the c <= 3.21 of the previous in-Lean anchor midpoint_anchor_44. The step from a midpoint bound to a real-number bound on c is iteration plus TwoD, the same unformalised step the older anchor has. Reasoning about the two-pointer's optimality is NOT needed: the recursion asks only for some split, so step returns the split it chose and a Bool checker confirms the cell's shape; a worse split would only weaken the certificate. ",
+   "theorems": [
+    "RevPebbling.AnchorPacked.kval_flAdd_le",
+    "RevPebbling.AnchorPacked.kval_mono",
+    "RevPebbling.AnchorPacked.wf_flAdd",
+    "RevPebbling.AnchorGrid.norm_le",
+    "RevPebbling.AnchorGrid.le_norm",
+    "RevPebbling.AnchorGrid.gval_lt_succ",
+    "RevPebbling.AnchorGrid.gidx_gval",
+    "RevPebbling.AnchorGrid.gval_rdIndex_le",
+    "RevPebbling.AnchorDP.okStep_of_verify",
+    "RevPebbling.AnchorDP.cell_of_okRow",
+    "RevPebbling.AnchorDP.kval_cell",
+    "RevPebbling.AnchorDP.Lg_base",
+    "RevPebbling.AnchorDP.Lg_step",
+    "RevPebbling.AnchorDP.Lg_cert",
+    "RevPebbling.AnchorDP.midv_le_of_verify",
+    "RevPebbling.AnchorCertify.verify_198",
+    "RevPebbling.AnchorCertify.anchor_198",
+    "RevPebbling.AnchorCertify.verify_1198",
+    "RevPebbling.AnchorCertify.cert_1198",
+    "RevPebbling.AnchorCertify.anchor_1198"
+   ],
+   "native_decide_theorems": [
+    "RevPebbling.AnchorCertify.anchor_1198",
+    "RevPebbling.AnchorCertify.anchor_198",
+    "RevPebbling.AnchorCertify.cert_1198",
+    "RevPebbling.AnchorCertify.verify_1198",
+    "RevPebbling.AnchorCertify.verify_198"
+   ],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "submultiplicativity_block_simulation": {
    "status": "proved_general",

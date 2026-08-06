@@ -1533,6 +1533,61 @@ def main() -> int:
                     "RevPebbling.RowExact.reachIn_upper",
                 ],
             },
+            "anchor_internal_replay": {
+                "status": "general_framework_plus_certified_values",
+                "scope": ("UNBOUNDED framework + BOUNDED certificate (this work, "
+                          "2026-08-06): the composition anchor, RUN INSIDE LEAN. "
+                          "CompositionAnchor recorded that the large anchors were "
+                          "computed outside the prover ('their Lean-internal replay "
+                          "is future work'); this replays T0 = 1200. The DP of "
+                          "scripts/m33_anchor_c.c runs on the geometric grid of "
+                          "AnchorGrid with the packed values of AnchorPacked. Unlike "
+                          "the C, the exponent is a Nat, so every representable "
+                          "value is an exact natural number - which is what lets it "
+                          "feed midpoint_composition, whose certificate function is "
+                          "Nat-valued. UNBOUNDED, kernel axioms only: kval_flAdd_le "
+                          "(addition rounds down, no invariant needed), kval_mono "
+                          "(on normalised keys the order on keys is the order on "
+                          "values), norm_le / le_norm (the grid rounds down and norm "
+                          "is the largest index that fits), gval_rdIndex_le, and "
+                          "midv_le_of_verify - 'the checker passed implies "
+                          "m_{S+K} <= m_S * v* for every S'. BOUNDED: verify_1198 "
+                          "and cert_1198 (native_decide, 1198 x 14976 = 1.8e7 cells, "
+                          "364 s, 1.8 GB - the artifact's second deliberate "
+                          "over-budget check after RLECertify.fRow_60's 384 s). "
+                          "Result: anchor_1198 : m_{S+1198} <= m_S * 62*2^405, whose "
+                          "arithmetic consequence is c <= 2.5368418, against the "
+                          "c <= 3.21 of the previous in-Lean anchor "
+                          "midpoint_anchor_44. The step from a midpoint bound to a "
+                          "real-number bound on c is iteration plus TwoD, the same "
+                          "unformalised step the older anchor has. Reasoning about "
+                          "the two-pointer's optimality is NOT needed: the recursion "
+                          "asks only for some split, so step returns the split it "
+                          "chose and a Bool checker confirms the cell's shape; a "
+                          "worse split would only weaken the certificate. "),
+                "theorems": [
+                    "RevPebbling.AnchorPacked.kval_flAdd_le",
+                    "RevPebbling.AnchorPacked.kval_mono",
+                    "RevPebbling.AnchorPacked.wf_flAdd",
+                    "RevPebbling.AnchorGrid.norm_le",
+                    "RevPebbling.AnchorGrid.le_norm",
+                    "RevPebbling.AnchorGrid.gval_lt_succ",
+                    "RevPebbling.AnchorGrid.gidx_gval",
+                    "RevPebbling.AnchorGrid.gval_rdIndex_le",
+                    "RevPebbling.AnchorDP.okStep_of_verify",
+                    "RevPebbling.AnchorDP.cell_of_okRow",
+                    "RevPebbling.AnchorDP.kval_cell",
+                    "RevPebbling.AnchorDP.Lg_base",
+                    "RevPebbling.AnchorDP.Lg_step",
+                    "RevPebbling.AnchorDP.Lg_cert",
+                    "RevPebbling.AnchorDP.midv_le_of_verify",
+                    "RevPebbling.AnchorCertify.verify_198",
+                    "RevPebbling.AnchorCertify.anchor_198",
+                    "RevPebbling.AnchorCertify.verify_1198",
+                    "RevPebbling.AnchorCertify.cert_1198",
+                    "RevPebbling.AnchorCertify.anchor_1198",
+                ],
+            },
             "submultiplicativity_block_simulation": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED (this work, 2026-08-05): SUBMULTIPLICATIVITY, "
