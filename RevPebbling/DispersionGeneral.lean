@@ -247,4 +247,26 @@ theorem dispersion_general
             (Wg r n M (v - 1 - (t1 * v / tb)))
             hLsum hDB (Wg_ge r n M v hr hv) hp hb hd hrec H1 H2 H3
 
+/-- **THE ROOT-FREE FORM.**  Raising to the `r`-th power removes the
+integer root, leaving a statement the growth layer can consume:
+`(D^s · C_S(v))^r ≤ M^r · v^n · (L^s)^r`. -/
+theorem dispersion_general_pow
+    (r n M D L B E t1 t2 tb : Nat)
+    (hr : 0 < r) (hM : 1 ≤ M) (hB : 0 < B) (htb : 0 < tb)
+    (hDL : D ≤ L)
+    (ht1 : t1 < tb) (hsum : tb ≤ t1 + t2)
+    (hLsum : L = D + B + E)
+    (hDB : D + B ≤ E * M)
+    (hth1 : L ^ r * t1 ^ n ≤ B ^ r * tb ^ n)
+    (hth2 : D ^ r * t2 ^ n ≤ B ^ r * tb ^ n) :
+    ∀ s v, (D ^ s * countLe (rowIter s) v) ^ r ≤ M ^ r * v ^ n * (L ^ s) ^ r := by
+  intro s v
+  have hmain := dispersion_general r n M D L B E t1 t2 tb hr hM hB htb hDL ht1
+    hsum hLsum hDB hth1 hth2 s v
+  calc (D ^ s * countLe (rowIter s) v) ^ r
+      ≤ (Wg r n M v * L ^ s) ^ r := Nat.pow_le_pow_left hmain r
+    _ = Wg r n M v ^ r * (L ^ s) ^ r := by rw [Nat.mul_pow]
+    _ ≤ (M ^ r * v ^ n) * (L ^ s) ^ r :=
+        Nat.mul_le_mul_right _ (Wg_pow_le r n M v hr)
+
 end RevPebbling.DispersionGeneral

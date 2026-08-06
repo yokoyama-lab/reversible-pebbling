@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "8165f3a032b66c7b2b7bbfa093dbeeefa4c32f7caf3b7b6a0474092059fe2e42",
+ "proof_bundle_sha256": "ca9332577585ca7cc624b0c18e1e1d1f959f9b37ff0a3ba725fb1fa057f60507",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -36,7 +36,8 @@
   "RevPebbling/DispersionBound32b.lean": "68ef986d04f83a2efd2afb6fdfde4185cddbe3f166177ac78219b21819859731",
   "RevPebbling/DispersionBound32c.lean": "398bb340689fb3b61f10c24f553068fd38ea646a99ea4a33c860f05f701e0669",
   "RevPebbling/DispersionBound4731.lean": "8ff9cc0a50182efe372d634acbf9f8881382ad6e6c638ff782fe7ddea068dfc4",
-  "RevPebbling/DispersionGeneral.lean": "7c69fb2b7119f27912901381d218adff8a3e888bc1211c1b55303725f31fdcbd",
+  "RevPebbling/DispersionBound5033.lean": "2d7698297c2fa85ee1a8b7f77ecc7429c628baaae1e5d6ffac5982aa916e929c",
+  "RevPebbling/DispersionGeneral.lean": "3d4b49812924a41d38988b0cb62232ca9229d45bd2d82188ffa06e1b906cb25f",
   "RevPebbling/DispersionGrowth.lean": "8dd94eb2f5abcd332644859a55822e875205ee2cfbd70879be928f434c1a55bf",
   "RevPebbling/DispersionRecover.lean": "5394771ac0163f94a2dc24bd9cb8a7cd1d3e9fb6887d70d25381cd746e73e86f",
   "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
@@ -86,7 +87,7 @@
   "RevPebbling/Unconditional.lean": "f43bba955448614a302dc832a7c1db6c6090b01058b5731fc92f081af6669d6b",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "be1b855c8bc6ce8ebea43962d07c65c203181a3868e297d97b207870c4bc9fdd"
+  "RevPebbling.lean": "87dee546515d383149fc7b45eebec800e527493227237e8134116d8a50b2496e"
  },
  "hypotheses": {
   "GameAttain": {
