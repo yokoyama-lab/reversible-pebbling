@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "ca9332577585ca7cc624b0c18e1e1d1f959f9b37ff0a3ba725fb1fa057f60507",
+ "proof_bundle_sha256": "75a889831e388e6a1abe97e8b4897cddcea6d1a7e95013f1c0213a8c894c503d",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -30,14 +30,17 @@
   "RevPebbling/CutUpperFix.lean": "b1aab41e462a4b4d97378eb3792820b6687f984c41b74daa4e24d874e953cf19",
   "RevPebbling/CutVocabulary.lean": "799b0c878104696ecda1b1d73b27fac5626f42fa5148680bad5561d1d8806770",
   "RevPebbling/DifferenceMergeProperty.lean": "bc65c46cf8135e9fd1898e6176874eaabf0ecbf47720450dbff5aba00a4b4878",
+  "RevPebbling/Dispersion197130Growth.lean": "c205a0ffe9d3388766fd78f3011bfaed7df53f6997b414c214127ebda4c7e0ff",
   "RevPebbling/Dispersion4731Growth.lean": "71906524bafa2c065dd281583698a7941f50d55b1527b100bd36933f66054ce6",
   "RevPebbling/DispersionBound.lean": "12244572e35198d5d550403f2cb5664e9698c3cb0ed43c924887ca15ecdb4c89",
+  "RevPebbling/DispersionBound197130.lean": "1325695b45ffc30822b3127964cdaf73e7382a807d5d51746cd368bd4342316a",
   "RevPebbling/DispersionBound32.lean": "432ccb527df7f4c06263d2ae5fd1e5f3a008bc677fee7814fade06973e06de63",
   "RevPebbling/DispersionBound32b.lean": "68ef986d04f83a2efd2afb6fdfde4185cddbe3f166177ac78219b21819859731",
   "RevPebbling/DispersionBound32c.lean": "398bb340689fb3b61f10c24f553068fd38ea646a99ea4a33c860f05f701e0669",
   "RevPebbling/DispersionBound4731.lean": "8ff9cc0a50182efe372d634acbf9f8881382ad6e6c638ff782fe7ddea068dfc4",
   "RevPebbling/DispersionBound5033.lean": "2d7698297c2fa85ee1a8b7f77ecc7429c628baaae1e5d6ffac5982aa916e929c",
   "RevPebbling/DispersionGeneral.lean": "3d4b49812924a41d38988b0cb62232ca9229d45bd2d82188ffa06e1b906cb25f",
+  "RevPebbling/DispersionGeneralGrowth.lean": "c773e0e395a7d8f75a2dcc1c7819ffaf8562ee5ad0d98dfb6b56f78fc4d1c89b",
   "RevPebbling/DispersionGrowth.lean": "8dd94eb2f5abcd332644859a55822e875205ee2cfbd70879be928f434c1a55bf",
   "RevPebbling/DispersionRecover.lean": "5394771ac0163f94a2dc24bd9cb8a7cd1d3e9fb6887d70d25381cd746e73e86f",
   "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
@@ -87,7 +90,7 @@
   "RevPebbling/Unconditional.lean": "f43bba955448614a302dc832a7c1db6c6090b01058b5731fc92f081af6669d6b",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "87dee546515d383149fc7b45eebec800e527493227237e8134116d8a50b2496e"
+  "RevPebbling.lean": "a99cff5546228f93604b3f72889d108b787b38c412f1225e55f4334cc340d5a7"
  },
  "hypotheses": {
   "GameAttain": {
@@ -125,7 +128,7 @@
   },
   "Submult RevPebbling.RowMax.fRow": {
    "status": "proved",
-   "carried_by": 12,
+   "carried_by": 14,
    "proved_by": [
     "RevPebbling.BlockSim.submult_fRow"
    ]
@@ -286,6 +289,42 @@
      "RevPebbling.Dispersion4731Growth.growth_ge_2_51706472",
      "RevPebbling.DispersionGrowth.growth_ge_32_13",
      "RevPebbling.DispersionGrowth.growth_ge_of_midv_geometric"
+    ]
+   },
+   "proves_hypotheses": {}
+  },
+  "dispersion_197130": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, relative to submultiplicativity.  The last affordable member of the dispersion family, and the development's sharpest lower bound on c.  The instance at q delivers c >= 2^{1+V(q)} with V(q) = 1/q - log2 rho_c(q), and kappa* = sup_q V(q) is attained at q* = 1.5153832361...; the deficit falls like (q - q*)^2, so only the convergents of q* are worth instantiating -- 3/2, 47/31, 50/33, 197/130, 8324/5493, ... -- and 197/130 is the last whose constants fit (the next would need L^r with about 7e8 digits against 5e5 here).  `DispersionBound197130` supplies the constants to `DispersionGeneral.dispersion_general`: sigma = rho_c(q)^(1/r) rounded UP to 20 decimals, so rho = sigma^r and lambda = L/D are exactly rational and the rounding is what leaves the slack E = L - D - B >= 1 that absorbs the +1 of the recursion.  `DispersionGeneralGrowth` is `Dispersion4731Growth` with the digits pulled out: from a certificate (D^S(2^S-1))^r <= M^r m_S^n (L^S)^r and a rational lambda0 = P/Q passing the integer master inequality P^n L^r <= Q^n (2D)^r, it delivers 2*(P/Q) <= c, so a new exponent is a new application rather than a new proof script.  With lambda0 = 12585324184468005104/10^19 -- the largest 19-digit rational that passes -- `c_ge_2_5170648368936010208` gives 2.5170648368936010208 <= c, an improvement of 1.1e-8 over the q = 47/31 bound and 2.2e-13 below the conjectured 2^(1+kappa*).  The remaining gap is the deficit of the exponent, not slack in lambda0.  `master` is about 5e5 digits on each side and depends on NO axiom beyond propext; everything else is kernel axioms only, and NO native_decide appears.",
+   "theorems": [
+    "RevPebbling.DispersionBound197130.hLsum",
+    "RevPebbling.DispersionBound197130.hDB",
+    "RevPebbling.DispersionBound197130.hth1",
+    "RevPebbling.DispersionBound197130.hth2",
+    "RevPebbling.DispersionBound197130.hDL",
+    "RevPebbling.DispersionBound197130.dispersion197130_main",
+    "RevPebbling.DispersionBound197130.dispersion197130_main_pow",
+    "RevPebbling.DispersionBound197130.dispersion197130_midpoint_pow",
+    "RevPebbling.DispersionGeneralGrowth.midv_ge_nat",
+    "RevPebbling.DispersionGeneralGrowth.midv_ge_real",
+    "RevPebbling.DispersionGeneralGrowth.growth_ge_of_master",
+    "RevPebbling.Dispersion197130Growth.master",
+    "RevPebbling.Dispersion197130Growth.growth_ge_2_5170648368936010208",
+    "RevPebbling.Dispersion197130Growth.c_ge_2_5170648368936010208",
+    "RevPebbling.Dispersion197130Growth.c_ge_2_5170648368936"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [
+    "RevPebbling.DispersionBound197130.hDB",
+    "RevPebbling.DispersionBound197130.hDL",
+    "RevPebbling.DispersionBound197130.hLsum",
+    "RevPebbling.DispersionBound197130.hth1",
+    "RevPebbling.DispersionBound197130.hth2"
+   ],
+   "carried_hypotheses": {
+    "Submult RevPebbling.RowMax.fRow": [
+     "RevPebbling.Dispersion197130Growth.growth_ge_2_5170648368936010208",
+     "RevPebbling.DispersionGeneralGrowth.growth_ge_of_master"
     ]
    },
    "proves_hypotheses": {}

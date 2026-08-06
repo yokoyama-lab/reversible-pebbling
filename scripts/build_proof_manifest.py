@@ -347,6 +347,63 @@ def main() -> int:
                     "RevPebbling.Dispersion4731Growth.growth_ge_2_51706472",
                 ],
             },
+            "dispersion_197130": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, relative to submultiplicativity.  The "
+                          "last affordable member of the dispersion family, "
+                          "and the development's sharpest lower bound on c. "
+                          " The instance at q delivers "
+                          "c >= 2^{1+V(q)} with V(q) = 1/q - log2 rho_c(q), "
+                          "and kappa* = sup_q V(q) is attained at "
+                          "q* = 1.5153832361...; the deficit falls like "
+                          "(q - q*)^2, so only the convergents of q* are "
+                          "worth instantiating -- 3/2, 47/31, 50/33, "
+                          "197/130, 8324/5493, ... -- and 197/130 is the "
+                          "last whose constants fit (the next would need "
+                          "L^r with about 7e8 digits against 5e5 here).  "
+                          "`DispersionBound197130` supplies the constants "
+                          "to `DispersionGeneral.dispersion_general`: "
+                          "sigma = rho_c(q)^(1/r) rounded UP to 20 "
+                          "decimals, so rho = sigma^r and lambda = L/D are "
+                          "exactly rational and the rounding is what leaves "
+                          "the slack E = L - D - B >= 1 that absorbs the +1 "
+                          "of the recursion.  `DispersionGeneralGrowth` is "
+                          "`Dispersion4731Growth` with the digits pulled "
+                          "out: from a certificate "
+                          "(D^S(2^S-1))^r <= M^r m_S^n (L^S)^r and a "
+                          "rational lambda0 = P/Q passing the integer "
+                          "master inequality P^n L^r <= Q^n (2D)^r, it "
+                          "delivers 2*(P/Q) <= c, so a new exponent is a "
+                          "new application rather than a new proof script. "
+                          " With lambda0 = 12585324184468005104/10^19 -- "
+                          "the largest 19-digit rational that passes -- "
+                          "`c_ge_2_5170648368936010208` gives "
+                          "2.5170648368936010208 <= c, an improvement of "
+                          "1.1e-8 over the q = 47/31 bound and 2.2e-13 "
+                          "below the conjectured 2^(1+kappa*).  The "
+                          "remaining gap is the deficit of the exponent, "
+                          "not slack in lambda0.  `master` is about 5e5 "
+                          "digits on each side and depends on NO axiom "
+                          "beyond propext; everything else is kernel "
+                          "axioms only, and NO native_decide appears."),
+                "theorems": [
+                    "RevPebbling.DispersionBound197130.hLsum",
+                    "RevPebbling.DispersionBound197130.hDB",
+                    "RevPebbling.DispersionBound197130.hth1",
+                    "RevPebbling.DispersionBound197130.hth2",
+                    "RevPebbling.DispersionBound197130.hDL",
+                    "RevPebbling.DispersionBound197130.dispersion197130_main",
+                    "RevPebbling.DispersionBound197130.dispersion197130_main_pow",
+                    "RevPebbling.DispersionBound197130.dispersion197130_midpoint_pow",
+                    "RevPebbling.DispersionGeneralGrowth.midv_ge_nat",
+                    "RevPebbling.DispersionGeneralGrowth.midv_ge_real",
+                    "RevPebbling.DispersionGeneralGrowth.growth_ge_of_master",
+                    "RevPebbling.Dispersion197130Growth.master",
+                    "RevPebbling.Dispersion197130Growth.growth_ge_2_5170648368936010208",
+                    "RevPebbling.Dispersion197130Growth.c_ge_2_5170648368936010208",
+                    "RevPebbling.Dispersion197130Growth.c_ge_2_5170648368936",
+                ],
+            },
             "two_d_closed_form": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED, relative to submultiplicativity (as "

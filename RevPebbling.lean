@@ -34,6 +34,9 @@ import RevPebbling.DispersionBound4731
 import RevPebbling.DispersionGeneral
 import RevPebbling.DispersionRecover
 import RevPebbling.DispersionBound5033
+import RevPebbling.DispersionBound197130
+import RevPebbling.DispersionGeneralGrowth
+import RevPebbling.Dispersion197130Growth
 import RevPebbling.DispersionGrowth
 import RevPebbling.DoublingLower
 import RevPebbling.FactorialBound

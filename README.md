@@ -25,12 +25,12 @@ file records the exact integer `v*` with `L(T0, v*) ≥ 2^{T0−2}`, whence
 | `anchor_T141000_m10.txt` | 141000 | mant 10 | 2.5174496 |
 | **`anchor_T98500_m11.txt`** | 98500 | mant 11 | **2.5174407** |
 
-Together with `DispersionBound4731` this brackets the growth rate as
+Together with `DispersionBound197130` this brackets the growth rate as
 
-  **2.5170647241 ≤ c ≤ 2.5174406519**,
+  **2.5170648368936 ≤ c ≤ 2.5174406519**,
 
 a window of 3.8·10⁻⁴ around the conjectured exact value
-`2^{1+κ*} = 2.5170648369`, which sits 1.1·10⁻⁷ above the lower bound.
+`2^{1+κ*} = 2.5170648369`, which sits 2.2·10⁻¹³ above the lower bound.
 The two large anchors were produced by `m33_anchor_c.c` (paper
 repository), which reproduces the earlier bignum certificates bit for
 bit while running ~600x faster; `base_check_T3000_eps001.txt` and
@@ -66,8 +66,8 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 534 theorems the
-manifest lists, **68 rest on a `native_decide` certificate and 9 need
+the rest are general (unbounded) proofs.  Of the 549 theorems the
+manifest lists, **68 rest on a `native_decide` certificate and 14 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -97,7 +97,7 @@ says — the counts above, the constants it quotes, the file paths and
 theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
-A full build takes about sixteen minutes (34 stages, 534 theorems),
+A full build takes about sixteen minutes (35 stages, 549 theorems),
 nearly all of it two checks: the certification of row 60 (13.1 M runs,
 ~5.6 GB, 384 s), which carries the published bound `c ≤ 2.6106`, and the
 composition anchor at `T₀ = 1200` (1.8 M cells, ~1.8 GB, 364 s), which
@@ -157,6 +157,26 @@ committed `proof-manifest.json` is reproduced byte for byte.
   certifies `c ≥ 2^{1+31/47}·10²⁷⁹/1007357123³¹ = 2.5170647241` —
   **within 1.1·10⁻⁷ of the conjectured exact `2^{1+κ*}`**, so the
   rational dispersion family now matches it to eight decimals.
+- `RevPebbling/DispersionGeneral.lean` +
+  `RevPebbling/DispersionBound197130.lean` +
+  `RevPebbling/DispersionGeneralGrowth.lean` +
+  `RevPebbling/Dispersion197130Growth.lean` — **the last affordable
+  member of the family, and the sharpest lower bound here**.  With the
+  constants and the extraction both parameterised, a new exponent is an
+  application rather than a new file of digits.  Which exponents are
+  worth the application is settled by `q*`: the deficit
+  `2^{1+κ*} − 2^{1+V(q)}` falls like `(q − q*)²`, so only the
+  convergents of `q*` matter — `3/2`, `47/31`, `50/33`, **`197/130`**,
+  `8324/5493`, … — and `197/130` is the last one whose constants fit
+  (the next needs `L^r` with ~7·10⁸ digits against 5·10⁵ here).  Taking
+  `σ = ρ_c(q)^{1/r}` rounded **up** to 20 decimals keeps `ρ` and
+  `λ = L/D` exactly rational and is itself what leaves the slack
+  `E = L − D − B ≥ 1` that absorbs the `+1` of the recursion.  With
+  `λ₀ = 12585324184468005104/10¹⁹`, the largest 19-digit rational that
+  passes the master inequality, `c_ge_2_5170648368936010208` gives
+  **`2.5170648368936010208 ≤ c`** — `2.2·10⁻¹³` below the conjectured
+  value, and what is left is the deficit of the exponent, not slack in
+  `λ₀`.  No `native_decide`; `master` needs no axiom but `propext`.
 
 (The modules above were renamed from the historical `GenJanus.*`
 namespace in the 2026-07-28 unification; see below.)
