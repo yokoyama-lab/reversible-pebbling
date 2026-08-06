@@ -37,11 +37,31 @@ bit while running ~600x faster; `base_check_T3000_eps001.txt` and
 `kappa_enclosure_certified.txt` are the base-row check and the certified
 23-digit enclosure of `κ*`.
 
+### `κ*` is now enclosed inside a prover too
+
+`kappa_enclosure_certified.txt` is rigorous but runs outside any prover
+(Arb balls, a Krawczyk operator, 602 adaptive boxes).  `rocq/KappaStar.v`
+re-derives a machine-checked enclosure with **Rocq + CoqInterval** —
+Lean 4 has no interval-arithmetic tactic, so this one file lives in
+Rocq:
+
+```
+κ* ∈ [0.3317423792563105, 0.3317423792563106]
+c  = 2^(1+κ*) ∈ [2.517064836893816, 2.517064836893817]
+```
+
+`ρ_c` is never built as a function; the trick is that `g q ·` is
+monotone, so `V q ≤ K` becomes the sign of `g` at `2^(1/q−K)`, which
+has a closed form.  Only `2/5 ≤ q ≤ 302/100` needs interval arithmetic;
+the two tails are elementary.  Details, and the exact trust base, in
+`rocq/README.md`.
+
 ## Build
 
 ```
 lake build                              # Lean 4 (see lean-toolchain)
 python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
+make -C rocq                            # Rocq + CoqInterval (see rocq/README.md)
 ```
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
