@@ -6,68 +6,95 @@
     q1 in (2.4, 2.4005), with the slope bracket [BLO,BHI] ASSUMED.  This
     cover replicates that across a grid and strengthens it: the slope
     bracket is DERIVED at every node from three point enclosures of f
-    ([CoverGlue.slope_upper] / [slope_lower], on top of
-    [LedgerParam.beta_bracket]) and transported to the CLOSED window by
-    Topkis monotonicity ([CoverGlue.slope_closed], on top of
-    [SlopeWindow.topkis]).  Consecutive windows share a node, so the
-    union is a closed interval with no gaps -- not a union of open
-    windows that misses its own grid points.
+    ([CoverGlue.slope_upper_eps] / [slope_lower_eps], on top of
+    [LedgerParam.beta_bracket_eps]) and transported to the CLOSED window
+    by [CoverGlue.slope_hi_eps] / [slope_lo_eps].  Consecutive windows
+    share a node, so the union is a closed interval with no gaps -- not a
+    union of open windows that misses its own grid points.
+
+    NOTE ON THE TWO eps.  [LedgerA.EPS = 1/100] is the trial profile's
+    design constant, unchanged.  The [eps] quantified in each window
+    below is the MINIMALITY SLACK, bounded by [CoverGlue.EPSB = 1e-11].
+    They are unrelated.
 
     ** WHAT IS COVERED
 
-    q1 in [1.45, 3.25], by 925 closed windows in 24 parts.
-    Window widths run from 4.0e-7 to 0.03453: they are chosen
+    q1 in [1.45, 3.25], by 932 closed windows in 24 parts.
+    Window widths run from 2.0e-7 to 0.03651: they are chosen
     adaptively, because the ledger's true margin varies by an order of
     magnitude over the range (it is tightest at q1 ~ 2.4).  The smallest
-    certified lower bound on the ledger, over all 925 windows, is
-    0.002057 > 0.
+    certified lower bound on the ledger, over all 932 windows, is
+    0.002047 > 0.
 
     The cover reaches the top of the Zone I range.
 
     ** WHAT EACH WINDOW SAYS
 
-    [window_i q1 b1 ... : qa <= q1 <= qb -> ... -> val <= ledger ...]
-    for every q1 in the window, every minimiser slope b1 there, and every
-    root of g at the three slopes involved.  The hypotheses are exactly
+    [window_i eps q1 b1 ... : 0 < eps -> eps <= EPSB ->
+                              qa <= q1 <= qb -> ... -> val <= ledger ...]
+    for every q1 in the window, every eps-minimiser slope b1 there, and
+    every root of g at the three slopes involved.  The hypotheses are
     those of [window_24] MINUS the assumed slope bracket, PLUS the
-    existence of minimiser slopes at the window's two nodes (needed by
-    Topkis, and the same assumption [SlopeWindow.slope_in_24_26] makes).
+    existence of eps-minimiser slopes at the window's two nodes.
+
+    ** eps-MINIMALITY, NOT EXACT MINIMALITY
+
+    [EminEps eps b q1 f1] asks only that the q1-line be lowest to within
+    eps.  That is the version [EminExists.emin_eps_exists] PRODUCES: for
+    every slope b > 0 and every eps > 0 an eps-minimiser exists, straight
+    from the completeness of R -- no compactness, no continuity of rho_c.
+    Exact minimality (the old [EminRel]) was never shown satisfiable at
+    all.
+
+    The price is that each node's slope bracket widens by C = 2 eps / h
+    on each side, and [CoverGlue.slope_hi_eps]/[slope_lo_eps] carry that
+    same C uniformly across the closed window -- no division by the
+    window width, so the narrowest windows pay no more than the widest.
+    MEASURED (on the previous, 925-window grid): every window still
+    closes up to C = 3.987e-5, i.e. eps = 1.99e-10, the binding window
+    being the one at q1 ~ 2.1179.  EPSB is a factor 20 inside that.
 
     ** WHAT IS NOT PROVED HERE
 
     That the ledger being positive implies Zone I's one-step inequality:
     that reduction is the appendix's, and is not formalised.  Zone 0
     (beta <= 0.12), Zone II (qtilde < 0.3) and the transfer principle are
-    elsewhere.  And the design constants eps, lam, mu and qstar of the
+    elsewhere.  And the design constants EPS, LAM, MU and QS of the
     trial profile are constants of the ansatz, not objects that this
     development characterises.
 
+    Nor is the node hypothesis discharged.  [EminExists] produces, for a
+    GIVEN SLOPE, a q that eps-minimises there; a node needs the converse
+    -- for a GIVEN q, a slope that q eps-minimises at -- which says f is
+    on its own lower convex envelope at that q.  That is false below
+    q ~ 0.5 and is not proved here for [1.45, 3.25].
+
     ** THE PARTS
 
-    LedgerCoverP00     windows    0..39     q1 in [1.45, 1.508728]
-    LedgerCoverP01     windows   40..79     q1 in [1.508728, 1.5659815]
-    LedgerCoverP02     windows   80..119    q1 in [1.5659815, 1.621971]
-    LedgerCoverP03     windows  120..159    q1 in [1.621971, 1.676907]
-    LedgerCoverP04     windows  160..199    q1 in [1.676907, 1.7306814]
-    LedgerCoverP05     windows  200..239    q1 in [1.7306814, 1.7831404]
-    LedgerCoverP06     windows  240..279    q1 in [1.7831404, 1.8342278]
-    LedgerCoverP07     windows  280..319    q1 in [1.8342278, 1.883927]
-    LedgerCoverP08     windows  320..359    q1 in [1.883927, 1.9322549]
-    LedgerCoverP09     windows  360..399    q1 in [1.9322549, 1.9793333]
-    LedgerCoverP10     windows  400..439    q1 in [1.9793333, 2.0253933]
-    LedgerCoverP11     windows  440..479    q1 in [2.0253933, 2.0706437]
-    LedgerCoverP12     windows  480..519    q1 in [2.0706437, 2.1156477]
-    LedgerCoverP13     windows  520..559    q1 in [2.1156477, 2.1606517]
-    LedgerCoverP14     windows  560..599    q1 in [2.1606517, 2.2060077]
-    LedgerCoverP15     windows  600..639    q1 in [2.2060077, 2.2526647]
-    LedgerCoverP16     windows  640..679    q1 in [2.2526647, 2.3016618]
-    LedgerCoverP17     windows  680..719    q1 in [2.3016618, 2.3546118]
-    LedgerCoverP18     windows  720..759    q1 in [2.3546118, 2.4140968]
-    LedgerCoverP19     windows  760..799    q1 in [2.4140968, 2.4850771]
-    LedgerCoverP20     windows  800..839    q1 in [2.4850771, 2.5785344]
-    LedgerCoverP21     windows  840..879    q1 in [2.5785344, 2.7289653]
-    LedgerCoverP22     windows  880..919    q1 in [2.7289653, 3.2462068]
-    LedgerCoverP23     windows  920..924    q1 in [3.2462068, 3.25]
+    LedgerCoverP00     windows    0..39     q1 in [1.45, 1.5084466]
+    LedgerCoverP01     windows   40..79     q1 in [1.5084466, 1.5654368]
+    LedgerCoverP02     windows   80..119    q1 in [1.5654368, 1.6212688]
+    LedgerCoverP03     windows  120..159    q1 in [1.6212688, 1.6759056]
+    LedgerCoverP04     windows  160..199    q1 in [1.6759056, 1.7294167]
+    LedgerCoverP05     windows  200..239    q1 in [1.7294167, 1.7816296]
+    LedgerCoverP06     windows  240..279    q1 in [1.7816296, 1.8324712]
+    LedgerCoverP07     windows  280..319    q1 in [1.8324712, 1.881924]
+    LedgerCoverP08     windows  320..359    q1 in [1.881924, 1.9299886]
+    LedgerCoverP09     windows  360..399    q1 in [1.9299886, 1.9767856]
+    LedgerCoverP10     windows  400..439    q1 in [1.9767856, 2.0225816]
+    LedgerCoverP11     windows  440..479    q1 in [2.0225816, 2.0675504]
+    LedgerCoverP12     windows  480..519    q1 in [2.0675504, 2.111868]
+    LedgerCoverP13     windows  520..559    q1 in [2.111868, 2.156168]
+    LedgerCoverP14     windows  560..599    q1 in [2.156168, 2.2010136]
+    LedgerCoverP15     windows  600..639    q1 in [2.2010136, 2.2471084]
+    LedgerCoverP16     windows  640..679    q1 in [2.2471084, 2.2952959]
+    LedgerCoverP17     windows  680..719    q1 in [2.2952959, 2.3471216]
+    LedgerCoverP18     windows  720..759    q1 in [2.3471216, 2.4049902]
+    LedgerCoverP19     windows  760..799    q1 in [2.4049902, 2.4732984]
+    LedgerCoverP20     windows  800..839    q1 in [2.4732984, 2.5615721]
+    LedgerCoverP21     windows  840..879    q1 in [2.5615721, 2.6972052]
+    LedgerCoverP22     windows  880..919    q1 in [2.6972052, 3.0592432]
+    LedgerCoverP23     windows  920..931    q1 in [3.0592432, 3.25]
 *)
 
 From RevPebblingRocq Require Export
