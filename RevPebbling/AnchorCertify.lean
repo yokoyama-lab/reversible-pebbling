@@ -1,4 +1,6 @@
 import RevPebbling.AnchorDP
+import RevPebbling.AnchorGrowth
+import RevPebbling.BlockSim
 
 /-!
 # The anchor, run and checked inside Lean (this work)
@@ -26,7 +28,8 @@ than the `c ≤ 2.6106` that `GrowthCertified` gets from `f_60`.
 namespace RevPebbling.AnchorCertify
 
 open RevPebbling.AnchorDP RevPebbling.AnchorPacked RevPebbling.AnchorGrid
-open RevPebbling.CompositionAnchor
+open RevPebbling.CompositionAnchor RevPebbling.AnchorGrowth
+open RevPebbling.GrowthRate RevPebbling.RowMax RevPebbling.GrowthClosedForm
 
 -- ------------------------------------------------------------------
 -- T₀ = 200 (regression): grid `M = 5`, cap `2^132`, `N = 4096`
@@ -83,5 +86,38 @@ theorem anchor_1198 (s : Nat) : midv (s + 1198) ≤ midv s * (62 * 2 ^ 405) := b
   have h := midv_le_of_verify (M := 5) (N := 14976) (K := 1198) (by omega)
     verify_1198 (istar := 13021) (by omega) cert_1198 s
   rwa [gval_13021] at h
+
+
+-- ------------------------------------------------------------------
+-- The anchor, on the growth rate
+-- ------------------------------------------------------------------
+
+set_option exponentiation.threshold 2000 in
+/-- The `t`-th root, taken by choosing a rational `B`: kernel `decide`
+on a 7300-digit comparison, **no axioms at all**. -/
+theorem anchor_witness : 62 * 2 ^ 405 * 1000000 ^ 1198 ≤ 1268421 ^ 1198 := by
+  decide
+
+set_option exponentiation.threshold 2000 in
+theorem v_le_pow : ((62 * 2 ^ 405 : Nat) : ℝ) ≤ (1268421 / 1000000 : ℝ) ^ 1198 := by
+  rw [div_pow, le_div_iff₀ (by positivity)]
+  have h : ((62 * 2 ^ 405 * 1000000 ^ 1198 : Nat) : ℝ)
+      ≤ ((1268421 ^ 1198 : Nat) : ℝ) := by exact_mod_cast anchor_witness
+  push_cast at h ⊢
+  linarith
+
+/-- **`c ≤ 2.536842`, FROM AN ANCHOR REPLAYED INSIDE THE PROVER.**
+
+The published `c ≤ 2.5174407` still rests on a C computation; this one
+does not.  It also improves the artifact's own internal upper bound,
+which was `c ≤ 2.6106` (`GrowthCertified.growth_le_2_6106`, from
+`f_60`). -/
+theorem c_le_2_536842 : RevPebbling.BlockSim.c ≤ 2536842 / 1000000 := by
+  have h := growth_le_of_anchor RevPebbling.BlockSim.submult_fRow
+    (t := 1198) (v := 62 * 2 ^ 405) (by omega) anchor_1198
+    (B := 1268421 / 1000000) (by norm_num) v_le_pow
+  have hid : (2 : ℝ) * (1268421 / 1000000) = 2536842 / 1000000 := by norm_num
+  rw [hid] at h
+  exact h
 
 end RevPebbling.AnchorCertify

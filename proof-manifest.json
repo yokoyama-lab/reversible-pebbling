@@ -2,13 +2,14 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "2a65e9f4cb3ebe8f8c165b1545c2ed35ff22c9f62ee085492e2701477aec4958",
+ "proof_bundle_sha256": "24498a07f5778d40d9d65915cd0e779165a6d9bc1a5ad2ce97fba44303e92aee",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
-  "RevPebbling/AnchorCertify.lean": "658fc26cb24ca9bf77d565899c3fad23a83b03d2abce2a792dde7ed97de9d1e6",
+  "RevPebbling/AnchorCertify.lean": "68ae6647ea1d3a628c9cc64ef1a4221ab8f7778889b19ec075740598e34a96aa",
   "RevPebbling/AnchorDP.lean": "782df7f9944c51738ae7d2f2a0e38d01a3ebf448a97bfd448c54e8b72440ab03",
   "RevPebbling/AnchorGrid.lean": "832b0cb70c58a2945e16341a2d69f31b57beb91f6fe89687217e45eee35d4fd7",
+  "RevPebbling/AnchorGrowth.lean": "e11ee45a273578abf64104a942894103147c7528e1e985cdadb819c739eff9b2",
   "RevPebbling/AnchorPacked.lean": "5cf88cbf524f3811c06374b8d650fe40c368fdda0ac44c5ec703826e1a0ff8cb",
   "RevPebbling/AttainSplit.lean": "70de32bf8c96007c556af976d8a10874478830776fb53971fe1e02a858a42dc9",
   "RevPebbling/BlockSim.lean": "7ed8bae1be394d12696428ac01438878ef0e6f0bbc6f2bc63d5e024ebcd56ce1",
@@ -82,12 +83,12 @@
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "ef510927d08f6aac5d817548138bf0acd215b08de7269391a0c52abb815f49ac"
+  "RevPebbling.lean": "66fd40fa1fca4efcb5cbc3c3a7325ddf00d4ddc8815f7a28c6db39e9fec666d0"
  },
  "hypotheses": {
   "Submult": {
    "status": "proved",
-   "carried_by": 18,
+   "carried_by": 20,
    "proved_by": [
     "RevPebbling.BlockSim.submult_fRow"
    ]
@@ -1067,7 +1068,7 @@
   },
   "anchor_internal_replay": {
    "status": "general_framework_plus_certified_values",
-   "scope": "UNBOUNDED framework + BOUNDED certificate (this work, 2026-08-06): the composition anchor, RUN INSIDE LEAN. CompositionAnchor recorded that the large anchors were computed outside the prover ('their Lean-internal replay is future work'); this replays T0 = 1200. The DP of scripts/m33_anchor_c.c runs on the geometric grid of AnchorGrid with the packed values of AnchorPacked. Unlike the C, the exponent is a Nat, so every representable value is an exact natural number - which is what lets it feed midpoint_composition, whose certificate function is Nat-valued. UNBOUNDED, kernel axioms only: kval_flAdd_le (addition rounds down, no invariant needed), kval_mono (on normalised keys the order on keys is the order on values), norm_le / le_norm (the grid rounds down and norm is the largest index that fits), gval_rdIndex_le, and midv_le_of_verify - 'the checker passed implies m_{S+K} <= m_S * v* for every S'. BOUNDED: verify_1198 and cert_1198 (native_decide, 1198 x 14976 = 1.8e7 cells, 364 s, 1.8 GB - the artifact's second deliberate over-budget check after RLECertify.fRow_60's 384 s). Result: anchor_1198 : m_{S+1198} <= m_S * 62*2^405, whose arithmetic consequence is c <= 2.5368418, against the c <= 3.21 of the previous in-Lean anchor midpoint_anchor_44. The step from a midpoint bound to a real-number bound on c is iteration plus TwoD, the same unformalised step the older anchor has. Reasoning about the two-pointer's optimality is NOT needed: the recursion asks only for some split, so step returns the split it chose and a Bool checker confirms the cell's shape; a worse split would only weaken the certificate. ",
+   "scope": "UNBOUNDED framework + BOUNDED certificate (this work, 2026-08-06): the composition anchor, RUN INSIDE LEAN. CompositionAnchor recorded that the large anchors were computed outside the prover ('their Lean-internal replay is future work'); this replays T0 = 1200. The DP of scripts/m33_anchor_c.c runs on the geometric grid of AnchorGrid with the packed values of AnchorPacked. Unlike the C, the exponent is a Nat, so every representable value is an exact natural number - which is what lets it feed midpoint_composition, whose certificate function is Nat-valued. UNBOUNDED, kernel axioms only: kval_flAdd_le (addition rounds down, no invariant needed), kval_mono (on normalised keys the order on keys is the order on values), norm_le / le_norm (the grid rounds down and norm is the largest index that fits), gval_rdIndex_le, and midv_le_of_verify - 'the checker passed implies m_{S+K} <= m_S * v* for every S'. BOUNDED: verify_1198 and cert_1198 (native_decide, 1198 x 14976 = 1.8e7 cells, 364 s, 1.8 GB - the artifact's second deliberate over-budget check after RLECertify.fRow_60's 384 s). Result: anchor_1198 : m_{S+1198} <= m_S * 62*2^405, whose arithmetic consequence is c <= 2.536842, against the c <= 3.21 of the previous in-Lean anchor midpoint_anchor_44. The step from a midpoint bound to the REAL NUMBER c is formalised here too: AnchorGrowth mirrors DispersionGrowth.growth_ge_of_midv_geometric on the other half of the sandwich (f_S <= 2^S M_S), and the polynomial factor of rowMax_le_mul_midv is avoided because RowMax.rowMax_succ makes the maxima the PARTIAL SUMS of the midpoints, so a geometric bound sums to a geometric bound with only the constant B/(B-1). No real powers appear: the t-th root is taken by choosing a rational B with v <= B^t, checked by kernel decide on a 7300-digit comparison (anchor_witness, no axioms at all). Result: c_le_2_536842 : c <= 2536842/1000000, about the same real number as the lower bound 2.51706472 <= c, and better than the artifact's previous internal upper bound c <= 2.6106 from f_60. Reasoning about the two-pointer's optimality is NOT needed: the recursion asks only for some split, so step returns the split it chose and a Bool checker confirms the cell's shape; a worse split would only weaken the certificate. ",
    "theorems": [
     "RevPebbling.AnchorPacked.kval_flAdd_le",
     "RevPebbling.AnchorPacked.kval_mono",
@@ -1088,17 +1089,29 @@
     "RevPebbling.AnchorCertify.anchor_198",
     "RevPebbling.AnchorCertify.verify_1198",
     "RevPebbling.AnchorCertify.cert_1198",
-    "RevPebbling.AnchorCertify.anchor_1198"
+    "RevPebbling.AnchorCertify.anchor_1198",
+    "RevPebbling.AnchorGrowth.rowMax_le_geom",
+    "RevPebbling.AnchorGrowth.growth_le_of_midv_geometric",
+    "RevPebbling.AnchorGrowth.midv_le_geom_of_anchor",
+    "RevPebbling.AnchorGrowth.growth_le_of_anchor",
+    "RevPebbling.AnchorCertify.anchor_witness",
+    "RevPebbling.AnchorCertify.c_le_2_536842"
    ],
    "native_decide_theorems": [
     "RevPebbling.AnchorCertify.anchor_1198",
     "RevPebbling.AnchorCertify.anchor_198",
+    "RevPebbling.AnchorCertify.c_le_2_536842",
     "RevPebbling.AnchorCertify.cert_1198",
     "RevPebbling.AnchorCertify.verify_1198",
     "RevPebbling.AnchorCertify.verify_198"
    ],
    "axiom_free_theorems": [],
-   "carried_hypotheses": {},
+   "carried_hypotheses": {
+    "Submult": [
+     "RevPebbling.AnchorGrowth.growth_le_of_anchor",
+     "RevPebbling.AnchorGrowth.growth_le_of_midv_geometric"
+    ]
+   },
    "proves_hypotheses": {}
   },
   "submultiplicativity_block_simulation": {

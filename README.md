@@ -46,8 +46,8 @@ python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 518 theorems the
-manifest lists, **65 rest on a `native_decide` certificate and 9 need
+the rest are general (unbounded) proofs.  Of the 524 theorems the
+manifest lists, **66 rest on a `native_decide` certificate and 9 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -72,11 +72,11 @@ says — the counts above, the constants it quotes, the file paths and
 theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
-A full build takes about sixteen minutes (33 stages, 518 theorems),
+A full build takes about sixteen minutes (33 stages, 524 theorems),
 nearly all of it two checks: the certification of row 60 (13.1 M runs,
 ~5.6 GB, 384 s), which carries the published bound `c ≤ 2.6106`, and the
 composition anchor at `T₀ = 1200` (1.8 M cells, ~1.8 GB, 364 s), which
-carries `c ≤ 2.5368`.  `.github/workflows/build.yml` runs the
+carries `c ≤ 2.536842`.  `.github/workflows/build.yml` runs the
 same thing on a clean machine — build, re-audit, and check that the
 committed `proof-manifest.json` is reproduced byte for byte.
 
@@ -203,8 +203,13 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   recorded that the large anchors came from a C computation ("their
   Lean-internal replay is future work"); `anchor_1198` replays
   `T₀ = 1200`, giving `m_{S+1198} ≤ m_S · 62·2^405` for every space
-  level — arithmetically `c ≤ 2.5368`, against the `c ≤ 3.21` of the
-  previous in-Lean anchor `midpoint_anchor_44`.  Values are carried as
+  level.  `AnchorGrowth` turns that into a statement about the real
+  number — `c_le_2_536842`, the same `c` the lower bound
+  `2.51706472 ≤ c` is about, and better than the artifact's previous
+  internal upper bound `c ≤ 2.6106`; the earlier in-Lean anchor
+  `midpoint_anchor_44` gave only `c ≤ 3.21`.  The `t`-th root needs no
+  real powers: one *chooses* a rational `B` with `v* ≤ B^t`, a
+  7300-digit kernel `decide` that needs no axioms at all.  Values are carried as
   `exponent · 2^32 + mantissa` so that each cell stays in machine
   arithmetic and every representable value is an exact natural number;
   addition and the grid both round **down** (`kval_flAdd_le`,

@@ -1556,11 +1556,23 @@ def main() -> int:
                           "364 s, 1.8 GB - the artifact's second deliberate "
                           "over-budget check after RLECertify.fRow_60's 384 s). "
                           "Result: anchor_1198 : m_{S+1198} <= m_S * 62*2^405, whose "
-                          "arithmetic consequence is c <= 2.5368418, against the "
+                          "arithmetic consequence is c <= 2.536842, against the "
                           "c <= 3.21 of the previous in-Lean anchor "
-                          "midpoint_anchor_44. The step from a midpoint bound to a "
-                          "real-number bound on c is iteration plus TwoD, the same "
-                          "unformalised step the older anchor has. Reasoning about "
+                          "midpoint_anchor_44. The step from a midpoint bound to the "
+                          "REAL NUMBER c is formalised here too: AnchorGrowth mirrors "
+                          "DispersionGrowth.growth_ge_of_midv_geometric on the other "
+                          "half of the sandwich (f_S <= 2^S M_S), and the polynomial "
+                          "factor of rowMax_le_mul_midv is avoided because "
+                          "RowMax.rowMax_succ makes the maxima the PARTIAL SUMS of "
+                          "the midpoints, so a geometric bound sums to a geometric "
+                          "bound with only the constant B/(B-1). No real powers "
+                          "appear: the t-th root is taken by choosing a rational B "
+                          "with v <= B^t, checked by kernel decide on a 7300-digit "
+                          "comparison (anchor_witness, no axioms at all). Result: "
+                          "c_le_2_536842 : c <= 2536842/1000000, about the same real "
+                          "number as the lower bound 2.51706472 <= c, and better "
+                          "than the artifact's previous internal upper bound "
+                          "c <= 2.6106 from f_60. Reasoning about "
                           "the two-pointer's optimality is NOT needed: the recursion "
                           "asks only for some split, so step returns the split it "
                           "chose and a Bool checker confirms the cell's shape; a "
@@ -1586,6 +1598,12 @@ def main() -> int:
                     "RevPebbling.AnchorCertify.verify_1198",
                     "RevPebbling.AnchorCertify.cert_1198",
                     "RevPebbling.AnchorCertify.anchor_1198",
+                    "RevPebbling.AnchorGrowth.rowMax_le_geom",
+                    "RevPebbling.AnchorGrowth.growth_le_of_midv_geometric",
+                    "RevPebbling.AnchorGrowth.midv_le_geom_of_anchor",
+                    "RevPebbling.AnchorGrowth.growth_le_of_anchor",
+                    "RevPebbling.AnchorCertify.anchor_witness",
+                    "RevPebbling.AnchorCertify.c_le_2_536842",
                 ],
             },
             "submultiplicativity_block_simulation": {

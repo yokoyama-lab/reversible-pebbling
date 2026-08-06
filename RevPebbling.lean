@@ -1,6 +1,7 @@
 import RevPebbling.AnchorCertify
 import RevPebbling.AnchorDP
 import RevPebbling.AnchorGrid
+import RevPebbling.AnchorGrowth
 import RevPebbling.AnchorPacked
 import RevPebbling.AttainSplit
 import RevPebbling.BlockSim
