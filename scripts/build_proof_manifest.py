@@ -1533,6 +1533,41 @@ def main() -> int:
                     "RevPebbling.RowExact.reachIn_upper",
                 ],
             },
+            "unconditional_summary": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-06): the artifact's "
+                          "results with their hypotheses discharged. Most of the "
+                          "development was written while submultiplicativity and "
+                          "the '>=' half of Knill Thm 2.1 were assumptions, so its "
+                          "theorems take them as arguments; all four are now proved "
+                          "(BlockSim.submult_fRow, RowExact.gameOptimal_holds / "
+                          "gameAttain_holds / lowerRowExact_all) and this stage "
+                          "instantiates them, so a reader need not trace each "
+                          "argument back. c_bracket is the headline: "
+                          "2.51706472 <= c <= 2.536842, both ends about the same "
+                          "real number and neither carrying anything - the lower end "
+                          "the q = 47/31 dispersion certificate, the upper end the "
+                          "composition anchor replayed inside the prover. TWO "
+                          "HYPOTHESES GENUINELY REMAIN and are not discharged here: "
+                          "Superadd (count profile, front-DP layer, does not touch "
+                          "c) and Submult fRLE - fRLE = fRow is known only at the "
+                          "six certified points S = 10,20,...,60, so GrowthBounds's "
+                          "copy of c <= 2.6106 is NOT covered by submult_fRow. The "
+                          "manifest keys hypotheses by their argument for exactly "
+                          "this reason. "),
+                "theorems": [
+                    "RevPebbling.Unconditional.c_pos",
+                    "RevPebbling.Unconditional.two_le_c",
+                    "RevPebbling.Unconditional.c_ge_32_13",
+                    "RevPebbling.Unconditional.c_le_2_6224",
+                    "RevPebbling.Unconditional.c_le_2_8285",
+                    "RevPebbling.Unconditional.tendsto_rowMax_root_uncond",
+                    "RevPebbling.Unconditional.c_bracket",
+                    "RevPebbling.Unconditional.solvesKnill_uncond",
+                    "RevPebbling.Unconditional.gameF_eq_Fpre_uncond",
+                    "RevPebbling.Unconditional.gameF_eq_fRow_uncond",
+                ],
+            },
             "anchor_internal_replay": {
                 "status": "general_framework_plus_certified_values",
                 "scope": ("UNBOUNDED framework + BOUNDED certificate (this work, "

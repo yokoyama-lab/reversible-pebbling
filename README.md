@@ -46,8 +46,8 @@ python3 scripts/build_proof_manifest.py # rebuild + audit + pin hashes
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 524 theorems the
-manifest lists, **66 rest on a `native_decide` certificate and 9 need
+the rest are general (unbounded) proofs.  Of the 534 theorems the
+manifest lists, **68 rest on a `native_decide` certificate and 9 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -56,14 +56,19 @@ in each stage's `scope` cannot drift away from what the kernel reports.
 The same file records, per stage, which theorems carry a hypothesis
 (`carried_hypotheses`) and which theorems *prove* one
 (`proves_hypotheses`), with the verdict per hypothesis in the top-level
-`hypotheses` field.  **One remains unproved**: superadditivity of the
-count profile (`Superadd`, carried by 3 theorems in the front-DP layer).
-The four the growth rate used to rest on are now **theorems** —
-submultiplicativity (`BlockSim.submult_fRow`, the letter's Lemma 1) and
-the `≥` half of Knill's Theorem 2.1 (`RowExact.gameOptimal_holds`,
+`hypotheses` field, **keyed by the argument**: `Submult fRow` and
+`Submult fRLE` are different assumptions and only the first is a
+theorem.  **Two remain unproved**: superadditivity of the count profile
+(`Superadd`, 3 theorems in the front-DP layer, which does not touch `c`)
+and `Submult fRLE`, since `fRLE = fRow` is certified only at the six
+points `S = 10, 20, …, 60`.  The four the growth rate used to rest on
+are now **theorems** — submultiplicativity of `fRow`
+(`BlockSim.submult_fRow`, the letter's Lemma 1) and the `≥` half of
+Knill's Theorem 2.1 (`RowExact.gameOptimal_holds`,
 `RowExact.gameAttain_holds`, `RowExact.lowerRowExact_all`).  Statements
 that still take them as arguments are the ones written before they were
-proved.  All of this is read off the statements with `#check`, splitting
+proved; `RevPebbling/Unconditional.lean` instantiates the headline ones,
+including `c_bracket : 2.51706472 ≤ c ≤ 2.536842`.  All of this is read off the statements with `#check`, splitting
 each type at its conclusion, not asserted in prose, so "relative to X"
 cannot drift either.
 
@@ -72,7 +77,7 @@ says — the counts above, the constants it quotes, the file paths and
 theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
-A full build takes about sixteen minutes (33 stages, 524 theorems),
+A full build takes about sixteen minutes (34 stages, 534 theorems),
 nearly all of it two checks: the certification of row 60 (13.1 M runs,
 ~5.6 GB, 384 s), which carries the published bound `c ≤ 2.6106`, and the
 composition anchor at `T₀ = 1200` (1.8 M cells, ~1.8 GB, 364 s), which

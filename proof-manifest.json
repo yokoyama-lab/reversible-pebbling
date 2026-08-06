@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "24498a07f5778d40d9d65915cd0e779165a6d9bc1a5ad2ce97fba44303e92aee",
+ "proof_bundle_sha256": "25b981075744260a83bb21b22300c778abc3b6e8411bb52c93ae6191d2bc797c",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -81,9 +81,10 @@
   "RevPebbling/Sandwich.lean": "3944694f7badafa0d456ea92b038dc071d5158293813b14c771fd19575ae4c57",
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
+  "RevPebbling/Unconditional.lean": "f43bba955448614a302dc832a7c1db6c6090b01058b5731fc92f081af6669d6b",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "66fd40fa1fca4efcb5cbc3c3a7325ddf00d4ddc8815f7a28c6db39e9fec666d0"
+  "RevPebbling.lean": "984343e4240dbf95d1c8703e11332e452260c42c5ad9eb9c8b725b00914dd82d"
  },
  "hypotheses": {
   "GameAttain": {
@@ -1087,6 +1088,29 @@
      "RevPebbling.RowExact.lowerRowExact_zero"
     ]
    }
+  },
+  "unconditional_summary": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (this work, 2026-08-06): the artifact's results with their hypotheses discharged. Most of the development was written while submultiplicativity and the '>=' half of Knill Thm 2.1 were assumptions, so its theorems take them as arguments; all four are now proved (BlockSim.submult_fRow, RowExact.gameOptimal_holds / gameAttain_holds / lowerRowExact_all) and this stage instantiates them, so a reader need not trace each argument back. c_bracket is the headline: 2.51706472 <= c <= 2.536842, both ends about the same real number and neither carrying anything - the lower end the q = 47/31 dispersion certificate, the upper end the composition anchor replayed inside the prover. TWO HYPOTHESES GENUINELY REMAIN and are not discharged here: Superadd (count profile, front-DP layer, does not touch c) and Submult fRLE - fRLE = fRow is known only at the six certified points S = 10,20,...,60, so GrowthBounds's copy of c <= 2.6106 is NOT covered by submult_fRow. The manifest keys hypotheses by their argument for exactly this reason. ",
+   "theorems": [
+    "RevPebbling.Unconditional.c_pos",
+    "RevPebbling.Unconditional.two_le_c",
+    "RevPebbling.Unconditional.c_ge_32_13",
+    "RevPebbling.Unconditional.c_le_2_6224",
+    "RevPebbling.Unconditional.c_le_2_8285",
+    "RevPebbling.Unconditional.tendsto_rowMax_root_uncond",
+    "RevPebbling.Unconditional.c_bracket",
+    "RevPebbling.Unconditional.solvesKnill_uncond",
+    "RevPebbling.Unconditional.gameF_eq_Fpre_uncond",
+    "RevPebbling.Unconditional.gameF_eq_fRow_uncond"
+   ],
+   "native_decide_theorems": [
+    "RevPebbling.Unconditional.c_bracket",
+    "RevPebbling.Unconditional.c_le_2_6224"
+   ],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "anchor_internal_replay": {
    "status": "general_framework_plus_certified_values",
