@@ -10,3 +10,4 @@ rocq/*.glob
 rocq/.*.aux
 rocq/.nra.cache
 rocq/.lia.cache
+rocq/gen/__pycache__/
