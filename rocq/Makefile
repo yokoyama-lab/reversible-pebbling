@@ -5,7 +5,7 @@ ROCQ ?= rocq
 FLAGS = -Q . RevPebblingRocq
 
 all: KappaStar.vo RhoEnclose.vo LedgerParam.vo EnvelopeE.vo RhoDeriv.vo \
-     SlopeWindow.vo
+     SlopeWindow.vo LedgerA.vo
 
 KappaStar.vo: KappaStar.v
 	$(ROCQ) c $(FLAGS) $<
@@ -23,6 +23,9 @@ RhoDeriv.vo: RhoDeriv.v LedgerParam.vo
 	$(ROCQ) c $(FLAGS) $<
 
 SlopeWindow.vo: SlopeWindow.v EnvelopeE.vo
+	$(ROCQ) c $(FLAGS) $<
+
+LedgerA.vo: LedgerA.v SlopeWindow.vo
 	$(ROCQ) c $(FLAGS) $<
 
 check: all

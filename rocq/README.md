@@ -275,15 +275,65 @@ nondegeneracy) are proved and kept — they are the natural interface if
 the implicit function theorem is ever wanted — but Zone I no longer
 needs them.
 
+## `LedgerA.v` — the ledger, assembled and closed on a window
+
+The appendix reduces Zone I to the **ledger**
+
+```
+δ̃ ≥ w₁q₁ε + w₂(q₂ε + G) − D  >  0
+```
+
+with `q₁` the E-branch slope, `q₂` the S-branch slope, `w₁/w₂` the
+soft-min weights, `G` the S-tangent's deficit below the corner, and `D`
+the chord deficit of `f`.  This file assembles it and closes it on one
+window.
+
+Two departures from the appendix, both to remove objects with no closed
+form:
+
+- **parameterise by `q₁`, not `β`** — `E` is the Legendre transform of
+  `−f`, so the tangency *is* minimality of the `q₁`-line and the inner
+  minimisation disappears;
+- **use the true chord deficit** `D = w₁f(q₁) + w₂f(q₂) − f(q̃)` instead
+  of `(M/2)w₁w₂(q₁−q₂)²` with `M = sup f''` — `D` is what the proof
+  consumes, it is explicit once `f` is, it removes the second derivative
+  of an implicit function, and it is 1.45× less lossy.
+
+Together with `SlopeWindow` pinning `b` from the endpoints, **no
+derivative appears anywhere**.
+
+| theorem | content |
+|---|---|
+| `ledger_pos` | given enclosures of every primitive, `0.0085 ≤ ledger` — pure interval arithmetic, and the only part a cover repeats |
+| `z_encl` / `q2_of_z` / `G_of_z` / `S_of_z` | `z = λ(κ* − b)`, and `q₂`, `G`, `S` explicit in `z` |
+| `f1_encl` / `f2_encl` / `ft_encl` | `f` at the three slopes, each two sign tests on a `ρ`-box of width `10⁻⁹` |
+| `w1_encl` / `qt_encl` | the soft-min weight and the composite slope |
+| **`window_24`** | **the window `(2.4, 2.4005)` closed end to end: `0.0085 ≤ ledger`** |
+
+The measured enclosure is `[0.00857, 0.01496]`; the theorem claims
+`≥ 0.0085`.  Every intermediate quantity is enclosed by kernel-checked
+interval arithmetic — `z ∈ [4.331171, 4.333272]`, `q₂ ∈ [1.443661,
+1.443761]`, `w₁ ∈ [0.759571, 0.761682]`, `q̃ ∈ [2.167020, 2.175540]`,
+and the three `f` values.
+
+**Not done: the cover.**  Zone I's slopes run over `q₁ ∈ [1.45, 3.25]`,
+which needs about **3700 windows** at this width (the ledger stops
+closing around `W = 2·10⁻³`; `W = 5·10⁻⁴` was used).  Each is a
+mechanical repetition of `window_24` with different constants —
+generatable, but not generated here.  Note also that `interval`
+evaluates `G = (q*/λ)(sp z − z·σ(z))` with the two terms decoupled,
+which costs a factor ~14 in `G`'s width; a cover would want `i_bisect`
+there.
+
 ## Building
 
 Needs Rocq ≥ 9 and CoqInterval:
 
 ```sh
 opam install coq-interval        # 4.11.4 here
-make                             # ≈ 25 s
+make                             # ≈ 31 s
 make check                       # Print Assumptions on the main theorems
 ```
 
 This is deliberately **not** wired into CI: installing CoqInterval takes
-about twenty minutes, against twenty-five seconds to check the proofs.
+about twenty minutes, against half a minute to check the proofs.
