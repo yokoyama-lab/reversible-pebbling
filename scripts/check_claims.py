@@ -45,6 +45,9 @@ CONSTANT_ALLOW = {
                           "the checker only reads the Lean sources",
     "2.517064836893817": "2^(1+kappa*) at that upper end, likewise from "
                          "rocq/KappaStar.v (c_bracket_of_kappa)",
+    "0.002047": "the smallest certified ledger value over the Zone I cover, "
+                "from the Rocq layer (rocq/LedgerCoverP*.v, re-derived by "
+                "rocq/gen/check_tiling.py); the checker reads only Lean sources",
     "2.551": "quoted FROM the letter, where it is unbacked: the artifact "
              "has no f_59, so the ratio cannot be checked (this entry "
              "exists to record the finding, not to bless the number)",
