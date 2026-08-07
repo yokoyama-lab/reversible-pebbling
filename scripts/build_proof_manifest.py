@@ -455,6 +455,67 @@ def main() -> int:
                     "RevPebbling.DispersionRealGrowth.c_ge_real",
                 ],
             },
+            "critical_root": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, kernel axioms only, NO CERTIFICATE.  "
+                          "Optimises the real parameter of "
+                          "dispersion_real_exponent.  For fixed theta the "
+                          "two branches of `hstep` force lam >= 1/(1-th^q) "
+                          "(rising in th) and lam >= 1 + (1-th)^q (falling), "
+                          "so the best lam is at the crossing; solving it "
+                          "gives lam* = rho^q and th = 1/(1+rho) where rho "
+                          "is a root of G q rho = rho^(-q) + (1+rho)^(-q) = "
+                          "1.  `theta_pow` and `one_sub_theta_pow` show BOTH "
+                          "branches then equal rho^q - 1 exactly -- the "
+                          "critical point is where they balance.  "
+                          "WHY A LIMIT: 1/M > 0 for every real M, so `hstep` "
+                          "FAILS at lam = lam*; `c_ge_of_root_gt` proves the "
+                          "bound for every lam > lam* with "
+                          "M = 1 + lam*/(lam-lam*), and `c_ge_of_root` takes "
+                          "the limit along lam = lam* + 1/(n+1) using "
+                          "continuity of lam |-> 2*(2/lam)^(1/q).  This is "
+                          "the limit in ONE real parameter that the "
+                          "certified rational family could not take.  "
+                          "`exists_root` gets the root from the "
+                          "intermediate value theorem on [1, 2^(1/q)+1] "
+                          "(G q 1 = 1 + 2^(-q) > 1 and "
+                          "G q (2^(1/q)+1) < 1/2 + 1/2 = 1; no numerics), "
+                          "and `root_unique` from strict antitonicity of "
+                          "G q, so rho really is rho_c(q).  END PRODUCT "
+                          "`c_ge_critical`: for every q > 0 there is a root "
+                          "rho with 2*2^(1/q)/rho <= c, which is "
+                          "c >= 2^(1+V(q)) for V(q) = 1/q - log2 rho -- "
+                          "written without a logarithm by `bound_eq`.  "
+                          "TEST: at q = 1 the root equation is rho^2 = "
+                          "rho + 1, so rho_c(1) is the golden ratio "
+                          "(`golden_root`) and the bound is the closed form "
+                          "2*sqrt 5 - 2 = 2.4721... "
+                          "(`c_ge_two_sqrt_five_sub_two`), which beats both "
+                          "the elementary 2 <= c and the first certified "
+                          "bound 32/13 = 2.4615... with no certificate.  "
+                          "WHAT REMAINS: kappa* = sup_q V(q).  Taking that "
+                          "supremum needs the enclosure of the critical q, "
+                          "which is in the Rocq layer (rocq/KappaStar.v) "
+                          "because Lean has no rigorous interval "
+                          "arithmetic; every INDIVIDUAL q is now "
+                          "unconditional inside Lean."),
+                "theorems": [
+                    "RevPebbling.CriticalRoot.one_le_rpow",
+                    "RevPebbling.CriticalRoot.theta_pow",
+                    "RevPebbling.CriticalRoot.one_sub_theta_pow",
+                    "RevPebbling.CriticalRoot.hstep_of_root",
+                    "RevPebbling.CriticalRoot.c_ge_of_root_gt",
+                    "RevPebbling.CriticalRoot.c_ge_of_root",
+                    "RevPebbling.CriticalRoot.bound_eq",
+                    "RevPebbling.CriticalRoot.c_ge_two_pow_V",
+                    "RevPebbling.CriticalRoot.G_strictAntiOn",
+                    "RevPebbling.CriticalRoot.root_unique",
+                    "RevPebbling.CriticalRoot.exists_root",
+                    "RevPebbling.CriticalRoot.c_ge_critical",
+                    "RevPebbling.CriticalRoot.golden_root",
+                    "RevPebbling.CriticalRoot.c_ge_two_sqrt_five_sub_two",
+                ],
+            },
             "two_d_closed_form": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED, relative to submultiplicativity (as "

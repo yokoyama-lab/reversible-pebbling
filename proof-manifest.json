@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "e69ce4e59d6d1f45138e39cdebf19a0c86e92689af22154f38548acc6d91a2e3",
+ "proof_bundle_sha256": "0e2a04e6ddceeea12a8f07c5b129f1f2561d8d588b64d808699313d51bab6cd9",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -20,6 +20,7 @@
   "RevPebbling/CompleteReach.lean": "8d3dc0ac5b5506db6369c53a06349e4359c0986de7f58f702015976616558c31",
   "RevPebbling/CompositionAnchor.lean": "040c9eeff6088e4822c17045f7047d8e00e538b240f0344ff651ef13802fcbf9",
   "RevPebbling/CountRecursion.lean": "a55f80b113f1bf74166c21ad086f217fcd4786de5ee99c7d46eaeeb0539178ef",
+  "RevPebbling/CriticalRoot.lean": "3dc414dd421c32d4f21f6dd08e93ef59e4bd75c6f79c683d8f460027c66a1470",
   "RevPebbling/CrossingConcentration.lean": "f13df2ffc6c6f79234793874a3f4d527b75d5144c2e95562d85e557c9ab3c539",
   "RevPebbling/CutAccounting.lean": "9b7c802614b3b981576302ff09a1f75a4249534dafca1d028d42ede9c63973f3",
   "RevPebbling/CutFull.lean": "ebc453db5d0082fceda7996915c76e9db52c1e50b02c8879370ab7777258e801",
@@ -94,7 +95,7 @@
   "RevPebbling/Unconditional.lean": "f43bba955448614a302dc832a7c1db6c6090b01058b5731fc92f081af6669d6b",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "68333edb1f8043e58d60e641ac659cde61f920d1a1c073d9fe4400e8ba6a3e5e"
+  "RevPebbling.lean": "6195918d7526b407e6049df34f6a51e2c9183627f0a4619789d7db197c204ac7"
  },
  "hypotheses": {
   "GameAttain": {
@@ -355,6 +356,30 @@
      "RevPebbling.DispersionRealGrowth.growth_ge_real"
     ]
    },
+   "proves_hypotheses": {}
+  },
+  "critical_root": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, kernel axioms only, NO CERTIFICATE.  Optimises the real parameter of dispersion_real_exponent.  For fixed theta the two branches of `hstep` force lam >= 1/(1-th^q) (rising in th) and lam >= 1 + (1-th)^q (falling), so the best lam is at the crossing; solving it gives lam* = rho^q and th = 1/(1+rho) where rho is a root of G q rho = rho^(-q) + (1+rho)^(-q) = 1.  `theta_pow` and `one_sub_theta_pow` show BOTH branches then equal rho^q - 1 exactly -- the critical point is where they balance.  WHY A LIMIT: 1/M > 0 for every real M, so `hstep` FAILS at lam = lam*; `c_ge_of_root_gt` proves the bound for every lam > lam* with M = 1 + lam*/(lam-lam*), and `c_ge_of_root` takes the limit along lam = lam* + 1/(n+1) using continuity of lam |-> 2*(2/lam)^(1/q).  This is the limit in ONE real parameter that the certified rational family could not take.  `exists_root` gets the root from the intermediate value theorem on [1, 2^(1/q)+1] (G q 1 = 1 + 2^(-q) > 1 and G q (2^(1/q)+1) < 1/2 + 1/2 = 1; no numerics), and `root_unique` from strict antitonicity of G q, so rho really is rho_c(q).  END PRODUCT `c_ge_critical`: for every q > 0 there is a root rho with 2*2^(1/q)/rho <= c, which is c >= 2^(1+V(q)) for V(q) = 1/q - log2 rho -- written without a logarithm by `bound_eq`.  TEST: at q = 1 the root equation is rho^2 = rho + 1, so rho_c(1) is the golden ratio (`golden_root`) and the bound is the closed form 2*sqrt 5 - 2 = 2.4721... (`c_ge_two_sqrt_five_sub_two`), which beats both the elementary 2 <= c and the first certified bound 32/13 = 2.4615... with no certificate.  WHAT REMAINS: kappa* = sup_q V(q).  Taking that supremum needs the enclosure of the critical q, which is in the Rocq layer (rocq/KappaStar.v) because Lean has no rigorous interval arithmetic; every INDIVIDUAL q is now unconditional inside Lean.",
+   "theorems": [
+    "RevPebbling.CriticalRoot.one_le_rpow",
+    "RevPebbling.CriticalRoot.theta_pow",
+    "RevPebbling.CriticalRoot.one_sub_theta_pow",
+    "RevPebbling.CriticalRoot.hstep_of_root",
+    "RevPebbling.CriticalRoot.c_ge_of_root_gt",
+    "RevPebbling.CriticalRoot.c_ge_of_root",
+    "RevPebbling.CriticalRoot.bound_eq",
+    "RevPebbling.CriticalRoot.c_ge_two_pow_V",
+    "RevPebbling.CriticalRoot.G_strictAntiOn",
+    "RevPebbling.CriticalRoot.root_unique",
+    "RevPebbling.CriticalRoot.exists_root",
+    "RevPebbling.CriticalRoot.c_ge_critical",
+    "RevPebbling.CriticalRoot.golden_root",
+    "RevPebbling.CriticalRoot.c_ge_two_sqrt_five_sub_two"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
    "proves_hypotheses": {}
   },
   "two_d_closed_form": {

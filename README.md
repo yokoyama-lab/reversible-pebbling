@@ -66,7 +66,7 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 568 theorems the
+the rest are general (unbounded) proofs.  Of the 582 theorems the
 manifest lists, **73 rest on a `native_decide` certificate and 14 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
@@ -101,7 +101,7 @@ theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
 A full build takes about two and a quarter hours
-(37 stages, 568 theorems), nearly all of it three checks: the composition anchor at
+(38 stages, 582 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the
@@ -183,6 +183,29 @@ committed `proof-manifest.json` is reproduced byte for byte.
   **`2.5170648368936010208 ≤ c`** — `2.2·10⁻¹³` below the conjectured
   value, and what is left is the deficit of the exponent, not slack in
   `λ₀`.  No `native_decide`; `master` needs no axiom but `propext`.
+- `RevPebbling/DispersionReal.lean` +
+  `RevPebbling/DispersionRealGrowth.lean` +
+  `RevPebbling/CriticalRoot.lean` — **the same family with no
+  certificate at all**.  Running the dispersion induction with the real
+  potential `Φ(v) = M·v^q` (rpow, not an integer root) makes the
+  exponent, the ratio and the split ordinary reals subject to one real
+  inequality, and `c_ge_real` turns any admissible quadruple into
+  `2·(2/λ)^{1/q} ≤ c`.  `CriticalRoot` then optimises `λ`: the two
+  branches of the step condition balance exactly at `λ = ρ^q`,
+  `θ = 1/(1+ρ)` where `ρ` is the root of
+  `ρ^{−q} + (1+ρ)^{−q} = 1`, so `c_ge_critical` gives
+  **`c ≥ 2·2^{1/q}/ρ_c(q) = 2^{1+V(q)}` for every real `q > 0`** —
+  existence of the root by the intermediate value theorem, uniqueness by
+  strict antitonicity, and the passage to the critical `λ` by a limit in
+  one real parameter (it is a genuine limit: `1/M > 0` always, so the
+  step condition fails *at* the critical value).  This is what the
+  rational family cannot do — there, lowering `λ` means certifying a new
+  instance and the certificates grow without bound.  Sanity-checked at
+  `q = 1`, where the root equation is `ρ² = ρ + 1`: the golden ratio,
+  giving the closed form **`2√5 − 2 = 2.4721… ≤ c`** with nothing
+  certified.  What is *not* here is `κ* = sup_q V(q)`, which needs the
+  enclosure of the critical `q` and therefore the Rocq layer; each
+  individual `q` is now unconditional inside Lean.
 
 (The modules above were renamed from the historical `GenJanus.*`
 namespace in the 2026-07-28 unification; see below.)

@@ -40,6 +40,7 @@ import RevPebbling.DispersionBound5033
 import RevPebbling.DispersionBound197130
 import RevPebbling.DispersionGeneral
 import RevPebbling.DispersionRealGrowth
+import RevPebbling.CriticalRoot
 import RevPebbling.Dispersion197130Growth
 import RevPebbling.DispersionGrowth
 import RevPebbling.DoublingLower
