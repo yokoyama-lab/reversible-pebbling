@@ -404,6 +404,57 @@ def main() -> int:
                     "RevPebbling.Dispersion197130Growth.c_ge_2_5170648368936",
                 ],
             },
+            "dispersion_real_exponent": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, kernel axioms only, NO CERTIFICATE OF "
+                          "ANY KIND -- the whole DispersionBound* family "
+                          "collapsed into one theorem with real parameters.  "
+                          "`dispersion_real` runs the dispersion induction "
+                          "with the real potential Phi(v) = M * v^q (rpow, "
+                          "not an integer root), so the exponent q, the "
+                          "ratio lam and the split th are ordinary reals "
+                          "subject to the single inequality `hstep`; "
+                          "`midv_pow_lower` specialises it at the midpoints "
+                          "and `root_of_pow_le` takes the q-th root.  "
+                          "`rpow_pow_div` is the one identity the passage "
+                          "needs, (x^n/y)^e = (x^e)^n * y^(-e); "
+                          "`midv_ge_geometric_real` assembles them into the "
+                          "geometric midpoint bound with "
+                          "B = (2/lam)^(1/q) and K = min ((2M)^(-1/q)) B, "
+                          "and `growth_ge_real` feeds that to "
+                          "DispersionGrowth.growth_ge_of_midv_geometric to "
+                          "get 2*(2/lam)^(1/q) <= c.  `c_ge_real` is the "
+                          "same with Submult fRow discharged by "
+                          "BlockSim.submult_fRow, so it is an unconditional "
+                          "statement about the growth rate itself.  "
+                          "WHAT THIS BUYS: the rational instances "
+                          "(dispersion_197130 and the rest) each cost a "
+                          "half-million-digit `decide`, and each is a "
+                          "separate theorem; here lam may be sent down to "
+                          "the critical rho_c(q)^q as a limit in ONE real "
+                          "parameter of ONE theorem.  WHAT REMAINS: Lean has "
+                          "no definition of rho_c yet, so the passage from "
+                          "this family to c >= 2^(1+kappa*) is not in Lean "
+                          "(the enclosure of kappa* lives in the Rocq layer, "
+                          "rocq/KappaStar.v).  The two `example`s in "
+                          "DispersionRealGrowth exercise the chain end to "
+                          "end at (M,q,lam,th) = (2,1,3,1/2) and "
+                          "(4,2,7/4,1/2); the second gives 2.13 <= c from "
+                          "reals alone.  These bounds are not competitive -- "
+                          "they test the passage, not the constant."),
+                "theorems": [
+                    "RevPebbling.DispersionReal.Phi_nonneg",
+                    "RevPebbling.DispersionReal.Phi_mono",
+                    "RevPebbling.DispersionReal.Phi_scale",
+                    "RevPebbling.DispersionReal.dispersion_real",
+                    "RevPebbling.DispersionRealGrowth.midv_pow_lower",
+                    "RevPebbling.DispersionRealGrowth.root_of_pow_le",
+                    "RevPebbling.DispersionRealGrowth.rpow_pow_div",
+                    "RevPebbling.DispersionRealGrowth.midv_ge_geometric_real",
+                    "RevPebbling.DispersionRealGrowth.growth_ge_real",
+                    "RevPebbling.DispersionRealGrowth.c_ge_real",
+                ],
+            },
             "two_d_closed_form": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED, relative to submultiplicativity (as "
