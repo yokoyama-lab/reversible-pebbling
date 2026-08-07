@@ -34,10 +34,12 @@ import RevPebbling.DispersionBound32b
 import RevPebbling.DispersionBound32c
 import RevPebbling.DispersionBound4731
 import RevPebbling.DispersionGeneral
+import RevPebbling.DispersionReal
 import RevPebbling.DispersionRecover
 import RevPebbling.DispersionBound5033
 import RevPebbling.DispersionBound197130
-import RevPebbling.DispersionGeneralGrowth
+import RevPebbling.DispersionGeneral
+import RevPebbling.DispersionRealGrowth
 import RevPebbling.Dispersion197130Growth
 import RevPebbling.DispersionGrowth
 import RevPebbling.DoublingLower

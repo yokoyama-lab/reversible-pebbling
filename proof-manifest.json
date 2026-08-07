@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "22550a2569814659376333979c8462f0d6096fbc51ad260667792f7d8c787b3c",
+ "proof_bundle_sha256": "2e839060457f1dcd9feba1e0ef19245d966aa586f3546af222c3c62f9b2bc92d",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -44,6 +44,8 @@
   "RevPebbling/DispersionGeneral.lean": "3d4b49812924a41d38988b0cb62232ca9229d45bd2d82188ffa06e1b906cb25f",
   "RevPebbling/DispersionGeneralGrowth.lean": "c773e0e395a7d8f75a2dcc1c7819ffaf8562ee5ad0d98dfb6b56f78fc4d1c89b",
   "RevPebbling/DispersionGrowth.lean": "8dd94eb2f5abcd332644859a55822e875205ee2cfbd70879be928f434c1a55bf",
+  "RevPebbling/DispersionReal.lean": "cfbee95beb5c3e99068908cfc0161438a6dee2fdf879dd8240ee0af89a46eada",
+  "RevPebbling/DispersionRealGrowth.lean": "eae8c36035c6ae08f417152e197a864b8b4e32bb7810a320b378a5f6ef34a52a",
   "RevPebbling/DispersionRecover.lean": "5394771ac0163f94a2dc24bd9cb8a7cd1d3e9fb6887d70d25381cd746e73e86f",
   "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
   "RevPebbling/FactorialBound.lean": "d330b3ca8ec882019b64c0d76b9ebab65fe2fe3133fb8e9d9521b5bd64bda099",
@@ -92,7 +94,7 @@
   "RevPebbling/Unconditional.lean": "f43bba955448614a302dc832a7c1db6c6090b01058b5731fc92f081af6669d6b",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "27eabea435c7d42cfbafe121d4beffde0d4a0d9aae11fe7c0dc36e4a7d1a75cc"
+  "RevPebbling.lean": "68333edb1f8043e58d60e641ac659cde61f920d1a1c073d9fe4400e8ba6a3e5e"
  },
  "hypotheses": {
   "GameAttain": {
