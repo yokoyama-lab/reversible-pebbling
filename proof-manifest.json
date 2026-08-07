@@ -2,15 +2,17 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "75a889831e388e6a1abe97e8b4897cddcea6d1a7e95013f1c0213a8c894c503d",
+ "proof_bundle_sha256": "22550a2569814659376333979c8462f0d6096fbc51ad260667792f7d8c787b3c",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
   "RevPebbling/AnchorCertify.lean": "68ae6647ea1d3a628c9cc64ef1a4221ab8f7778889b19ec075740598e34a96aa",
+  "RevPebbling/AnchorCertify4798.lean": "cff1ecd93551c41de2d1fea8a47c2af501ed256734850a7ed896d7eeca953b9d",
   "RevPebbling/AnchorDP.lean": "782df7f9944c51738ae7d2f2a0e38d01a3ebf448a97bfd448c54e8b72440ab03",
   "RevPebbling/AnchorGrid.lean": "832b0cb70c58a2945e16341a2d69f31b57beb91f6fe89687217e45eee35d4fd7",
   "RevPebbling/AnchorGrowth.lean": "e11ee45a273578abf64104a942894103147c7528e1e985cdadb819c739eff9b2",
   "RevPebbling/AnchorPacked.lean": "5cf88cbf524f3811c06374b8d650fe40c368fdda0ac44c5ec703826e1a0ff8cb",
+  "RevPebbling/AnchorRun.lean": "80eca176dcb01cc68bbadcf2575f1016af47d906873998a0e7483011b6259694",
   "RevPebbling/AttainSplit.lean": "70de32bf8c96007c556af976d8a10874478830776fb53971fe1e02a858a42dc9",
   "RevPebbling/BlockSim.lean": "7ed8bae1be394d12696428ac01438878ef0e6f0bbc6f2bc63d5e024ebcd56ce1",
   "RevPebbling/ChordDeficit.lean": "3ece7a7e581f5bfc8802892724c51521d98a04ad9b218945d83a54663c8ccd24",
@@ -90,7 +92,7 @@
   "RevPebbling/Unconditional.lean": "f43bba955448614a302dc832a7c1db6c6090b01058b5731fc92f081af6669d6b",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "a99cff5546228f93604b3f72889d108b787b38c412f1225e55f4334cc340d5a7"
+  "RevPebbling.lean": "27eabea435c7d42cfbafe121d4beffde0d4a0d9aae11fe7c0dc36e4a7d1a75cc"
  },
  "hypotheses": {
   "GameAttain": {
@@ -1200,6 +1202,31 @@
      "RevPebbling.AnchorGrowth.growth_le_of_midv_geometric"
     ]
    },
+   "proves_hypotheses": {}
+  },
+  "anchor_in_lean_4798": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED framework + BOUNDED certificate (this work, 2026-08-07): the same anchor machinery, run at T0 = 4800 on the MANTISSA-6 grid, giving c <= 2.5240034 - the artifact's sharpest INTERNAL upper bound, cutting the gap to the conjectured 2^{1+kappa*} by a factor 2.9 (1.98e-2 -> 6.9e-3). Two changes make it affordable. (1) ONE PASS: AnchorCertify spends two native_decide calls on each anchor, verify (run + check every row) and cert (run the SAME DP again to read the certificate cell); AnchorRun.certRun does both in one run, with the verdict in an accumulator so the recursion stays tail-recursive at K ~ 5000. runAux_eq says the two components are exactly verifyAux and iter, so midv_le_of_certRun is AnchorDP.midv_le_of_verify with its premisses read off one Bool - nothing is weakened. (2) MINIMAL GRID: N = istar + 1, the smallest that holds the certificate cell, since each cell depends only on smaller indices.  Measured: the T0 = 1200 anchor takes 226 s this way against 364 s for the two-pass form at the larger N. The cost is about 2^m * kappa * K^2 cells at a probed 6.3e4 cells/s, so it is quadratic in T0 and exponential in the mantissa; sweeping (T0, m) against a few hours of budget makes T0 = 4800, m = 6 (4.93e8 cells) the best c reachable. It realised 5695 s and 6084 s on two timed runs (8.1-8.7e4 cells/s), ~1.8 GB. BOUNDED: cert_4798 (native_decide) - the artifact's third deliberate over-budget check after RLECertify.fRow_60 (384 s) and AnchorCertify.verify_1198 (364 s). The t-th root is again a rational B with v <= B^t, a 34000-digit kernel decide (anchor_witness, no axioms at all). c_bracket_sharp puts both internal ends together: 2.5170648368936010208 <= c <= 2.5240034, a window of 6.9e-3 with nothing carried and nothing computed outside the prover. The next recorded anchor, data/anchor_T7500_m7.txt (c <= 2.521235), is 2.4e9 cells = about 8 hours at the realised rate, so it stays outside.",
+   "theorems": [
+    "RevPebbling.AnchorRun.runAux_eq",
+    "RevPebbling.AnchorRun.midv_le_of_certRun",
+    "RevPebbling.AnchorCertify4798.cert_4798",
+    "RevPebbling.AnchorCertify4798.gval_102763",
+    "RevPebbling.AnchorCertify4798.anchor_4798",
+    "RevPebbling.AnchorCertify4798.anchor_witness",
+    "RevPebbling.AnchorCertify4798.v_le_pow",
+    "RevPebbling.AnchorCertify4798.c_le_2_5240034",
+    "RevPebbling.AnchorCertify4798.c_bracket_sharp"
+   ],
+   "native_decide_theorems": [
+    "RevPebbling.AnchorCertify4798.anchor_4798",
+    "RevPebbling.AnchorCertify4798.c_bracket_sharp",
+    "RevPebbling.AnchorCertify4798.c_le_2_5240034",
+    "RevPebbling.AnchorCertify4798.cert_4798",
+    "RevPebbling.AnchorCertify4798.gval_102763"
+   ],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
    "proves_hypotheses": {}
   },
   "submultiplicativity_block_simulation": {

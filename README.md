@@ -66,8 +66,8 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 549 theorems the
-manifest lists, **68 rest on a `native_decide` certificate and 14 need
+the rest are general (unbounded) proofs.  Of the 558 theorems the
+manifest lists, **73 rest on a `native_decide` certificate and 14 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -88,7 +88,10 @@ Knill's Theorem 2.1 (`RowExact.gameOptimal_holds`,
 `RowExact.gameAttain_holds`, `RowExact.lowerRowExact_all`).  Statements
 that still take them as arguments are the ones written before they were
 proved; `RevPebbling/Unconditional.lean` instantiates the headline ones,
-including `c_bracket : 2.51706472 ≤ c ≤ 2.536842`.  All of this is read off the statements with `#check`, splitting
+including `c_bracket : 2.51706472 ≤ c ≤ 2.536842`; the sharpest form
+of that, with both ends internal, is
+`AnchorCertify4798.c_bracket_sharp : 2.5170648368936010208 ≤ c ≤ 2.5240034`.
+All of this is read off the statements with `#check`, splitting
 each type at its conclusion, not asserted in prose, so "relative to X"
 cannot drift either.
 
@@ -97,11 +100,14 @@ says — the counts above, the constants it quotes, the file paths and
 theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
-A full build takes about sixteen minutes (35 stages, 549 theorems),
-nearly all of it two checks: the certification of row 60 (13.1 M runs,
-~5.6 GB, 384 s), which carries the published bound `c ≤ 2.6106`, and the
-composition anchor at `T₀ = 1200` (1.8 M cells, ~1.8 GB, 364 s), which
-carries `c ≤ 2.536842`.  `.github/workflows/build.yml` runs the
+A full build takes about two and a quarter hours
+(36 stages, 558 theorems), nearly all of it three checks: the composition anchor at
+`T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
+and 6084 s on two timed runs),
+which carries the sharpest internal bound `c ≤ 2.5240034`; the
+certification of row 60 (13.1 M runs, ~5.6 GB, 384 s), which carries the
+published bound `c ≤ 2.6106`; and the earlier anchor at `T₀ = 1200`
+(1.8 M cells, ~1.8 GB, 364 s), which carries `c ≤ 2.536842`.  `.github/workflows/build.yml` runs the
 same thing on a clean machine — build, re-audit, and check that the
 committed `proof-manifest.json` is reproduced byte for byte.
 
@@ -242,6 +248,22 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   this direction (Knill 1995, p. 5) has a gap at the step that bounds the
   middle part; the three-part decomposition follows Královič
   (RAIRO-ITA **38** (2004) 137–161, proof of Thm 3.4).
+* `RevPebbling/AnchorRun.lean` + `RevPebbling/AnchorCertify4798.lean` —
+  **the same anchor, one pass and one grid size larger**.  `certRun`
+  runs the DP once, checks every row and reads the certificate cell,
+  where `AnchorCertify` runs the same DP twice (once for `verify`, once
+  for `cert`); the verdict rides in an accumulator so the recursion
+  stays tail-recursive at `K ≈ 5000` transitions, and `runAux_eq`
+  identifies the two components with `verifyAux` and `iter`, so nothing
+  is weakened.  The grid is also cut to `N = istar + 1`, the smallest
+  that holds the certificate cell.  Measured, the `T₀ = 1200` anchor
+  takes 226 s this way against 364 s.  The cost is about `2^m·κ·K²`
+  cells at `8.1`–`8.7·10⁴` cells/s — quadratic in `T₀`, exponential in the
+  mantissa — which makes `T₀ = 4800, m = 6` the best `c` reachable in a
+  few hours: **`c_le_2_5240034`**, cutting the internal gap to
+  `2^{1+κ*}` by 2.9.  (`data/anchor_T7500_m7.txt`, `c ≤ 2.521235`, is
+  `2.4·10⁹` cells ≈ 8 h at that rate, so it stays outside the
+  prover.)  `c_bracket_sharp` puts both internal ends together.
 * `RevPebbling/AnchorPacked.lean` + `RevPebbling/AnchorGrid.lean` +
   `RevPebbling/AnchorDP.lean` + `RevPebbling/AnchorCertify.lean` — the
   **composition anchor, run inside the prover**.  `CompositionAnchor`

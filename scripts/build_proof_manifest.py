@@ -1698,6 +1698,60 @@ def main() -> int:
                     "RevPebbling.AnchorCertify.c_le_2_536842",
                 ],
             },
+            "anchor_in_lean_4798": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED framework + BOUNDED certificate (this work, "
+                          "2026-08-07): the same anchor machinery, run at "
+                          "T0 = 4800 on the MANTISSA-6 grid, giving "
+                          "c <= 2.5240034 - the artifact's sharpest INTERNAL "
+                          "upper bound, cutting the gap to the conjectured "
+                          "2^{1+kappa*} by a factor 2.9 (1.98e-2 -> 6.9e-3). "
+                          "Two changes make it affordable. (1) ONE PASS: "
+                          "AnchorCertify spends two native_decide calls on each "
+                          "anchor, verify (run + check every row) and cert (run "
+                          "the SAME DP again to read the certificate cell); "
+                          "AnchorRun.certRun does both in one run, with the "
+                          "verdict in an accumulator so the recursion stays "
+                          "tail-recursive at K ~ 5000. runAux_eq says the two "
+                          "components are exactly verifyAux and iter, so "
+                          "midv_le_of_certRun is AnchorDP.midv_le_of_verify with "
+                          "its premisses read off one Bool - nothing is weakened. "
+                          "(2) MINIMAL GRID: N = istar + 1, the smallest that "
+                          "holds the certificate cell, since each cell depends "
+                          "only on smaller indices.  Measured: the T0 = 1200 "
+                          "anchor takes 226 s this way against 364 s for the "
+                          "two-pass form at the larger N. The cost is about "
+                          "2^m * kappa * K^2 cells at a probed 6.3e4 cells/s, "
+                          "so it is quadratic in T0 and exponential in the "
+                          "mantissa; sweeping (T0, m) against a few hours of "
+                          "budget makes T0 = 4800, m = 6 (4.93e8 cells) the best "
+                          "c reachable. It realised 5695 s and 6084 s on two "
+                          "timed runs (8.1-8.7e4 cells/s), ~1.8 GB. "
+                          "BOUNDED: cert_4798 "
+                          "(native_decide) - the artifact's third deliberate "
+                          "over-budget check after RLECertify.fRow_60 (384 s) and "
+                          "AnchorCertify.verify_1198 (364 s). The t-th root is "
+                          "again a rational B with v <= B^t, a 34000-digit kernel "
+                          "decide (anchor_witness, no axioms at all). "
+                          "c_bracket_sharp puts both internal ends together: "
+                          "2.5170648368936010208 <= c <= 2.5240034, a window of "
+                          "6.9e-3 with nothing carried and nothing computed "
+                          "outside the prover. The next recorded anchor, "
+                          "data/anchor_T7500_m7.txt (c <= 2.521235), is 2.4e9 "
+                          "cells = about 8 hours at the realised rate, so it "
+                          "stays outside."),
+                "theorems": [
+                    "RevPebbling.AnchorRun.runAux_eq",
+                    "RevPebbling.AnchorRun.midv_le_of_certRun",
+                    "RevPebbling.AnchorCertify4798.cert_4798",
+                    "RevPebbling.AnchorCertify4798.gval_102763",
+                    "RevPebbling.AnchorCertify4798.anchor_4798",
+                    "RevPebbling.AnchorCertify4798.anchor_witness",
+                    "RevPebbling.AnchorCertify4798.v_le_pow",
+                    "RevPebbling.AnchorCertify4798.c_le_2_5240034",
+                    "RevPebbling.AnchorCertify4798.c_bracket_sharp",
+                ],
+            },
             "submultiplicativity_block_simulation": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED (this work, 2026-08-05): SUBMULTIPLICATIVITY, "
