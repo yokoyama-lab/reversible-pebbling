@@ -518,55 +518,64 @@ def main() -> int:
                     "RevPebbling.CriticalRoot.c_ge_two_sqrt_five_sub_two",
                 ],
             },
-            "critical_root_197130": {
+            "critical_root_rational": {
                 "status": "proved_with_certificate",
-                "scope": ("BOUNDED (four `decide` certificates), kernel only, "
-                          "no native_decide.  Turns critical_root's "
-                          "conclusion into a DECIMAL.  `c_ge_critical` says "
-                          "2*2^(1/q)/rho_c(q) <= c for every real q, but "
-                          "naming a number needs a rigorous enclosure of "
-                          "rho_c(q), which Lean cannot do in general (no "
-                          "interval arithmetic).  UNLESS q IS RATIONAL: at "
-                          "q = 197/130 every rpow collapses into an integer "
-                          "comparison.  `le_rpow_div` and `rpow_div_le` are "
-                          "the two conversions (x^n <= s^m gives "
-                          "x <= s^(m/n), and x^m <= s^n gives "
-                          "x^(m/n) <= s); `two_rpow_ge` pins 2^(130/197) "
-                          "from below by a/S via `cert_A` (a^197 <= 2^130 "
-                          "S^197); `G_bound` shows G(197/130)(u/S) <= 1 by "
-                          "bounding each summand with `cert_s1`/`cert_s2` "
-                          "and adding with `cert_sum`; `root_le` then pins "
-                          "rho_c from above by u/S, because G q . is "
-                          "strictly decreasing (`root_le_of_G_le`, from "
-                          "critical_root's `G_strictAntiOn`).  RESULT "
-                          "`c_ge_2_5170648368936010217`: "
-                          "2.5170648368936010217 <= c.  COMPARE "
-                          "dispersion_197130, which reaches the same "
-                          "constant through a bespoke rational instance of "
-                          "the dispersion induction and a master inequality "
-                          "of about 5*10^5 digits: here the largest "
-                          "certificate is 8826 digits (57x smaller, and the "
-                          "whole file elaborates in 25 s), the constant is "
-                          "10^-18 SHARPER because the rational family loses "
-                          "that much rounding lambda_0, and the mathematical "
-                          "content sits in the real theorem rather than in "
-                          "the instance.  WHAT THIS DOES NOT DO: sup_q V(q) "
-                          "= kappa*.  Pinning one rational q is easy exactly "
-                          "because the expression is not tangent there; at "
-                          "q* it is, so the supremum genuinely needs "
-                          "interval arithmetic with Taylor models and stays "
-                          "in rocq/KappaStar.v."),
+                "scope": ("BOUNDED (four `decide` certificates per "
+                          "instance), kernel only, no native_decide.  Turns "
+                          "critical_root's conclusion into a DECIMAL.  "
+                          "`c_ge_of_G_le_one` says 2*2^(1/q)/rho <= c "
+                          "whenever G q rho <= 1, but naming a number needs "
+                          "rigorous rational witnesses for 2^(1/q) and rho, "
+                          "which in general means interval arithmetic -- "
+                          "absent from Lean.  IF q = N/R IS RATIONAL there "
+                          "is nothing to enclose: every power becomes an "
+                          "integer comparison (`le_rpow_div`, "
+                          "`rpow_div_le`), so a lower witness a/S for "
+                          "2^(R/N) is one `decide`, an upper witness u/S for "
+                          "rho_c is three more (bound each summand of "
+                          "G q (u/S), then their sum), and "
+                          "`c_ge_of_certs` packages the four into "
+                          "2a/u <= c.  Nothing in it is specific to the "
+                          "exponent.  INSTANCES: q = 197/130 gives "
+                          "2.5170648368936010217 <= c (largest certificate "
+                          "8826 digits); q = 8324/5493 -- the next "
+                          "convergent of q*, and the SHARPEST LOWER BOUND IN "
+                          "THIS DEVELOPMENT -- gives "
+                          "2.5170648368938160702 <= c, which is 5.0e-17 "
+                          "below the conjectured 2^(1+kappa*) = "
+                          "2.5170648368938161206, against 2.2e-13 for "
+                          "197/130.  COST: certificates are N-th and R-th "
+                          "powers of ~25-digit witnesses, so they grow "
+                          "LINEARLY in N: 8826 digits at 197/130 and 372891 "
+                          "at 8324/5493, and both decide in about 1.0 s (the "
+                          "empty-file baseline).  This is why the convergent "
+                          "after 197/130 is reachable here and was not for "
+                          "dispersion_197130, whose constants are L^r with r "
+                          "the denominator of q -- 5e5 digits already at "
+                          "197/130 and about 7e8 at the next one.  The "
+                          "8324/5493 instance needs "
+                          "`exponentiation.threshold` raised (the elaborator "
+                          "declines exponents above 256) and a deeper "
+                          "`maxRecDepth`; that is its whole extra cost.  "
+                          "WHAT THIS DOES NOT DO: sup_q V(q) = kappa*.  "
+                          "Pinning one rational q is easy exactly because "
+                          "the expression is not tangent there; at q* it is, "
+                          "so the supremum needs interval arithmetic with "
+                          "Taylor models and stays in rocq/KappaStar.v."),
                 "theorems": [
-                    "RevPebbling.CriticalRoot197130.rpow_div_le",
-                    "RevPebbling.CriticalRoot197130.le_rpow_div",
+                    "RevPebbling.CriticalRootRat.rpow_div_le",
+                    "RevPebbling.CriticalRootRat.le_rpow_div",
+                    "RevPebbling.CriticalRootRat.c_ge_of_certs",
                     "RevPebbling.CriticalRoot197130.cert_A",
                     "RevPebbling.CriticalRoot197130.cert_s1",
                     "RevPebbling.CriticalRoot197130.cert_s2",
                     "RevPebbling.CriticalRoot197130.cert_sum",
-                    "RevPebbling.CriticalRoot197130.two_rpow_ge",
-                    "RevPebbling.CriticalRoot197130.G_bound",
-                    "RevPebbling.CriticalRoot197130.root_le",
                     "RevPebbling.CriticalRoot197130.c_ge_2_5170648368936010217",
+                    "RevPebbling.CriticalRoot8324.cert_A",
+                    "RevPebbling.CriticalRoot8324.cert_s1",
+                    "RevPebbling.CriticalRoot8324.cert_s2",
+                    "RevPebbling.CriticalRoot8324.cert_sum",
+                    "RevPebbling.CriticalRoot8324.c_ge_2_5170648368938160702",
                 ],
             },
             "two_d_closed_form": {
