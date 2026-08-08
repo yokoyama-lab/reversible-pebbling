@@ -168,7 +168,8 @@ committed `proof-manifest.json` is reproduced byte for byte.
   `RevPebbling/DispersionBound197130.lean` +
   `RevPebbling/DispersionGeneralGrowth.lean` +
   `RevPebbling/Dispersion197130Growth.lean` — **the last affordable
-  member of the family, and the sharpest lower bound here**.  With the
+  member of *this* family** (the sharpest lower bound overall is now
+  `CriticalRoot25366`, below).  With the
   constants and the extraction both parameterised, a new exponent is an
   application rather than a new file of digits.  Which exponents are
   worth the application is settled by `q*`: the deficit
@@ -208,23 +209,33 @@ committed `proof-manifest.json` is reproduced byte for byte.
   enclosure of the critical `q` and therefore the Rocq layer; each
   individual `q` is now unconditional inside Lean.
 - `RevPebbling/CriticalRootRat.lean` + `CriticalRoot197130.lean` +
-  `CriticalRoot8324.lean` — **the real theorem, as a decimal.**  `c_ge_critical` names `ρ_c(q)` rather than a number, and
-  extracting a number normally needs a rigorous enclosure of it — which
-  Lean cannot do, having no interval arithmetic.  *Unless `q` is
-  rational*: at `q = 197/130` every `rpow` collapses into an integer
-  comparison (`x^{197/130} ≤ s ⟸ x^197 ≤ s^130`), so pinning
-  `2^{130/197}` from below and `ρ_c` from above — the latter using only
-  that `G q ·` is strictly decreasing — is **four `decide`s**, and
-  `c_ge_2_5170648368936010217` gives `2.5170648368936010217 ≤ c`.  That
-  is the same constant `Dispersion197130Growth` reaches, but its route
-  needs a bespoke rational instance of the dispersion induction and a
-  master inequality of about `5·10⁵` digits; here the largest
-  certificate is **8826 digits** and the whole file elaborates in 25 s.
-  It is also `10⁻¹⁸` sharper, that being what the rational family loses
-  rounding `λ₀`.  Pinning one rational `q` is easy *because the
-  expression is not tangent to its bound there*; at `q*` it is, which is
-  why the supremum, and only the supremum, still needs interval
-  arithmetic with Taylor models.
+  `CriticalRoot8324.lean` + `CriticalRoot25366.lean` — **the real
+  theorem, as a decimal.**  `c_ge_critical` names `ρ_c(q)` rather than a
+  number, and extracting a number normally needs a rigorous enclosure of
+  it — which Lean cannot do, having no interval arithmetic.  *Unless `q`
+  is rational*: then every `rpow` collapses into an integer comparison
+  (`x^{N/R} ≤ s ⟸ x^N ≤ s^R`), so pinning `2^{R/N}` from below and
+  `ρ_c` from above — the latter using only that `G q ·` is strictly
+  decreasing — is **four `decide`s**, packaged once and for all by
+  `c_ge_of_certs`.  **The certificates grow linearly in the
+  convergent**, not exponentially: 8826 digits at `q = 197/130`,
+  372891 at `8324/5493`, 1136320 at `25366/16739`, and 6·10⁶ at
+  `143675/94811` — *all deciding in about a second*.  That is why this
+  route reaches convergents the rational-instance family cannot: there
+  the constants are `L^r` with `r` the denominator of `q`, already
+  `5·10⁵` digits at `197/130` and about `7·10⁸` at the next one.
+  `CriticalRoot25366.c_ge_2_5170648368938161205` gives
+  **`2.5170648368938161205 ≤ c`**, nineteen decimal places of the
+  conjectured `2^{1+κ*}`, where the rational-instance family stopped at
+  thirteen.  **We stop there** for reasons that are not about
+  certificate size: the bound saturates in the digits one would quote;
+  the certified enclosure of `κ*` pins the target to only sixteen
+  digits, so further digits cannot be corroborated inside the
+  development; and none of it narrows the bracket, whose width is
+  entirely on the upper side.  Pinning one rational `q` is easy
+  *because the expression is not tangent to its bound there*; at `q*` it
+  is, which is why the supremum, and only the supremum, still needs
+  interval arithmetic with Taylor models.
 
 (The modules above were renamed from the historical `GenJanus.*`
 namespace in the 2026-07-28 unification; see below.)
