@@ -576,6 +576,11 @@ def main() -> int:
                     "RevPebbling.CriticalRoot8324.cert_s2",
                     "RevPebbling.CriticalRoot8324.cert_sum",
                     "RevPebbling.CriticalRoot8324.c_ge_2_5170648368938160702",
+                    "RevPebbling.CriticalRoot25366.cert_A",
+                    "RevPebbling.CriticalRoot25366.cert_s1",
+                    "RevPebbling.CriticalRoot25366.cert_s2",
+                    "RevPebbling.CriticalRoot25366.cert_sum",
+                    "RevPebbling.CriticalRoot25366.c_ge_2_5170648368938161205",
                 ],
             },
             "two_d_closed_form": {

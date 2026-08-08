@@ -25,13 +25,13 @@ file records the exact integer `v*` with `L(T0, v*) ≥ 2^{T0−2}`, whence
 | `anchor_T141000_m10.txt` | 141000 | mant 10 | 2.5174496 |
 | **`anchor_T98500_m11.txt`** | 98500 | mant 11 | **2.5174407** |
 
-Together with `CriticalRoot8324` this brackets the growth rate as
+Together with `CriticalRoot25366` this brackets the growth rate as
 
-  **2.5170648368938160702 ≤ c ≤ 2.5174406519**,
+  **2.5170648368938161205 ≤ c ≤ 2.5174406519**,
 
-a window of 3.8·10⁻⁴ around the conjectured exact value
-`2^{1+κ*} = 2.5170648368938161206`, which sits **5.0·10⁻¹⁷** above the
-lower bound.
+a window of 3.8·10⁻⁴ — all of it on the upper side — around the
+conjectured exact value `2^{1+κ*} = 2.5170648368938161205744…`, which
+the lower bound now matches to **nineteen decimal places**.
 The two large anchors were produced by `m33_anchor_c.c` (paper
 repository), which reproduces the earlier bignum certificates bit for
 bit while running ~600x faster; `base_check_T3000_eps001.txt` and
@@ -67,8 +67,8 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 597 theorems the
-manifest lists, **73 rest on a `native_decide` certificate and 16 need
+the rest are general (unbounded) proofs.  Of the 602 theorems the
+manifest lists, **73 rest on a `native_decide` certificate and 17 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -102,7 +102,7 @@ theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
 A full build takes about two and a quarter hours
-(39 stages, 597 theorems), nearly all of it three checks: the composition anchor at
+(39 stages, 602 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the

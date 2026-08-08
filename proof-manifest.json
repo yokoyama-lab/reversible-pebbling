@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "819aa3e86d5076748aaf6f9cacd725a61be7306478ebbcc35ce4b8cc5eed959d",
+ "proof_bundle_sha256": "ba9f3c31481954cd2120f1b88cb7f598311e17904905434bef6d3e006d834ec7",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -22,6 +22,7 @@
   "RevPebbling/CountRecursion.lean": "a55f80b113f1bf74166c21ad086f217fcd4786de5ee99c7d46eaeeb0539178ef",
   "RevPebbling/CriticalRoot.lean": "e2d0d7998b0a8cd7bffe65eb039a5ef25b5d68af1f8b7db6c7482d71e38f5432",
   "RevPebbling/CriticalRoot197130.lean": "b998d68c1bfd951a1774ba65459e7ee9c5f4f182b6099ddab2d86ee2d4e9265c",
+  "RevPebbling/CriticalRoot25366.lean": "e534d6ad1c5ed8cbc349955f2fcca0b46c0be69e12afab2d8fe62ccb67ae0488",
   "RevPebbling/CriticalRoot8324.lean": "da9763dfce45e9b2d2ffc71504f28a2895ff0da4b47b094c21551531be597d6a",
   "RevPebbling/CriticalRootRat.lean": "38e519f9d1693e8e8a40a612cbc45b35176201516969f828e88a94baf011de3e",
   "RevPebbling/CrossingConcentration.lean": "f13df2ffc6c6f79234793874a3f4d527b75d5144c2e95562d85e557c9ab3c539",
@@ -98,7 +99,7 @@
   "RevPebbling/Unconditional.lean": "f43bba955448614a302dc832a7c1db6c6090b01058b5731fc92f081af6669d6b",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "e67a716c9a80152e12c1c230a312e531eb7bdeb60045d93faf60fb4f64966caa"
+  "RevPebbling.lean": "8f9703c52d7b6050b1211cd99a671f41ccd1598def019698afd8e558268f65ab"
  },
  "hypotheses": {
   "GameAttain": {
@@ -403,11 +404,17 @@
     "RevPebbling.CriticalRoot8324.cert_s1",
     "RevPebbling.CriticalRoot8324.cert_s2",
     "RevPebbling.CriticalRoot8324.cert_sum",
-    "RevPebbling.CriticalRoot8324.c_ge_2_5170648368938160702"
+    "RevPebbling.CriticalRoot8324.c_ge_2_5170648368938160702",
+    "RevPebbling.CriticalRoot25366.cert_A",
+    "RevPebbling.CriticalRoot25366.cert_s1",
+    "RevPebbling.CriticalRoot25366.cert_s2",
+    "RevPebbling.CriticalRoot25366.cert_sum",
+    "RevPebbling.CriticalRoot25366.c_ge_2_5170648368938161205"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [
     "RevPebbling.CriticalRoot197130.cert_sum",
+    "RevPebbling.CriticalRoot25366.cert_sum",
     "RevPebbling.CriticalRoot8324.cert_sum"
    ],
    "carried_hypotheses": {},
