@@ -5,9 +5,54 @@ chains — the artifact accompanying the paper *"Exact Reversible
 Pebbling at Minimal Space: Machine-Checked Structure Theorems and the
 Growth Rate of Space-Optimal Simulation"* (in preparation).
 
+Its subject is the **Knill constant** `c`, the growth rate of Knill's
+space-optimal cost `f_p = F(2^{p-1}, p)`.  The name is attached to `c`
+itself (`BlockSim.c`), which provably exists and is bracketed below;
+`2^{1+κ*}` is its *conjectured* value, not its definition.
+
 To our knowledge this is the first machine-checked treatment of the
 reversible-pebbling literature (Knill 1995, Královič 2004,
 Pesu–Phillips 2015).
+
+## What pinning `c` would settle
+
+`c` is the growth rate of the time cost of reversible simulation at
+**exactly minimal space**: uncomputing an `n`-step chain with the
+smallest possible number of pebbles costs `Θ(n^{log₂ c})` moves, and
+`log₂ c = 1.33…`.  Before this work that exponent was only known to lie
+between `1` (Královič's `Ω(n lg n)`) and `log₂ 3` (Li–Vitányi) — an
+interval of width more than one half.  What a sharp value buys:
+
+- **Resource estimation for reversible and quantum computation.**
+  Bennett's pebble game is what decides how many ancillas and how many
+  gates an uncomputation costs, and the minimal-space corner is the
+  regime that matters when qubits, not gates, are scarce.  The gap
+  between the old bounds is a factor `n^{log₂ 3 − log₂ c}`, which is
+  already more than an order of magnitude at `n = 10⁶`.
+- **The trade-off curve closes.**  Knill settled the asymptotics for
+  `(log n)/S ≤ 1/2`; the minimal-space end was open.  With both ends
+  known, the profile `g(β)` interpolates between them, so `F(n,S)` has a
+  known exponent throughout.
+- **Memory-hard functions.**  Reversible-pebbling bounds feed the
+  post-quantum security analysis of iMHFs (e.g. *The Parallel Reversible
+  Pebbling Game: Analyzing the Post-Quantum Security of iMHFs*,
+  eprint 2024/334); sharper constants give sharper parameters.
+- **The method transfers.**  The route here — a supersolution family for
+  a dual counting recursion, made exact by a zero-duality-gap identity —
+  is not specific to this problem.  The recursion's value is a
+  branching-random-walk front velocity, and the residual error of any
+  finite-time evaluation is the Bramson logarithmic correction
+  (measured here as `≈ 1.37·ln T/T`, see `CLAUDE.md`).  That structure
+  recurs in other pebble games and in min-max divide-and-conquer
+  recurrences.
+
+Two honest limits.  *Pinning* `c` means proving the conjecture
+`c = 2^{1+κ*}`; the lower bound already agrees to nineteen decimals, so
+what is missing is an analytic upper bound — the anchor DP cannot get
+there, its error being the `ln T/T` correction above.  And `c` is the
+constant of a **chain**; pebbling general DAGs is PSPACE-hard, so what
+generalises is the method and the exact answer at the extreme point of
+the trade-off, not the number.
 
 ## `data/` — numerical certificates
 
