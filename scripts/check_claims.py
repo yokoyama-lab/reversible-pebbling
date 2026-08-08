@@ -34,6 +34,17 @@ MANIFEST = ROOT / "proof-manifest.json"
 # Constants the artifact deliberately does not back, each with the
 # reason.  Anything not listed here has to occur in a source or a
 # certificate, so an unbacked number cannot slip in unnoticed.
+# Numbers the working notes PROJECT from the measured anchor-DP cost model
+# (CLAUDE.md, upper-bound section).  They are model output, NOT results:
+# no certificate backs them and none should be quoted as a bound.
+_PROJECTION = ("a PROJECTION from the anchor-DP cost model in CLAUDE.md, "
+               "not a result -- no certificate backs it, and it must not "
+               "be quoted as a bound")
+
+_FITTED = ("a coefficient FITTED to measured anchor-DP runs (CLAUDE.md, "
+           "upper-bound section); it describes the generator's error, not "
+           "the pebbling problem, and nothing is proved from it")
+
 CONSTANT_ALLOW = {
     "4.31.0": "the Lean toolchain version",
     "2.5174407": "the anchor bound, an exact integer computation "
@@ -48,6 +59,9 @@ CONSTANT_ALLOW = {
     "0.002047": "the smallest certified ledger value over the Zone I cover, "
                 "from the Rocq layer (rocq/LedgerCoverP*.v, re-derived by "
                 "rocq/gen/check_tiling.py); the checker reads only Lean sources",
+    "1.374": _FITTED, "0.0982": _FITTED,
+    "2.5173824": _PROJECTION, "2.5172533": _PROJECTION,
+    "2.5172079": _PROJECTION, "2.5171522": _PROJECTION,
     "2.551": "quoted FROM the letter, where it is unbacked: the artifact "
              "has no f_59, so the ratio cannot be checked (this entry "
              "exists to record the finding, not to bless the number)",
