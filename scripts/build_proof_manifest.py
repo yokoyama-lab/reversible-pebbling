@@ -516,6 +516,58 @@ def main() -> int:
                     "RevPebbling.CriticalRoot.c_ge_two_sqrt_five_sub_two",
                 ],
             },
+            "critical_root_197130": {
+                "status": "proved_with_certificate",
+                "scope": ("BOUNDED (four `decide` certificates), kernel only, "
+                          "no native_decide.  Turns critical_root's "
+                          "conclusion into a DECIMAL.  `c_ge_critical` says "
+                          "2*2^(1/q)/rho_c(q) <= c for every real q, but "
+                          "naming a number needs a rigorous enclosure of "
+                          "rho_c(q), which Lean cannot do in general (no "
+                          "interval arithmetic).  UNLESS q IS RATIONAL: at "
+                          "q = 197/130 every rpow collapses into an integer "
+                          "comparison.  `le_rpow_div` and `rpow_div_le` are "
+                          "the two conversions (x^n <= s^m gives "
+                          "x <= s^(m/n), and x^m <= s^n gives "
+                          "x^(m/n) <= s); `two_rpow_ge` pins 2^(130/197) "
+                          "from below by a/S via `cert_A` (a^197 <= 2^130 "
+                          "S^197); `G_bound` shows G(197/130)(u/S) <= 1 by "
+                          "bounding each summand with `cert_s1`/`cert_s2` "
+                          "and adding with `cert_sum`; `root_le` then pins "
+                          "rho_c from above by u/S, because G q . is "
+                          "strictly decreasing (`root_le_of_G_le`, from "
+                          "critical_root's `G_strictAntiOn`).  RESULT "
+                          "`c_ge_2_5170648368936010217`: "
+                          "2.5170648368936010217 <= c.  COMPARE "
+                          "dispersion_197130, which reaches the same "
+                          "constant through a bespoke rational instance of "
+                          "the dispersion induction and a master inequality "
+                          "of about 5*10^5 digits: here the largest "
+                          "certificate is 8826 digits (57x smaller, and the "
+                          "whole file elaborates in 25 s), the constant is "
+                          "10^-18 SHARPER because the rational family loses "
+                          "that much rounding lambda_0, and the mathematical "
+                          "content sits in the real theorem rather than in "
+                          "the instance.  WHAT THIS DOES NOT DO: sup_q V(q) "
+                          "= kappa*.  Pinning one rational q is easy exactly "
+                          "because the expression is not tangent there; at "
+                          "q* it is, so the supremum genuinely needs "
+                          "interval arithmetic with Taylor models and stays "
+                          "in rocq/KappaStar.v."),
+                "theorems": [
+                    "RevPebbling.CriticalRoot197130.rpow_div_le",
+                    "RevPebbling.CriticalRoot197130.le_rpow_div",
+                    "RevPebbling.CriticalRoot197130.root_le_of_G_le",
+                    "RevPebbling.CriticalRoot197130.cert_A",
+                    "RevPebbling.CriticalRoot197130.cert_s1",
+                    "RevPebbling.CriticalRoot197130.cert_s2",
+                    "RevPebbling.CriticalRoot197130.cert_sum",
+                    "RevPebbling.CriticalRoot197130.two_rpow_ge",
+                    "RevPebbling.CriticalRoot197130.G_bound",
+                    "RevPebbling.CriticalRoot197130.root_le",
+                    "RevPebbling.CriticalRoot197130.c_ge_2_5170648368936010217",
+                ],
+            },
             "two_d_closed_form": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED, relative to submultiplicativity (as "

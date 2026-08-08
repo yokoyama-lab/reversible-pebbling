@@ -66,8 +66,8 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 582 theorems the
-manifest lists, **73 rest on a `native_decide` certificate and 14 need
+the rest are general (unbounded) proofs.  Of the 593 theorems the
+manifest lists, **73 rest on a `native_decide` certificate and 15 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -101,7 +101,7 @@ theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
 A full build takes about two and a quarter hours
-(38 stages, 582 theorems), nearly all of it three checks: the composition anchor at
+(39 stages, 593 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the
@@ -206,6 +206,24 @@ committed `proof-manifest.json` is reproduced byte for byte.
   certified.  What is *not* here is `κ* = sup_q V(q)`, which needs the
   enclosure of the critical `q` and therefore the Rocq layer; each
   individual `q` is now unconditional inside Lean.
+- `RevPebbling/CriticalRoot197130.lean` — **the real theorem, as a
+  decimal.**  `c_ge_critical` names `ρ_c(q)` rather than a number, and
+  extracting a number normally needs a rigorous enclosure of it — which
+  Lean cannot do, having no interval arithmetic.  *Unless `q` is
+  rational*: at `q = 197/130` every `rpow` collapses into an integer
+  comparison (`x^{197/130} ≤ s ⟸ x^197 ≤ s^130`), so pinning
+  `2^{130/197}` from below and `ρ_c` from above — the latter using only
+  that `G q ·` is strictly decreasing — is **four `decide`s**, and
+  `c_ge_2_5170648368936010217` gives `2.5170648368936010217 ≤ c`.  That
+  is the same constant `Dispersion197130Growth` reaches, but its route
+  needs a bespoke rational instance of the dispersion induction and a
+  master inequality of about `5·10⁵` digits; here the largest
+  certificate is **8826 digits** and the whole file elaborates in 25 s.
+  It is also `10⁻¹⁸` sharper, that being what the rational family loses
+  rounding `λ₀`.  Pinning one rational `q` is easy *because the
+  expression is not tangent to its bound there*; at `q*` it is, which is
+  why the supremum, and only the supremum, still needs interval
+  arithmetic with Taylor models.
 
 (The modules above were renamed from the historical `GenJanus.*`
 namespace in the 2026-07-28 unification; see below.)
