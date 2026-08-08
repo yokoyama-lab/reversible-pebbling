@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "ba9f3c31481954cd2120f1b88cb7f598311e17904905434bef6d3e006d834ec7",
+ "proof_bundle_sha256": "47f10aeab32b67f5002fe5db80b6fc1312f22df9d70cc6c64f9be212f6495462",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -14,7 +14,7 @@
   "RevPebbling/AnchorPacked.lean": "5cf88cbf524f3811c06374b8d650fe40c368fdda0ac44c5ec703826e1a0ff8cb",
   "RevPebbling/AnchorRun.lean": "80eca176dcb01cc68bbadcf2575f1016af47d906873998a0e7483011b6259694",
   "RevPebbling/AttainSplit.lean": "70de32bf8c96007c556af976d8a10874478830776fb53971fe1e02a858a42dc9",
-  "RevPebbling/BlockSim.lean": "7ed8bae1be394d12696428ac01438878ef0e6f0bbc6f2bc63d5e024ebcd56ce1",
+  "RevPebbling/BlockSim.lean": "cd83e54cc8d7d8aad5117eaddcb88a81ec5afc116c646fde675f6f722668008a",
   "RevPebbling/ChordDeficit.lean": "3ece7a7e581f5bfc8802892724c51521d98a04ad9b218945d83a54663c8ccd24",
   "RevPebbling/CompleteCost.lean": "7cd96f10dca18d6158eead8cd2fcf83d6d8fb55b4ec4deabcd3574f9eca4af75",
   "RevPebbling/CompleteReach.lean": "8d3dc0ac5b5506db6369c53a06349e4359c0986de7f58f702015976616558c31",
@@ -97,9 +97,10 @@
   "RevPebbling/SeamIdentity.lean": "8983dc21aee3ad4f7bb43189b1bb465b2e8f07ba9835c55611f95a6229b9ce1d",
   "RevPebbling/TwoD.lean": "3d3120dec58b3752ad427931c337a136a1160e00b10b0841575bcd57f4017f3f",
   "RevPebbling/Unconditional.lean": "f43bba955448614a302dc832a7c1db6c6090b01058b5731fc92f081af6669d6b",
+  "RevPebbling/UnconditionalLink1.lean": "b2592a347249d23eece02a004cd84b06f49c6c6a9a49d7743b5f6ccc3b0c1e68",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "8f9703c52d7b6050b1211cd99a671f41ccd1598def019698afd8e558268f65ab"
+  "RevPebbling.lean": "b0ab2d2be0f104116435c5b5d28c5912c8f50ad00d21f1c7db4ac0932fe6208a"
  },
  "hypotheses": {
   "GameAttain": {
@@ -127,7 +128,8 @@
    "status": "proved",
    "carried_by": 4,
    "proved_by": [
-    "RevPebbling.RowExact.lowerRowExact_all"
+    "RevPebbling.RowExact.lowerRowExact_all",
+    "RevPebbling.UnconditionalLink1.lowerRowExact_succ_uncond"
    ]
   },
   "Submult RevPebbling.RLEPebble.fRLE": {
@@ -1244,6 +1246,24 @@
    "axiom_free_theorems": [],
    "carried_hypotheses": {},
    "proves_hypotheses": {}
+  },
+  "link1_unconditional_summary": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (this work, 2026-08-09): the four theorems INSIDE link (1) that still took the proved AttainSplit.LowerRowExact as an argument, instantiated with RowExact.lowerRowExact_all - they were written while LowerRowExact was the outer induction hypothesis, before RowExact closed the induction. Nothing here is a new proof; the point is that a reader who finds the conditional statement does not conclude that a hypothesis remains. With this stage every theorem carrying one of the three proved link-(1) hypotheses has a named unconditional version: GameGap.gameF_eq_fRow -> RowExact.gameF_eq_fRow_all; GameDecomposition.solvesKnill_of_attain / gameF_eq_Fpre -> Unconditional.solvesKnill_uncond / gameF_eq_Fpre_uncond; GameDecomposition.gameOptimal_of_attain -> RowExact.gameOptimal_holds (its conclusion, outright); AttainSplit.attain_split_of_recursion / attain_split_cutFull and RowExact.ge_row_of_lower / lowerRowExact_succ -> the four theorems of this stage. The two hypotheses that genuinely remain (Superadd, Submult fRLE) are carried by other theorems and are not touched here. Exercised at concrete values in the module: ge_row at gameF 4 3, the successor identification reproduces gameF 8 4 = 25, and the split witness at n = 4, S = 3 from the recursion equality 9 = 3 + 3 + 3. ",
+   "theorems": [
+    "RevPebbling.UnconditionalLink1.attain_split_of_recursion_uncond",
+    "RevPebbling.UnconditionalLink1.attain_split_cutFull_uncond",
+    "RevPebbling.UnconditionalLink1.ge_row_uncond",
+    "RevPebbling.UnconditionalLink1.lowerRowExact_succ_uncond"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {
+    "LowerRowExact s": [
+     "RevPebbling.UnconditionalLink1.lowerRowExact_succ_uncond"
+    ]
+   }
   },
   "anchor_internal_replay": {
    "status": "general_framework_plus_certified_values",

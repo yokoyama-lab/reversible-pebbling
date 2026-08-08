@@ -112,7 +112,7 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 602 theorems the
+the rest are general (unbounded) proofs.  Of the 606 theorems the
 manifest lists, **73 rest on a `native_decide` certificate and 17 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
@@ -134,7 +134,11 @@ Knill's Theorem 2.1 (`RowExact.gameOptimal_holds`,
 `RowExact.gameAttain_holds`, `RowExact.lowerRowExact_all`).  Statements
 that still take them as arguments are the ones written before they were
 proved; `RevPebbling/Unconditional.lean` instantiates the headline ones,
-including `c_bracket : 2.51706472 ≤ c ≤ 2.536842`; the sharpest form
+including `c_bracket : 2.51706472 ≤ c ≤ 2.536842`, and
+`RevPebbling/UnconditionalLink1.lean` the four inside link (1) that
+carried `LowerRowExact`, so every theorem carrying a *proved* hypothesis
+now has a named unconditional version (the mapping is tabulated in that
+file's docstring); the sharpest form
 of that, with both ends internal, is
 `AnchorCertify4798.c_bracket_sharp : 2.5170648368936010208 ≤ c ≤ 2.5240034`.
 All of this is read off the statements with `#check`, splitting
@@ -147,7 +151,7 @@ theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
 A full build takes about two and a quarter hours
-(39 stages, 602 theorems), nearly all of it three checks: the composition anchor at
+(40 stages, 606 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the

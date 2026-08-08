@@ -1804,6 +1804,43 @@ def main() -> int:
                     "RevPebbling.Unconditional.gameF_eq_fRow_uncond",
                 ],
             },
+            "link1_unconditional_summary": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-09): the four theorems "
+                          "INSIDE link (1) that still took the proved "
+                          "AttainSplit.LowerRowExact as an argument, instantiated "
+                          "with RowExact.lowerRowExact_all - they were written "
+                          "while LowerRowExact was the outer induction "
+                          "hypothesis, before RowExact closed the induction. "
+                          "Nothing here is a new proof; the point is that a "
+                          "reader who finds the conditional statement does not "
+                          "conclude that a hypothesis remains. With this stage "
+                          "every theorem carrying one of the three proved "
+                          "link-(1) hypotheses has a named unconditional "
+                          "version: GameGap.gameF_eq_fRow -> "
+                          "RowExact.gameF_eq_fRow_all; "
+                          "GameDecomposition.solvesKnill_of_attain / "
+                          "gameF_eq_Fpre -> Unconditional.solvesKnill_uncond / "
+                          "gameF_eq_Fpre_uncond; "
+                          "GameDecomposition.gameOptimal_of_attain -> "
+                          "RowExact.gameOptimal_holds (its conclusion, "
+                          "outright); AttainSplit.attain_split_of_recursion / "
+                          "attain_split_cutFull and RowExact.ge_row_of_lower / "
+                          "lowerRowExact_succ -> the four theorems of this "
+                          "stage. The two hypotheses that genuinely remain "
+                          "(Superadd, Submult fRLE) are carried by other "
+                          "theorems and are not touched here. Exercised at "
+                          "concrete values in the module: ge_row at gameF 4 3, "
+                          "the successor identification reproduces "
+                          "gameF 8 4 = 25, and the split witness at n = 4, "
+                          "S = 3 from the recursion equality 9 = 3 + 3 + 3. "),
+                "theorems": [
+                    "RevPebbling.UnconditionalLink1.attain_split_of_recursion_uncond",
+                    "RevPebbling.UnconditionalLink1.attain_split_cutFull_uncond",
+                    "RevPebbling.UnconditionalLink1.ge_row_uncond",
+                    "RevPebbling.UnconditionalLink1.lowerRowExact_succ_uncond",
+                ],
+            },
             "anchor_internal_replay": {
                 "status": "general_framework_plus_certified_values",
                 "scope": ("UNBOUNDED framework + BOUNDED certificate (this work, "
