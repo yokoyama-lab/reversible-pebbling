@@ -64,15 +64,6 @@ theorem le_rpow_div {x s : ℝ} (hs : 0 ≤ s) {m n : ℕ} (hn : n ≠ 0)
         div_mul_cancel₀ _ (by exact_mod_cast hn), Real.rpow_natCast]
   rw [hid]; exact h
 
-/-- A root of `G q` is at most any point where `G q` has already dropped
-to `1`, because `G q ·` is strictly decreasing. -/
-theorem root_le_of_G_le {q ρ B : ℝ} (hq : 0 < q) (hρ : 0 < ρ) (hB : 0 < B)
-    (hg : G q ρ = 1) (hGB : G q B ≤ 1) : ρ ≤ B := by
-  by_contra hc
-  have hlt : B < ρ := not_le.mp hc
-  have := G_strictAntiOn hq (Set.mem_Ioi.mpr hB) (Set.mem_Ioi.mpr hρ) hlt
-  linarith
-
 /-! ## The witnesses -/
 
 /-- `A = a/S` is a lower bound for `2^{130/197}`. -/

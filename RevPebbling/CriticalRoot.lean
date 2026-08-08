@@ -247,6 +247,15 @@ theorem exists_root (hq : 0 < q) : ∃ ρ, 1 ≤ ρ ∧ G q ρ = 1 := by
   obtain ⟨ρ, hρmem, hρ⟩ := intermediate_value_Icc' hb1 hcont hmem
   exact ⟨ρ, hρmem.1, hρ⟩
 
+/-- A root of `G q` is at most any point where `G q` has already dropped
+to `1`, because `G q ·` is strictly decreasing. -/
+theorem root_le_of_G_le {q ρ B : ℝ} (hq : 0 < q) (hρ : 0 < ρ) (hB : 0 < B)
+    (hg : G q ρ = 1) (hGB : G q B ≤ 1) : ρ ≤ B := by
+  by_contra hc
+  have hlt : B < ρ := not_le.mp hc
+  have := G_strictAntiOn hq (Set.mem_Ioi.mpr hB) (Set.mem_Ioi.mpr hρ) hlt
+  linarith
+
 /-- **THE RESULT: for every `q > 0`, `c ≥ 2^{1+V(q)}`.**
 
 The root `ρ` is `ρ_c(q)` (unique by `root_unique`), and `2·2^{1/q}/ρ` is
@@ -259,6 +268,19 @@ theorem c_ge_critical (hq : 0 < q) :
     ∃ ρ : ℝ, 1 ≤ ρ ∧ G q ρ = 1 ∧ 2 * 2 ^ q⁻¹ / ρ ≤ RevPebbling.BlockSim.c := by
   obtain ⟨ρ, hρ, hg⟩ := exists_root hq
   exact ⟨ρ, hρ, hg, c_ge_two_pow_V hq hρ hg⟩
+
+/-- **The bound at any supersolution point, not just at the root.**
+
+This is the form the letter states: `ρ^{-q} + (1+ρ)^{-q} ≤ 1` already
+gives `c ≥ 2^{1+1/q}/ρ`, with no need to know where the root is.  It
+follows from `c_ge_two_pow_V` because `G q ·` is strictly decreasing, so
+any such `ρ` is at least `ρ_c(q)`, and the bound weakens as `ρ` grows. -/
+theorem c_ge_of_G_le_one {q ρ : ℝ} (hq : 0 < q) (hρ : 0 < ρ) (hG : G q ρ ≤ 1) :
+    2 * 2 ^ q⁻¹ / ρ ≤ RevPebbling.BlockSim.c := by
+  obtain ⟨r, hr1, hgr, hcr⟩ := c_ge_critical hq
+  have hr0 : (0:ℝ) < r := lt_of_lt_of_le zero_lt_one hr1
+  have hle : r ≤ ρ := root_le_of_G_le hq hr0 hρ hgr hG
+  refine le_trans (div_le_div₀ (by positivity) (le_refl _) hr0 hle) hcr
 
 /-! ## Test: the closed-form instance `q = 1`
 

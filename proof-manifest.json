@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "32643fb4c1256391b3e88b8977f99845824c265913466d109a4cfd1a1cfcdc5f",
+ "proof_bundle_sha256": "fdd879d5640ae7e6ef3fad6714e37f7ceb222a8c5d21c316c5491c8e6a470ce1",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -20,8 +20,8 @@
   "RevPebbling/CompleteReach.lean": "8d3dc0ac5b5506db6369c53a06349e4359c0986de7f58f702015976616558c31",
   "RevPebbling/CompositionAnchor.lean": "040c9eeff6088e4822c17045f7047d8e00e538b240f0344ff651ef13802fcbf9",
   "RevPebbling/CountRecursion.lean": "a55f80b113f1bf74166c21ad086f217fcd4786de5ee99c7d46eaeeb0539178ef",
-  "RevPebbling/CriticalRoot.lean": "3dc414dd421c32d4f21f6dd08e93ef59e4bd75c6f79c683d8f460027c66a1470",
-  "RevPebbling/CriticalRoot197130.lean": "65ef87e2039374e24be2a0e53f4cfccb69e4805a8ae85b00ad2c2796eeadf113",
+  "RevPebbling/CriticalRoot.lean": "e2d0d7998b0a8cd7bffe65eb039a5ef25b5d68af1f8b7db6c7482d71e38f5432",
+  "RevPebbling/CriticalRoot197130.lean": "033d6f7afbb8ed4abe7dc0735666cd447d756e73a6912b32e5b3517713222bf1",
   "RevPebbling/CrossingConcentration.lean": "f13df2ffc6c6f79234793874a3f4d527b75d5144c2e95562d85e557c9ab3c539",
   "RevPebbling/CutAccounting.lean": "9b7c802614b3b981576302ff09a1f75a4249534dafca1d028d42ede9c63973f3",
   "RevPebbling/CutFull.lean": "ebc453db5d0082fceda7996915c76e9db52c1e50b02c8879370ab7777258e801",
@@ -375,6 +375,8 @@
     "RevPebbling.CriticalRoot.root_unique",
     "RevPebbling.CriticalRoot.exists_root",
     "RevPebbling.CriticalRoot.c_ge_critical",
+    "RevPebbling.CriticalRoot.root_le_of_G_le",
+    "RevPebbling.CriticalRoot.c_ge_of_G_le_one",
     "RevPebbling.CriticalRoot.golden_root",
     "RevPebbling.CriticalRoot.c_ge_two_sqrt_five_sub_two"
    ],
@@ -389,7 +391,6 @@
    "theorems": [
     "RevPebbling.CriticalRoot197130.rpow_div_le",
     "RevPebbling.CriticalRoot197130.le_rpow_div",
-    "RevPebbling.CriticalRoot197130.root_le_of_G_le",
     "RevPebbling.CriticalRoot197130.cert_A",
     "RevPebbling.CriticalRoot197130.cert_s1",
     "RevPebbling.CriticalRoot197130.cert_s2",

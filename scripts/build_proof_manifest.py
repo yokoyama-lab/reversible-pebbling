@@ -512,6 +512,8 @@ def main() -> int:
                     "RevPebbling.CriticalRoot.root_unique",
                     "RevPebbling.CriticalRoot.exists_root",
                     "RevPebbling.CriticalRoot.c_ge_critical",
+                    "RevPebbling.CriticalRoot.root_le_of_G_le",
+                    "RevPebbling.CriticalRoot.c_ge_of_G_le_one",
                     "RevPebbling.CriticalRoot.golden_root",
                     "RevPebbling.CriticalRoot.c_ge_two_sqrt_five_sub_two",
                 ],
@@ -557,7 +559,6 @@ def main() -> int:
                 "theorems": [
                     "RevPebbling.CriticalRoot197130.rpow_div_le",
                     "RevPebbling.CriticalRoot197130.le_rpow_div",
-                    "RevPebbling.CriticalRoot197130.root_le_of_G_le",
                     "RevPebbling.CriticalRoot197130.cert_A",
                     "RevPebbling.CriticalRoot197130.cert_s1",
                     "RevPebbling.CriticalRoot197130.cert_s2",
