@@ -152,9 +152,15 @@ for s in 1 42 99; do PYJANUS=… python3 tools/reftest.py --cases 200 --seed $s;
 
 共通定義のある `steps` と `call_depth` で照合 → **219/219 本で一致。不一致 0 本。**
 
-**改名をまたいだ再現**も取れた。旧 `atlas.csv` と名寄せできた 87 本で
-`steps`・`stack_peak`・`final_live_bits`・`call_depth_peak` の 4 値が **87/87 完全一致**
-（`gcd` と `injective_gcd` は改名で `_g` / `_c` が入れ替わって見えるだけ）。
+**改名をまたいだ再現**も取れた。`steps`・`stack_peak`・`final_live_bits`・`call_depth_peak`
+の 4 値が **97/97 完全一致**。
+
+> **2026-08-09 訂正**: 初版はここを「名寄せできた 87 本で 87/87」と書いていた。
+> 名前から `_g` / `_c` を推測する名寄せだったため、**改名で入れ替わった対**
+> （`gcd` ↔ `injective_gcd`）を落として 87 本に減っていた。PyJanus の git の
+> **改名記録**から対応表を作り直すと 97 本すべてが対応づき、4 値とも一致する。
+> レター（`~/dev/overleaf/2026_resource_atlas_letter/`）には再導出できる 97/97 を書いた。
+> **名前の規約から対応を推測しない**——改名記録が正本である。
 
 ### 照合の途中で踏んだ偽陰性 1 件
 
