@@ -69,13 +69,13 @@ file records the exact integer `v*` with `L(T0, v*) ≥ 2^{T0−2}`, whence
 | `anchor_T7500_m7.txt` | 7500 | mant 7 | 2.521235 |
 | `anchor_T141000_m10.txt` | 141000 | mant 10 | 2.5174496 |
 | `anchor_T98500_m11.txt` | 98500 | mant 11 | 2.5174407 |
-| **`anchor_T655000_m12.txt`** | 655000 | mant 12 | **2.5171571** |
+| **`anchor_T700000_m12.txt`** | 700000 | mant 12 | **2.5171540** |
 
 Together with `CriticalRoot25366` this brackets the growth rate as
 
-  **2.5170648368938161205 ≤ c ≤ 2.5171570677**,
+  **2.5170648368938161205 ≤ c ≤ 2.5171539807**,
 
-a window of 9.2·10⁻⁵ — all of it on the upper side — around the
+a window of 8.9·10⁻⁵ — all of it on the upper side — around the
 conjectured exact value `2^{1+κ*} = 2.5170648368938161205744…`, which
 the lower bound now matches to **nineteen decimal places**.
 Note that a finer grid beats a longer run: `anchor_T141000_m10.txt`

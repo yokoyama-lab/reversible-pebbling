@@ -25,7 +25,7 @@ second (measured).  Two other things stop us.
   development.
 
 Above all, **this does not narrow the bracket**: the window
-`[2.5170648368938161205, 2.5171571]` has width `9.2 × 10⁻⁵`, all of it
+`[2.5170648368938161205, 2.5171540]` has width `8.9 × 10⁻⁵`, all of it
 on the upper side.  Sharpening the lower bound past this point buys
 evidence for the conjecture `c = 2^{1+κ*}`, not a better interval.
 -/

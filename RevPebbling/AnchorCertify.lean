@@ -64,7 +64,7 @@ BUDGET: this is the artifact's second deliberate over-budget check,
 after `RLECertify.fRow_60`.  The DP is 1198 × 14976 ≈ 1.8·10⁷ cells and
 the row is checked cell by cell, so the module takes about eight
 minutes — the same order as `f_60`'s 384 s.  Its value is that the
-`c ≤ 2.5368` it certifies is *internal*: the published `c ≤ 2.5171571`
+`c ≤ 2.5368` it certifies is *internal*: the published `c ≤ 2.5171540`
 still rests on a C computation outside the prover. -/
 
 set_option maxHeartbeats 0 in
@@ -108,7 +108,7 @@ theorem v_le_pow : ((62 * 2 ^ 405 : Nat) : ℝ) ≤ (1268421 / 1000000 : ℝ) ^ 
 
 /-- **`c ≤ 2.536842`, FROM AN ANCHOR REPLAYED INSIDE THE PROVER.**
 
-The published `c ≤ 2.5171571` still rests on a C computation; this one
+The published `c ≤ 2.5171540` still rests on a C computation; this one
 does not.  It also improves the artifact's own internal upper bound,
 which was `c ≤ 2.6106` (`GrowthCertified.growth_le_2_6106`, from
 `f_60`). -/
