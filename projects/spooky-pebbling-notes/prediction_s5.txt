@@ -1,0 +1,5 @@
+theta(5) = 15
+予測 n=13, s=5: T_UP=41  T_UG=42  T_UG-T_UP=1
+予測 n=14, s=5: T_UP=45  T_UG=46  T_UG-T_UP=1
+予測 n=15, s=5: T_UP=51  T_UG=50  T_UG-T_UP=-1
+予測 n=16, s=5: T_UP=57  T_UG=56  T_UG-T_UP=-1
