@@ -73,7 +73,7 @@ file records the exact integer `v*` with `L(T0, v*) ≥ 2^{T0−2}`, whence
 
 Together with `CriticalRoot25366` this brackets the growth rate as
 
-  **2.5170648368938161205 ≤ c ≤ 2.5171570676**,
+  **2.5170648368938161205 ≤ c ≤ 2.5171570677**,
 
 a window of 9.2·10⁻⁵ — all of it on the upper side — around the
 conjectured exact value `2^{1+κ*} = 2.5170648368938161205744…`, which
