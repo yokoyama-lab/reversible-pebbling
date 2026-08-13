@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Defs
+import SpookyPebbling.Decomp
 
 namespace Spooky
 
@@ -132,5 +132,16 @@ example : Run 2 2 (sinkPebble 2)
 
 example : TUG 3 2 ≤ 8 := TUG_le ⟨wUG3_2, rfl, by decide⟩
 example : TUP 3 2 ≤ 9 := TUP_le ⟨wUP3_2, rfl, by decide⟩
+
+/-! ## 主定理が空虚でないこと
+
+`decomp_ge` の仮定は充足可能である（上の witness）。実際に適用して結論を得る。
+-/
+
+example : ∃ k, 1 ≤ k ∧ k < 3 ∧ 2 * k - 1 + TUP k 3 + TUP (3 - k) 2 ≤ wUP3_3.length :=
+  decomp_ge (by omega) (by decide)
+
+example : ∃ k, 1 ≤ k ∧ k < 5 ∧ 2 * k - 1 + TUP k 3 + TUP (5 - k) 2 ≤ wUP5_3.length :=
+  decomp_ge (by omega) (by decide)
 
 end Spooky

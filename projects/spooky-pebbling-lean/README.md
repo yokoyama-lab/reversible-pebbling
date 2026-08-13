@@ -20,14 +20,28 @@
 
 | 主張 | 層 | 置き場 |
 |---|---|---|
+| **$T_{UP}$ 分解の $\ge$ 方向**（本丸。KSS の交換論法は不要） | **1（Lean）** | `SpookyPebbling/Decomp.lean` |
 | **$T_{UG}(n,s) \ne T_{UP}(n,s)$**（パリティ不変量） | **1（Lean）** | `SpookyPebbling/Parity.lean` |
 | unpebbling は奇数手・unghosting は偶数手・pebbling は奇数手 | **1（Lean）** | `SpookyPebbling/Parity.lean` |
 | **補題G**: 始状態に余分なゴーストが在っても手数は減らない | **1（Lean）** | `SpookyPebbling/Ghost.lean` |
+| 段(i): 頭の手は `2k-1` 手以上 | **1（Lean）** | `SpookyPebbling/Count.lean` |
+| 頭・尻尾への射影が部分鎖の妥当な手順になること | **1（Lean）** | `SpookyPebbling/Project.lean` |
 | 意味論が `< n` の値にしか依存しない（射影の土台） | **1（Lean）** | `SpookyPebbling/Defs.lean` |
-| $T_{UP}$ 分解の $\ge$ 方向、$\theta(s)=s(s+1)/2$、傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$ | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
+| $\le$ 方向（構成）、$\theta(s)=s(s+1)/2$、傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$ | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
 
 **$T_{UG}\ne T_{UP}$ は KSS が持っていない。** KSS Thm 4.11 の $\pm1$ は Lemma 4.9/4.10 の
 両側不等式から出るもので、$0$ の可能性を排除していない。パリティが排除する。
+
+**分解の $\ge$ 方向は KSS の交換論法を使わない。** KSS Lemma 4.1 は
+「すべての最適算法のうち $k$ を最大にするものを取る」WLOG から $P^\bot$ を構成するが、
+$k$ を*与えられた 1 本の手順の内側*で
+
+$$s^\dagger := \max_t |P_t|,\quad F := \{t : |P_t| = s^\dagger\},\quad
+  u := \max_{t\in F}\ \min\{i : v_i\in P_t\},\quad k := u+1$$
+
+と取れば、必要な「尻尾のペブルは常に $\le s^\dagger-1$」が**定義から**出る。
+手順を作り変えないので、最適性の仮定も sweep-first 正規化も要らず、
+**任意の妥当な手順について**主張が立つ（`decomp_ge` の仮定は `Run` だけ）。
 
 ## 検査（テストファースト）
 
@@ -64,6 +78,9 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 公理検査 | 主要 8 定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
 | 変異A（偽の補題 `probe : False`） | **検出**（ビルドが落ちる） |
 | 変異B（`ghost` に前提条件を付ける） | **検出**。うち `Tests.lean` だけで 14 か所（`by decide` が定義の変異を捕まえる） |
+| 変異C（主定理の `2k-1` を `2k` に強める） | **検出** |
+| 変異D（尻尾の上限を `s†-1` でなく `s` にする） | **検出**（`k` の取り方が効いている証拠） |
+| 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` を適用して結論を得ている |
 
 再現:
 
@@ -74,12 +91,23 @@ echo 'import SpookyPebbling
 #print axioms Spooky.TUG_ne_TUP' > /tmp/ax.lean && lake env lean /tmp/ax.lean
 ```
 
+## ファイル
+
+| ファイル | 内容 |
+|---|---|
+| `Defs.lean` | 遷移規則（Quist–Laarman Def 2.2 の逐語）、`Run`、`TP`/`TUP`/`TUG`、`< n` 依存性 |
+| `Parity.lean` | パリティ不変量 → `TUG_ne_TUP` |
+| `Ghost.lean` | 補題G（余分なゴーストは損にならない） |
+| `Project.lean` | 軌跡・`valid`/上限の分離・添字ずらし・頭/尻尾への射影 |
+| `Count.lean` | 段(i)（`2k-1` の数え上げ） |
+| `Split.lean` | ペブル数の分割・最下位ペブル・最大元の存在 |
+| `Decomp.lean` | `s†≥2`、尻尾の上限、**主定理 `decomp_ge` / `TUP_ge_decomp`** |
+| `Tests.lean` | 陽性 13 点・陰性 6 点・主定理の非空虚性 |
+
 ## 未移植（次にやること）
 
-1. **$T_{UP}$ 分解の $\ge$ 方向**（本丸）。紙の証明は
-   $s^\dagger=\max_t|P_t|$、$F=\{t:|P_t|=s^\dagger\}$、$k=\max_{t\in F}\min P_t$ と取る。
-   Lean 化には (a) 手順の軌跡、(b) 頭・尻尾への射影（`List.filter` と添字のずらし）、
-   (c) 「各 $v_i$ が 1 回は置かれ 1 回は外される」の数え上げ、が要る。
-   補題G（済）はその段(2)にあたる
-2. 上界側の構成（$\le$ 方向）
-3. $\theta(s)=s(s+1)/2$
+1. **$\le$ 方向（構成）** — 任意の $k$ について「$v_k$ まで掃いてペブル 1 個を残す
+   → 尻尾を上限 $s-1$ で片付ける → 頭を上限 $s$ で片付ける」が妥当な手順であること。
+   $\ge$ 方向と合わせて $s\ge3$ の等号が確定する
+2. $\theta(s)=s(s+1)/2$（等号が出れば `closed2.py` の 3 本の漸化式から従う）
+3. 傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$

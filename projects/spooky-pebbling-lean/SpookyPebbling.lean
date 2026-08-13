@@ -3,4 +3,6 @@ import SpookyPebbling.Parity
 import SpookyPebbling.Ghost
 import SpookyPebbling.Project
 import SpookyPebbling.Count
+import SpookyPebbling.Split
+import SpookyPebbling.Decomp
 import SpookyPebbling.Tests
