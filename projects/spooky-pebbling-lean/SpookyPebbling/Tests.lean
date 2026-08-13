@@ -1,0 +1,136 @@
+/-
+# 計算による検査（テストファースト）
+
+**定義が正しいことは証明できない。**できるのは、独立に得た値と突き合わせて
+「間違っていたら落ちる」ようにしておくことだけ。ここでは 2 種類を置く。
+
+1. **陽性**: `~/dev/notes/spooky-pebbling` の BFS（`kss.py` / `witness_up.py`、
+   Knill の既知値 5 点と独立 2 実装 40 点で校正済み）が返した**最適手順そのもの**を
+   転記し、`by decide` で妥当性を検査する。同時に `T… ≤ 値` の上界も得る
+2. **陰性（変異注入）**: 前提条件・上限・終状態・範囲を 1 つずつ壊した手順が
+   **`Run` にならない**ことを `by decide` で検査する。陽性だけだと
+   「何でも `Run` になる」定義でも通ってしまう
+
+値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
+$T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
+-/
+import SpookyPebbling.Defs
+
+namespace Spooky
+
+/-! ## 陽性: BFS の最適手順を転記して検査する -/
+
+/-- BFS が返した最適手順（TUP(2,2) = 3）。 -/
+def wUP2_2 : List Move := [⟨.pebble, 0⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 2 2 (sinkPebble 2) wUP2_2 allEmpty := by decide
+example : TUP 2 2 ≤ 3 := TUP_le ⟨wUP2_2, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUP(3,2) = 9）。 -/
+def wUP3_2 : List Move := [⟨.pebble, 0⟩, ⟨.ghost, 2⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.unghost, 2⟩, ⟨.unpebble, 2⟩, ⟨.pebble, 0⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 3 2 (sinkPebble 3) wUP3_2 allEmpty := by decide
+example : TUP 3 2 ≤ 9 := TUP_le ⟨wUP3_2, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUP(4,2) = 17）。 -/
+def wUP4_2 : List Move := [⟨.pebble, 0⟩, ⟨.ghost, 3⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.pebble, 2⟩, ⟨.ghost, 1⟩, ⟨.unghost, 3⟩, ⟨.unpebble, 3⟩, ⟨.pebble, 0⟩, ⟨.ghost, 2⟩, ⟨.unghost, 1⟩, ⟨.unpebble, 0⟩, ⟨.unghost, 2⟩, ⟨.unpebble, 2⟩, ⟨.pebble, 0⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 4 2 (sinkPebble 4) wUP4_2 allEmpty := by decide
+example : TUP 4 2 ≤ 17 := TUP_le ⟨wUP4_2, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUP(3,3) = 5）。 -/
+def wUP3_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 2⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 3 3 (sinkPebble 3) wUP3_3 allEmpty := by decide
+example : TUP 3 3 ≤ 5 := TUP_le ⟨wUP3_3, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUP(4,4) = 7）。 -/
+def wUP4_4 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.pebble, 2⟩, ⟨.unpebble, 3⟩, ⟨.unpebble, 2⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 4 4 (sinkPebble 4) wUP4_4 allEmpty := by decide
+example : TUP 4 4 ≤ 7 := TUP_le ⟨wUP4_4, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUP(5,3) = 13）。 -/
+def wUP5_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.pebble, 2⟩, ⟨.ghost, 1⟩, ⟨.pebble, 3⟩, ⟨.unpebble, 4⟩, ⟨.pebble, 0⟩, ⟨.unpebble, 3⟩, ⟨.unghost, 1⟩, ⟨.unpebble, 2⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 5 3 (sinkPebble 5) wUP5_3 allEmpty := by decide
+example : TUP 5 3 ≤ 13 := TUP_le ⟨wUP5_3, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUG(2,2) = 4）。 -/
+def wUG2_2 : List Move := [⟨.pebble, 0⟩, ⟨.unghost, 1⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 2 2 (sinkGhost 2) wUG2_2 allEmpty := by decide
+example : TUG 2 2 ≤ 4 := TUG_le ⟨wUG2_2, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUG(3,2) = 8）。 -/
+def wUG3_2 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.unghost, 2⟩, ⟨.unpebble, 2⟩, ⟨.pebble, 0⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 3 2 (sinkGhost 3) wUG3_2 allEmpty := by decide
+example : TUG 3 2 ≤ 8 := TUG_le ⟨wUG3_2, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUG(4,2) = 16）。 -/
+def wUG4_2 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.pebble, 2⟩, ⟨.ghost, 1⟩, ⟨.unghost, 3⟩, ⟨.unpebble, 3⟩, ⟨.pebble, 0⟩, ⟨.ghost, 2⟩, ⟨.unghost, 1⟩, ⟨.unpebble, 0⟩, ⟨.unghost, 2⟩, ⟨.unpebble, 2⟩, ⟨.pebble, 0⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 4 2 (sinkGhost 4) wUG4_2 allEmpty := by decide
+example : TUG 4 2 ≤ 16 := TUG_le ⟨wUG4_2, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUG(3,3) = 6）。 -/
+def wUG3_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unghost, 2⟩, ⟨.unpebble, 2⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 3 3 (sinkGhost 3) wUG3_3 allEmpty := by decide
+example : TUG 3 3 ≤ 6 := TUG_le ⟨wUG3_3, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TUG(5,3) = 14）。 -/
+def wUG5_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.pebble, 2⟩, ⟨.ghost, 1⟩, ⟨.pebble, 3⟩, ⟨.unghost, 4⟩, ⟨.unpebble, 4⟩, ⟨.pebble, 0⟩, ⟨.unpebble, 3⟩, ⟨.unghost, 1⟩, ⟨.unpebble, 2⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 5 3 (sinkGhost 5) wUG5_3 allEmpty := by decide
+example : TUG 5 3 ≤ 14 := TUG_le ⟨wUG5_3, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TP(4,3) = 9）。 -/
+def wP4_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.pebble, 2⟩, ⟨.pebble, 3⟩, ⟨.unpebble, 2⟩, ⟨.pebble, 0⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 4 3 allEmpty wP4_3 (sinkPebble 4) := by decide
+example : TP 4 3 ≤ 9 := TP_le ⟨wP4_3, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TP(5,3) = 17）。 -/
+def wP5_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.pebble, 2⟩, ⟨.ghost, 1⟩, ⟨.pebble, 3⟩, ⟨.pebble, 4⟩, ⟨.unpebble, 3⟩, ⟨.pebble, 0⟩, ⟨.ghost, 2⟩, ⟨.unghost, 1⟩, ⟨.unpebble, 0⟩, ⟨.unghost, 2⟩, ⟨.unpebble, 2⟩, ⟨.pebble, 0⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 5 3 allEmpty wP5_3 (sinkPebble 5) := by decide
+example : TP 5 3 ≤ 17 := TP_le ⟨wP5_3, rfl, by decide⟩
+
+/-- BFS が返した最適手順（TP(3,3) = 5）。 -/
+def wP3_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.pebble, 2⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+example : Run 3 3 allEmpty wP3_3 (sinkPebble 3) := by decide
+example : TP 3 3 ≤ 5 := TP_le ⟨wP3_3, rfl, by decide⟩
+
+/-! ## 陰性（変異注入）: 1 つ壊すと `Run` にならないこと
+
+陽性の検査だけでは「常に真」の定義でも通る。以下が**すべて偽**であることを確かめる。
+-/
+
+/-- 上限を 1 下げると通らない（`wUP2_2` は途中で 2 個持つ）。 -/
+example : ¬ Run 2 1 (sinkPebble 2) wUP2_2 allEmpty := by decide
+
+/-- 前提条件: `v₀` にペブルが無いのに `unpebble v₁` は打てない。 -/
+example : ¬ Run 2 2 (sinkPebble 2) [⟨.unpebble, 1⟩] allEmpty := by decide
+
+/-- 前提条件: `v₀` にペブルが無いのに `unghost v₁` は打てない。 -/
+example : ¬ Run 2 2 (sinkGhost 2) [⟨.unghost, 1⟩, ⟨.unpebble, 1⟩] allEmpty := by decide
+
+/-- 終状態: ゴーストを残したまま終わってはいけない（$G_\tau=\emptyset$）。 -/
+example : ¬ Run 2 2 (sinkPebble 2) [⟨.ghost, 1⟩] allEmpty := by decide
+
+/-- 範囲: 鎖の外の頂点は触れない。 -/
+example : ¬ Run 2 2 (sinkPebble 2) [⟨.pebble, 5⟩] allEmpty := by decide
+
+/-- 手順を 1 手削ると終状態に届かない。 -/
+example : ¬ Run 2 2 (sinkPebble 2) [⟨.pebble, 0⟩, ⟨.unpebble, 1⟩] allEmpty := by decide
+
+/-! ## `ghost` だけは前提を持たない（測定）
+
+これは Quist–Laarman Def 2.2 の逐語。`ghost` に前提を付けてしまうと落ちる検査。
+-/
+
+/-- $v_0$ が空のまま `ghost v₁` を打てる（そのあと `unghost` には $v_0$ が要る）。 -/
+example : Run 2 2 (sinkPebble 2)
+    [⟨.ghost, 1⟩, ⟨.pebble, 0⟩, ⟨.unghost, 1⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩] allEmpty := by
+  decide
+
+/-! ## 3 量の関係（KSS Thm 4.11 の片側）を小さい点で確かめる
+
+`TUG n s ≤ TUP n s + 1`（KSS Lemma 4.10）と `TUP n s ≤ TUG n s + 1`（Lemma 4.9）は
+上の上界だけからは出ないが、$n=3,s=2$ では $T_{UP}=9$, $T_{UG}=8$ で差が 1。
+ここでは上界どうしの比較だけを記録する（下界は `Parity.lean` の議論が要る）。
+-/
+
+example : TUG 3 2 ≤ 8 := TUG_le ⟨wUG3_2, rfl, by decide⟩
+example : TUP 3 2 ≤ 9 := TUP_le ⟨wUP3_2, rfl, by decide⟩
+
+end Spooky
