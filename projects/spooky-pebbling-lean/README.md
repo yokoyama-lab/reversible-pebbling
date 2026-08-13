@@ -73,9 +73,9 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 点 | 結果 |
 |---|---|
 | ビルド | `lake build SpookyPebbling` rc=0 |
-| 成果物の実在 | `Defs.olean` `Parity.olean` `Ghost.olean` `Tests.olean` の 4 本を確認 |
-| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（4 ファイルすべて） |
-| 公理検査 | 主要 8 定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
+| 成果物の実在 | `Defs` `Parity` `Ghost` `Project` `Count` `Split` `Decomp` `Tests` の olean 8 本を確認 |
+| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（8 ファイルすべて） |
+| 公理検査 | `decomp_ge` を含む主要定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
 | 変異A（偽の補題 `probe : False`） | **検出**（ビルドが落ちる） |
 | 変異B（`ghost` に前提条件を付ける） | **検出**。うち `Tests.lean` だけで 14 か所（`by decide` が定義の変異を捕まえる） |
 | 変異C（主定理の `2k-1` を `2k` に強める） | **検出** |
