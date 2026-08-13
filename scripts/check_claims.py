@@ -47,9 +47,12 @@ _FITTED = ("a coefficient FITTED to measured anchor-DP runs (CLAUDE.md, "
 
 CONSTANT_ALLOW = {
     "4.31.0": "the Lean toolchain version",
-    "2.5174407": "the anchor bound, an exact integer computation "
-                 "outside the prover (see data/anchor_T98500_m11.txt)",
-    "2.5174406519": "the same bound at full precision",
+    "2.5171571": "the anchor bound, an exact integer computation "
+                 "outside the prover (see data/anchor_T655000_m12.txt)",
+    "2.5171570676": "the same bound at full precision",
+    "2.5174407": "the previous anchor bound, superseded by the mant-12 "
+                 "run but still listed in the README table of "
+                 "certificates (see data/anchor_T98500_m11.txt)",
     "2.924": "the bound f_4 = 25 gives on paper, quoted for comparison",
     "0.3317423792563106": "the upper end of the kappa* enclosure, proved "
                           "in the Rocq layer (rocq/KappaStar.v, kappa_upper); "

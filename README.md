@@ -68,16 +68,21 @@ file records the exact integer `v*` with `L(T0, v*) ≥ 2^{T0−2}`, whence
 | `anchor_t1198.txt` | 1200 | mant 5 | 2.536842 |
 | `anchor_T7500_m7.txt` | 7500 | mant 7 | 2.521235 |
 | `anchor_T141000_m10.txt` | 141000 | mant 10 | 2.5174496 |
-| **`anchor_T98500_m11.txt`** | 98500 | mant 11 | **2.5174407** |
+| `anchor_T98500_m11.txt` | 98500 | mant 11 | 2.5174407 |
+| **`anchor_T655000_m12.txt`** | 655000 | mant 12 | **2.5171571** |
 
 Together with `CriticalRoot25366` this brackets the growth rate as
 
-  **2.5170648368938161205 ≤ c ≤ 2.5174406519**,
+  **2.5170648368938161205 ≤ c ≤ 2.5171570676**,
 
-a window of 3.8·10⁻⁴ — all of it on the upper side — around the
+a window of 9.2·10⁻⁵ — all of it on the upper side — around the
 conjectured exact value `2^{1+κ*} = 2.5170648368938161205744…`, which
 the lower bound now matches to **nineteen decimal places**.
-The two large anchors were produced by `m33_anchor_c.c` (paper
+Note that a finer grid beats a longer run: `anchor_T141000_m10.txt`
+uses 43% more time steps than `anchor_T98500_m11.txt` and is still the
+weaker bound, because the round-down loss per step scales with the
+octave resolution `2^{-m}`.
+The three large anchors were produced by `m33_anchor_c.c` (paper
 repository), which reproduces the earlier bignum certificates bit for
 bit while running ~600x faster; `base_check_T3000_eps001.txt` and
 `kappa_enclosure_certified.txt` are the base-row check and the certified

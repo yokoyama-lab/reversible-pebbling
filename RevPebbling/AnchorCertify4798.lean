@@ -14,7 +14,7 @@ one — `T₀ = 4800` on the **mantissa-6** grid — and gets
 
 which cuts the artifact's *internal* gap to the conjectured
 `2^{1+κ*} = 2.5170648369` by a factor of 2.9 (from `1.98·10⁻²` to
-`6.9·10⁻³`).  The published `c ≤ 2.5174407` still rests on a C
+`6.9·10⁻³`).  The published `c ≤ 2.5171571` still rests on a C
 computation outside the prover; this one does not.
 
 ## Why `T₀ = 4800`, mantissa 6
