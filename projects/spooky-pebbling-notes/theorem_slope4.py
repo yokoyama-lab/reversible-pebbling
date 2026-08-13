@@ -3,8 +3,10 @@
 
     python3 theorem_slope4.py
 
-**$T_{UP}$ の分解の $\\ge$ 方向（唯一の未証明）を使わずに**、次まで証明できる。
-残るギャップは各 $s$ につき **$n=\\theta(s)$ の 1 点だけ**になった。
+**$T_{UP}$ の分解の $\\ge$ 方向を使わずに**、次まで証明できる。
+この経路だけでは各 $s$ につき **$n=\\theta(s)$ の 1 点**が残る。
+その 1 点は `exchange.py`（$T_{UP}$ 分解の $\\ge$ 方向）で 2026-08-13 に閉じた。
+本ファイルは「分解に依存しない独立経路」としての価値があるので残してある。
 
 ---
 
@@ -104,16 +106,15 @@ def main() -> int:
     print(f"定理A（下界 T_UG>=4n-2s）: {cA} 点")
     print(f"定理B（T_UG=4n-2s on [s,theta]）: {cB} 点")
     print(f"定理C（T_UP=4n-2s-1 on [s,theta-1] と delta=+1）: {cC} 点")
-    print(f"残るギャップ（n=theta(s) で T_UP=4n-2s+1）: {cD} 点（s=2..10）")
+    print(f"この経路だけで残る 1 点（n=theta(s) で T_UP=4n-2s+1）: {cD} 点（s=2..10）")
     if fails:
         print(f"\nNG {len(fails)} 件（先頭 10）:")
         for f in fails[:10]:
             print("  -", f)
         return 1
-    print("\nすべて成立。証明済みなのは A・B・C（theta の手前まで）。")
-    print("未証明は各 s につき n=theta(s) の 1 点のみ:")
-    print("  T_UP(theta(s),s) が 4n-2s-1 ではないこと（パリティと KSS の ±1 から")
-    print("  値は 4n-2s±1 のどちらかに確定しているので、下側を排除すればよい）。")
+    print("\nすべて成立。この経路（分解に依存しない）で証明済みなのは A・B・C。")
+    print("各 s につき n=theta(s) の 1 点だけはこの経路では出ないが、")
+    print("T_UP 分解の >= 方向（exchange.py、2026-08-13）で閉じている。未証明は無い。")
     return 0
 
 
