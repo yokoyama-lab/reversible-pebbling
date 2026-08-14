@@ -49,7 +49,12 @@ shape には出現順に id を振り、id → (popcount, root ビット, key) �
 
 from __future__ import annotations
 
-_SHIFT = 27  # 子 id は 2^27 未満と仮定（assert で検査）
+_SHIFT = 36  # 子 id は 2^36 未満と仮定（assert で検査）
+# 2026-08-10: 27 では `pmin_tree(6)` が 10 分・19.5GB の時点で assert に当たった。
+# Python の int は多倍長なので上げても正しさは変わらない（速度がわずかに落ちるだけ）。
+# ⚠ ただし `pmin_tree(6)` は _SHIFT を上げても**メモリで詰む見込み**。
+# 高さ 7 の値が要るなら Královič Lemma 4.3（S̄min(h+1) = Smin(h) + 2）で
+# 高さ 6 側の計算に落とすこと。
 
 # 実測した到達範囲（2026-07-27, 61GB マシン。他の作業と共用）:
 #   m<=5 (cbt(6) free-leaves, 63 頂点): p<=10 まで数分・数百MB で完走。

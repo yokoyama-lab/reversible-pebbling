@@ -1,0 +1,35 @@
+{
+ "p": 6,
+ "e": 3,
+ "n": 81,
+ "layer_sizes": [
+  1626196,
+  5675133,
+  13277946,
+  24722566
+ ],
+ "bfs_seconds": 1040.0,
+ "staircase_bad": [],
+ "tip_minsupp_by_u": {
+  "2": {
+   "s": 73,
+   "witness": [
+    57,
+    73,
+    81
+   ]
+  },
+  "3": {
+   "s": 57,
+   "witness": [
+    57,
+    81
+   ]
+  }
+ },
+ "pts_reach": 24722565,
+ "pts_unreach": 997154,
+ "kchk": 4,
+ "counterexamples": [],
+ "check_seconds": 4690.7
+}

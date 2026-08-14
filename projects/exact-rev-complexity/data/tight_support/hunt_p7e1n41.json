@@ -1,0 +1,30 @@
+{
+ "p": 7,
+ "e": 1,
+ "n": 41,
+ "layer_sizes": [
+  17384086,
+  21111741
+ ],
+ "bfs_seconds": 1182.0,
+ "staircase_bad": [],
+ "tip_minsupp_by_u": {
+  "0": {
+   "s": 0,
+   "witness": [
+    41
+   ]
+  },
+  "1": {
+   "s": 0,
+   "witness": [
+    41
+   ]
+  }
+ },
+ "pts_reach": 21111740,
+ "pts_unreach": 0,
+ "kchk": 4,
+ "counterexamples": [],
+ "check_seconds": 16190.7
+}
