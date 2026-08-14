@@ -6,3 +6,21 @@ __pycache__/
 .lake/
 lean/.lake/
 data/families/sat_work/
+
+# --- 2026-08-14 追加 ---
+# DRAT の証明対象 CNF は決定的に再生成できる（scripts/q2_cnf.py）。
+# 77MB あるので本体は追跡せず、data/q2_certs/SHA256SUMS で同一性を担保する。
+data/q2_certs/*.cnf
+data/q2_certs/*.drat
+# コンパイル済みバイナリ・ビルド成果物
+rocq/anchor/run_ml
+rocq/anchor/shim/t3
+rocq/anchor/arrbuild/run_arr
+rocq/anchor/**/*.cm[iox]
+rocq/anchor/**/*.o
+rust/*/target/
+*.vo
+*.vok
+*.vos
+*.glob
+.pytest_cache/
