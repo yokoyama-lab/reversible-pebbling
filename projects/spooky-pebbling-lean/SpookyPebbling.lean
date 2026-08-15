@@ -5,4 +5,6 @@ import SpookyPebbling.Project
 import SpookyPebbling.Count
 import SpookyPebbling.Split
 import SpookyPebbling.Decomp
+import SpookyPebbling.Lift
+import SpookyPebbling.Sweep
 import SpookyPebbling.Tests
