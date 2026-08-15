@@ -7,4 +7,5 @@ import SpookyPebbling.Split
 import SpookyPebbling.Decomp
 import SpookyPebbling.Lift
 import SpookyPebbling.Sweep
+import SpookyPebbling.Reghost
 import SpookyPebbling.Tests
