@@ -20,14 +20,16 @@
 
 | 主張 | 層 | 置き場 |
 |---|---|---|
-| **$T_{UP}$ 分解の $\ge$ 方向**（本丸。KSS の交換論法は不要） | **1（Lean）** | `SpookyPebbling/Decomp.lean` |
+| **$T_{UP}$ 分解が厳密**（$\ge$ と $\le$ の両方向。$s\ge3$） | **1（Lean）** | `Decomp.lean` / `Upper.lean` |
+| **$\ge$ 方向**（KSS の交換論法は不要） | **1（Lean）** | `SpookyPebbling/Decomp.lean` |
+| **$\le$ 方向**（掃き＋尻尾の持ち上げ＋ゴースト回収） | **1（Lean）** | `Sweep.lean` / `Lift.lean` / `Reghost.lean` / `Upper.lean` |
 | **$T_{UG}(n,s) \ne T_{UP}(n,s)$**（パリティ不変量） | **1（Lean）** | `SpookyPebbling/Parity.lean` |
 | unpebbling は奇数手・unghosting は偶数手・pebbling は奇数手 | **1（Lean）** | `SpookyPebbling/Parity.lean` |
 | **補題G**: 始状態に余分なゴーストが在っても手数は減らない | **1（Lean）** | `SpookyPebbling/Ghost.lean` |
 | 段(i): 頭の手は `2k-1` 手以上 | **1（Lean）** | `SpookyPebbling/Count.lean` |
 | 頭・尻尾への射影が部分鎖の妥当な手順になること | **1（Lean）** | `SpookyPebbling/Project.lean` |
 | 意味論が `< n` の値にしか依存しない（射影の土台） | **1（Lean）** | `SpookyPebbling/Defs.lean` |
-| $\le$ 方向（構成）、$\theta(s)=s(s+1)/2$、傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$ | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
+| $\theta(s)=s(s+1)/2$、傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$ | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
 
 **$T_{UG}\ne T_{UP}$ は KSS が持っていない。** KSS Thm 4.11 の $\pm1$ は Lemma 4.9/4.10 の
 両側不等式から出るもので、$0$ の可能性を排除していない。パリティが排除する。
@@ -42,6 +44,20 @@ $$s^\dagger := \max_t |P_t|,\quad F := \{t : |P_t| = s^\dagger\},\quad
 と取れば、必要な「尻尾のペブルは常に $\le s^\dagger-1$」が**定義から**出る。
 手順を作り変えないので、最適性の仮定も sweep-first 正規化も要らず、
 **任意の妥当な手順について**主張が立つ（`decomp_ge` の仮定は `Run` だけ）。
+
+**⚠ $\le$ 方向で紙の証明が飛ばしていた点（形式化で判明）**: 「$v_{k-1}$ まで掃いて
+ペブル 1 個を残す `2k-1` 手」は **`unpebble` では書けない**。`unpebble v_i` は
+$v_{i-1}\in P$ を要求するが、掃きでは $v_{i-1}$ を既に外しているからである
+（$v_0$ だけは前提が無いので外せる）。手数がちょうど `2k-1` である以上、余分な手を
+入れる余地は無い。したがって
+
+> **掃きは `ghost` を使い、$v_0..v_{k-2}$ にゴーストを残す。**
+
+残ったゴーストは頭の手順が回収する: 頭の手順はどのみち各頂点を 1 回は置くので
+（`head_places`）、その `pebble` を `unghost` に読み替えればよく、**手数は変わらない**
+（`Run_reghost` = `Ghost.lean` の補題G のちょうど逆向き）。この読み替えが要ることは
+紙の証明にも `closed2.py` の数値検証にも現れていなかった。変異G（掃きを `unpebble` に
+戻す）でビルドが落ちることが、この点が本質であることの機械的な証拠である。
 
 ## 検査（テストファースト）
 
@@ -78,9 +94,12 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 公理検査 | `decomp_ge` を含む主要定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
 | 変異A（偽の補題 `probe : False`） | **検出**（ビルドが落ちる） |
 | 変異B（`ghost` に前提条件を付ける） | **検出**。うち `Tests.lean` だけで 14 か所（`by decide` が定義の変異を捕まえる） |
-| 変異C（主定理の `2k-1` を `2k` に強める） | **検出** |
+| 変異C（$\ge$ 方向の `2k-1` を `2k` に強める） | **検出** |
 | 変異D（尻尾の上限を `s†-1` でなく `s` にする） | **検出**（`k` の取り方が効いている証拠） |
-| 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` を適用して結論を得ている |
+| 変異E（構成の手数を `2j+1` でなく `2j` と主張） | **検出** |
+| 変異F（`s ≥ 3` を `s ≥ 2` に緩める） | **検出**（掃きの 3 個が入らなくなる） |
+| 変異G（掃きの `ghost` を `unpebble` にする＝紙の証明どおりの書き方） | **検出**（ゴーストが本質である証拠） |
+| 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` / `decomp_le_run` を適用して結論を得ている |
 
 再現:
 
@@ -101,13 +120,18 @@ echo 'import SpookyPebbling
 | `Project.lean` | 軌跡・`valid`/上限の分離・添字ずらし・頭/尻尾への射影 |
 | `Count.lean` | 段(i)（`2k-1` の数え上げ） |
 | `Split.lean` | ペブル数の分割・最下位ペブル・最大元の存在 |
-| `Decomp.lean` | `s†≥2`、尻尾の上限、**主定理 `decomp_ge` / `TUP_ge_decomp`** |
-| `Tests.lean` | 陽性 13 点・陰性 6 点・主定理の非空虚性 |
+| `Decomp.lean` | `s†≥2`、尻尾の上限、**`decomp_ge` / `TUP_ge_decomp`**（$\ge$ 方向） |
+| `Lift.lean` | 持ち上げ（射影の逆）・連結・`valid_mono`・`traj_above` |
+| `Sweep.lean` | 掃き `sweep k`（`2k-1` 手、ゴーストを残す）とその仕様 |
+| `Reghost.lean` | `head_places` と再ゴースト `Run_reghost`（補題G の逆向き） |
+| `Upper.lean` | **`decomp_le_run` / `decomp_le` / `decomp_exact`**（$\le$ 方向と等号） |
+| `Tests.lean` | 陽性 13 点・陰性 6 点・両方向の非空虚性 |
 
 ## 未移植（次にやること）
 
-1. **$\le$ 方向（構成）** — 任意の $k$ について「$v_k$ まで掃いてペブル 1 個を残す
-   → 尻尾を上限 $s-1$ で片付ける → 頭を上限 $s$ で片付ける」が妥当な手順であること。
-   $\ge$ 方向と合わせて $s\ge3$ の等号が確定する
-2. $\theta(s)=s(s+1)/2$（等号が出れば `closed2.py` の 3 本の漸化式から従う）
-3. 傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$
+1. **$\theta(s)=s(s+1)/2$** — 分解が両方向とも層1 になったので、`closed2.py` の 3 本の
+   漸化式（KSS Cor 4.7・Cor 4.12 と本リポの分解）を Lean 上で閉じれば従う。
+   KSS の 2 本は現状 Lean に無いので、そこが次の壁
+2. 傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$
+3. 到達可能性（`UPLengths n s` が空でないこと）を `s ≥ 3` で一般に示す。
+   いまは `decomp_le` / `decomp_exact` の仮定に置いている

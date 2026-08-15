@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Decomp
+import SpookyPebbling.Upper
 
 namespace Spooky
 
@@ -143,5 +143,16 @@ example : ∃ k, 1 ≤ k ∧ k < 3 ∧ 2 * k - 1 + TUP k 3 + TUP (3 - k) 2 ≤ w
 
 example : ∃ k, 1 ≤ k ∧ k < 5 ∧ 2 * k - 1 + TUP k 3 + TUP (5 - k) 2 ≤ wUP5_3.length :=
   decomp_ge (by omega) (by decide)
+
+/-! ## `<=` 方向の構成も空虚でない
+
+`n = 5, k = 2, s = 3` で、頭（長さ 2・上限 3）と尻尾（長さ 3・上限 2）の手順から
+実際に長さ `3 + 9 + 3 = 15` の手順が組み上がる（`k = 2` は最適ではないので
+`T_UP(5,3) = 13 ≤ 15`。等号は最適な `k` で立つ）。
+-/
+
+example : ∃ ms : List Move, ms.length = 2 * 1 + 1 + wUP3_2.length + wUP2_2.length ∧
+    Run 5 3 (sinkPebble 5) ms allEmpty :=
+  decomp_le_run (by omega) (by omega) (by decide) (by decide)
 
 end Spooky
