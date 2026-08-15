@@ -16,16 +16,9 @@ $$T_{UP}(n,s)\ \le\ 2k-1 + T_{UP}(k,s) + T_{UP}(n-k,s-1) \qquad (s\ge3,\ 1\le k<
 掃きの間は `≤ 2 + 1 = 3`、尻尾の間は `1 + (s-1) = s`、頭の間は `s + 0 = s`。
 **掃きの `3` が $s\ge3$ の由来**である。
 -/
-import SpookyPebbling.Reghost
-import SpookyPebbling.Parity
+import SpookyPebbling.Reach
 
 namespace Spooky
-
-theorem exec_mem_traj : ∀ (ms : List Move) (c : Config), exec c ms ∈ traj c ms := by
-  intro ms
-  induction ms with
-  | nil => intro c; simp only [traj_nil, List.mem_singleton]; rfl
-  | cons m ms ih => intro c; simp only [traj_cons, List.mem_cons]; exact Or.inr (ih (step c m))
 
 /-- 鎖の外（`≥ n`）は空。 -/
 theorem sinkPebble_above {n v : ℕ} (hn : 0 < n) (h : n ≤ v) : sinkPebble n v = Cell.empty := by
@@ -189,13 +182,14 @@ theorem decomp_le_run {n s j : ℕ} (hs : 3 ≤ s) (hjn : j + 1 < n)
       rw [shiftC_apply, show v - (j + 1) + (j + 1) = v by omega] at h
       exact h
 
-/-- **$\le$ 方向**（`T_UP` の形）。 -/
-theorem decomp_le {n s k : ℕ} (hs : 3 ≤ s) (hk : 1 ≤ k) (hkn : k < n)
-    (hHne : (UPLengths k s).Nonempty) (hTne : (UPLengths (n - k) (s - 1)).Nonempty) :
+/-- **$\le$ 方向**（`T_UP` の形）。到達可能性（`Reach.lean`）で仮定は不要になった。 -/
+theorem decomp_le {n s k : ℕ} (hs : 3 ≤ s) (hk : 1 ≤ k) (hkn : k < n) :
     TUP n s ≤ 2 * k - 1 + TUP k s + TUP (n - k) (s - 1) := by
   obtain ⟨j, rfl⟩ : ∃ j, k = j + 1 := ⟨k - 1, by omega⟩
-  obtain ⟨msH, hlenH, hrunH⟩ := Nat.sInf_mem hHne
-  obtain ⟨msT, hlenT, hrunT⟩ := Nat.sInf_mem hTne
+  obtain ⟨msH, hlenH, hrunH⟩ :=
+    Nat.sInf_mem (UPLengths_nonempty (n := j + 1) (s := s) (by omega) (by omega))
+  obtain ⟨msT, hlenT, hrunT⟩ :=
+    Nat.sInf_mem (UPLengths_nonempty (n := n - (j + 1)) (s := s - 1) (by omega) (by omega))
   obtain ⟨ms, hlen, hrun⟩ := decomp_le_run hs hkn hrunH hrunT
   have hb := TUP_le (n := n) (s := s) ⟨ms, rfl, hrun⟩
   rw [hlen] at hb
@@ -204,18 +198,13 @@ theorem decomp_le {n s k : ℕ} (hs : 3 ≤ s) (hk : 1 ≤ k) (hkn : k < n)
 
 /-! ## 両方向を合わせて等号 -/
 
-/-- **分解は厳密**（`s ≥ 3`）: ある `k` で等号が成り立ち、どの `k` も上界を与える。
-
-`sInf ∅ = 0` を避けるため、右辺に現れる量が実現可能であることを仮定に置く。 -/
-theorem decomp_exact {n s : ℕ} (hs : 3 ≤ s) (hn : 2 ≤ n)
-    (hne : (UPLengths n s).Nonempty)
-    (hsub : ∀ k, 1 ≤ k → k < n →
-      (UPLengths k s).Nonempty ∧ (UPLengths (n - k) (s - 1)).Nonempty) :
+/-- **分解は厳密**（`s ≥ 3`）: ある `k` で等号が成り立ち、どの `k` も上界を与える。 -/
+theorem decomp_exact {n s : ℕ} (hs : 3 ≤ s) (hn : 2 ≤ n) :
     (∃ k, 1 ≤ k ∧ k < n ∧ TUP n s = 2 * k - 1 + TUP k s + TUP (n - k) (s - 1)) ∧
     (∀ k, 1 ≤ k → k < n → TUP n s ≤ 2 * k - 1 + TUP k s + TUP (n - k) (s - 1)) := by
-  refine ⟨?_, fun k hk hkn => decomp_le hs hk hkn (hsub k hk hkn).1 (hsub k hk hkn).2⟩
-  obtain ⟨k, hk, hkn, hge⟩ := TUP_ge_decomp hn hne
-  exact ⟨k, hk, hkn,
-    le_antisymm (decomp_le hs hk hkn (hsub k hk hkn).1 (hsub k hk hkn).2) hge⟩
+  refine ⟨?_, fun k hk hkn => decomp_le hs hk hkn⟩
+  obtain ⟨k, hk, hkn, hge⟩ :=
+    TUP_ge_decomp hn (UPLengths_nonempty (n := n) (s := s) (by omega) (by omega))
+  exact ⟨k, hk, hkn, le_antisymm (decomp_le hs hk hkn) hge⟩
 
 end Spooky

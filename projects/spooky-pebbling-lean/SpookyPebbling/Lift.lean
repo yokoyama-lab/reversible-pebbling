@@ -30,6 +30,12 @@ theorem valid_append {n : ℕ} : ∀ (l₁ l₂ : List Move) (c : Config),
       simp only [valid_cons, Bool.and_eq_true] at h1 ⊢
       exact ⟨h1.1, ih l₂ (step c a) h1.2 h2⟩
 
+theorem exec_mem_traj : ∀ (ms : List Move) (c : Config), exec c ms ∈ traj c ms := by
+  intro ms
+  induction ms with
+  | nil => intro c; simp only [traj_nil, List.mem_singleton]; rfl
+  | cons m ms ih => intro c; simp only [traj_cons, List.mem_cons]; exact Or.inr (ih (step c m))
+
 theorem traj_append_mem : ∀ (l₁ : List Move) (c : Config) (l₂ : List Move),
     ∀ d ∈ traj c (l₁ ++ l₂), d ∈ traj c l₁ ∨ d ∈ traj (exec c l₁) l₂ := by
   intro l₁

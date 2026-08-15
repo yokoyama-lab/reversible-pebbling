@@ -28,6 +28,7 @@
 | **補題G**: 始状態に余分なゴーストが在っても手数は減らない | **1（Lean）** | `SpookyPebbling/Ghost.lean` |
 | 段(i): 頭の手は `2k-1` 手以上 | **1（Lean）** | `SpookyPebbling/Count.lean` |
 | 頭・尻尾への射影が部分鎖の妥当な手順になること | **1（Lean）** | `SpookyPebbling/Project.lean` |
+| **到達可能性**: `s ≥ 2` ならどんな長さの鎖も片付く（`sInf ∅ = 0` を回避） | **1（Lean）** | `SpookyPebbling/Reach.lean` |
 | 意味論が `< n` の値にしか依存しない（射影の土台） | **1（Lean）** | `SpookyPebbling/Defs.lean` |
 | $\theta(s)=s(s+1)/2$、傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$ | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
 
@@ -89,8 +90,8 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 点 | 結果 |
 |---|---|
 | ビルド | `lake build SpookyPebbling` rc=0 |
-| 成果物の実在 | `Defs` `Parity` `Ghost` `Project` `Count` `Split` `Decomp` `Tests` の olean 8 本を確認 |
-| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（8 ファイルすべて） |
+| 成果物の実在 | olean 13 本を確認 |
+| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（13 ファイルすべて） |
 | 公理検査 | `decomp_ge` を含む主要定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
 | 変異A（偽の補題 `probe : False`） | **検出**（ビルドが落ちる） |
 | 変異B（`ghost` に前提条件を付ける） | **検出**。うち `Tests.lean` だけで 14 か所（`by decide` が定義の変異を捕まえる） |
@@ -99,6 +100,8 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 変異E（構成の手数を `2j+1` でなく `2j` と主張） | **検出** |
 | 変異F（`s ≥ 3` を `s ≥ 2` に緩める） | **検出**（掃きの 3 個が入らなくなる） |
 | 変異G（掃きの `ghost` を `unpebble` にする＝紙の証明どおりの書き方） | **検出**（ゴーストが本質である証拠） |
+| 変異H（到達可能性の上限を 2 でなく 1 と主張） | **検出** |
+| 変異I（到達可能性の構成から最初の `ghost v_{n-1}` を消す） | **検出**（枠を空けないと掃きに 3 個要る） |
 | 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` / `decomp_le_run` を適用して結論を得ている |
 
 再現:
@@ -124,6 +127,7 @@ echo 'import SpookyPebbling
 | `Lift.lean` | 持ち上げ（射影の逆）・連結・`valid_mono`・`traj_above` |
 | `Sweep.lean` | 掃き `sweep k`（`2k-1` 手、ゴーストを残す）とその仕様 |
 | `Reghost.lean` | `head_places` と再ゴースト `Run_reghost`（補題G の逆向き） |
+| `Reach.lean` | 到達可能性（上限 2 の構成と上限の単調性） |
 | `Upper.lean` | **`decomp_le_run` / `decomp_le` / `decomp_exact`**（$\le$ 方向と等号） |
 | `Tests.lean` | 陽性 13 点・陰性 6 点・両方向の非空虚性 |
 
@@ -133,5 +137,5 @@ echo 'import SpookyPebbling
    漸化式（KSS Cor 4.7・Cor 4.12 と本リポの分解）を Lean 上で閉じれば従う。
    KSS の 2 本は現状 Lean に無いので、そこが次の壁
 2. 傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$
-3. 到達可能性（`UPLengths n s` が空でないこと）を `s ≥ 3` で一般に示す。
-   いまは `decomp_le` / `decomp_exact` の仮定に置いている
+3. ~~到達可能性~~ → **`Reach.lean` で解決**（2026-08-16）。`decomp_le` / `decomp_exact` の
+   仮定は無くなった（`3 ≤ s` と `k` の範囲だけ）
