@@ -9,5 +9,6 @@ import SpookyPebbling.Lift
 import SpookyPebbling.Sweep
 import SpookyPebbling.Reghost
 import SpookyPebbling.Reach
+import SpookyPebbling.Unghost
 import SpookyPebbling.Upper
 import SpookyPebbling.Tests

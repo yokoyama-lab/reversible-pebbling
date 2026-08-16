@@ -24,15 +24,6 @@ namespace Spooky
 theorem sinkPebble_above {n v : ℕ} (hn : 0 < n) (h : n ≤ v) : sinkPebble n v = Cell.empty := by
   rw [sinkPebble_apply, if_neg (by omega)]
 
-/-- 尻尾から見た始状態は、長さ `n-k` の鎖の始状態と一致する。 -/
-theorem shiftC_sinkPebble {n k : ℕ} (hk : 0 < k) (hkn : k < n) :
-    AgreeOn (n - k) (shiftC k (sinkPebble n)) (sinkPebble (n - k)) := by
-  intro t ht
-  rw [shiftC_apply, sinkPebble_apply, sinkPebble_apply]
-  by_cases h : t = n - k - 1
-  · rw [if_pos h, if_pos (by omega)]
-  · rw [if_neg h, if_neg (by omega)]
-
 /-- **$\le$ 方向の構成**: 頭と尻尾の手順から、元の鎖の手順を組み立てる。 -/
 theorem decomp_le_run {n s j : ℕ} (hs : 3 ≤ s) (hjn : j + 1 < n)
     {msH msT : List Move}

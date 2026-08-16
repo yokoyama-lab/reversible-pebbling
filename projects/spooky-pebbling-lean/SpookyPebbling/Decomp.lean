@@ -277,36 +277,48 @@ theorem sinkPebble_apply (n j : ℕ) :
 
 /-! ## 主定理 -/
 
-/-- **$T_{UP}$ 分解の $\ge$ 方向**。KSS の $P^\bot$ 交換論法は使わない。 -/
-theorem decomp_ge {n s : ℕ} (hn : 2 ≤ n) {ms : List Move}
-    (h : Run n s (sinkPebble n) ms allEmpty) :
-    ∃ k, 1 ≤ k ∧ k < n ∧ 2 * k - 1 + TUP k s + TUP (n - k) (s - 1) ≤ ms.length := by
+/-- 尻尾から見た始状態は、長さ `n-k` の鎖の始状態と一致する。 -/
+theorem shiftC_sinkPebble {n k : ℕ} (hk : 0 < k) (hkn : k < n) :
+    AgreeOn (n - k) (shiftC k (sinkPebble n)) (sinkPebble (n - k)) := by
+  intro t ht
+  rw [shiftC_apply, sinkPebble_apply, sinkPebble_apply]
+  by_cases h : t = n - k - 1
+  · rw [if_pos h, if_pos (by omega)]
+  · rw [if_neg h, if_neg (by omega)]
+
+/-- **分解の $\ge$ 方向（始状態について一般化）**。
+
+頭に初期ペブルが無く、途中でペブルを 2 個持つ時刻がある妥当な手順は、
+`2u+1 + T_UP(u+1,s) + (尻尾の手数)` 以上かかる。尻尾は長さ `n-(u+1)` の鎖の、
+始状態 `shiftC (u+1) c₀` からの妥当な手順（上限 `s-1`）になっている。
+
+`c₀ = sinkPebble n` で `T_UP` の分解が、`c₀ = sinkGhost n` で KSS Cor 4.12 の
+$\ge$ 方向（`Unghost.lean`）が出る。**KSS の $P^\bot$ 交換論法はどちらにも要らない。** -/
+theorem decomp_ge_pieces {n s : ℕ} (hn : 2 ≤ n) {c₀ : Config} {ms : List Move}
+    (hnp : ∀ j, j + 1 < n → c₀ j ≠ Cell.pebble)
+    (h2ex : ∃ d ∈ traj c₀ ms, 2 ≤ pcount n d)
+    (h : Run n s c₀ ms allEmpty) :
+    ∃ u, u + 1 < n ∧
+      2 * u + 1 + TUP (u + 1) s + (tailMoves u ms).length ≤ ms.length ∧
+      Run (n - (u + 1)) (s - 1) (shiftC (u + 1) c₀) (tailMoves u ms) allEmpty := by
   classical
   obtain ⟨hok, hagree⟩ := h
-  obtain ⟨hv, hcapall⟩ := (ok_iff ms (sinkPebble n)).mp hok
-  -- s† = 軌跡上のペブル数の最大
-  obtain ⟨dmax, hdmax, hmax⟩ :=
-    exists_max_on (pcount n) (traj (sinkPebble n) ms) (traj_ne_nil _ _)
+  obtain ⟨hv, hcapall⟩ := (ok_iff ms c₀).mp hok
+  obtain ⟨dmax, hdmax, hmax⟩ := exists_max_on (pcount n) (traj c₀ ms) (traj_ne_nil _ _)
   have hsd_le_s : pcount n dmax ≤ s := hcapall dmax hdmax
-  -- s† ≥ 2: v_{n-1} のペブルは（ゴーストを経ても）いつか 2 個同時に持たないと消せない
   have h2 : 2 ≤ pcount n dmax := by
-    obtain ⟨d, hd, hd2⟩ :=
-      two_pebbles_of_clear ms.length ms le_rfl (sinkPebble n) hv (i := n - 1)
-        (by omega) (by omega) (by rw [sinkPebble_apply]; simp)
-        (by rw [hagree (n - 1) (by omega)]; rfl)
+    obtain ⟨d, hd, hd2⟩ := h2ex
     exact le_trans hd2 (hmax d hd)
-  -- 満室の時刻のうち、最下位ペブルが最大のものを取る
-  set F := (traj (sinkPebble n) ms).filter (fun d => decide (pcount n d = pcount n dmax)) with hF
+  set F := (traj c₀ ms).filter (fun d => decide (pcount n d = pcount n dmax)) with hF
   have hFne : F ≠ [] := by
     intro hnil
     have hm : dmax ∈ F := by simp [hF, List.mem_filter, hdmax]
     rw [hnil] at hm; simp at hm
   obtain ⟨d₁, hd₁F, humax⟩ := exists_max_on (minPeb n) F hFne
-  have hd₁ : d₁ ∈ traj (sinkPebble n) ms ∧ pcount n d₁ = pcount n dmax := by
+  have hd₁ : d₁ ∈ traj c₀ ms ∧ pcount n d₁ = pcount n dmax := by
     simpa [hF, List.mem_filter] using hd₁F
   set u := minPeb n d₁ with hu
   obtain ⟨hun, hupeb, hulow⟩ := minPeb_spec (n := n) (c := d₁) (by omega)
-  -- 頭 `0..u` のペブルはちょうど 1 個
   have hhead1 : pcount (u + 1) d₁ = 1 := by
     unfold pcount
     have hset : (Finset.range (u + 1)).filter (fun v => d₁ v = Cell.pebble) = {u} := by
@@ -319,16 +331,14 @@ theorem decomp_ge {n s : ℕ} (hn : 2 ≤ n) {ms : List Move}
       · rintro rfl
         exact ⟨by omega, hupeb⟩
     rw [hset]; simp
-  -- したがって u+1 < n（`k < n` になる）
   have hun1 : u + 1 < n := by
     rcases Nat.lt_or_ge (u + 1) n with hlt | hge
     · exact hlt
     · exfalso
-      have : u + 1 = n := by omega
-      rw [this] at hhead1
+      have he : u + 1 = n := by omega
+      rw [he] at hhead1
       omega
-  -- 尻尾のペブルは常に s†-1 以下（k の取り方から定義的に出る）
-  have htailcap : ∀ d ∈ traj (sinkPebble n) ms,
+  have htailcap : ∀ d ∈ traj c₀ ms,
       pcount (n - (u + 1)) (shiftC (u + 1) d) ≤ pcount n dmax - 1 := by
     intro d hd
     by_contra hcon
@@ -341,22 +351,16 @@ theorem decomp_ge {n s : ℕ} (hn : 2 ≤ n) {ms : List Move}
     have hmin_le : minPeb n d ≤ u := humax d hdF
     obtain ⟨_, hpebd, _⟩ := minPeb_spec (n := n) (c := d) (by omega)
     exact (pcount_eq_zero_iff.mp hhead0) (minPeb n d) (by omega) hpebd
-  -- 手順を d₁ の時刻で切る
-  obtain ⟨ms₁, ms₂, hmseq, hexec₁⟩ := mem_traj_split ms (sinkPebble n) d₁ hd₁.1
-  have hv₁ : valid n (sinkPebble n) ms₁ = true := valid_append_left ms₁ ms₂ _ (hmseq ▸ hv)
-  have hc₀ : ∀ j, j ≤ u → sinkPebble n j ≠ Cell.pebble := by
-    intro j hj
-    rw [sinkPebble_apply, if_neg (by omega)]
-    simp
-  -- 段(i): 前半の頭の手は 2u+1 手以上
+  obtain ⟨ms₁, ms₂, hmseq, hexec₁⟩ := mem_traj_split ms c₀ d₁ hd₁.1
+  have hv₁ : valid n c₀ ms₁ = true := valid_append_left ms₁ ms₂ _ (hmseq ▸ hv)
+  have hc₀ : ∀ j, j ≤ u → c₀ j ≠ Cell.pebble := fun j hj => hnp j (by omega)
   have hbefore : 2 * u + 1 ≤ (headMoves u ms₁).length := by
-    refine length_ge_two_mul_add_one (n := u + 1) (headMoves u ms₁) (sinkPebble n)
+    refine length_ge_two_mul_add_one (n := u + 1) (headMoves u ms₁) c₀
       (valid_headMoves ms₁ _ hv₁) hc₀ ?_ ?_
     · rw [← exec_headMoves ms₁ _ u (by omega), hexec₁]; exact hupeb
     · intro j hj
       rw [← exec_headMoves ms₁ _ j (by omega), hexec₁]
       exact hulow j hj
-  -- 段(iii): 後半の頭の手は TUP (u+1) s 以上（補題G を使う）
   have hafter : TUP (u + 1) s ≤ (headMoves u ms₂).length := by
     refine TUP_le_of_ghosts (a := d₁) ?_ ⟨?_, ?_⟩
     · intro v hv1
@@ -364,31 +368,13 @@ theorem decomp_ge {n s : ℕ} (hn : 2 ≤ n) {ms : List Move}
       unfold stripGhosts
       by_cases hvu : v = u
       · subst hvu; rw [hupeb]; simp
-      · have : d₁ v ≠ Cell.pebble := hulow v (by omega)
+      · have hne : d₁ v ≠ Cell.pebble := hulow v (by omega)
         cases hcell : d₁ v <;> simp [hcell, hvu, (by omega : ¬ (v = u + 1 - 1))] <;> simp_all
     · exact ok_headMoves (by omega) ms₂ d₁
-        (hexec₁ ▸ ok_append_right ms₁ ms₂ (sinkPebble n) (hmseq ▸ hok))
+        (hexec₁ ▸ ok_append_right ms₁ ms₂ c₀ (hmseq ▸ hok))
     · intro v hv1
-      rw [← exec_headMoves ms₂ d₁ v hv1, ← hexec₁, ← exec_append ms₁ ms₂ (sinkPebble n), ← hmseq]
+      rw [← exec_headMoves ms₂ d₁ v hv1, ← hexec₁, ← exec_append ms₁ ms₂ c₀, ← hmseq]
       exact hagree v (by omega)
-  -- 段(ii): 尻尾の手は TUP (n-(u+1)) (s-1) 以上
-  have hshift : AgreeOn (n - (u + 1)) (shiftC (u + 1) (sinkPebble n)) (sinkPebble (n - (u + 1))) := by
-    intro v hv1
-    rw [shiftC_apply, sinkPebble_apply, sinkPebble_apply]
-    by_cases hvv : v = n - (u + 1) - 1
-    · rw [if_pos hvv, if_pos (by omega)]
-    · rw [if_neg hvv, if_neg (by omega)]
-  have htail : TUP (n - (u + 1)) (s - 1) ≤ (tailMoves u ms).length := by
-    refine TUP_le ⟨tailMoves u ms, rfl, ?_, ?_⟩
-    · refine ok_congr hshift (ok_tailMoves ms (sinkPebble n) hv ?_)
-      intro d hd
-      exact le_trans (htailcap d hd) (by omega)
-    · intro v hv1
-      rw [← exec_congr (tailMoves u ms) hshift v hv1, ← exec_tailMoves ms (sinkPebble n),
-        shiftC_apply]
-      exact hagree (v + (u + 1)) (by omega)
-  -- 合流
-  refine ⟨u + 1, by omega, by omega, ?_⟩
   have hlen : (headMoves u ms₁).length + (headMoves u ms₂).length + (tailMoves u ms).length
       = ms.length := by
     have hht := headMoves_tailMoves_length u ms
@@ -396,6 +382,35 @@ theorem decomp_ge {n s : ℕ} (hn : 2 ≤ n) {ms : List Move}
         = (headMoves u ms₁).length + (headMoves u ms₂).length := by
       rw [hmseq, headMoves_append, List.length_append]
     omega
+  refine ⟨u, hun1, by omega, ?_, ?_⟩
+  · refine ok_tailMoves ms c₀ hv ?_
+    intro d hd
+    exact le_trans (htailcap d hd) (by omega)
+  · intro v hv1
+    rw [← exec_tailMoves ms c₀, shiftC_apply]
+    exact hagree (v + (u + 1)) (by omega)
+
+/-- **$T_{UP}$ 分解の $\ge$ 方向**。KSS の $P^\bot$ 交換論法は使わない。 -/
+theorem decomp_ge {n s : ℕ} (hn : 2 ≤ n) {ms : List Move}
+    (h : Run n s (sinkPebble n) ms allEmpty) :
+    ∃ k, 1 ≤ k ∧ k < n ∧ 2 * k - 1 + TUP k s + TUP (n - k) (s - 1) ≤ ms.length := by
+  obtain ⟨hok, hagree⟩ := h
+  obtain ⟨hv, _⟩ := (ok_iff ms (sinkPebble n)).mp hok
+  obtain ⟨u, hun1, hlen, hrunT⟩ := decomp_ge_pieces hn
+    (fun j hj => by rw [sinkPebble_apply, if_neg (by omega)]; simp)
+    (two_pebbles_of_clear ms.length ms le_rfl (sinkPebble n) hv (i := n - 1)
+      (by omega) (by omega) (by rw [sinkPebble_apply]; simp)
+      (by rw [hagree (n - 1) (by omega)]; rfl))
+    ⟨hok, hagree⟩
+  have hshift : AgreeOn (n - (u + 1)) (shiftC (u + 1) (sinkPebble n)) (sinkPebble (n - (u + 1))) :=
+    shiftC_sinkPebble (by omega) hun1
+  obtain ⟨hokT, hagreeT⟩ := hrunT
+  have htail : TUP (n - (u + 1)) (s - 1) ≤ (tailMoves u ms).length := by
+    refine TUP_le ⟨tailMoves u ms, rfl, ok_congr hshift hokT, ?_⟩
+    intro v hv1
+    rw [← exec_congr (tailMoves u ms) hshift v hv1]
+    exact hagreeT v hv1
+  refine ⟨u + 1, by omega, by omega, ?_⟩
   have hk : 2 * (u + 1) - 1 = 2 * u + 1 := by omega
   rw [hk]
   omega
