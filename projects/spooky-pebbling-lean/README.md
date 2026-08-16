@@ -20,6 +20,7 @@
 
 | 主張 | 層 | 置き場 |
 |---|---|---|
+| **KSS Cor 4.12**: $T_{UG}(n,s)=\min_k[2k-1+T_{UP}(k,s)+T_{UG}(n-k,s-1)]$ | **1（Lean）** | `SpookyPebbling/Unghost.lean` |
 | **$T_{UP}$ 分解が厳密**（$\ge$ と $\le$ の両方向。$s\ge3$） | **1（Lean）** | `Decomp.lean` / `Upper.lean` |
 | **$\ge$ 方向**（KSS の交換論法は不要） | **1（Lean）** | `SpookyPebbling/Decomp.lean` |
 | **$\le$ 方向**（掃き＋尻尾の持ち上げ＋ゴースト回収） | **1（Lean）** | `Sweep.lean` / `Lift.lean` / `Reghost.lean` / `Upper.lean` |
@@ -90,8 +91,8 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 点 | 結果 |
 |---|---|
 | ビルド | `lake build SpookyPebbling` rc=0 |
-| 成果物の実在 | olean 13 本を確認 |
-| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（13 ファイルすべて） |
+| 成果物の実在 | olean 14 本を確認 |
+| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（14 ファイルすべて） |
 | 公理検査 | `decomp_ge` を含む主要定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
 | 変異A（偽の補題 `probe : False`） | **検出**（ビルドが落ちる） |
 | 変異B（`ghost` に前提条件を付ける） | **検出**。うち `Tests.lean` だけで 14 か所（`by decide` が定義の変異を捕まえる） |
@@ -102,6 +103,8 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 変異G（掃きの `ghost` を `unpebble` にする＝紙の証明どおりの書き方） | **検出**（ゴーストが本質である証拠） |
 | 変異H（到達可能性の上限を 2 でなく 1 と主張） | **検出** |
 | 変異I（到達可能性の構成から最初の `ghost v_{n-1}` を消す） | **検出**（枠を空けないと掃きに 3 個要る） |
+| 変異J（Cor 4.12 の `2k-1` を `2k` に強める） | **検出** |
+| 変異K（Cor 4.12 の $\le$ 方向を `s ≥ 1` に緩める） | **検出**（掃きに 2 個要る） |
 | 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` / `decomp_le_run` を適用して結論を得ている |
 
 再現:
@@ -128,14 +131,17 @@ echo 'import SpookyPebbling
 | `Sweep.lean` | 掃き `sweep k`（`2k-1` 手、ゴーストを残す）とその仕様 |
 | `Reghost.lean` | `head_places` と再ゴースト `Run_reghost`（補題G の逆向き） |
 | `Reach.lean` | 到達可能性（上限 2 の構成と上限の単調性） |
-| `Upper.lean` | **`decomp_le_run` / `decomp_le` / `decomp_exact`**（$\le$ 方向と等号） |
+| `Upper.lean` | **`decomp_le_run_gen` / `decomp_le` / `decomp_exact`**（$\le$ 方向と等号） |
+| `Unghost.lean` | **KSS Cor 4.12**（`decomp_ug_ge` / `decomp_ug_le` / `decomp_ug_exact`） |
 | `Tests.lean` | 陽性 13 点・陰性 6 点・両方向の非空虚性 |
 
 ## 未移植（次にやること）
 
-1. **$\theta(s)=s(s+1)/2$** — 分解が両方向とも層1 になったので、`closed2.py` の 3 本の
-   漸化式（KSS Cor 4.7・Cor 4.12 と本リポの分解）を Lean 上で閉じれば従う。
-   KSS の 2 本は現状 Lean に無いので、そこが次の壁
-2. 傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$
-3. ~~到達可能性~~ → **`Reach.lean` で解決**（2026-08-16）。`decomp_le` / `decomp_exact` の
+1. **KSS Cor 4.7** — `T_P(n,s)=\min_k[2k-1+T_{UP}(k,s-1)+T_P(n-k,s-1)]`。Cor 4.12 と
+   同じ枠組み（`decomp_ge_pieces` / `decomp_le_run_gen`）で出るはずだが、頭が
+   `T_{UP}(k,s-1)`（上限が 1 小さい）なので、そこだけ別扱いが要る
+2. **$\theta(s)=s(s+1)/2$** — Cor 4.7 が載れば `closed2.py` の 3 本の漸化式が Lean 上で
+   閉じる（Cor 4.12 と本リポの $T_{UP}$ 分解は済み）
+3. 傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$
+4. ~~到達可能性~~ → **`Reach.lean` で解決**（2026-08-16）。`decomp_le` / `decomp_exact` の
    仮定は無くなった（`3 ≤ s` と `k` の範囲だけ）

@@ -24,42 +24,46 @@ namespace Spooky
 theorem sinkPebble_above {n v : ℕ} (hn : 0 < n) (h : n ≤ v) : sinkPebble n v = Cell.empty := by
   rw [sinkPebble_apply, if_neg (by omega)]
 
-/-- **$\le$ 方向の構成**: 頭と尻尾の手順から、元の鎖の手順を組み立てる。 -/
-theorem decomp_le_run {n s j : ℕ} (hs : 3 ≤ s) (hjn : j + 1 < n)
+/-- **$\le$ 方向の構成（始状態について一般化）**: 頭と尻尾の手順から元の鎖の手順を組む。
+
+`c₀ = sinkPebble n`（尻尾の初期ペブル 1 個）なら掃きに 3 個要るので $s\ge3$、
+`c₀ = sinkGhost n`（同 0 個）なら 2 個で済むので $s\ge2$ で回る。 -/
+theorem decomp_le_run_gen {n s j : ℕ} (hs1 : 1 ≤ s) (hjn : j + 1 < n) {c₀ cT : Config}
+    (hc₀empty : ∀ i, i ≤ j → c₀ i = Cell.empty)
+    (hc₀above : ∀ v, n ≤ v → c₀ v = Cell.empty)
+    (hshiftT : AgreeOn (n - (j + 1)) (shiftC (j + 1) c₀) cT)
+    (hcap : 2 + pcount (n - (j + 1)) (shiftC (j + 1) c₀) ≤ s)
     {msH msT : List Move}
     (hH : Run (j + 1) s (sinkPebble (j + 1)) msH allEmpty)
-    (hT : Run (n - (j + 1)) (s - 1) (sinkPebble (n - (j + 1))) msT allEmpty) :
+    (hT : Run (n - (j + 1)) (s - 1) cT msT allEmpty) :
     ∃ ms : List Move, ms.length = 2 * j + 1 + msT.length + msH.length ∧
-      Run n s (sinkPebble n) ms allEmpty := by
+      Run n s c₀ ms allEmpty := by
   classical
   obtain ⟨hokH, hagreeH⟩ := hH
   obtain ⟨hokT, hagreeT⟩ := hT
   obtain ⟨hvH, hcapH⟩ := (ok_iff msH (sinkPebble (j + 1))).mp hokH
-  obtain ⟨hvT, hcapT⟩ := (ok_iff msT (sinkPebble (n - (j + 1)))).mp hokT
+  obtain ⟨hvT, hcapT⟩ := (ok_iff msT (cT)).mp hokT
   -- 第 1 段: 掃き
-  have hc₀empty : ∀ i, i ≤ j → sinkPebble n i = Cell.empty := by
-    intro i hi
-    rw [sinkPebble_apply, if_neg (by omega)]
-  obtain ⟨hsv, hse, hsp⟩ := sweep_spec j (sinkPebble n) hc₀empty
+  obtain ⟨hsv, hse, hsp⟩ := sweep_spec j (c₀) hc₀empty
   -- 掃いた後の配置から見た尻尾は、部分鎖の始状態と一致する
-  have hshift₁ : AgreeOn (n - (j + 1)) (shiftC (j + 1) (swept j (sinkPebble n)))
-      (sinkPebble (n - (j + 1))) := by
+  have hshift₁ : AgreeOn (n - (j + 1)) (shiftC (j + 1) (swept j (c₀)))
+      (cT) := by
     intro t ht
     rw [shiftC_apply, swept_above (by omega)]
-    exact shiftC_sinkPebble (by omega) hjn t ht
-  have hpedestal : swept j (sinkPebble n) (j + 1 - 1) = Cell.pebble := by
+    exact hshiftT t ht
+  have hpedestal : swept j (c₀) (j + 1 - 1) = Cell.pebble := by
     rw [show j + 1 - 1 = j by omega]; exact swept_at
-  have hheadcount : pcount (j + 1) (swept j (sinkPebble n)) = 1 := pcount_swept j (sinkPebble n)
+  have hheadcount : pcount (j + 1) (swept j (c₀)) = 1 := pcount_swept j (c₀)
   -- 第 2 段: 尻尾を持ち上げる
-  have hvT' : valid (n - (j + 1)) (shiftC (j + 1) (swept j (sinkPebble n))) msT = true :=
+  have hvT' : valid (n - (j + 1)) (shiftC (j + 1) (swept j (c₀))) msT = true :=
     valid_congr (fun t ht => (hshift₁ t ht).symm) _ hvT
-  have hvlift : valid n (swept j (sinkPebble n)) (liftT (j + 1) msT) = true :=
+  have hvlift : valid n (swept j (c₀)) (liftT (j + 1) msT) = true :=
     valid_liftT (by omega) msT _ hpedestal hvT'
   have hc₂head : ∀ jj, jj < j + 1 →
-      exec (swept j (sinkPebble n)) (liftT (j + 1) msT) jj = swept j (sinkPebble n) jj :=
+      exec (swept j (c₀)) (liftT (j + 1) msT) jj = swept j (c₀) jj :=
     fun jj hjj => exec_liftT_below msT _ hjj
   have hc₂tail : AgreeOn (n - (j + 1))
-      (shiftC (j + 1) (exec (swept j (sinkPebble n)) (liftT (j + 1) msT))) allEmpty := by
+      (shiftC (j + 1) (exec (swept j (c₀)) (liftT (j + 1) msT))) allEmpty := by
     intro t ht
     rw [exec_liftT_shift]
     rw [← exec_congr msT (fun t' ht' => (hshift₁ t' ht').symm) t ht]
@@ -75,16 +79,16 @@ theorem decomp_le_run {n s j : ℕ} (hs : 3 ≤ s) (hjn : j + 1 < n)
       have := valid_lt msT _ hvT' m' hm'
       simp only [liftM_v]; omega
   have habove : ∀ v, n ≤ v →
-      exec (swept j (sinkPebble n)) (liftT (j + 1) msT) v = sinkPebble n v := by
+      exec (swept j (c₀)) (liftT (j + 1) msT) v = c₀ v := by
     intro v hv
-    have hmem : exec (swept j (sinkPebble n)) (liftT (j + 1) msT)
-        ∈ traj (sinkPebble n) (sweep (j + 1) ++ liftT (j + 1) msT) := by
+    have hmem : exec (swept j (c₀)) (liftT (j + 1) msT)
+        ∈ traj (c₀) (sweep (j + 1) ++ liftT (j + 1) msT) := by
       rw [← hse]
-      exact traj_append_subset (sweep (j + 1)) (sinkPebble n) (liftT (j + 1) msT) _
+      exact traj_append_subset (sweep (j + 1)) (c₀) (liftT (j + 1) msT) _
         (by rw [hse]; exact exec_mem_traj _ _)
-    exact traj_above _ (sinkPebble n) (fun m hm => by have := hmvlt m hm; omega) _ hmem v (by omega)
+    exact traj_above _ (c₀) (fun m hm => by have := hmvlt m hm; omega) _ hmem v (by omega)
   -- 第 3 段: 頭（ゴーストの読み替え）
-  have hdom : Dom2 msH (exec (swept j (sinkPebble n)) (liftT (j + 1) msT)) (sinkPebble (j + 1)) := by
+  have hdom : Dom2 msH (exec (swept j (c₀)) (liftT (j + 1) msT)) (sinkPebble (j + 1)) := by
     intro v
     by_cases hvk : v < j + 1
     · rw [hc₂head v hvk]
@@ -100,46 +104,45 @@ theorem decomp_le_run {n s j : ℕ} (hs : 3 ≤ s) (hjn : j + 1 < n)
       · have h := hc₂tail (v - (j + 1)) (by omega)
         rw [shiftC_apply, show v - (j + 1) + (j + 1) = v by omega] at h
         exact h
-      · rw [habove v (by omega), sinkPebble_above (by omega) (by omega)]
+      · rw [habove v (by omega), hc₀above v (by omega)]
   obtain ⟨hrunH', hlenH'⟩ := Run_reghost hdom ⟨hokH, hagreeH⟩
   obtain ⟨hokH', hagreeH'⟩ := hrunH'
   obtain ⟨hvH', hcapH'⟩ :=
-    (ok_iff (strip2 (exec (swept j (sinkPebble n)) (liftT (j + 1) msT)) msH) _).mp hokH'
-  have hstriplt : ∀ m ∈ strip2 (exec (swept j (sinkPebble n)) (liftT (j + 1) msT)) msH,
+    (ok_iff (strip2 (exec (swept j (c₀)) (liftT (j + 1) msT)) msH) _).mp hokH'
+  have hstriplt : ∀ m ∈ strip2 (exec (swept j (c₀)) (liftT (j + 1) msT)) msH,
       m.v < j + 1 := fun m hm => valid_lt _ _ hvH' m hm
   -- 組み立て
   refine ⟨sweep (j + 1) ++ liftT (j + 1) msT
-      ++ strip2 (exec (swept j (sinkPebble n)) (liftT (j + 1) msT)) msH, ?_, ?_, ?_⟩
+      ++ strip2 (exec (swept j (c₀)) (liftT (j + 1) msT)) msH, ?_, ?_, ?_⟩
   · simp only [List.length_append, liftT_length, hlenH', sweep_length]
-  · refine (ok_iff _ (sinkPebble n)).mpr ⟨?_, ?_⟩
+  · refine (ok_iff _ (c₀)).mpr ⟨?_, ?_⟩
     · refine valid_append _ _ _ (valid_append _ _ _ (valid_mono (by omega) _ _ hsv) ?_) ?_
       · rw [hse]; exact hvlift
       · rw [exec_append, hse]
         exact valid_mono (by omega) _ _ hvH'
     · intro d hd
-      rcases traj_append_mem _ (sinkPebble n) _ d hd with hd | hd
-      · rcases traj_append_mem (sweep (j + 1)) (sinkPebble n) (liftT (j + 1) msT) d hd with hd | hd
+      rcases traj_append_mem _ (c₀) _ d hd with hd | hd
+      · rcases traj_append_mem (sweep (j + 1)) (c₀) (liftT (j + 1) msT) d hd with hd | hd
         · -- 掃きの間: 頭 ≤ 2、尻尾 = 1
           rw [pcount_split n j (by omega) d]
           have h1 : pcount (j + 1) d ≤ 2 := hsp d hd
-          have h2 : pcount (n - (j + 1)) (shiftC (j + 1) d) = 1 := by
-            have hkeep : ∀ v, j + 1 ≤ v → d v = sinkPebble n v :=
-              traj_above (sweep (j + 1)) (sinkPebble n) (fun m hm => sweep_mem_lt j m hm) d hd
-            have hagree : AgreeOn (n - (j + 1)) (shiftC (j + 1) d) (sinkPebble (n - (j + 1))) := by
-              intro t ht
-              rw [shiftC_apply, hkeep (t + (j + 1)) (by omega)]
-              exact shiftC_sinkPebble (by omega) hjn t ht
-            rw [pcount_congr hagree, pcount_sinkPebble (by omega)]
+          have h2 : pcount (n - (j + 1)) (shiftC (j + 1) d)
+              = pcount (n - (j + 1)) (shiftC (j + 1) c₀) := by
+            have hkeep : ∀ v, j + 1 ≤ v → d v = c₀ v :=
+              traj_above (sweep (j + 1)) (c₀) (fun m hm => sweep_mem_lt j m hm) d hd
+            refine pcount_congr ?_
+            intro tt htt
+            rw [shiftC_apply, shiftC_apply, hkeep (tt + (j + 1)) (by omega)]
           omega
         · -- 尻尾の間: 頭 = 1、尻尾 ≤ s-1
           rw [hse] at hd
           rw [pcount_split n j (by omega) d]
-          obtain ⟨hbelow, hin⟩ := traj_liftT msT (swept j (sinkPebble n)) d hd
+          obtain ⟨hbelow, hin⟩ := traj_liftT msT (swept j (c₀)) d hd
           have h1 : pcount (j + 1) d = 1 := by
             rw [pcount_congr (fun v hv => hbelow v hv)]; exact hheadcount
           have h2 : pcount (n - (j + 1)) (shiftC (j + 1) d) ≤ s - 1 := by
             obtain ⟨e, he, hae⟩ :=
-              traj_agree msT _ (sinkPebble (n - (j + 1))) hshift₁ _ hin
+              traj_agree msT _ (cT) hshift₁ _ hin
             rw [pcount_congr hae]
             exact hcapT e he
           omega
@@ -149,7 +152,7 @@ theorem decomp_le_run {n s j : ℕ} (hs : 3 ≤ s) (hjn : j + 1 < n)
         have h1 : pcount (j + 1) d ≤ s := hcapH' d hd
         have h2 : pcount (n - (j + 1)) (shiftC (j + 1) d) = 0 := by
           have hkeep : ∀ v, j + 1 ≤ v →
-              d v = exec (swept j (sinkPebble n)) (liftT (j + 1) msT) v :=
+              d v = exec (swept j (c₀)) (liftT (j + 1) msT) v :=
             traj_above _ _ hstriplt d hd
           refine pcount_eq_zero_iff.mpr ?_
           intro t ht
@@ -164,14 +167,27 @@ theorem decomp_le_run {n s j : ℕ} (hs : 3 ≤ s) (hjn : j + 1 < n)
     rw [exec_append, exec_append, hse]
     by_cases hvk : v < j + 1
     · exact hagreeH' v hvk
-    · have hkeep : exec (exec (swept j (sinkPebble n)) (liftT (j + 1) msT))
-          (strip2 (exec (swept j (sinkPebble n)) (liftT (j + 1) msT)) msH) v
-          = exec (swept j (sinkPebble n)) (liftT (j + 1) msT) v :=
+    · have hkeep : exec (exec (swept j (c₀)) (liftT (j + 1) msT))
+          (strip2 (exec (swept j (c₀)) (liftT (j + 1) msT)) msH) v
+          = exec (swept j (c₀)) (liftT (j + 1) msT) v :=
         traj_above _ _ hstriplt _ (exec_mem_traj _ _) v (by omega)
       rw [hkeep]
       have h := hc₂tail (v - (j + 1)) (by omega)
       rw [shiftC_apply, show v - (j + 1) + (j + 1) = v by omega] at h
       exact h
+
+/-- **$\le$ 方向の構成**（`T_UP` の分解。尻尾も unpebbling）。 -/
+theorem decomp_le_run {n s j : ℕ} (hs : 3 ≤ s) (hjn : j + 1 < n)
+    {msH msT : List Move}
+    (hH : Run (j + 1) s (sinkPebble (j + 1)) msH allEmpty)
+    (hT : Run (n - (j + 1)) (s - 1) (sinkPebble (n - (j + 1))) msT allEmpty) :
+    ∃ ms : List Move, ms.length = 2 * j + 1 + msT.length + msH.length ∧
+      Run n s (sinkPebble n) ms allEmpty := by
+  have hshiftT := shiftC_sinkPebble (n := n) (k := j + 1) (by omega) hjn
+  refine decomp_le_run_gen (by omega) hjn ?_ (fun v hv => sinkPebble_above (by omega) hv)
+    hshiftT ?_ hH hT
+  · intro i hi; rw [sinkPebble_apply, if_neg (by omega)]
+  · rw [pcount_congr hshiftT, pcount_sinkPebble (by omega)]; omega
 
 /-- **$\le$ 方向**（`T_UP` の形）。到達可能性（`Reach.lean`）で仮定は不要になった。 -/
 theorem decomp_le {n s k : ℕ} (hs : 3 ≤ s) (hk : 1 ≤ k) (hkn : k < n) :
