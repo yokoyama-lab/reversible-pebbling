@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Theta
+import SpookyPebbling.Delta
 
 namespace Spooky
 
@@ -176,5 +176,43 @@ example : TUG 3 2 = wUG3_2.length := by rw [TUG_3_2]; rfl
 example : TUG 3 3 = wUG3_3.length := by rw [TUG_3_3]; rfl
 
 example : TUG 5 3 = wUG5_3.length := by rw [TUG_5_3]; rfl
+
+/-! ## 定理C・定理D と BFS の突き合わせ（交差検証）
+
+`TUP_eq_slope4`（定理C）が与える値も BFS の最適手順の長さと一致する。
+`(n,s)=(5,3)` は **`n = θ(s)-1`（傾き 4 の領域の右端・δ が反転する 1 つ手前）**なので、
+範囲の境界そのものを検査していることになる。
+-/
+
+theorem TUP_2_2 : TUP 2 2 = 3 := by
+  have := TUP_eq_slope4 (s := 2) (n := 2) (by omega) (by omega) (by decide); omega
+
+theorem TUP_3_3 : TUP 3 3 = 5 := by
+  have := TUP_eq_slope4 (s := 3) (n := 3) (by omega) (by omega) (by decide); omega
+
+theorem TUP_5_3 : TUP 5 3 = 13 := by
+  have := TUP_eq_slope4 (s := 3) (n := 5) (by omega) (by omega) (by decide); omega
+
+example : TUP 2 2 = wUP2_2.length := by rw [TUP_2_2]; rfl
+
+example : TUP 3 3 = wUP3_3.length := by rw [TUP_3_3]; rfl
+
+example : TUP 5 3 = wUP5_3.length := by rw [TUP_5_3]; rfl
+
+/-- **δ = T_UG - T_UP = +1**（定理C の系）。両辺とも BFS の最適手順で裏が取れている。 -/
+example : TUG 3 3 = TUP 3 3 + 1 := TUG_eq_TUP_add_one (by omega) (by omega) (by decide)
+
+example : TUG 5 3 = TUP 5 3 + 1 := TUG_eq_TUP_add_one (by omega) (by omega) (by decide)
+
+example : wUG3_3.length = wUP3_3.length + 1 := rfl
+
+example : wUG5_3.length = wUP5_3.length + 1 := rfl
+
+/-- **定理D は `(n,s) = (3,2)` で等号**: `6·3 - 2·(2+3) = 8` が BFS の最適手数 8 に一致する。 -/
+example : TUG 3 2 = 8 ∧ 6 * 3 ≤ TUG 3 2 + 2 * (2 + 3) :=
+  ⟨TUG_3_2, TUG_ge_slope6 (by omega) 3 (by omega)⟩
+
+/-- 定理D は `(n,s) = (5,3)` では緩い（`30 ≤ 14 + 18`）。緊密でない点も記録しておく。 -/
+example : 6 * 5 ≤ TUG 5 3 + 3 * (3 + 3) := TUG_ge_slope6 (by omega) 5 (by omega)
 
 end Spooky
