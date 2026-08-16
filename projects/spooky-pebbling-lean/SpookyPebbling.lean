@@ -13,4 +13,6 @@ import SpookyPebbling.Upper
 import SpookyPebbling.Unghost
 import SpookyPebbling.Small
 import SpookyPebbling.Slope4
+import SpookyPebbling.Closed
+import SpookyPebbling.Theta
 import SpookyPebbling.Tests

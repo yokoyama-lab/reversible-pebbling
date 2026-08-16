@@ -20,6 +20,8 @@
 
 | 主張 | 層 | 置き場 |
 |---|---|---|
+| **定理B**: $T_{UG}(n,s)=4n-2s$（$s\le n\le\theta(s)$、$\theta(s)=s(s+1)/2$） | **1（Lean）** | `SpookyPebbling/Theta.lean` |
+| **補題3**: $T_{UG}(n,s)=2n$（$n\le s$）、**補題4**: $T_{UP}(k,s)=2k-1$（$k\le s$） | **1（Lean）** | `SpookyPebbling/Closed.lean` |
 | **定理A**: $T_{UG}(n,s)\ge 4n-2s$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope4.lean` |
 | **KSS Cor 4.12**: $T_{UG}(n,s)=\min_k[2k-1+T_{UP}(k,s)+T_{UG}(n-k,s-1)]$ | **1（Lean）** | `SpookyPebbling/Unghost.lean` |
 | $T_{UP}(k,s)\ge 2k-1$、$T_{UG}(n,s)\ge 2n$（無条件） | **1（Lean）** | `SpookyPebbling/Small.lean` |
@@ -93,8 +95,8 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 点 | 結果 |
 |---|---|
 | ビルド | `lake build SpookyPebbling` rc=0 |
-| 成果物の実在 | olean 16 本を確認 |
-| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（16 ファイルすべて） |
+| 成果物の実在 | olean 18 本を確認 |
+| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（18 ファイルすべて） |
 | 公理検査 | `decomp_ge` を含む主要定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
 | 変異A（偽の補題 `probe : False`） | **検出**（ビルドが落ちる） |
 | 変異B（`ghost` に前提条件を付ける） | **検出**。うち `Tests.lean` だけで 14 か所（`by decide` が定義の変異を捕まえる） |
@@ -109,6 +111,9 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 変異K（Cor 4.12 の $\le$ 方向を `s ≥ 1` に緩める） | **検出**（掃きに 2 個要る） |
 | 変異L（定理A の傾きを 4 でなく 5 にする） | **検出** |
 | 変異M（`T_UP` の下界を `2k-1` でなく `2k` にする） | **検出** |
+| 変異N（傾き 4 の領域を $\theta(s)+1$ まで広げる） | **検出**（真の値は 2 大きい） |
+| 変異O（定理B の傾きを 4 でなく 3 にする） | **検出** |
+| **定理B と BFS の突き合わせ** | `TUG 3 2 = 8`・`TUG 3 3 = 6`・`TUG 5 3 = 14` が**転記した最適手順の長さと一致**（片方は定理・片方は全数探索） |
 | 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` / `decomp_le_run` を適用して結論を得ている |
 
 再現:
@@ -139,15 +144,17 @@ echo 'import SpookyPebbling
 | `Unghost.lean` | **KSS Cor 4.12**（`decomp_ug_ge` / `decomp_ug_le` / `decomp_ug_exact`） |
 | `Small.lean` | 数え上げの下界（`T_UP ≥ 2k-1`・`T_UG ≥ 2n`） |
 | `Slope4.lean` | **定理A**（`T_UG ≥ 4n-2s`。Cor 4.12 の望遠鏡） |
+| `Closed.lean` | 補題3・補題4（`n ≤ s` / `k ≤ s` での厳密値。上界＝構成） |
+| `Theta.lean` | `θ(s)=s(s+1)/2` と **定理B**（傾き 4 の領域の厳密値） |
 | `Tests.lean` | 陽性 13 点・陰性 6 点・両方向の非空虚性 |
 
 ## 未移植（次にやること）
 
-1. **$T_{UG}(n,s)\le 4n-2s$（$s\le n\le\theta(s)$）** — 定理A の逆向き。Cor 4.12 の
-   `min` の項を 1 つ選び、補題4（$k\le s$ で $T_{UP}(k,s)=2k-1$）で望遠鏡を回す。
-   ここから **$\theta(s)=\theta(s-1)+s$**、すなわち $\theta(s)=s(s+1)/2$ が出る
-2. 補題3（$n\le s$ で $T_{UG}=2n$）と補題4（$k\le s$ で $T_{UP}=2k-1$）の**上界側の構成**
-   （下界は `Small.lean` で済み）
+1. **定理D（傾き 6 の下界 $T_{UG}\ge 6n-s(s+3)$）** — 定理A と同じ望遠鏡。まず任意の $k$ で
+   $T_{UP}(k,s)\ge 4k-2s-1$（定理A ＋ KSS Lemma 4.10）が要るので、**Lemma 4.10
+   （$T_{UG}\le T_{UP}+1$）**を先に Lean へ
+2. **$\delta = T_{UG}-T_{UP}$ の符号反転が $\theta$ で起きること**（定理C）。
+   Lemma 4.10 とパリティ（済）から
 3. **KSS Cor 4.7** — `T_P` 版。$\theta$ には**不要**で、$T(n,3)=n^2-n-3$ に要る。
    頭が `T_{UP}(k,s-1)`（上限が 1 小さい）なので、そこだけ別扱いが要る
 4. 傾き 6 の厳密値、$T(n,3)=n^2-n-3$

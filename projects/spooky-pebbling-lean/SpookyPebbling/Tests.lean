@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Upper
+import SpookyPebbling.Theta
 
 namespace Spooky
 
@@ -154,5 +154,27 @@ example : ∃ k, 1 ≤ k ∧ k < 5 ∧ 2 * k - 1 + TUP k 3 + TUP (5 - k) 2 ≤ w
 example : ∃ ms : List Move, ms.length = 2 * 1 + 1 + wUP3_2.length + wUP2_2.length ∧
     Run 5 3 (sinkPebble 5) ms allEmpty :=
   decomp_le_run (by omega) (by omega) (by decide) (by decide)
+
+/-! ## 定理B と BFS の突き合わせ（交差検証）
+
+`TUG_eq_slope4` が与える値が、上で転記した BFS の最適手順の長さと一致することを確かめる。
+**片方は定理・片方は全数探索**なので、どちらかが間違っていれば落ちる。
+-/
+
+theorem TUG_3_2 : TUG 3 2 = 8 := by
+  have := TUG_eq_slope4 (s := 2) (n := 3) (by omega) (by omega) (by decide); omega
+
+theorem TUG_3_3 : TUG 3 3 = 6 := by
+  have := TUG_eq_slope4 (s := 3) (n := 3) (by omega) (by omega) (by decide); omega
+
+theorem TUG_5_3 : TUG 5 3 = 14 := by
+  have := TUG_eq_slope4 (s := 3) (n := 5) (by omega) (by omega) (by decide); omega
+
+/-- BFS の最適手順の長さ（8）と定理B の値が一致する。 -/
+example : TUG 3 2 = wUG3_2.length := by rw [TUG_3_2]; rfl
+
+example : TUG 3 3 = wUG3_3.length := by rw [TUG_3_3]; rfl
+
+example : TUG 5 3 = wUG5_3.length := by rw [TUG_5_3]; rfl
 
 end Spooky
