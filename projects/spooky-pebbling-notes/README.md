@@ -44,11 +44,19 @@ $O(n^2)$」が既知。**「鎖の最小量子空間は 3」は新しくない�
 | **$\theta(s)=s(s+1)/2$**、ゆえに `closed2.py` の 3 本の漸化式はすべて定理 | 鎖 |
 
 **層1（Lean 機械証明）へ上がったもの**（`github.com/yokoyama-lab/spooky-pebbling-lean`、
-2026-08-14。sorry 0・公理は標準の 3 つのみ・変異注入 2 種で検出力を確認）:
+2026-08-17 更新。sorry 0・公理は標準の 3 つのみ・変異注入 19 種で検出力を確認）:
 
 | 主張 | 置き場 |
 |---|---|
+| **定理B**: $T_{UG}=4n-2s$（$s\le n\le\theta(s)$）と $\theta(s)=s(s+1)/2$ | `SpookyPebbling/Theta.lean` |
+| **定理C**: $T_{UP}=4n-2s-1$（$s\le n\le\theta(s)-1$）と系 $\delta=+1$ | `SpookyPebbling/Delta.lean` |
+| **定理D**: $T_{UG}\ge 6n-s(s+3)$（無条件） | `SpookyPebbling/Slope6.lean` |
+| **定理A**: $T_{UG}\ge 4n-2s$（無条件）、補題3・補題4 | `Slope4.lean` / `Closed.lean` |
+| **KSS Cor 4.12**（$T_{UG}$ の分解、両方向） | `SpookyPebbling/Unghost.lean` |
+| **KSS Lemma 4.10**: $T_{UG}\le T_{UP}+1$ | `SpookyPebbling/UGvsUP.lean` |
 | **$T_{UP}$ 分解の $\ge$ 方向**（本丸。交換論法なし） | `SpookyPebbling/Decomp.lean` |
+| **$T_{UP}$ 分解の $\le$ 方向**（掃き＋持ち上げ＋ゴースト回収） | `Sweep.lean` / `Lift.lean` / `Reghost.lean` / `Upper.lean` |
+| 到達可能性（$s\ge2$ ならどんな鎖も片付く） | `SpookyPebbling/Reach.lean` |
 | **$T_{UG}(n,s)\ne T_{UP}(n,s)$**（パリティ）、$T_P\ne T_{UG}$ | `SpookyPebbling/Parity.lean` |
 | unpebbling は奇数手・unghosting は偶数手・pebbling は奇数手 | 同上 |
 | **補題G**（余分なゴーストは損にならない）＝分解の段(2) | `SpookyPebbling/Ghost.lean` |
@@ -56,9 +64,12 @@ $O(n^2)$」が既知。**「鎖の最小量子空間は 3」は新しくない�
 | 頭・尻尾への射影が部分鎖の妥当な手順になること | `SpookyPebbling/Project.lean` |
 | 意味論が `< n` の値にしか依存しない（射影の土台） | `SpookyPebbling/Defs.lean` |
 
-**分解は $\ge$ / $\le$ の両方向とも層1 になった**（2026-08-16）。残る層2 は
-$\theta(s)=s(s+1)/2$・傾き 4/6 の厳密値・$T(n,3)=n^2-n-3$（KSS の 2 本の漸化式が
-まだ Lean に無いのが壁）。混同しないこと。
+**$\theta(s)=s(s+1)/2$ と傾き 4 の領域の厳密値（定理B/C）、傾き 6 の下界（定理D）まで
+層1 になった**（2026-08-17）。**残る層2 は 傾き 6 の厳密値（定理E/F の上界側）・
+$T(n,3)=n^2-n-3$・KSS Cor 4.7・傾き 8 以降**。混同しないこと。
+
+定理B/C は BFS の最適手順の長さと突き合わせてある（`TUG 3 2 = 8`、`TUP 5 3 = 13` など。
+`(5,3)` は $n=\theta(s)-1$＝$\delta$ が反転する 1 つ手前の点）。定理D は $(3,2)$ で等号。
 
 > **⚠ 形式化が紙の証明の穴を 1 つ見つけた（2026-08-16）。** $\le$ 方向の掃きは
 > **`unpebble` では書けない**。`unpebble v_i` は $v_{i-1}\in P$ を要求するが、掃きでは
@@ -80,9 +91,9 @@ $\theta(s)=s(s+1)/2$・傾き 4/6 の厳密値・$T(n,3)=n^2-n-3$（KSS の 2 �
 1. **論文化**。$\theta(s)=s(s+1)/2$ と傾き 4/6 の厳密値、$T(n,3)=n^2-n-3$ が揃った。
    KSS の体系が $T_{UP}$ について閉じていないことを埋めた形なので、貢献の位置は明確
    （新規性の再確認は `novelty-check` で $T_{UP}$ の漸化式そのものを核語にする）
-2. **Lean 化の続き**（2026-08-16。分解は両方向とも層1）。**残るは $\theta(s)=s(s+1)/2$** で、
-   そのためには KSS Cor 4.7 / Cor 4.12 を Lean に載せる必要がある（現状 Lean には無い）。
-   到達可能性（`UPLengths n s` が空でないこと）を $s\ge3$ で一般に示すのも残っている
+2. **Lean 化の続き**（2026-08-17）。$\theta$・定理A/B/C/D・Cor 4.12・Lemma 4.10・
+   到達可能性はすべて層1。**残るは (a) KSS Cor 4.7（$T_P$ 版。$T(n,3)=n^2-n-3$ に要る）、
+   (b) 傾き 6 の厳密値（定理D は下界だけで、上界＝構成側がまだ）**
 3. **傾き 8 以降を厳密にする**（定理E の $c_m$ は $m\ge4$ で緩む。$c_4(3)$ は漸化式 38・実測 34）。
    $T_{UP}$ 分解が定理になったので、$c_m$ の緩みを詰める材料が増えている
 4. **一般 DAG（鎖以外）へ。** KSS Cor 4.7/4.12 は線グラフ専用だが、今回の $k$ の取り方
