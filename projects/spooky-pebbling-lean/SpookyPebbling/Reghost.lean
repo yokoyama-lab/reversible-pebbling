@@ -85,10 +85,10 @@ theorem pred_pebbled_of_clear {n : ℕ} : ∀ (N : ℕ) (ms : List Move), ms.len
             obtain ⟨l₁, l₂, heq, hpp⟩ := ih ms' (by omega) (step c m) hv.2 hi hp' he
             exact ⟨m :: l₁, l₂, by rw [List.cons_append, ← heq], hpp⟩
 
-/-- **頭の手順は `v_0 .. v_{k-2}` のどれも 1 回以上「置く」**。 -/
-theorem head_places {k s : ℕ} {ms : List Move}
+/-- **頭の手順は `v_0 .. v_{k-2}` のどれにもペブルが載る時刻を持つ**。 -/
+theorem head_pebbled {k s : ℕ} {ms : List Move}
     (h : Run k s (sinkPebble k) ms allEmpty) :
-    ∀ j, j + 1 < k → 0 < ms.countP (isPlace j) := by
+    ∀ j, j + 1 < k → ∃ l₁ l₂, ms = l₁ ++ l₂ ∧ exec (sinkPebble k) l₁ j = Cell.pebble := by
   intro j hj
   obtain ⟨hok, hagree⟩ := h
   obtain ⟨hv, _⟩ := (ok_iff ms (sinkPebble k)).mp hok
@@ -104,12 +104,19 @@ theorem head_places {k s : ℕ} {ms : List Move}
     simp
   obtain ⟨r₁, r₂, hr, hrp⟩ :=
     reaches_below (k - 1 - 1) l₁ (sinkPebble k) hv₁ hc hpp j (by omega)
-  have hplace : 0 < r₁.countP (isPlace j) :=
-    exists_place r₁ (sinkPebble k) (hc j (by omega)) hrp
-  have h1 : r₁.countP (isPlace j) ≤ l₁.countP (isPlace j) := by
+  exact ⟨r₁, r₂ ++ l₂, by rw [heq, hr, List.append_assoc], hrp⟩
+
+/-- **頭の手順は `v_0 .. v_{k-2}` のどれも 1 回以上「置く」**。 -/
+theorem head_places {k s : ℕ} {ms : List Move}
+    (h : Run k s (sinkPebble k) ms allEmpty) :
+    ∀ j, j + 1 < k → 0 < ms.countP (isPlace j) := by
+  intro j hj
+  obtain ⟨r₁, r₂, hr, hrp⟩ := head_pebbled h j hj
+  have hc : sinkPebble k j ≠ Cell.pebble := by
+    rw [sinkPebble_apply, if_neg (by omega)]; simp
+  have hplace : 0 < r₁.countP (isPlace j) := exists_place r₁ (sinkPebble k) hc hrp
+  have h1 : r₁.countP (isPlace j) ≤ ms.countP (isPlace j) := by
     rw [hr, List.countP_append]; omega
-  have h2 : l₁.countP (isPlace j) ≤ ms.countP (isPlace j) := by
-    rw [heq, List.countP_append]; omega
   omega
 
 /-! ## 再ゴースト（補題G の逆向き） -/

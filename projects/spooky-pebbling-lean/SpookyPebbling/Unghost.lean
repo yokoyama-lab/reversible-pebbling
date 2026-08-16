@@ -82,6 +82,38 @@ theorem decomp_ug_ge {n s : ℕ} (hn : 2 ≤ n) {ms : List Move}
   rw [hk]
   omega
 
+/-- 尻尾の手順そのものも返す版（縮退 `T_UG(m,1)=∞` を使うときに要る）。 -/
+theorem decomp_ug_ge' {n s : ℕ} (hn : 2 ≤ n) {ms : List Move}
+    (h : Run n s (sinkGhost n) ms allEmpty) :
+    ∃ k, 1 ≤ k ∧ k < n ∧ 2 * k - 1 + TUP k s + TUG (n - k) (s - 1) ≤ ms.length ∧
+      ∃ msT, Run (n - k) (s - 1) (sinkGhost (n - k)) msT allEmpty := by
+  obtain ⟨u, hun1, hlen, hrunT⟩ :=
+    decomp_ge_pieces hn (fun j _ => sinkGhost_ne_pebble n j)
+      (two_pebbles_of_sinkGhost hn h) h
+  have hshift : AgreeOn (n - (u + 1)) (shiftC (u + 1) (sinkGhost n)) (sinkGhost (n - (u + 1))) :=
+    shiftC_sinkGhost (by omega) hun1
+  obtain ⟨hokT, hagreeT⟩ := hrunT
+  have hrunT' : Run (n - (u + 1)) (s - 1) (sinkGhost (n - (u + 1))) (tailMoves u ms) allEmpty := by
+    refine ⟨ok_congr hshift hokT, ?_⟩
+    intro v hv1
+    rw [← exec_congr (tailMoves u ms) hshift v hv1]
+    exact hagreeT v hv1
+  have htail : TUG (n - (u + 1)) (s - 1) ≤ (tailMoves u ms).length :=
+    TUG_le ⟨tailMoves u ms, rfl, hrunT'⟩
+  refine ⟨u + 1, by omega, by omega, ?_, tailMoves u ms, hrunT'⟩
+  have hk : 2 * (u + 1) - 1 = 2 * u + 1 := by omega
+  rw [hk]
+  omega
+
+/-- 上限 1 では長さ 2 以上の鎖の unghosting はできない（KSS の `s<2 ∧ s<n → ∞`）。 -/
+theorem not_run_ug_cap_one {m : ℕ} (hm : 2 ≤ m) {ms : List Move} :
+    ¬ Run m 1 (sinkGhost m) ms allEmpty := by
+  intro h
+  obtain ⟨d, hd, hd2⟩ := two_pebbles_of_sinkGhost hm h
+  obtain ⟨_, hcap⟩ := (ok_iff ms (sinkGhost m)).mp h.1
+  have := hcap d hd
+  omega
+
 /-- 論文の形: `T_UG(n,s)` そのものについての下界。 -/
 theorem TUG_ge_decomp {n s : ℕ} (hn : 2 ≤ n) (hne : (UGLengths n s).Nonempty) :
     ∃ k, 1 ≤ k ∧ k < n ∧ 2 * k - 1 + TUP k s + TUG (n - k) (s - 1) ≤ TUG n s := by
