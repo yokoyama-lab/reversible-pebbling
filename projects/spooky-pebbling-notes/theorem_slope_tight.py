@@ -129,6 +129,32 @@ def main() -> int:
     print("  → m<=2 では +1（δ=+1 の領域）、m>=3 では -1（δ=-1 の領域）。"
           "\n    これが「定理E が m>=4 で 2 ずつ損をする」ことの直接の証拠。")
 
+    print("\n上包絡: T_UP(n,s) == max_m (2mn - β_m(s))  ← 構成側の目標はこの形")
+    env_cnt = 0
+    for s in range(2, min(smax, 5) + 1):
+        for n in range(1, 61):
+            v = closed2.T_UP(n, s)
+            if v == INF:
+                continue
+            env = max(2 * m * n - beta(m, s) for m in range(1, 2 * n + 4))
+            env_cnt += 1
+            if env != int(v):
+                fails.append(f"上包絡 破れ: T_UP({n},{s})={int(v)} != {env}")
+    print(f"  {env_cnt} 点")
+    print("  → 各傾き 2m は **ある n の区間でだけ** 包絡を与える（s=4 の例）:")
+    rng: dict[int, list[int]] = {}
+    for n in range(1, 61):
+        v = closed2.T_UP(n, 4)
+        if v == INF:
+            continue
+        for m in range(1, 2 * n + 4):
+            if 2 * m * n - beta(m, 4) == int(v):
+                rng.setdefault(m, [n, n])[1] = n
+    for m in sorted(rng):
+        print(f"     m={m} (傾き{2 * m}): n ∈ [{rng[m][0]}..{rng[m][1]}]")
+    print("  したがって上界（構成）の目標は「任意の m で T_UP ≤ 2mn-β_m(s)」ではなく")
+    print("  **各 m について、その傾きが包絡を与える区間で達成する**（定理F と同じ形）。")
+
     if fails:
         print(f"\nNG {len(fails)} 件（先頭 10）:")
         for f in fails[:10]:
