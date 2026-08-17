@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Delta
+import SpookyPebbling.Slope6Exact
 
 namespace Spooky
 
@@ -214,5 +214,49 @@ example : TUG 3 2 = 8 ∧ 6 * 3 ≤ TUG 3 2 + 2 * (2 + 3) :=
 
 /-- 定理D は `(n,s) = (5,3)` では緩い（`30 ≤ 14 + 18`）。緊密でない点も記録しておく。 -/
 example : 6 * 5 ≤ TUG 5 3 + 3 * (3 + 3) := TUG_ge_slope6 (by omega) 5 (by omega)
+
+/-! ## 定理F（傾き 6 の領域の厳密値）と BFS の突き合わせ
+
+`s=3` の傾き 6 の区間は `θ(3)=6 ≤ n ≤ B₄(3)-1 = 8`。下の 2 本は独立に走らせた BFS の
+最適手順で、長さが定理F の値 `6n-18` に一致する。
+-/
+
+def wUG6_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.pebble, 2⟩,
+  ⟨.ghost, 1⟩, ⟨.pebble, 3⟩, ⟨.pebble, 4⟩, ⟨.unpebble, 3⟩, ⟨.unghost, 5⟩, ⟨.unpebble, 5⟩,
+  ⟨.pebble, 3⟩, ⟨.unpebble, 4⟩, ⟨.pebble, 0⟩, ⟨.unpebble, 3⟩, ⟨.unghost, 1⟩,
+  ⟨.unpebble, 2⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+
+example : Run 6 3 (sinkGhost 6) wUG6_3 allEmpty := by decide
+
+def wUG7_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.pebble, 2⟩,
+  ⟨.ghost, 1⟩, ⟨.pebble, 3⟩, ⟨.ghost, 2⟩, ⟨.pebble, 4⟩, ⟨.pebble, 5⟩, ⟨.unpebble, 4⟩,
+  ⟨.unghost, 6⟩, ⟨.unpebble, 6⟩, ⟨.pebble, 4⟩, ⟨.unpebble, 5⟩, ⟨.pebble, 0⟩,
+  ⟨.unpebble, 4⟩, ⟨.unghost, 1⟩, ⟨.unpebble, 0⟩, ⟨.unghost, 2⟩, ⟨.unpebble, 3⟩,
+  ⟨.pebble, 0⟩, ⟨.unpebble, 2⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+
+example : Run 7 3 (sinkGhost 7) wUG7_3 allEmpty := by decide
+
+theorem TUG_6_3 : TUG 6 3 = 18 := by
+  have := TUG_eq_slope6 (s := 3) (n := 6) (by omega) (by decide) (by decide); omega
+
+theorem TUG_7_3 : TUG 7 3 = 24 := by
+  have := TUG_eq_slope6 (s := 3) (n := 7) (by omega) (by decide) (by decide); omega
+
+theorem TUG_8_3 : TUG 8 3 = 30 := by
+  have := TUG_eq_slope6 (s := 3) (n := 8) (by omega) (by decide) (by decide); omega
+
+/-- 定理F の値が BFS の最適手順の長さと一致する。 -/
+example : TUG 6 3 = wUG6_3.length := by rw [TUG_6_3]; rfl
+
+example : TUG 7 3 = wUG7_3.length := by rw [TUG_7_3]; rfl
+
+/-- **区間の右端 `B₄(3)-1 = 8` は本物**: `n = 9` を含めると値は 38 で、`6·9-18 = 36` ではない
+（BFS で確認。ここでは「定理F が `n = B₄(s)` を主張していない」ことだけを記録する）。 -/
+example : ¬ (9 + 1 ≤ B4 3) := by decide
+
+/-- `T_UG` と `T_UP` の差はちょうど 1（両側不等式＋パリティ）。 -/
+example : TUG 5 3 = TUP 5 3 + 1 ∨ TUP 5 3 = TUG 5 3 + 1 :=
+  TUG_TUP_diff_one (by omega) (by omega)
+    (UPLengths_nonempty (by omega) (by omega)) (UGLengths_nonempty (by omega) (by omega))
 
 end Spooky

@@ -167,6 +167,58 @@ theorem TUG_le_TUP_succ {n s : ℕ} (hn : 1 ≤ n) (hne : (UPLengths n s).Nonemp
   unfold TUP
   omega
 
+/-! ## 逆向き（こちらは 1 手の構成だけ）
+
+`sinkPebble n` に `ghost (n-1)` を 1 手打てば `sinkGhost n` になる。`ghost` は
+**前提条件を持たない**（測定）ので、上限の枠さえ空いていれば必ず打てる。しかも
+ペブルが 1 個減るので枠の心配も要らない。 -/
+
+/-- **KSS Lemma 4.9 に対応**: `T_UP(n,s) ≤ T_UG(n,s) + 1`。 -/
+theorem TUP_le_TUG_succ {n s : ℕ} (hn : 1 ≤ n) (hs : 1 ≤ s)
+    (hne : (UGLengths n s).Nonempty) : TUP n s ≤ TUG n s + 1 := by
+  obtain ⟨ms, hlen, hok, hagree⟩ := Nat.sInf_mem hne
+  have hA : AgreeOn n (step (sinkPebble n) ⟨Op.ghost, n - 1⟩) (sinkGhost n) := by
+    intro w hw
+    show Function.update (sinkPebble n) (n - 1) Cell.ghost w = sinkGhost n w
+    rw [sinkGhost_apply]
+    by_cases h1 : w = n - 1
+    · subst h1; rw [Function.update_self, if_pos rfl]
+    · rw [Function.update_of_ne h1, if_neg h1, sinkPebble_apply, if_neg h1]
+  have hrun : Run n s (sinkPebble n) (⟨Op.ghost, n - 1⟩ :: ms) allEmpty := by
+    constructor
+    · show (decide (pcount n (sinkPebble n) ≤ s) && legal n (sinkPebble n) ⟨Op.ghost, n - 1⟩
+            && ok n s (step (sinkPebble n) ⟨Op.ghost, n - 1⟩) ms) = true
+      have hA' : AgreeOn n (sinkGhost n) (step (sinkPebble n) ⟨Op.ghost, n - 1⟩) :=
+        fun w hw => (hA w hw).symm
+      rw [ok_congr hA' hok]
+      have hp : pcount n (sinkPebble n) = 1 := pcount_sinkPebble (by omega)
+      have hleg : legal n (sinkPebble n) ⟨Op.ghost, n - 1⟩ = true := by
+        show (decide (n - 1 < n) && decide (sinkPebble n (n - 1) = Cell.pebble)) = true
+        rw [sinkPebble_apply, if_pos rfl]
+        simp [show n - 1 < n by omega]
+      rw [hleg]
+      simp only [Bool.and_true, decide_eq_true_eq]
+      omega
+    · intro v hv
+      show exec (step (sinkPebble n) ⟨Op.ghost, n - 1⟩) ms v = allEmpty v
+      rw [exec_congr ms hA v hv]
+      exact hagree v hv
+  have := TUP_le (n := n) (s := s) ⟨_, rfl, hrun⟩
+  unfold TUG
+  simp only [List.length_cons] at this
+  omega
+
+/-- **KSS Thm 4.11 の `T_UG`/`T_UP` 版**: 差はちょうど 1。
+両側不等式（Lemma 4.9/4.10）だけでは `0` を排除できないが、パリティ（`Parity.lean`）が
+排除する。**この形は KSS には無い**。 -/
+theorem TUG_TUP_diff_one {n s : ℕ} (hn : 1 ≤ n) (hs : 1 ≤ s)
+    (hUP : (UPLengths n s).Nonempty) (hUG : (UGLengths n s).Nonempty) :
+    TUG n s = TUP n s + 1 ∨ TUP n s = TUG n s + 1 := by
+  have h1 := TUG_le_TUP_succ hn hUP
+  have h2 := TUP_le_TUG_succ hn hs hUG
+  have h3 := TUG_ne_TUP (by omega) hUP hUG
+  omega
+
 /-- **定理A の `T_UP` 版**: `T_UP(n,s) ≥ 4n - 2s - 1`（`s ≥ 2`）。
 
 定理D（傾き 6 の下界）の望遠鏡が、頭の unpebbling についてこの形を要求する。 -/

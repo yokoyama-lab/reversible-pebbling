@@ -18,4 +18,5 @@ import SpookyPebbling.Theta
 import SpookyPebbling.UGvsUP
 import SpookyPebbling.Slope6
 import SpookyPebbling.Delta
+import SpookyPebbling.Slope6Exact
 import SpookyPebbling.Tests
