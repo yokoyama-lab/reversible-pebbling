@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.SlopeE
+import SpookyPebbling.Lemma48Gen
 
 namespace Spooky
 
@@ -368,5 +368,33 @@ example : cc 2 5 = 10 := cc_two 5 (by omega)
 example : cc 3 4 = 28 := cc_three 4 (by omega)
 
 example : cc 4 3 = 38 := cc_four_three
+
+/-! ## KSS Thm 4.11（一般の `s`）
+
+`Lemma48Gen.lean` で `T_P(n+1,s+1) = T_UG(n,s)+1` が任意の `s` で層1 になった。
+上限 3 の場合は `Lemma48.lean` の特化版と合わせて**2 通りに証明されている**。
+-/
+
+example {p : ℕ} : TP (p + 3) 3 = TUG (p + 2) 2 + 1 := TP_eq_TUG_succ_cap3
+
+example {p : ℕ} : TP (p + 3) 3 = TUG (p + 2) 2 + 1 := TP_eq_TUG_succ (s := 2) (by omega)
+
+/-- 一般版から `T_P(4,3)=9`（BFS の最適手数と一致）。 -/
+example : TP 4 3 = 9 := by
+  have h1 : TP 4 3 = TUG 3 2 + 1 := TP_eq_TUG_succ (p := 1) (s := 2) (by omega)
+  have h2 := TUG_3_2
+  omega
+
+/-- 一般版から `T_P(5,3)=17`。 -/
+example : TP 5 3 = 17 := by
+  have h1 : TP 5 3 = TUG 4 2 + 1 := TP_eq_TUG_succ (p := 2) (s := 2) (by omega)
+  have h2 := TUG_4_2'
+  omega
+
+/-- 傾き 4 の領域の `T_P` の厳密値（`s=3`・`n=5=θ(3)-1`）。`T_UG(5,3)=14` から 15。 -/
+example : TP 6 4 = 15 := by
+  have h1 : TP 6 4 = TUG 5 3 + 1 := TP_eq_TUG_succ (p := 3) (s := 3) (by omega)
+  have h2 := TUG_5_3
+  omega
 
 end Spooky
