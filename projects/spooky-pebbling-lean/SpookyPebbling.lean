@@ -19,4 +19,6 @@ import SpookyPebbling.UGvsUP
 import SpookyPebbling.Slope6
 import SpookyPebbling.Delta
 import SpookyPebbling.Slope6Exact
+import SpookyPebbling.Cap2
+import SpookyPebbling.Sign
 import SpookyPebbling.Tests

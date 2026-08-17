@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Slope6Exact
+import SpookyPebbling.Sign
 
 namespace Spooky
 
@@ -258,5 +258,42 @@ example : ¬ (9 + 1 ≤ B4 3) := by decide
 example : TUG 5 3 = TUP 5 3 + 1 ∨ TUP 5 3 = TUG 5 3 + 1 :=
   TUG_TUP_diff_one (by omega) (by omega)
     (UPLengths_nonempty (by omega) (by omega)) (UGLengths_nonempty (by omega) (by omega))
+
+/-! ## `T_UP(n,2) = n²+n-3` と δ の符号反転
+
+上限 2 の閉形式（`Cap2.lean`）は、既に転記してある `wUP3_2`（9 手）・`wUP4_2`（17 手）と
+一致する。`s=3` では **`n=5` で `δ=+1`・`n=6` で `δ=-1`** となり、
+`θ(3)=6` がちょうど反転点であることが BFS の最適手順の長さでも確かめられる。
+-/
+
+theorem TUP_3_2 : TUP 3 2 = 9 := by have := TUP_cap2 (n := 3) (by omega); omega
+
+theorem TUP_4_2 : TUP 4 2 = 17 := by have := TUP_cap2 (n := 4) (by omega); omega
+
+example : TUP 3 2 = wUP3_2.length := by rw [TUP_3_2]; rfl
+
+example : TUP 4 2 = wUP4_2.length := by rw [TUP_4_2]; rfl
+
+def wUP6_3 : List Move := [⟨.pebble, 0⟩, ⟨.pebble, 1⟩, ⟨.unpebble, 0⟩, ⟨.pebble, 2⟩,
+  ⟨.ghost, 1⟩, ⟨.pebble, 3⟩, ⟨.ghost, 2⟩, ⟨.pebble, 4⟩, ⟨.unpebble, 5⟩, ⟨.pebble, 0⟩,
+  ⟨.unpebble, 4⟩, ⟨.unghost, 1⟩, ⟨.unpebble, 0⟩, ⟨.unghost, 2⟩, ⟨.unpebble, 3⟩,
+  ⟨.pebble, 0⟩, ⟨.unpebble, 2⟩, ⟨.unpebble, 1⟩, ⟨.unpebble, 0⟩]
+
+example : Run 6 3 (sinkPebble 6) wUP6_3 allEmpty := by decide
+
+theorem TUP_6_3 : TUP 6 3 = 19 := by
+  have := TUP_eq_slope6 (s := 3) (n := 6) (by omega) (by decide) (by decide); omega
+
+example : TUP 6 3 = wUP6_3.length := by rw [TUP_6_3]; rfl
+
+/-- **符号の反転**: `n = 5 = θ(3)-1` では `δ = +1`、`n = 6 = θ(3)` では `δ = -1`。 -/
+example : TUG 5 3 = TUP 5 3 + 1 := TUG_eq_TUP_add_one (by omega) (by omega) (by decide)
+
+example : TUP 6 3 = TUG 6 3 + 1 := TUP_eq_TUG_add_one (by omega) (by decide) (by decide)
+
+/-- 転記した BFS の最適手順の長さでも同じ向きに 1 だけ違う。 -/
+example : wUG5_3.length = wUP5_3.length + 1 := rfl
+
+example : wUP6_3.length = wUG6_3.length + 1 := rfl
 
 end Spooky

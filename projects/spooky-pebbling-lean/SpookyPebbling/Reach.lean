@@ -70,7 +70,8 @@ theorem run_one {s : ℕ} (hs : 1 ≤ s) :
 /-- **帰納段**: 長さ `j+1` の鎖の手順から、長さ `j+2` の鎖の手順を作る（上限 2）。 -/
 theorem run_cap2_step {j : ℕ} {msH : List Move}
     (hH : Run (j + 1) 2 (sinkPebble (j + 1)) msH allEmpty) :
-    ∃ ms : List Move, Run (j + 2) 2 (sinkPebble (j + 2)) ms allEmpty := by
+    ∃ ms : List Move, ms.length = msH.length + 2 * j + 4 ∧
+      Run (j + 2) 2 (sinkPebble (j + 2)) ms allEmpty := by
   classical
   obtain ⟨hokH, hagreeH⟩ := hH
   -- 第 1 手: 終端を測定して枠を空ける
@@ -150,7 +151,10 @@ theorem run_cap2_step {j : ℕ} {msH : List Move}
   have hc₃j : c₃ j = Cell.pebble := by rw [hc₃low j (by omega)]; exact hc₂at
   -- 組み立て
   refine ⟨[⟨Op.ghost, j + 1⟩] ++ sweep (j + 1)
-      ++ [⟨Op.unghost, j + 1⟩, ⟨Op.unpebble, j + 1⟩] ++ strip2 H msH, ?_, ?_⟩
+      ++ [⟨Op.unghost, j + 1⟩, ⟨Op.unpebble, j + 1⟩] ++ strip2 H msH, ?_, ?_, ?_⟩
+  · -- 手数: `1 + (2j+1) + 2 + |msH| = |msH| + 2j + 4`
+    simp only [List.length_append, List.length_cons, List.length_nil, sweep_length, hlenH']
+    omega
   · refine (ok_iff _ (sinkPebble (j + 2))).mpr ⟨?_, ?_⟩
     · refine valid_append _ _ _ (valid_append _ _ _ (valid_append _ _ _ ?_ ?_) ?_) ?_
       · simp only [valid_cons, valid_nil, Bool.and_true]
@@ -227,7 +231,7 @@ theorem UPLengths_two_nonempty : ∀ n, 1 ≤ n → (UPLengths n 2).Nonempty := 
         exact ⟨1, [⟨Op.unpebble, 0⟩], rfl, run_one (by omega)⟩
       · obtain ⟨j, rfl⟩ : ∃ j, n = j + 2 := ⟨n - 2, by omega⟩
         obtain ⟨_, msH, _, hrunH⟩ := ih (j + 1) (by omega) (by omega)
-        obtain ⟨ms, hrun⟩ := run_cap2_step hrunH
+        obtain ⟨ms, _, hrun⟩ := run_cap2_step hrunH
         exact ⟨ms.length, ms, rfl, hrun⟩
 
 /-- **到達可能性**: `s ≥ 2` なら `T_UP n s` は実現される（`sInf ∅ = 0` を避けられる）。 -/
