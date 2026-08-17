@@ -176,6 +176,20 @@ def main() -> int:
             elif d // 2 != rng2[m + 1][0]:
                 fails.append(f"折れ目 s={s} m={m}→{m+1}: 予測 {d // 2} != 実測 {rng2[m + 1][0]}")
     print(f"  {bcnt} 点")
+    # 折れ目は **広義**単調（s=2 では β_2-β_1 = β_3-β_2 = 4 なので m=2 の区間が 1 点に退化する）
+    mono = 0
+    for s in range(2, min(smax, 7) + 1):
+        prev = None
+        for m in range(1, 60):
+            d = beta(m + 1, s) - beta(m, s)
+            if d % 2 != 0:
+                fails.append(f"β の階差 {d} が奇数（s={s}, m={m}）")
+            b = d // 2
+            if prev is not None and b < prev:
+                fails.append(f"折れ目が狭義に減少（s={s}, m={m}: {prev} → {b}）")
+            prev = b
+            mono += 1
+    print(f"  折れ目の**広義**単調性: {mono} 点（s=2 は m=2 の区間が [2,2] に退化する。等号は成立）")
     print("  m=2→3 を入れると (β_3-β_2)/2 = (s+2)(s-1)/2 = θ(s)-1 で、**θ が β から落ちてくる**:")
     print("   " + "  ".join(f"s={s}:{(beta(3, s) - beta(2, s)) // 2}(θ-1={s * (s + 1) // 2 - 1})"
                             for s in range(2, 8)))
