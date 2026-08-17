@@ -10,11 +10,26 @@
 
 | もの | 出典 |
 |---|---|
-| spooky pebble game の遷移規則 | Quist–Laarman, *Trade-offs between classical and quantum space using spooky pebbling*, LMCS 21:4 (2025), arXiv:2401.10579, **Definition 2.2** |
+| spooky pebble game の遷移規則 | Kornerup–Sadun–Soloveichik, arXiv:2110.08973v3, **Definition 2.6/2.7** に対応 |
 | $T_P$ / $T_{UP}$ / $T_{UG}$ の名前と役割 | Kornerup–Sadun–Soloveichik, *Tight Bounds on the Spooky Pebble Game*, Quantum 9:1636 (2025), arXiv:2110.08973v3, §3–4 |
+| 概念の初出（本形式化が逐語で従うものではない） | Quist–Laarman, *Trade-offs between classical and quantum space using spooky pebbling*, LMCS 21:4 (2025), arXiv:2401.10579, Definition 2.2 |
 
 頂点は `0, …, n-1`、辺は `i → i+1`。配置は `ℕ → Cell`（`Cell = empty | pebble | ghost`）で、
 鎖の長さ `n` は述語の側に持たせている。`ghost` だけが前提条件を持たない（測定）。
+
+> ⚠ **2026-08-18 に出典表示を訂正した**（監査 `docs/review-plan.md` Round 2・重大2）。
+> それまで遷移規則を「QL Def 2.2 の逐語」としていたが、**QL Def 2.2 とは一致していない**。
+> QL の前提条件は in-node 条件だけで対象頂点 `v` 自身の状態を拘束せず、また `(P, S)` は
+> `P ∩ S ≠ ∅` を許す。本形式化は `v` 自身の状態条件を 4 本課し `Cell` 型で `P ∩ S = ∅` を
+> 強制するので **QL に対し狭い**。KSS Def 2.6/2.7（`‖P_i △ P_{i+1}‖ = 1`）の下では
+> その 4 条件は定義から従う。
+>
+> **KSS とも 1 点ずれる（未解消）**: KSS は `remove(v)` が ghost を作るか否かを
+> `parents(v) ⊆ P` で自動決定するが、本形式化の `.ghost` は `ready` が真でも打てるので
+> **KSS より広い**。よって **下界はそのまま KSS へ移るが、上界は自動では移らない**
+> （実際 `sweep 2` と `placeUpto` は `ready` が真の状態で `ghost` を打っている）。
+> 解消には正規化補題（`ready` が真の `ghost v` → `unpebble v`、後続の `unghost v` → `pebble v`。
+> 前提条件も長さも `pcount` も不変）が要る。詳細は `SpookyPebbling/Defs.lean` の冒頭。
 
 ## 層（何が機械証明されているか）
 
