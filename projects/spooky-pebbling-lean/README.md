@@ -31,6 +31,7 @@
 | **KSS Lemma 3.2**: $T_P(n{+}1,s{+}1)\le T_{UG}(n,s)+1$（全 $s$） | **1（Lean）** | `SpookyPebbling/Bridge.lean` |
 | **定理D**: $T_{UG}(n,s)\ge 6n-s(s+3)$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope6.lean` |
 | **定理F**: $T_{UG}(n,s)=6n-s(s+3)$（$\theta(s)\le n\le B_4(s)-1$）と $B_4(s)=B_4(s-1)+\theta(s)-1$ | **1（Lean）** | `SpookyPebbling/Slope6Exact.lean` |
+| **定理E**: $T_{UG}(n,s)\ge 2mn-c_m(s)$（任意の傾き $2m$。定理A・定理D を含む） | **1（Lean）** | `SpookyPebbling/SlopeE.lean` |
 | **KSS Lemma 4.9/4.10**: $T_{UG}\le T_{UP}+1$ と $T_{UP}\le T_{UG}+1$、ゆえに差はちょうど 1 | **1（Lean）** | `SpookyPebbling/UGvsUP.lean` |
 | **補題3**: $T_{UG}(n,s)=2n$（$n\le s$）、**補題4**: $T_{UP}(k,s)=2k-1$（$k\le s$） | **1（Lean）** | `SpookyPebbling/Closed.lean` |
 | **定理A**: $T_{UG}(n,s)\ge 4n-2s$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope4.lean` |
@@ -46,7 +47,7 @@
 | 頭・尻尾への射影が部分鎖の妥当な手順になること | **1（Lean）** | `SpookyPebbling/Project.lean` |
 | **到達可能性**: `s ≥ 2` ならどんな長さの鎖も片付く（`sInf ∅ = 0` を回避） | **1（Lean）** | `SpookyPebbling/Reach.lean` |
 | 意味論が `< n` の値にしか依存しない（射影の土台） | **1（Lean）** | `SpookyPebbling/Defs.lean` |
-| KSS Lemma 4.8 の**一般の $s$**（Lemma 4.5 の正準な置き方が要る）、定理E（傾き 8 以降） | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
+| KSS Lemma 4.8 の**一般の $s$**（Lemma 4.5 の正準な置き方が要る） | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
 
 **$T_{UG}\ne T_{UP}$ は KSS が持っていない。** KSS Thm 4.11 の $\pm1$ は Lemma 4.9/4.10 の
 両側不等式から出るもので、$0$ の可能性を排除していない。パリティが排除する。
@@ -155,7 +156,11 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 変異AJ（$T(n,3)$ の値を 1 ずらす） | **検出** |
 | 変異AK（**最後**の手でなく**最初**の手で切る） | **検出**（`Last(v_n)` で切るのが本質）|
 | 変異AL（数え上げの置く手を $v_0..v_{n-1}$ に減らす） | **検出**（終端の `place` の 1 手が効く）|
+| 変異AM（$c_m$ の漸化式の `+2` を `+1` に） | **検出** |
+| 変異AN（底 $c_m(1)$ を 1 小さく） | **検出** |
+| 変異AO（傾きを $2m$ でなく $2m+1$ と主張） | **検出** |
 | **$T(n,3)$ と BFS** | 定理の値 `TP 4 3 = 9`・`TP 5 3 = 17` が、独立に走らせた BFS の**最適**手数（`wP4_3`・`wP5_3` の長さ）と一致。`TP 6 3 = 27` も BFS と一致 |
+| **定理E と定理A・定理D の突き合わせ** | 一般形から $m=2,3$ を取り出すと、**独立に証明した** `TUG_ge_slope4`・`TUG_ge_slope6` とまったく同じ主張になる（`TUG_ge_slope4_of_E` / `TUG_ge_slope6_of_E`）。$c_2(s)=2s$・$c_3(s)=s(s+3)$ も漸化式から導出 |
 | 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` / `decomp_le_run` を適用して結論を得ている |
 
 再現:
@@ -197,6 +202,7 @@ echo 'import SpookyPebbling
 | `Cap2Exact.lean` | `T_UG(n,2)=n²+n-4`・`s=2` の `δ=-1`・上限 2 の到達不能性 |
 | `Bridge.lean` | **KSS Lemma 3.2**（unghosting → pebbling は 1 手）と `T_P(n,3) ≤ n²-n-3` |
 | `Lemma48.lean` | **KSS Lemma 4.8（上限 3→2）**と **`T(n,3) = n²-n-3`** |
+| `SlopeE.lean` | **定理E**（任意の傾き `2m`。`c_m(s)` の漸化式と `m=2,3` の閉形式） |
 | `Tests.lean` | 陽性 13 点・陰性 6 点・両方向の非空虚性・定理B/C/D と BFS の突き合わせ |
 
 ## 未移植（次にやること）
@@ -206,8 +212,10 @@ echo 'import SpookyPebbling
    `Sweep.lean` の `sweep` で済ませている。一般の $s$ では **Lemma 4.5 の
    「任意の集合 $S$ をちょうど置く正準手順」**（$2\max S+2-|S|$ 手・$|S|+1$ ペブル）を
    作る必要がある。数え上げ（`length_ge_of_places_removes`）も任意の添字集合へ一般化が要る
-2. **$B_4(s)$ より先**（傾き 8 以降）。定理E の $c_m$ は $m\ge4$ で緩む（$c_4(3)$ は
-   漸化式 38・実測 34）ので、$\delta$ の主張も $n\le B_4(s)-1$ で止まっている
+2. **$B_4(s)$ より先の厳密値**（傾き 8 以降）。定理E 自体は層1 になったが、
+   **$c_m$ は $m\ge4$ で緩む**（`cc_four_three` で $c_4(3)=38$、実測の折れ目は 34）。
+   $\delta$ と定理F の主張が $n\le B_4(s)-1$ で止まっているのはこれが理由で、
+   ここは形式化ではなく**新しい下界の材料**が要る
 3. 鎖以外の一般 DAG（今回の $k$ の取り方は鎖をほとんど使っていない）
 4. ~~到達可能性~~ → **`Reach.lean` で解決**（2026-08-16）。`decomp_le` / `decomp_exact` の
    仮定は無くなった（`3 ≤ s` と `k` の範囲だけ）

@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Lemma48
+import SpookyPebbling.SlopeE
 
 namespace Spooky
 
@@ -349,5 +349,24 @@ example : TP 4 3 = TUG 3 2 + 1 := TP_eq_TUG_succ_cap3 (p := 1)
 example : TP 4 3 = wP4_3.length := by rw [TP_4_3]; rfl
 
 example : TP 5 3 = wP5_3.length := by rw [TP_5_3]; rfl
+
+/-! ## 定理E（任意の傾き）と、既証明の定理A・定理D の突き合わせ
+
+`SlopeE.lean` の一般形から `m = 2, 3` を取り出すと、独立に証明してある `TUG_ge_slope4`
+（定理A）・`TUG_ge_slope6`（定理D）とまったく同じ主張になる。**二重に証明したことになる。**
+-/
+
+example {s n : ℕ} (hs : 2 ≤ s) (hn : 1 ≤ n) : 4 * n ≤ TUG n s + 2 * s :=
+  TUG_ge_slope4_of_E hs hn
+
+example {s n : ℕ} (hs : 2 ≤ s) (hn : 1 ≤ n) : 6 * n ≤ TUG n s + s * (s + 3) :=
+  TUG_ge_slope6_of_E hs hn
+
+/-- 係数の値。`c_2(s)=2s`・`c_3(s)=s(s+3)` は厳密、`c_4(3)=38` は緩い（実測 34）。 -/
+example : cc 2 5 = 10 := cc_two 5 (by omega)
+
+example : cc 3 4 = 28 := cc_three 4 (by omega)
+
+example : cc 4 3 = 38 := cc_four_three
 
 end Spooky

@@ -24,4 +24,5 @@ import SpookyPebbling.Sign
 import SpookyPebbling.Cap2Exact
 import SpookyPebbling.Bridge
 import SpookyPebbling.Lemma48
+import SpookyPebbling.SlopeE
 import SpookyPebbling.Tests
