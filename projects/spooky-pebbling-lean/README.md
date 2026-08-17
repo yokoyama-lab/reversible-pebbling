@@ -26,6 +26,7 @@
 | **$T_{UP}(n,2)=n^2+n-3$**（上限 2 の閉形式） | **1（Lean）** | `SpookyPebbling/Cap2.lean` |
 | **$T_{UG}(n,2)=n^2+n-4$** と、$s=2$ では $\delta=-1$ が全ての $n\ge3$ で成立 | **1（Lean）** | `SpookyPebbling/Cap2Exact.lean` |
 | **上限 2 では鎖（$n\ge3$）の先端にペブルを置けない**（KSS Cor 4.7 の $\infty$ 条項） | **1（Lean）** | `SpookyPebbling/Cap2Exact.lean` |
+| **KSS Lemma 3.2**: $T_P(n{+}1,s{+}1)\le T_{UG}(n,s)+1$、その系 $T_P(n,3)\le n^2-n-3$ | **1（Lean）** | `SpookyPebbling/Bridge.lean` |
 | **定理D**: $T_{UG}(n,s)\ge 6n-s(s+3)$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope6.lean` |
 | **定理F**: $T_{UG}(n,s)=6n-s(s+3)$（$\theta(s)\le n\le B_4(s)-1$）と $B_4(s)=B_4(s-1)+\theta(s)-1$ | **1（Lean）** | `SpookyPebbling/Slope6Exact.lean` |
 | **KSS Lemma 4.9/4.10**: $T_{UG}\le T_{UP}+1$ と $T_{UP}\le T_{UG}+1$、ゆえに差はちょうど 1 | **1（Lean）** | `SpookyPebbling/UGvsUP.lean` |
@@ -43,7 +44,7 @@
 | 頭・尻尾への射影が部分鎖の妥当な手順になること | **1（Lean）** | `SpookyPebbling/Project.lean` |
 | **到達可能性**: `s ≥ 2` ならどんな長さの鎖も片付く（`sInf ∅ = 0` を回避） | **1（Lean）** | `SpookyPebbling/Reach.lean` |
 | 意味論が `< n` の値にしか依存しない（射影の土台） | **1（Lean）** | `SpookyPebbling/Defs.lean` |
-| **KSS Cor 4.7**（$T_P$ の分解）と、その系 $T(n,3)=n^2-n-3$、定理E（傾き 8 以降） | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
+| **KSS Lemma 4.8**（$T_P\to T_{UG}$ の向き）と $T(n,3)=n^2-n-3$ の**下界**、定理E（傾き 8 以降） | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
 
 **$T_{UG}\ne T_{UP}$ は KSS が持っていない。** KSS Thm 4.11 の $\pm1$ は Lemma 4.9/4.10 の
 両側不等式から出るもので、$0$ の可能性を排除していない。パリティが排除する。
@@ -144,7 +145,11 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 変異AD（到達不能性を $n\ge2$ に緩める） | **検出**（$n=2$ では実際に到達できる） |
 | 変異AE（不変条件の上限を 2 でなく 3 にする） | **検出**（3 個目が入らないことが本質） |
 | **符号反転と BFS** | `n=5=θ(3)-1` で `TUG 5 3 = TUP 5 3 + 1`、`n=6=θ(3)` で `TUP 6 3 = TUG 6 3 + 1`。転記した手順の長さ（14/13 と 19/18）でも同じ向き |
+| 変異AF（Lemma 3.2 の `+1` を落とす） | **検出** |
+| 変異AG（$T_P(n,3)$ の上界を 1 きつくする） | **検出**（BFS でも $T_P(4,3)=9$） |
+| 変異AH（鎖を伸ばすとき上限を増やさない） | **検出**（挿した `pebble v_n` の分が要る） |
 | **上限 2 の可否の対比** | 同じ長さ 3 の鎖で、上限 3 なら 5 手の witness（`wP3_3`）が在り、上限 2 では**どんな手順も存在しない**（定理）。`TUG 4 2 = 16` も `wUG4_2` と一致 |
+| **$T_P(n,3)$ の上界と BFS** | 定理の上界 9・17 が、独立に走らせた BFS の**最適**手数と一致（`wP4_3`・`wP5_3`。BFS では $T_P(6,3)=27$ も $n^2-n-3$）|
 | 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` / `decomp_le_run` を適用して結論を得ている |
 
 再現:
@@ -184,22 +189,23 @@ echo 'import SpookyPebbling
 | `Cap2.lean` | **`T_UP(n,2)=n²+n-3`**（終端に 3 手要ることで足りない 2 を取り返す） |
 | `Sign.lean` | **δ の符号反転**（`T_UP ≥ 6n-s(s+3)+1` と `δ=-1`） |
 | `Cap2Exact.lean` | `T_UG(n,2)=n²+n-4`・`s=2` の `δ=-1`・上限 2 の到達不能性 |
+| `Bridge.lean` | **KSS Lemma 3.2**（unghosting → pebbling は 1 手）と `T_P(n,3) ≤ n²-n-3` |
 | `Tests.lean` | 陽性 13 点・陰性 6 点・両方向の非空虚性・定理B/C/D と BFS の突き合わせ |
 
 ## 未移植（次にやること）
 
-1. **KSS Cor 4.7** — `T_P` 版
-   $T_P(n,s)=\min_k[\,2k-1 + T_{UP}(k,s-1) + T_P(n-k,s-1)\,]$。$\theta$ にも $\delta$ にも
-   **不要**で、$T(n,3)=n^2-n-3$ にだけ要る。`theorem_p3.py` の証明は 5 段で、
-   **段1〜段4 はここまでで層1 になった**（$T_P(m,2)=\infty$ は `not_run_p_cap2`、
-   $T_{UG}(m,1)=\infty$ は `not_run_ug_cap_one`、閉形式は `Cap2.lean`/`Cap2Exact.lean`）。
-   **残るのは段5＝Cor 4.7 そのもの**。難所は 2 つ:
-   - $\le$ 方向: `Upper.lean` の `decomp_le_run_gen` は**終状態が `allEmpty` に固定**されている。
-     Cor 4.7 では尻尾も全体も `sinkPebble` で終わるので、終状態を引数にした一般化が要る
-   - $\ge$ 方向: **頭の上限が `s` でなく `s-1`**。`decomp_ge_pieces` が出すのは `s` なので
-     足りない。頭を片付ける間ずっと尻尾がペブルを 1 個持っていること（構成では $v_{n-1}$）を
-     任意の手順について言う必要がある。**頭を `s` にすると値が小さくなりすぎて
-     $T(n,3)$ が出ない**ので、ここは緩められない
+1. **KSS Lemma 4.8**（$T_P(n{+}1,s{+}1) \ge T_{UG}(n,s)+1$）。これ 1 本で
+   $T(n,3)=n^2-n-3$ が層1 になる（上界は `Bridge.lean` で済んだ）。
+   **原論文（arXiv:2110.08973v3）を読んで分かったこと**:
+   - **KSS Cor 4.7 は要らない**。$T(n,3)$ への最短路は Cor 4.7 ではなく
+     **Thm 4.11（= Lemma 3.2 ＋ Lemma 4.8）**で、こちらは分解を一切使わない
+   - Cor 4.7 の証明は **Lemma 4.6（sweep-first 正規化）と Lemma 4.1 の $P^\bot$ 交換論法の
+     両方**を使う。本リポジトリの「交換論法は不要」は $T_{UP}$/$T_{UG}$ の分解
+     （Cor 4.12）についての話で、Cor 4.7 までは及ばない
+   - Lemma 4.8 の難所は **Lemma 4.5 の正準な置き方 `I` による前半の正規化**
+     （前半を $2n-\|P_t\|$ 手の標準形に置き換え、それが元より短いことを数える）。
+     後半の `v_n` への外科手術は `UGvsUP.lean` の Lemma 4.10 と同型、
+     ゴーストの辻褄合わせは `Reghost.lean` の `Run_reghost` がそのまま使える
 2. **$B_4(s)$ より先**（傾き 8 以降）。定理E の $c_m$ は $m\ge4$ で緩む（$c_4(3)$ は
    漸化式 38・実測 34）ので、$\delta$ の主張も $n\le B_4(s)-1$ で止まっている
 3. 鎖以外の一般 DAG（今回の $k$ の取り方は鎖をほとんど使っていない）
