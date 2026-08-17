@@ -104,8 +104,9 @@ theorem TUG_eq_slope6 {s n : ℕ} (hs : 2 ≤ s) (hn1 : theta s ≤ n) (hn2 : n 
   omega
 
 /-- **定理F の系**: 傾き 6 の領域でも `T_UP = T_UG - 1` … ではない。
-`θ(s)` 以降は `δ = -1`、すなわち `T_UP = T_UG + 1` が予想されている（未証明）。
-ここでは Lemma 4.10 から出る側だけを記録する: `T_UP(n,s) ≥ 6n - s(s+3) - 1`。 -/
+`θ(s)` 以降は `δ = -1`、すなわち `T_UP = T_UG + 1`（`Sign.lean` の
+`TUP_eq_TUG_add_one` で**証明済み**）。ここでは Lemma 4.10 から出る弱い側だけを記録する:
+`T_UP(n,s) ≥ 6n - s(s+3) - 1`。強い側は `Sign.lean` の `TUP_ge_slope6'`。 -/
 theorem TUP_ge_slope6 {s n : ℕ} (hs : 2 ≤ s) (hn : 1 ≤ n)
     (hne : (UPLengths n s).Nonempty) : 6 * n ≤ TUP n s + s * (s + 3) + 1 := by
   have h1 := TUG_ge_slope6 hs n hn

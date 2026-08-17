@@ -29,3 +29,4 @@ import SpookyPebbling.PlaceI
 import SpookyPebbling.Lemma48Gen
 import SpookyPebbling.SlopeTight
 import SpookyPebbling.Tests
+import SpookyPebbling.KSSModel

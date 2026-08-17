@@ -49,8 +49,9 @@
 | **定理E**: $T_{UG}(n,s)\ge 2mn-c_m(s)$（任意の傾き $2m$。定理A・定理D を含む） | **1（Lean）** | `SpookyPebbling/SlopeE.lean` |
 | **定理E'**: $T_{UP}(n,s)\ge 2mn-\beta_m(s)$ — **任意の傾きで緊密**（$m\ge4$ で定理E より真に強い） | **1（Lean）** | `SpookyPebbling/SlopeTight.lean` |
 | **KSS Thm 4.11**: $T_P(n{+}1,s{+}1)=T_{UG}(n,s)+1$（**任意の $s$**） | **1（Lean）** | `Bridge.lean` / `Lemma48Gen.lean` |
-| **KSS Lemma 4.5**: 任意の目標配置を作る正準手順（$2M{+}1-|S|$ 手・$|S|{+}1$ ペブル） | **1（Lean）** | `SpookyPebbling/PlaceI.lean` |
-| **KSS Lemma 4.9/4.10**: $T_{UG}\le T_{UP}+1$ と $T_{UP}\le T_{UG}+1$、ゆえに差はちょうど 1 | **1（Lean）** | `SpookyPebbling/UGvsUP.lean` |
+| **KSS Lemma 4.5**: 任意の目標配置を作る正準手順（$2M{+}2-|S|$ 手・$|S|{+}1$ ペブル。$S$ は $[0,M]$ 上の目標のペブル集合） | **1（Lean）** | `SpookyPebbling/PlaceI.lean` |
+| **KSS Lemma 4.10**: $T_{UG}\le T_{UP}+1$、**Lemma 4.9**: $T_{UP}\le T_{UG}+1$、ゆえに差はちょうど 1 | **1（Lean）** | `SpookyPebbling/UGvsUP.lean` |
+| **KSS の意味論との同値性**（`legalK` は Def 2.6/2.7 の逐語。$T$ は一致する） | **1（Lean）** | `SpookyPebbling/KSSModel.lean` |
 | **補題3**: $T_{UG}(n,s)=2n$（$n\le s$）、**補題4**: $T_{UP}(k,s)=2k-1$（$k\le s$） | **1（Lean）** | `SpookyPebbling/Closed.lean` |
 | **定理A**: $T_{UG}(n,s)\ge 4n-2s$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope4.lean` |
 | **KSS Cor 4.12**: $T_{UG}(n,s)=\min_k[2k-1+T_{UP}(k,s)+T_{UG}(n-k,s-1)]$ | **1（Lean）** | `SpookyPebbling/Unghost.lean` |
@@ -126,7 +127,7 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 点 | 結果 |
 |---|---|
 | ビルド | `lake build SpookyPebbling` rc=0 |
-| 成果物の実在 | olean 18 本を確認 |
+| 成果物の実在 | olean 32 本を確認（`find .lake/build/lib/lean/SpookyPebbling -name '*.olean' | wc -l`） |
 | `sorry` / `native_decide` / 追加 `axiom` | **0 件**（18 ファイルすべて） |
 | 公理検査 | `decomp_ge` を含む主要定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
 | 変異A（偽の補題 `probe : False`） | **検出**（ビルドが落ちる） |
@@ -184,6 +185,9 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 変異AR（正準形のペブル上限を `+2` でなく `+1` に） | **検出** |
 | 変異AS（数え上げから外す手の寄与を落とす） | **検出** |
 | **定理E と定理A・定理D の突き合わせ** | 一般形から $m=2,3$ を取り出すと、**独立に証明した** `TUG_ge_slope4`・`TUG_ge_slope6` とまったく同じ主張になる（`TUG_ge_slope4_of_E` / `TUG_ge_slope6_of_E`）。$c_2(s)=2s$・$c_3(s)=s(s+3)$ も漸化式から導出 |
+| 変異AW（KSS への読み替えで `ghost`→`unpebble` を止める） | **検出** |
+| 変異AX（KSS 側の `ghost` 制限を外す＝両モデルを同一にする） | **検出** |
+| 変異AY（正規化が手数を変えないという主張を崩す） | **検出** |
 | 変異AT（$\beta$ の漸化式の `+1` を落とす） | **検出** |
 | 変異AU（底 $\beta_m(2)$ の定数を 1 小さく） | **検出** |
 | 変異AV（定理E' の傾きを $2m$ でなく $2m+1$ と主張） | **検出** |
@@ -222,6 +226,7 @@ echo 'import SpookyPebbling
 | `Closed.lean` | 補題3・補題4（`n ≤ s` / `k ≤ s` での厳密値。上界＝構成） |
 | `Theta.lean` | `θ(s)=s(s+1)/2` と **定理B**（傾き 4 の領域の厳密値） |
 | `UGvsUP.lean` | **KSS Lemma 4.9/4.10**（`T_UG ≤ T_UP+1` と逆向き。差はちょうど 1） |
+| `KSSModel.lean` | **KSS Def 2.6/2.7 の意味論**と本形式化の同値性（`T` が一致するので上界も KSS の定理） |
 | `Slope6.lean` | **定理D**（`T_UG ≥ 6n-s(s+3)`。望遠鏡をもう一段） |
 | `Delta.lean` | **定理C**（`T_UP = 4n-2s-1` と `δ = +1`） |
 | `Slope6Exact.lean` | **定理F**（傾き 6 の領域の厳密値と折れ目 `B₄(s)`） |
