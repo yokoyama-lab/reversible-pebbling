@@ -127,6 +127,9 @@ $v_{n-1}$ と合わせて 3 個目が必要になって上限 2 では不可能�
 > 1 回は置くので、その `pebble` を `unghost` に読み替える。手数は変わらない）。
 > **値は変わらないので `closed2.py` の数値検証では見えなかった。論文にはこの段を書くこと。**
 
+- **鎖は極値だが向きが $s$ で反転する**（`tree_extremal.py`、$n\le8$ 全数）: 根つき木の中で
+  $s=3$ では鎖が**最大**（最も深いので最も損をする。$n=7$ で 39 対 最小 29）、
+  $s\ge4$ では鎖が**最小**。台帳の未解決問題「鎖が極値グラフか」への部分的な答え
 - **数値**: $T_{UG}$ は折れ線の上包絡 $\max(2n,\ 4n-2s,\ 6n-s(s+3),\dots)$。
   $\theta(s)=s(s+1)/2$ は傾き 4 と傾き 6 の線の**交点**
 - **SAT で確定した値**（DRAT 検証済み・`proofs.manifest`）: $s=6$ で
@@ -145,8 +148,13 @@ $v_{n-1}$ と合わせて 3 個目が必要になって上限 2 では不可能�
    （傾き 8 以降の厳密値・一般 DAG）だけ
 3. **傾き 8 以降を厳密にする**（定理E の $c_m$ は $m\ge4$ で緩む。$c_4(3)$ は漸化式 38・実測 34）。
    $T_{UP}$ 分解が定理になったので、$c_m$ の緩みを詰める材料が増えている
-4. **一般 DAG（鎖以外）へ。** KSS Cor 4.7/4.12 は線グラフ専用だが、今回の $k$ の取り方
-   （満室時刻の最下位ペブル）は**鎖であることをほとんど使っていない**。木への一般化が近い
+4. **一般 DAG（鎖以外）へ。** ⚠ **「木への一般化が近い」は楽観的すぎた**（2026-08-18 訂正）。
+   `decomp_ge` の依存で鎖を使っているのは 4 補題だけで、うち 3 つ（`Dom_ready`・
+   `pred_pebbled`・`two_pebbles_of_clear`）は「親を 1 つ取ればよい」ので一般 DAG でそのまま。
+   **残る 1 つ `Project.ready_shift`（頭/尻尾の添字ずらし）だけが鎖に本質的**で、
+   これは「1 頂点を取り除くと下と上に分かれる」＝関節点の存在を要求する。木は分岐するので
+   単一頂点では分かれない。**KSS の分解は本質的に直列構造の道具**である（`tree_extremal.py`）
+
 
 ### 注意（踏むと痛い）
 - **`~/dev` にはリモートが無い。** 機械が飛べば成果物も消える
@@ -158,8 +166,8 @@ $v_{n-1}$ と合わせて 3 個目が必要になって上限 2 では不可能�
 - **同じ道を再試行しないこと**: Cor 4.12 / 4.7 の「各項 $\ge$ 左辺」から $T_{UP}$ の下界を
   作る道は、定理A でも定理D でも望遠鏡で打ち消し合い、自明な下界しか出ない（§0 に記録）
 - **zsh は未クォート変数を単語分割しない。** 引数つきで回すときは `python3 ${=c}`
-- 回帰は 13 本: `test_spooky` `test_kss 8 4` `lemmas 10 4` `prefix 12 6` `breakpoints`
-  `upper_bound` `theorem_p3 11` `theorem_slope4` `theorem_slope6` `theorem_slope_tight`
+- 回帰は 15 本: `test_spooky` `test_kss 8 4` `lemmas 10 4` `prefix 12 6` `breakpoints`
+  `upper_bound` `theorem_p3 11` `theorem_slope4` `theorem_slope6` `theorem_slope_tight` `tree_extremal 7 5`
   `closed2 --verify 11 5` `structure_check 10 4` `exchange 7 4 60 --mutate`
   （全量は `exchange 9 5 200 --mutate`・約 20 分）
 - **`structure_check.py` は歴史的な骨格**（$k=\min P_{\mathrm{Last}(v_n)}$）。正本は `exchange.py`。
