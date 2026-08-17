@@ -1,10 +1,37 @@
 /-
 # Spooky pebble game — 定義と実行可能な意味論
 
-定義は Quist–Laarman, *Trade-offs between classical and quantum space using spooky
-pebbling*, LMCS 21:4 (2025), arXiv:2401.10579, **Definition 2.2** の逐語。
-量の名前（`TP` / `TUP` / `TUG`）は Kornerup–Sadun–Soloveichik, *Tight Bounds on the
-Spooky Pebble Game*, Quantum 9:1636 (2025), arXiv:2110.08973v3 の §3–4 に合わせる。
+遷移規則は Kornerup–Sadun–Soloveichik, *Tight Bounds on the Spooky Pebble Game*,
+Quantum 9:1636 (2025), arXiv:2110.08973v3, **Definition 2.6/2.7** に対応する。
+量の名前（`TP` / `TUP` / `TUG`）も同論文 §3–4 に合わせる。
+
+⚠ **2026-08-18 に出典表示を訂正した。** それまで「Quist–Laarman, LMCS 21:4 (2025),
+arXiv:2401.10579, **Definition 2.2** の逐語」と書いていたが、監査
+（`docs/review-plan.md` Round 2・重大2）で**実際には QL Def 2.2 と一致していない**
+ことが判明した:
+
+* QL Def 2.2 の前提条件は **in-node 条件だけ**で、対象頂点 `v` 自身の状態を拘束しない。
+  下の `legal` は **`v` 自身の状態条件を 4 本とも課している**
+* `Cell = empty | pebble | ghost` は `P ∩ S = ∅` を**型で強制**するが、QL の `(P, S)` は
+  `P ∩ S ≠ ∅` を許す。よって本形式化は **QL に対し狭い**
+* KSS Def 2.6/2.7 は `‖P_i △ P_{i+1}‖ = 1` を課し ghost を**導出**する。
+  この下では下の 4 条件は**定義から従う**
+
+⚠ **KSS とも 1 点だけずれる（既知・未解消）**: KSS では `remove(v)` が ghost を作るか否かが
+`parents(v) ⊆ P` で**自動決定され選べない**が、下の `.ghost` は `ready` が真でも打てる。
+したがって**本形式化のモデルは KSS より広い**。帰結:
+
+* **下界（定理A・D・E、分解の `≥` 方向）は KSS へそのまま移る**
+  （手順が多いほど最小値は小さいので `T_本形式化 ≤ T_KSS`）
+* **上界（定理B・C・F の `≤` 側、Cor 4.12 の `≤` 方向、Lemma 3.2/4.8）は自動では移らない。**
+  実際 `sweep 2 = [pebble 0, pebble 1, ghost 0]` の `ghost 0` と、`placeUpto` の `ghost i`
+  （`g (i-1) = pebble` のとき）は **`ready` が真の状態で打っている**
+
+**正規化補題（未証明・`SlopeTight` 等とは独立の TODO）**: `ready` が真のときの `ghost v` を
+`unpebble v` に、対応する後続の `unghost v` を `pebble v` に置き換えると、**前提条件も
+長さも `pcount` も変わらない**（`unghost` と `pebble` はどちらも `ready c v` を要求し、
+ghost も empty も `pcount` に寄与しない）。これを証明すれば `T` が一致し、上界も
+KSS の定理になる。
 
 本ファイルは**鎖（線グラフ）**に特化する: 頂点は `0, 1, …, n-1`、辺は `i → i+1`。
 

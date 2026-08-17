@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Lemma48Gen
+import SpookyPebbling.SlopeTight
 
 namespace Spooky
 
@@ -396,5 +396,22 @@ example : TP 6 4 = 15 := by
   have h1 : TP 6 4 = TUG 5 3 + 1 := TP_eq_TUG_succ (p := 3) (s := 3) (by omega)
   have h2 := TUG_5_3
   omega
+
+/-! ## 定理E'（緊密な下界）と定理E の比較
+
+`SlopeTight.lean` は `T_UP` 自身の分解で望遠鏡を回すので、`T_UG → T_UP` の変換損（2）が
+出ない。`m ≤ 3` では定理E と一致し、`m ≥ 4` では**真に強い**。
+-/
+
+example : bb 2 5 = 11 := bb_two 5 (by omega)
+
+example : bb 3 4 + 1 = 28 := bb_three 4 (by omega)
+
+/-- 傾き 8: 定理E' は 34、定理E は 38。実測の折れ目は 34 なので **E' が緊密で E は緩い**。 -/
+example : bb 4 3 + 1 = 34 ∧ cc 4 3 = 38 := slope8_strictly_better
+
+/-- `m = 3` では両者が一致する（`c_3(s) = s(s+3) = β_3(s)+1`）。 -/
+example {s : ℕ} (hs : 2 ≤ s) : bb 3 s + 1 = cc 3 s := by
+  rw [bb_three s hs, cc_three s (by omega)]
 
 end Spooky

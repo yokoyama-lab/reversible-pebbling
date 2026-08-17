@@ -27,4 +27,5 @@ import SpookyPebbling.Lemma48
 import SpookyPebbling.SlopeE
 import SpookyPebbling.PlaceI
 import SpookyPebbling.Lemma48Gen
+import SpookyPebbling.SlopeTight
 import SpookyPebbling.Tests
