@@ -155,6 +155,31 @@ def main() -> int:
     print("  したがって上界（構成）の目標は「任意の m で T_UP ≤ 2mn-β_m(s)」ではなく")
     print("  **各 m について、その傾きが包絡を与える区間で達成する**（定理F と同じ形）。")
 
+    print("\n折れ目も β から直接出る: B_{2(m+1)}(s) = (β_{m+1}(s) - β_m(s)) / 2")
+    bcnt = 0
+    for s in range(2, min(smax, 6) + 1):
+        rng2: dict[int, list[int]] = {}
+        for n in range(1, 121):
+            v = closed2.T_UP(n, s)
+            if v == INF:
+                continue
+            for m in range(1, 2 * n + 4):
+                if 2 * m * n - beta(m, s) == int(v):
+                    rng2.setdefault(m, [n, n])[1] = n
+        for m in sorted(rng2):
+            if m + 1 not in rng2:
+                continue
+            d = beta(m + 1, s) - beta(m, s)
+            bcnt += 1
+            if d % 2 != 0:
+                fails.append(f"β の階差 {d} が奇数（s={s}, m={m}）")
+            elif d // 2 != rng2[m + 1][0]:
+                fails.append(f"折れ目 s={s} m={m}→{m+1}: 予測 {d // 2} != 実測 {rng2[m + 1][0]}")
+    print(f"  {bcnt} 点")
+    print("  m=2→3 を入れると (β_3-β_2)/2 = (s+2)(s-1)/2 = θ(s)-1 で、**θ が β から落ちてくる**:")
+    print("   " + "  ".join(f"s={s}:{(beta(3, s) - beta(2, s)) // 2}(θ-1={s * (s + 1) // 2 - 1})"
+                            for s in range(2, 8)))
+
     if fails:
         print(f"\nNG {len(fails)} 件（先頭 10）:")
         for f in fails[:10]:
