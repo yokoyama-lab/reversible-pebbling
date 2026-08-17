@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Bridge
+import SpookyPebbling.Lemma48
 
 namespace Spooky
 
@@ -323,23 +323,31 @@ example (ms : List Move) : ¬ Run 3 2 allEmpty ms (sinkPebble 3) :=
 
 example : ¬ (PLengths 5 2).Nonempty := PLengths_cap2_empty (by omega)
 
-/-! ## `T_P(n,3) ≤ n²-n-3`（`Bridge.lean`）
+/-! ## `T(n,3) = n²-n-3`（`Bridge.lean` ＋ `Lemma48.lean`）
 
 KSS Lemma 3.2（unghosting → pebbling、1 手挿すだけ）と `T_UG(n,2)=n²+n-4` の合成。
+`Lemma48.lean` で下界も付き、**`T(n,3)=n²-n-3` は等式として層1 になった**。
 上で転記した `wP4_3`（9 手）・`wP5_3`（17 手）は独立に走らせた BFS の**最適**手順で、
-**定理の上界がちょうど達成されている**（BFS: `T_P(4,3)=9`・`T_P(5,3)=17`・`T_P(6,3)=27`）。
+定理の値と一致する（BFS: `T_P(4,3)=9`・`T_P(5,3)=17`・`T_P(6,3)=27`）。
 -/
 
-theorem TP_4_3_le : TP 4 3 ≤ 9 := by have := TP_cap3_le (n := 4) (by omega); omega
+theorem TP_4_3 : TP 4 3 = 9 := by have := TP_cap3 (n := 4) (by omega); omega
 
-theorem TP_5_3_le : TP 5 3 ≤ 17 := by have := TP_cap3_le (n := 5) (by omega); omega
+theorem TP_5_3 : TP 5 3 = 17 := by have := TP_cap3 (n := 5) (by omega); omega
+
+theorem TP_6_3 : TP 6 3 = 27 := by have := TP_cap3 (n := 6) (by omega); omega
 
 example : wP4_3.length = 9 := rfl
 
 example : wP5_3.length = 17 := rfl
 
-/-- 橋渡しそのもの: `T_P(4,3) ≤ T_UG(3,2)+1 = 9`。 -/
-example : TP 4 3 ≤ TUG 3 2 + 1 :=
-  TP_le_TUG_succ (n := 3) (s := 2) (by omega) (UGLengths_nonempty (by omega) (by omega))
+/-- 橋渡しそのもの（KSS Thm 4.11）: `T_P(4,3) = T_UG(3,2)+1 = 9`。 -/
+example : TP 4 3 = TUG 3 2 + 1 := TP_eq_TUG_succ_cap3 (p := 1)
+
+/-- **主定理と BFS の突き合わせ**: `T_P(4,3)=9`・`T_P(5,3)=17` は
+転記した BFS の**最適**手順の長さそのもの。`T_P(6,3)=27` も BFS と一致する。 -/
+example : TP 4 3 = wP4_3.length := by rw [TP_4_3]; rfl
+
+example : TP 5 3 = wP5_3.length := by rw [TP_5_3]; rfl
 
 end Spooky
