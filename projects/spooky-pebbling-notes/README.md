@@ -45,7 +45,7 @@ $O(n^2)$」が既知。**「鎖の最小量子空間は 3」は新しくない�
 | **$\delta$ の符号反転が $n=\theta(s)$**（$s\le n\le B_4(s)-1$）| 鎖・$s\ge2$。層1 |
 
 **層1（Lean 機械証明）へ上がったもの**（`github.com/yokoyama-lab/spooky-pebbling-lean`、
-2026-08-18 更新。sorry 0・公理は標準の 3 つのみ・変異注入 45 種で検出力を確認）:
+2026-08-18 更新。sorry 0・公理は標準の 3 つのみ・変異注入 48 種で検出力を確認）:
 
 | 主張 | 置き場 |
 |---|---|
@@ -61,6 +61,7 @@ $O(n^2)$」が既知。**「鎖の最小量子空間は 3」は新しくない�
 | **KSS Lemma 4.8（上限 3→2）**と **$T(n,3)=n^2-n-3$**（$n\ge4$） | `SpookyPebbling/Lemma48.lean` |
 | **定理E**: $T_{UG}\ge 2mn-c_m(s)$（任意の傾き。定理A・定理D を含む） | `SpookyPebbling/SlopeE.lean` |
 | **KSS Thm 4.11**: $T_P(n{+}1,s{+}1)=T_{UG}(n,s)+1$（任意の $s$）と Lemma 4.5 | `Lemma48Gen.lean` / `PlaceI.lean` |
+| **定理E'**: $T_{UP}\ge 2mn-\beta_m(s)$ — **任意の傾きで緊密**（$m\ge4$ で定理E より真に強い） | `SpookyPebbling/SlopeTight.lean` |
 | **定理A**: $T_{UG}\ge 4n-2s$（無条件）、補題3・補題4 | `Slope4.lean` / `Closed.lean` |
 | **KSS Cor 4.12**（$T_{UG}$ の分解、両方向） | `SpookyPebbling/Unghost.lean` |
 | **KSS Lemma 4.9/4.10**: $T_{UG}\le T_{UP}+1$・$T_{UP}\le T_{UG}+1$、差はちょうど 1 | `SpookyPebbling/UGvsUP.lean` |
@@ -83,8 +84,20 @@ $O(n^2)$」が既知。**「鎖の最小量子空間は 3」は新しくない�
 層1** になった。したがって **$T_P$ は $T_{UG}$ で完全に決まり**、$T_{UG}$ 側の結果
 （$\theta$・傾き 4/6 の厳密値・$\delta$ の符号反転・定理E）がそのまま $T_P$ に移る。
 
-**残るのは層3（未解決）だけ**: (a) 傾き 8 以降の厳密値（$c_m$ が $m\ge4$ で緩む。
-`cc_four_three` で $c_4(3)=38$、実測の折れ目は 34）、(b) 鎖以外の一般 DAG。
+**傾き 8 以降が緩む問題も 2026-08-18 に下界側を解決した**（定理E'、`theorem_slope_tight.py`）:
+
+> 定理E の望遠鏡は Cor 4.12 の頭の項に $T_{UP}\ge T_{UG}-1$（Lemma 4.10）を入れるが、
+> **最大点は $\delta=-1$ の領域にあり、そこでは $T_{UP}=T_{UG}+1$**。1 段ごとに 2 だけ
+> 損をしていた。$T_{UG}$ ではなく **$T_{UP}$ 自身の分解**で望遠鏡を回せば損が出ない。
+
+得られる係数 $\beta_1(s)=1$・$\beta_m(2)=m^2-m+3$・$\beta_m(s)=\beta_{m-1}(s)+\beta_m(s-1)+1$ は
+$m\le8$・$s\le7$ で **$\max_n(2mn-T_{UP}(n,s))$ と完全一致**（緊密）。$m\ge3$ では
+$\max_n(2mn-T_{UG}(n,s))=\beta_m(s)+1$。$m=2,3$ では既知の $\beta_2=2s+1$・$\beta_3=s(s+3)-1$ に
+一致し、$m\ge4$ で定理E より真に強い（$m{=}6,s{=}5$ で 434 対 502）。
+
+**残るのは層3（未解決）だけ**: (a) 傾き 8 以降の**上界（構成）**——下界は緊密なものが
+取れたので、その値が達成されることを示せば $\delta$ と定理F の $n\le B_4(s)-1$ の制限も外れる、
+(b) 鎖以外の一般 DAG。
 
 > **⚠ 原論文を読んで経路を引き直した（2026-08-18）。** $T(n,3)$ に **KSS Cor 4.7 は要らない**。
 > 最短路は **Thm 4.11 = Lemma 3.2（unghosting→pebbling）＋ Lemma 4.8（逆向き）**で、
@@ -145,9 +158,10 @@ $v_{n-1}$ と合わせて 3 個目が必要になって上限 2 では不可能�
 - **同じ道を再試行しないこと**: Cor 4.12 / 4.7 の「各項 $\ge$ 左辺」から $T_{UP}$ の下界を
   作る道は、定理A でも定理D でも望遠鏡で打ち消し合い、自明な下界しか出ない（§0 に記録）
 - **zsh は未クォート変数を単語分割しない。** 引数つきで回すときは `python3 ${=c}`
-- 回帰は 12 本: `test_spooky` `test_kss 8 4` `lemmas 10 4` `prefix 12 6` `breakpoints`
-  `upper_bound` `theorem_p3 11` `theorem_slope4` `theorem_slope6` `closed2 --verify 11 5`
-  `structure_check 10 4` `exchange 7 4 60 --mutate`（全量は `exchange 9 5 200 --mutate`・約 20 分）
+- 回帰は 13 本: `test_spooky` `test_kss 8 4` `lemmas 10 4` `prefix 12 6` `breakpoints`
+  `upper_bound` `theorem_p3 11` `theorem_slope4` `theorem_slope6` `theorem_slope_tight`
+  `closed2 --verify 11 5` `structure_check 10 4` `exchange 7 4 60 --mutate`
+  （全量は `exchange 9 5 200 --mutate`・約 20 分）
 - **`structure_check.py` は歴史的な骨格**（$k=\min P_{\mathrm{Last}(v_n)}$）。正本は `exchange.py`。
   旧い $k$ の取り方は一般の妥当手順では実際に破れる（`--mutate` の変異4 が 960 件検出）
 
@@ -566,10 +580,24 @@ BFS の限界 $n=15$ を超えて計算できる:
 「厳密定数」だけ**。これは `2026_exact_reversible_pebbling` で
 $\Omega(n\lg n)$／$O(n^{\log_2 3})$ を $c = 2.517\ldots$ に変えたのと同じ構図。
 
-## 2. 定義（一次資料から逐語）
+## 2. 定義
 
-Quist–Laarman, LMCS 21:4, **Definition 2.2**。頂点は empty / pebble / ghost のいずれか。
-$P_0=S_0=\emptyset$、$P_T=R$（根＝出次数 0）、$S_T=\emptyset$。各手で 1 頂点 $v$ について:
+⚠ **2026-08-18 訂正**: 以前この節は「Quist–Laarman, LMCS 21:4, **Definition 2.2** から逐語」と
+書いていたが、**形式化の遷移規則は QL Def 2.2 と一致していない**（監査 Round 2・重大2、
+`spooky-pebbling-lean/docs/review-plan.md`）。**実際に対応するのは KSS Def 2.6/2.7**。
+
+* QL Def 2.2 の前提条件は **in-node 条件だけ**で対象頂点 $v$ 自身の状態を拘束せず、
+  $(P,S)$ は $P\cap S\ne\emptyset$ を許す。形式化は $v$ 自身の状態条件を 4 本課し、
+  `Cell` 型で $P\cap S=\emptyset$ を強制する ＝ **QL に対し狭い**
+* KSS Def 2.6/2.7（$\|P_i\triangle P_{i+1}\|=1$、ghost は導出）の下ではその 4 条件は定義から従う
+* **KSS とも 1 点ずれる（未解消）**: KSS は ghost を作るか否かを $\text{parents}(v)\subseteq P$ で
+  自動決定するが、形式化の `.ghost` は `ready` が真でも打てる ＝ **KSS より広い**。
+  よって**下界は KSS へ移るが上界は自動では移らない**。解消には正規化補題が要る（下記 TODO）
+* ⚠ `spooky.py` / `kss.py` も同じ 3 値セルモデルで docstring も同じ誤記なので、
+  **BFS と形式化は同じ狭め方を共有している**。陽性 13 点も変異注入 45 種も共通前提を試していない
+
+以下の表は **KSS Def 2.6/2.7 に対応する形式化の規則**である。頂点は empty / pebble / ghost の
+いずれか。$P_0=S_0=\emptyset$、$P_T=R$（根＝出次数 0）、$S_T=\emptyset$。各手で 1 頂点 $v$ について:
 
 | 手 | 効果 | 前提 |
 |---|---|---|
