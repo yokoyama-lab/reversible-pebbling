@@ -14,7 +14,7 @@
 値の出典は README の表（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
 $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$）。
 -/
-import SpookyPebbling.Sign
+import SpookyPebbling.Cap2Exact
 
 namespace Spooky
 
@@ -295,5 +295,32 @@ example : TUP 6 3 = TUG 6 3 + 1 := TUP_eq_TUG_add_one (by omega) (by decide) (by
 example : wUG5_3.length = wUP5_3.length + 1 := rfl
 
 example : wUP6_3.length = wUG6_3.length + 1 := rfl
+
+/-! ## 上限 2 の全貌（`Cap2Exact.lean`）
+
+`T_UG(n,2)=n²+n-4` は転記した `wUG3_2`（8 手）・`wUG4_2`（16 手）と一致する。
+`n=4` は `B₄(2)-1 = 3` より先なので、定理F の範囲外でも `δ = -1` が言えている。
+-/
+
+theorem TUG_4_2' : TUG 4 2 = 16 := by have := TUG_cap2 (n := 4) (by omega); omega
+
+example : TUG 3 2 = wUG3_2.length := by rw [TUG_3_2]; rfl
+
+example : TUG 4 2 = wUG4_2.length := by rw [TUG_4_2']; rfl
+
+/-- `s = 2` では `δ = -1` が `B₄(2)-1 = 3` より先でも成り立つ。 -/
+example : TUP 4 2 = TUG 4 2 + 1 := TUP_eq_TUG_add_one_cap2 (by omega)
+
+/-! ## 上限 2 では鎖の先端に届かない（上限 3 なら届く）
+
+同じ長さ 3 の鎖で、上限 3 では 5 手の手順が在り（`wP3_3`）、上限 2 では
+**どんな手順も存在しない**。片方は具体的な witness、片方は不可能性の定理。 -/
+
+example : Run 3 3 allEmpty wP3_3 (sinkPebble 3) := by decide
+
+example (ms : List Move) : ¬ Run 3 2 allEmpty ms (sinkPebble 3) :=
+  not_run_p_cap2 (by omega)
+
+example : ¬ (PLengths 5 2).Nonempty := PLengths_cap2_empty (by omega)
 
 end Spooky

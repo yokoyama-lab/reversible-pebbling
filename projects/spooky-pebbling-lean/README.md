@@ -24,6 +24,8 @@
 | **定理C**: $T_{UP}(n,s)=4n-2s-1$（$s\le n\le\theta(s)-1$）と系 $\delta=T_{UG}-T_{UP}=+1$ | **1（Lean）** | `SpookyPebbling/Delta.lean` |
 | **符号反転**: $\delta$ は $n<\theta(s)$ で $+1$、$\theta(s)\le n\le B_4(s)-1$ で $-1$ | **1（Lean）** | `SpookyPebbling/Sign.lean` |
 | **$T_{UP}(n,2)=n^2+n-3$**（上限 2 の閉形式） | **1（Lean）** | `SpookyPebbling/Cap2.lean` |
+| **$T_{UG}(n,2)=n^2+n-4$** と、$s=2$ では $\delta=-1$ が全ての $n\ge3$ で成立 | **1（Lean）** | `SpookyPebbling/Cap2Exact.lean` |
+| **上限 2 では鎖（$n\ge3$）の先端にペブルを置けない**（KSS Cor 4.7 の $\infty$ 条項） | **1（Lean）** | `SpookyPebbling/Cap2Exact.lean` |
 | **定理D**: $T_{UG}(n,s)\ge 6n-s(s+3)$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope6.lean` |
 | **定理F**: $T_{UG}(n,s)=6n-s(s+3)$（$\theta(s)\le n\le B_4(s)-1$）と $B_4(s)=B_4(s-1)+\theta(s)-1$ | **1（Lean）** | `SpookyPebbling/Slope6Exact.lean` |
 | **KSS Lemma 4.9/4.10**: $T_{UG}\le T_{UP}+1$ と $T_{UP}\le T_{UG}+1$、ゆえに差はちょうど 1 | **1（Lean）** | `SpookyPebbling/UGvsUP.lean` |
@@ -41,7 +43,7 @@
 | 頭・尻尾への射影が部分鎖の妥当な手順になること | **1（Lean）** | `SpookyPebbling/Project.lean` |
 | **到達可能性**: `s ≥ 2` ならどんな長さの鎖も片付く（`sInf ∅ = 0` を回避） | **1（Lean）** | `SpookyPebbling/Reach.lean` |
 | 意味論が `< n` の値にしか依存しない（射影の土台） | **1（Lean）** | `SpookyPebbling/Defs.lean` |
-| 定理E（任意の傾き $2m$ の下界 $c_m$）、$T(n,3)=n^2-n-3$、KSS Cor 4.7、傾き 8 以降 | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
+| **KSS Cor 4.7**（$T_P$ の分解）と、その系 $T(n,3)=n^2-n-3$、定理E（傾き 8 以降） | 2（紙＋機械検査） | `notes/spooky-pebbling`（未移植） |
 
 **$T_{UG}\ne T_{UP}$ は KSS が持っていない。** KSS Thm 4.11 の $\pm1$ は Lemma 4.9/4.10 の
 両側不等式から出るもので、$0$ の可能性を排除していない。パリティが排除する。
@@ -138,7 +140,11 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 | 変異AB（$\delta$ の符号を逆向きに主張） | **検出** |
 | **定理F と BFS の突き合わせ** | `TUG 6 3 = 18`・`TUG 7 3 = 24` が転記した BFS の最適手順の長さと一致。$B_4(3)=9$ は実測どおり（`9,18,32,52,79,114` を `rfl` で照合） |
 | **上限 2 の閉形式と BFS** | `TUP 3 2 = 9`・`TUP 4 2 = 17` が転記した最適手順の長さと一致 |
+| 変異AC（$T_{UG}(n,2)$ の値を 1 ずらす） | **検出** |
+| 変異AD（到達不能性を $n\ge2$ に緩める） | **検出**（$n=2$ では実際に到達できる） |
+| 変異AE（不変条件の上限を 2 でなく 3 にする） | **検出**（3 個目が入らないことが本質） |
 | **符号反転と BFS** | `n=5=θ(3)-1` で `TUG 5 3 = TUP 5 3 + 1`、`n=6=θ(3)` で `TUP 6 3 = TUG 6 3 + 1`。転記した手順の長さ（14/13 と 19/18）でも同じ向き |
+| **上限 2 の可否の対比** | 同じ長さ 3 の鎖で、上限 3 なら 5 手の witness（`wP3_3`）が在り、上限 2 では**どんな手順も存在しない**（定理）。`TUG 4 2 = 16` も `wUG4_2` と一致 |
 | 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` / `decomp_le_run` を適用して結論を得ている |
 
 再現:
@@ -177,12 +183,23 @@ echo 'import SpookyPebbling
 | `Slope6Exact.lean` | **定理F**（傾き 6 の領域の厳密値と折れ目 `B₄(s)`） |
 | `Cap2.lean` | **`T_UP(n,2)=n²+n-3`**（終端に 3 手要ることで足りない 2 を取り返す） |
 | `Sign.lean` | **δ の符号反転**（`T_UP ≥ 6n-s(s+3)+1` と `δ=-1`） |
+| `Cap2Exact.lean` | `T_UG(n,2)=n²+n-4`・`s=2` の `δ=-1`・上限 2 の到達不能性 |
 | `Tests.lean` | 陽性 13 点・陰性 6 点・両方向の非空虚性・定理B/C/D と BFS の突き合わせ |
 
 ## 未移植（次にやること）
 
-1. **KSS Cor 4.7** — `T_P` 版。$\theta$ にも $\delta$ にも**不要**で、$T(n,3)=n^2-n-3$ に要る。
-   頭が `T_{UP}(k,s-1)`（上限が 1 小さい）なので、そこだけ別扱いが要る
+1. **KSS Cor 4.7** — `T_P` 版
+   $T_P(n,s)=\min_k[\,2k-1 + T_{UP}(k,s-1) + T_P(n-k,s-1)\,]$。$\theta$ にも $\delta$ にも
+   **不要**で、$T(n,3)=n^2-n-3$ にだけ要る。`theorem_p3.py` の証明は 5 段で、
+   **段1〜段4 はここまでで層1 になった**（$T_P(m,2)=\infty$ は `not_run_p_cap2`、
+   $T_{UG}(m,1)=\infty$ は `not_run_ug_cap_one`、閉形式は `Cap2.lean`/`Cap2Exact.lean`）。
+   **残るのは段5＝Cor 4.7 そのもの**。難所は 2 つ:
+   - $\le$ 方向: `Upper.lean` の `decomp_le_run_gen` は**終状態が `allEmpty` に固定**されている。
+     Cor 4.7 では尻尾も全体も `sinkPebble` で終わるので、終状態を引数にした一般化が要る
+   - $\ge$ 方向: **頭の上限が `s` でなく `s-1`**。`decomp_ge_pieces` が出すのは `s` なので
+     足りない。頭を片付ける間ずっと尻尾がペブルを 1 個持っていること（構成では $v_{n-1}$）を
+     任意の手順について言う必要がある。**頭を `s` にすると値が小さくなりすぎて
+     $T(n,3)$ が出ない**ので、ここは緩められない
 2. **$B_4(s)$ より先**（傾き 8 以降）。定理E の $c_m$ は $m\ge4$ で緩む（$c_4(3)$ は
    漸化式 38・実測 34）ので、$\delta$ の主張も $n\le B_4(s)-1$ で止まっている
 3. 鎖以外の一般 DAG（今回の $k$ の取り方は鎖をほとんど使っていない）
