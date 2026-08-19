@@ -88,8 +88,55 @@ def _add_interval(m, a, chg, n, D, T) -> None:
                 m.Add(a[k][t1] - a[k][t2] <= tch[t1]).OnlyEnforceIf(u)
 
 
+def _add_runs(m, a, add, rem, chg, n, D, T, mutate: bool = False) -> None:
+    """**run 数を陽に持つ抽象**（2026-08-18、docs/35 §「次に効きそうな手」2 番）。
+
+    各層・各時刻に run 数 $r_k(t) = \\mathrm{runs}(S_k(t))$ を変数として足す。健全な制約:
+
+    * $a = 0 \\Rightarrow r = 0$、$a \\ge 1 \\Rightarrow 1 \\le r \\le \\min(a,\\ n_k - a + 1)$
+      （run の間には隙間が要る）
+    * **隣接ペアの上界**: 層 $k$ の変化した頂点の親は層 $k-1$ の凍結部 $F \\subseteq S_{k-1}(t)$
+      にあり、触れる子の個数は $F$ の隣接ペア数 $\\le S$ の隣接ペア数 $= a - r$。よって
+      $\\mathrm{chg}_k(t) \\le a_{k-1}(t) - r_{k-1}(t)$ と $\\le a_{k-1}(t+1) - r_{k-1}(t+1)$
+      （Lean `touchable_card_add_runs`。旧抽象の $a-1$ は $r \\ge 1$ を代入したもの）
+    * **run 数の動特性**: 1 頂点の増減で run 数は高々 1 動くので $|r(t{+}1) - r(t)| \\le \\mathrm{chg}(t)$
+
+    ⚠ **これらは $r_k(t) = \\min(a_k(t), 1)$ ですべて満たされる**（$a \\ge 1$ なら $r=1$ は
+    $1 \\le 1 \\le \\min(a, n-a+1)$、ペア上界は $a-1$ に戻り、$r$ の変化は $a$ が 0 と正を
+    またぐときだけで、そのとき $\\mathrm{chg} \\ge 1$）。したがって**この抽象の最適値は
+    個数抽象と同じ**であることが計算前に分かる。ここで実装するのは、その事実を実測で
+    確かめ、`mutate=True`（$2 \\le a \\le n-1$ なら $r \\ge 2$ を課す**不健全**な変異）で
+    制約が効いていること（空振りでないこと）を示すため。
+    """
+    r = [[m.NewIntVar(0, n[k], f"r{k}_{t}") for t in range(T + 1)] for k in range(D + 1)]
+    for k in range(D + 1):
+        for t in range(T + 1):
+            pos = m.NewBoolVar(f"pos{k}_{t}")
+            m.Add(a[k][t] >= 1).OnlyEnforceIf(pos)
+            m.Add(a[k][t] == 0).OnlyEnforceIf(pos.Not())
+            m.Add(r[k][t] == 0).OnlyEnforceIf(pos.Not())
+            m.Add(r[k][t] >= 1).OnlyEnforceIf(pos)
+            m.Add(r[k][t] <= a[k][t])
+            m.Add(r[k][t] <= n[k] - a[k][t] + 1).OnlyEnforceIf(pos)
+            if mutate:
+                mid = m.NewBoolVar(f"mid{k}_{t}")     # mid ⇔ 2 ≤ a ≤ n-1
+                lo = m.NewBoolVar(f"lo{k}_{t}"); hi = m.NewBoolVar(f"hi{k}_{t}")
+                m.Add(a[k][t] >= 2).OnlyEnforceIf(lo); m.Add(a[k][t] <= 1).OnlyEnforceIf(lo.Not())
+                m.Add(a[k][t] <= n[k] - 1).OnlyEnforceIf(hi); m.Add(a[k][t] >= n[k]).OnlyEnforceIf(hi.Not())
+                m.AddBoolAnd([lo, hi]).OnlyEnforceIf(mid)
+                m.AddBoolOr([lo.Not(), hi.Not(), mid])
+                m.Add(r[k][t] >= 2).OnlyEnforceIf(mid)
+        for t in range(T):
+            m.Add(r[k][t + 1] - r[k][t] <= chg[k][t])
+            m.Add(r[k][t] - r[k][t + 1] <= chg[k][t])
+    for k in range(1, D + 1):
+        for t in range(T):
+            m.Add(chg[k][t] <= a[k - 1][t] - r[k - 1][t])
+            m.Add(chg[k][t] <= a[k - 1][t + 1] - r[k - 1][t + 1])
+
+
 def bound(h: int, limit: float = 300.0, frozen: bool = True, workers: int = 8,
-          interval: bool = False):
+          interval: bool = False, runs: bool = False, runs_mutate: bool = False):
     """ピラミッド $P_h$ のピーク下界。
 
     `frozen=False` で旧抽象に戻す（比較用）。`interval=True` で区間版の制約を足す
@@ -137,6 +184,8 @@ def bound(h: int, limit: float = 300.0, frozen: bool = True, workers: int = 8,
 
     if interval:
         _add_interval(m, a, chg, n, D, T)
+    if runs or runs_mutate:
+        _add_runs(m, a, add, rem, chg, n, D, T, mutate=runs_mutate)
 
     p = m.NewIntVar(1, sum(n), "p")
     for t in range(T + 1):
@@ -162,6 +211,9 @@ def main() -> int:
     ap.add_argument("--compare", action="store_true", help="旧抽象（凍結なし）も出す")
     ap.add_argument("--interval", action="store_true", help="区間版の制約を足す")
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--runs", action="store_true", help="run 数を陽に持つ抽象を足す（2026-08-18）")
+    ap.add_argument("--runs-mutate", action="store_true",
+                    help="変異注入: 2 ≤ a ≤ n-1 なら r ≥ 2 を課す（不健全。制約が効くことの確認用）")
     args = ap.parse_args()
 
     print(f"  {'h':>3} {'旧(拡大性)':>10} {'新':>9} {'実測':>5} {'隙間':>5}  状態")
@@ -169,7 +221,7 @@ def main() -> int:
     improved = 0
     for h in range(args.hmin, args.hmax + 1):
         new, st = bound(h, args.limit, frozen=True, workers=args.workers,
-                        interval=args.interval)
+                        interval=args.interval, runs=args.runs, runs_mutate=args.runs_mutate)
         old, _ = (bound(h, args.limit, frozen=False, workers=args.workers)
                   if args.compare else (None, ""))
         meas = MEASURED.get(h)
