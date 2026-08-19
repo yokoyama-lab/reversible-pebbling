@@ -1,0 +1,4 @@
+# h=19 の走行結果（2026-08-18 起動、watch_h19.sh が自動追記）
+descent h=19 d=61 (scripts/q2_descent_cnf.py): 
+sym+window h=19 p=62 (scratchpad symcnf.py): 
+runcap 上限: descent 8GB/14400s、sym 24GB/7200s。出力なしは打ち切りであって UNSAT ではない
