@@ -148,5 +148,11 @@ def main() -> int:
     return 0
 
 
+def test_window_units_are_implied():
+    """pytest からも走らせる（main() だけだと 0 件収集になり、
+    「走っていない検査」と「異常なし」が区別できなくなる）。"""
+    assert main() == 0
+
+
 if __name__ == "__main__":
     sys.exit(main())
