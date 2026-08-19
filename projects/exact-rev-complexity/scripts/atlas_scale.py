@@ -25,6 +25,8 @@ sys.path.insert(0, str(REPO / "scripts"))
 from atlas_measure import measure  # noqa: E402
 
 PYJ = Path.home() / "dev/github.com/yokoyama-lab/PyJanus/tests/jana2014/fixtures/examples"
+# ⚠ PyJanus 側は 2026-08 に事例を「残すもの」で改名した（_g=ゴミを残す / _c=clean）。
+# fib.ja -> fib_c.ja、gcd.ja -> gcd_g.ja（PyJanus commit d960817・f05527e）。
 MEMO2017 = Path.home() / "dev/overleaf/2017_rev_memoization/program"
 MEMO2021 = Path.home() / "dev/overleaf/2021_rev_memoization2/programs"
 OUTDIR = REPO / "data/fixtures/scale"
@@ -37,8 +39,8 @@ def _head(path: Path) -> str:
 
 
 def fib_iter(n: int) -> tuple[Path, str]:
-    """反復対 Fibonacci（pyjanus/fib.ja）。n 段。"""
-    src = PYJ / "fib.ja"
+    """反復対 Fibonacci（pyjanus/fib_c.ja）。n 段。"""
+    src = PYJ / "fib_c.ja"
     return src, _head(src) + f"""procedure main()
     int x1
     int x2
@@ -49,7 +51,7 @@ def fib_iter(n: int) -> tuple[Path, str]:
 
 
 def factorial(n: int) -> tuple[Path, str]:
-    src = PYJ / "factorial.ja"
+    src = PYJ / "factorial_c.ja"
     return src, _head(src) + f"""procedure main()
   int n
   int res
@@ -63,7 +65,7 @@ def gcd_fib(k: int) -> tuple[Path, str]:
     a, b = 1, 1
     for _ in range(k):
         a, b = a + b, a
-    src = PYJ / "gcd.ja"
+    src = PYJ / "gcd_g.ja"
     return src, _head(src) + f"""procedure main()
   int a
   int b
@@ -76,7 +78,7 @@ def gcd_fib(k: int) -> tuple[Path, str]:
 
 def bubble_sort(n: int) -> tuple[Path, str]:
     """逆順配列（最悪ケース）。ガベージスタック gb を使う族。"""
-    src = PYJ / "bubble_sort.ja"
+    src = PYJ / "bubble_sort_g.ja"
     sets = "\n".join(f"  a[{i}] += {(n - i) * 10}" for i in range(n))
     return src, _head(src) + f"""procedure main()
   int a[{n}]
@@ -91,7 +93,7 @@ def bubble_sort(n: int) -> tuple[Path, str]:
 
 def edit_distance(n: int) -> tuple[Path, str]:
     """長さ n vs n。x は全て 1、y は全て 2（置換 n 回が答え）。"""
-    src = PYJ / "edit_distance.ja"
+    src = PYJ / "edit_distance_c.ja"
     xs = "\n".join(f"  x[{i}] += 1" for i in range(1, n + 1))
     ys = "\n".join(f"  y[{i}] += 2" for i in range(1, n + 1))
     d = (n + 1) * (n + 1)
@@ -111,7 +113,7 @@ def edit_distance(n: int) -> tuple[Path, str]:
 
 def lcs(n: int) -> tuple[Path, str]:
     """長さ n vs n の交互列（1,2,1,... と 2,1,2,...）。"""
-    src = PYJ / "lcs.ja"
+    src = PYJ / "lcs_c.ja"
     xs = "\n".join(f"  x[{i}] += {1 + (i % 2)}" for i in range(1, n + 1))
     ys = "\n".join(f"  y[{i}] += {2 - (i % 2)}" for i in range(1, n + 1))
     d = (n + 1) * (n + 1)
@@ -131,7 +133,7 @@ def lcs(n: int) -> tuple[Path, str]:
 
 def knapsack(n: int) -> tuple[Path, str]:
     """n 品目、wt[i] = (i mod 3)+1、val[i] = i、容量 n+2。"""
-    src = PYJ / "knapsack.ja"
+    src = PYJ / "knapsack_c.ja"
     cap = n + 2
     items = "\n".join(
         f"  wt[{i}] += {(i % 3) + 1}  val[{i}] += {i}" for i in range(1, n + 1)

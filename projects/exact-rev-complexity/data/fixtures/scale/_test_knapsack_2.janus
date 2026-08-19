@@ -1,4 +1,14 @@
-//////////////////////////////////////////////////////////////////////
+// @summary:   0/1 knapsack, leaving the whole DP table, row-major with stride cap+1
+// @technique: clean-accumulation
+// @source:    classical 0/1 knapsack DP; the reversible formulation is original
+// @confirmed: reproduced by tests/jana2014/reference/knapsack_c.py, an independent Python implementation written from the algorithm (only the inputs are transcribed from main); it agrees on K, cap, n, val, wt
+// @keep:      K, cap, n, val, wt
+// @expect: K[24] = {0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 3, 4, 4, 7, 0, 0, 3, 4, 5, 7}
+// @expect: cap = 5
+// @expect: n = 3
+// @expect: val[4] = {0, 3, 4, 5}
+// @expect: wt[4] = {0, 2, 3, 4}
+//
 // Reversible 0/1 Knapsack (dynamic programming)
 //
 // K[i][w] = best value achievable with items 1..i and capacity w:
@@ -9,7 +19,6 @@
 // stable and the DP is reversible by construction -- no logging
 // (0 energy), as in lcs.j / edit_distance.j.  Answer: K[n][W].
 // Items are 1-indexed (wt[0], val[0] unused).
-//////////////////////////////////////////////////////////////////////
 
 procedure knapsack(int wt[], int val[], int n, int cap, int K[])
   local int i = 1
