@@ -30,11 +30,17 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_l2_map_covers_the_registered_algorithms() -> None:
-    """reftest の 40 登録が 39 本の `.j` に対応する（avl_insert.j が 2 つに使われる）。"""
+    """reftest の登録が `.j` に対応する（1 本が複数登録に使われることがある）。
+
+    ⚠ **本数を固定しない。** 対象は外部リポジトリ `reversible-algorithms` で、
+    正当に増える（2026-08-20 実測で 97 本・102 登録。この検査を書いた時点は 39 本・40 登録）。
+    固定すると、増えただけで落ちる。ここで守るのは「対応が壊れていないこと」で、
+    それは下の代表例と『登録名 ≧ ファイル数』のほうが直接に見ている。
+    """
     m = cov.l2_map()
-    assert len(m) == 39, sorted(m)
+    assert len(m) >= 39, sorted(m)
     names = {n for v in m.values() for n in v}
-    assert len(names) == 40, sorted(names)
+    assert len(names) >= len(m), (len(names), len(m))
     # 代表例: パスと名前の対応が壊れていないこと
     assert m["numeric/gcd.j"] == ["gcd"]
     assert "kmp_count" in m["string_search/kmp2.j"]

@@ -26,10 +26,14 @@ def test_categorize() -> None:
 
 
 def test_discover_finds_main_corpus() -> None:
-    """主コーパス（PyJanus 97 本）が見えること。他は環境依存なので本数を固定しない。"""
+    """主コーパス（PyJanus）が見えること。他は環境依存なので本数を固定しない。
+
+    ⚠ PyJanus 側も増える（2026-08-20 実測 101 本。この検査を書いた時点は 97 本）。
+    ここも下限だけを見る。
+    """
     files = discover()
     pyjanus = [f for f in files if f[0] == "pyjanus"]
-    assert len(pyjanus) == 97, len(pyjanus)
+    assert len(pyjanus) >= 97, len(pyjanus)
     # 総数はコーパスの増減がありうるので下限のみ
     assert len(files) >= 100, len(files)
 

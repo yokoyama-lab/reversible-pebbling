@@ -164,12 +164,40 @@ def l2_map() -> dict[str, list[str]]:
             if fs:
                 helper_files[node.name] = fs
 
+    # ループ変数 → 取りうる定数（`for _p in ("rankCC", "rankC"):` の形だけ扱う）。
+    # reftest.py は 2026-08 に `register("tree_" + _p, ...)` の形を導入した。
+    # ここを黙って読み飛ばすと**被覆表が実際より狭くなる**（沈黙する側の誤り）ので、
+    # 展開できる形は展開し、できない形は例外にする。
+    loop_values: dict[str, list[str]] = {}
+    for node in pyast.walk(tree):
+        if (isinstance(node, pyast.For) and isinstance(node.target, pyast.Name)
+                and isinstance(node.iter, (pyast.Tuple, pyast.List))
+                and all(isinstance(e, pyast.Constant) and isinstance(e.value, str)
+                        for e in node.iter.elts)):
+            loop_values.setdefault(node.target.id, []).extend(
+                e.value for e in node.iter.elts)
+
+    def names_of(arg: pyast.expr) -> list[str]:
+        """register の第 1 引数から登録名を復元する。"""
+        if isinstance(arg, pyast.Constant):
+            return [arg.value]
+        # "接頭辞" + ループ変数
+        if (isinstance(arg, pyast.BinOp) and isinstance(arg.op, pyast.Add)
+                and isinstance(arg.left, pyast.Constant)
+                and isinstance(arg.right, pyast.Name)
+                and arg.right.id in loop_values):
+            return [arg.left.value + v for v in loop_values[arg.right.id]]
+        raise ValueError(
+            f"reftest.py:{arg.lineno} の register 名を復元できない: "
+            f"{pyast.dump(arg)[:80]}。ここを読み飛ばすと被覆表が狭くなるので、"
+            f"新しい書き方が入ったら names_of を足すこと")
+
     out: dict[str, list[str]] = {}
     for node in pyast.walk(tree):
         if not (isinstance(node, pyast.Call) and isinstance(node.func, pyast.Name)
                 and node.func.id == "register" and node.args):
             continue
-        name = node.args[0].value
+        names = names_of(node.args[0])
         files: list[str] = []
         for kw in node.keywords:
             if kw.arg not in ("procs", "_procs"):
@@ -179,7 +207,8 @@ def l2_map() -> dict[str, list[str]]:
             elif isinstance(kw.value, pyast.Name):
                 files += helper_files.get(kw.value.id, [])
         for f in files:
-            out.setdefault(f, []).append(name)
+            for name in names:
+                out.setdefault(f, []).append(name)
     return out
 
 
