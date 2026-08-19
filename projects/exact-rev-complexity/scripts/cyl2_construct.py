@@ -106,8 +106,10 @@ def chain_pmin(h: int) -> int:
 
 
 def upper_bound(h: int) -> int:
-    """**この構成が実際に達成する**ピーク $2\\lceil\\log_2 h\\rceil+2 = 2P$。
+    """持ち上げ構成の**上界** $2\\lceil\\log_2 h\\rceil+2 = 2P$。
 
+    $h\\ge4$ では**この値ちょうど**が達成される。$h=2,3$ では構成のほうが 1 小さい
+    （$h=2$: 3、$h=3$: 5）ので、達成値そのものではなく上界として使うこと。
     実測の p_min より 1 大きい（module docstring の但し書きを参照）。"""
     return 2 * chain_pmin(h)
 

@@ -292,6 +292,13 @@ def test_cyl2_construction_verifies_and_bounds_pmin() -> None:
     ⚠️ **実測の $p_{\\min}$ より 1 大きい。** 予想 $2\\lceil\\log_2 h\\rceil+1$ の
     上界側はこれでは閉じない。差がちょうど 1 であることを固定しておく
     （縮んだら、より良い構成が見つかったということ）。
+
+    ⚠️ **ただし $h=2,3$ では構成のほうが上界より 1 小さい**（実測 2026-08-20:
+    $h=2$ でピーク 3 対 上界 4、$h=3$ で 5 対 6。$h\\ge4$ は等号）。
+    導入時（commit 2146fa2）から等号を主張していたが、それは $h\\ge4$ でしか
+    成り立たない。全体テストが 56 分かかるため完走されておらず、
+    **この不一致は書かれた時から検出されずに残っていた**。
+    上界 $p_{\\min} \\le 2\\lceil\\log_2 h\\rceil+2$ 自体は全ての $h$ で正しい。
     """
     import sys
     from pathlib import Path
@@ -313,7 +320,12 @@ def test_cyl2_construction_verifies_and_bounds_pmin() -> None:
     for h in range(2, 25):
         r = check(h)  # 検証器を通らなければ AssertionError
         assert r["ok"], f"h={h}: {r.get('why')}"
-        assert r["peak"] == upper_bound(h), f"h={h}: ピーク {r['peak']} != {upper_bound(h)}"
+        # 上界は全ての h で成り立つ。⚠ h=2,3 では構成のほうが 1 良い（下の但し書き）
+        assert r["peak"] <= upper_bound(h), (
+            f"h={h}: ピーク {r['peak']} が上界 {upper_bound(h)} を超えた"
+        )
+        expected = upper_bound(h) - 1 if h <= 3 else upper_bound(h)
+        assert r["peak"] == expected, f"h={h}: ピーク {r['peak']} != {expected}"
         if h in ledger:
             gap = r["peak"] - ledger[h]
             assert gap in (0, 1), f"h={h}: 実測との差が {gap}（0 か 1 のはず）"
