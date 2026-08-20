@@ -1590,6 +1590,19 @@
         ]
       },
       "proves_hypotheses": {}
+    },
+    "shape_definition_and_cap_step": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): the shape itself. An independent check found that Psi, I and cap had NO definition anywhere, so the hypotheses of Subsolution.subsolution_le_of_step could not even be STATED for the real construction and the analytic files stood alone as free-variable inequalities. This stage defines cap S = 2^{S-1} - 1 and Psi I X S v = floor_N (cap S * 2^{-I (X S - log v / log 2)}), with I (the profile integral) and X (the front) as parameters, and proves the CAP case of the step for the actual Psi: when all three arguments sit above their fronts (I = 0 there) the step is the cap identity 2^{n+1} - 1 = 1 + (2^n - 1) + (2^n - 1) and closes with equality, the min over the two levels being the lower one since cap is increasing. Also cap (s+2) = (rowIter s).length, which is what ReadoutBridge needs. NOT done here: the head, band, arc and self-closing regions, which need I on zeta > 0, the analytic margin bounds, and the Int.floor -> N bridge of FloorAbsorb.",
+      "theorems": [
+        "RevPebbling.Shape.Psi_eq_cap",
+        "RevPebbling.Shape.cap_step_Psi",
+        "RevPebbling.Shape.cap_eq_rowIter_length"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
