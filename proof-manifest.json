@@ -1467,6 +1467,20 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "floor_absorption_lemma_V4": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): Lemma V4 of the upper-bound programme (companion manuscript notes/lemma_U_clean.md) — the floors in Psi_S(v) = floor(cap_S 2^{-I}) cost nothing as soon as the RELATIVE margin mu satisfies mu x >= 1, where x is the real value floored on the left. The bookkeeping is exact and off by a factor of two if the +1 is misplaced: the REAL statement drops the +1 of the count recursion (the conservative side), x(1+mu) <= y1 + ym, while the INTEGER statement keeps it, floor x <= 1 + floor y1 + floor ym. Two floors on the right lose at most 1 each, so the right side is > y1 + ym - 1 >= x + mu x - 1, and mu x >= 1 brings that back to >= x >= floor x. The +1 of the recursion buys exactly the one unit that makes mu x >= 1 (rather than >= 2) sufficient. Also floor_min, which lets the min of the two branches be taken before or after flooring.",
+      "theorems": [
+        "RevPebbling.FloorAbsorb.floor_min",
+        "RevPebbling.FloorAbsorb.floor_absorb",
+        "RevPebbling.FloorAbsorb.floor_absorb_min",
+        "RevPebbling.FloorAbsorb.mu_mul_ge_one_of_ge"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
