@@ -288,6 +288,102 @@ theorem cap_succ (S : ℕ) (hS : 1 ≤ S) : cap (S + 1) = 2 * cap S + 1 := by
   simp only [Nat.add_sub_cancel]
   omega
 
+/-! ## Assembling the band step: `band_real_margin` → `margin_step_Psi` -/
+
+/-- **The band step, for the actual `Ψ` and an abstract profile.**  In the
+band the parent (level `S`) and the lower child sit above their fronts
+(`I = 0`), the upper child sits at depth `≤ 1/q_h` (`I ≤ 1`, so its value
+is at least `cap(S+1)/2 ≥ cap S` and the `min` is the lower child), and
+the value itself sits in the head (`I = q_h·ζ`).  The real inequality is
+then exactly `band_real_margin`, and `margin_step_Psi` turns it into the
+step. -/
+theorem band_step_Psi {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ} {μ q_h ζ : ℝ}
+    (hS : 2 ≤ S)
+    (hIv : I (X (S + 1) - Real.log v / Real.log 2) = q_h * ζ)
+    (hIvp : I (X S - Real.log v / Real.log 2) = 0)
+    (hIu : I (X S - Real.log u / Real.log 2) = 0)
+    (hIw : I (X (S + 1) - Real.log w / Real.log 2) ≤ 1)
+    (hμ : (1 + μ) * (1 + 1 / (2 * (cap S : ℝ))) ≤ (2 : ℝ) ^ (q_h * ζ))
+    (hμx : 1 ≤ μ * ((cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(q_h * ζ)))) :
+    Psi I X (S + 1) v
+      ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) := by
+  have h1 : 1 ≤ cap S := by
+    unfold cap
+    have h2 : (2 : ℕ) ^ 1 ≤ 2 ^ (S - 1) := Nat.pow_le_pow_right (by norm_num) (by omega)
+    omega
+  have hc0 : (0 : ℝ) < (cap S : ℝ) := by exact_mod_cast h1
+  have hsucc : (cap (S + 1) : ℝ) = 2 * (cap S : ℝ) + 1 := by
+    have := cap_succ S (by omega)
+    exact_mod_cast this
+  -- the real inequality, from `band_real_margin`
+  have hmain : (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(q_h * ζ)) * (1 + μ)
+      ≤ (cap S : ℝ) + (cap S : ℝ) := by
+    rw [hsucc]; exact band_real_margin hc0 hμ
+  -- the upper child is worth at least `cap S`
+  have hy3 : (cap S : ℝ)
+      ≤ (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(I (X (S + 1) - Real.log w / Real.log 2))) := by
+    have hhalf : (2 : ℝ) ^ (-(1 : ℝ))
+        ≤ (2 : ℝ) ^ (-(I (X (S + 1) - Real.log w / Real.log 2))) :=
+      Real.rpow_le_rpow_of_exponent_le (by norm_num) (by linarith)
+    have hval : (2 : ℝ) ^ (-(1 : ℝ)) = 1 / 2 := by
+      rw [Real.rpow_neg (by norm_num), Real.rpow_one]; norm_num
+    have hcap1 : (0 : ℝ) ≤ (cap (S + 1) : ℝ) := Nat.cast_nonneg _
+    calc (cap S : ℝ) ≤ (cap (S + 1) : ℝ) * (1 / 2) := by rw [hsucc]; linarith
+      _ ≤ _ := by rw [← hval]; exact mul_le_mul_of_nonneg_left hhalf hcap1
+  refine margin_step_Psi (μ := μ) ?_ ?_
+  · rw [hIv]; exact hμx
+  · rw [hIv, hIvp, hIu]
+    simp only [neg_zero, Real.rpow_zero, mul_one]
+    rw [min_eq_left hy3]
+    linarith [hmain]
+
+/-- **The band step for the concrete flat head**, with every profile
+hypothesis discharged from the *positions* alone.  The upper child's
+depth bound `ζ_w ≤ 1/q_h ≤ H` is exactly where **C4** (`q_h·H ≥ 1`,
+`KappaLowerRat`) enters. -/
+theorem band_step_Ihead {X : ℕ → ℝ} {S u w v : ℕ} {μ q_h H lam : ℝ}
+    (hS : 2 ≤ S) (hq : 0 < q_h) (hqH : 1 ≤ q_h * H)
+    (hX : X (S + 1) = X S + lam)
+    (hζpos : 0 < X (S + 1) - Real.log v / Real.log 2)
+    (hζlam : X (S + 1) - Real.log v / Real.log 2 ≤ lam)
+    (hlamH : lam ≤ H)
+    (hu : X S ≤ Real.log u / Real.log 2)
+    (hw : X (S + 1) - Real.log w / Real.log 2 ≤ 1 / q_h)
+    (hμ : (1 + μ) * (1 + 1 / (2 * (cap S : ℝ)))
+        ≤ (2 : ℝ) ^ (q_h * (X (S + 1) - Real.log v / Real.log 2)))
+    (hμx : 1 ≤ μ * ((cap (S + 1) : ℝ)
+        * (2 : ℝ) ^ (-(q_h * (X (S + 1) - Real.log v / Real.log 2))))) :
+    Psi (Ihead q_h H) X (S + 1) v
+      ≤ 1 + Psi (Ihead q_h H) X S v
+        + min (Psi (Ihead q_h H) X S u) (Psi (Ihead q_h H) X (S + 1) w) := by
+  -- the value sits in the head: `0 < ζ ≤ lam ≤ H`
+  have hIv : Ihead q_h H (X (S + 1) - Real.log v / Real.log 2)
+      = q_h * (X (S + 1) - Real.log v / Real.log 2) :=
+    Ihead_of_mem hζpos (le_trans hζlam hlamH)
+  -- the parent sits above its front: depth `ζ − lam ≤ 0`
+  have hIvp : Ihead q_h H (X S - Real.log v / Real.log 2) = 0 := by
+    apply Ihead_of_nonpos
+    have : X S = X (S + 1) - lam := by rw [hX]; ring
+    rw [this]; linarith
+  -- the lower child sits above its front
+  have hIu : Ihead q_h H (X S - Real.log u / Real.log 2) = 0 :=
+    Ihead_of_nonpos (by linarith)
+  -- the upper child: `q_h·ζ_w ≤ 1` and (via C4) `ζ_w ≤ H`, so `I ≤ 1`
+  have hIw : Ihead q_h H (X (S + 1) - Real.log w / Real.log 2) ≤ 1 := by
+    have hqζw : q_h * (X (S + 1) - Real.log w / Real.log 2) ≤ 1 := by
+      have h := mul_le_mul_of_nonneg_left hw (le_of_lt hq)
+      rwa [mul_one_div, div_self (ne_of_gt hq)] at h
+    have hζwH : X (S + 1) - Real.log w / Real.log 2 ≤ H := by
+      have h2 : q_h * (X (S + 1) - Real.log w / Real.log 2) ≤ q_h * H :=
+        le_trans hqζw hqH
+      exact le_of_mul_le_mul_left h2 hq
+    -- `hζwH` is in context, so `split_ifs` discharges the second test itself
+    unfold Ihead
+    split_ifs
+    · norm_num
+    · exact hqζw
+  exact band_step_Psi hS hIv hIvp hIu hIw hμ hμx
+
 /-- The cap value is what the readout needs at `ζ ≤ 0`: `Ψ = cap S` and
 `cap S = (rowIter S).length` exactly when `S ≥ 1`, so
 `ReadoutBridge.rowMax_le_of_subsolution` applies there. -/
