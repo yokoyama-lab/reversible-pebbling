@@ -1397,6 +1397,20 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "balance_identity_and_two_rpow_convexity": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): the balance identity t(delta*) = delta* - log2 rho (delta* = log2(1+rho), t(delta) = -log2(1 - 2^{-delta})), in the form delta* - t(delta*) + lam = 1/q when rho = 2^{1/q - lam}. This makes the hypothesis delta* > |t(delta*) - lam| of the margin lemma (Step 4 of Lemma U in the companion manuscript, notes/lemma_U_clean.md) hold UNCONDITIONALLY: the slack is 1/q when delta* >= 1/q and 2 delta* - 1/q otherwise. An earlier numerical certifier computed that slack with delta and t at one lambda and the subtracted lambda at another, returning an UPPER bound where a lower one is needed; the identity removes the need for numerics there. Also 2^x - 1 >= x ln 2 (convexity of exp), which is the linear lower bound for the seam band 0 < zeta < lambda, where the margin is exactly 2^{q_h zeta} - 1.",
+      "theorems": [
+        "RevPebbling.BalanceIdentity.two_rpow_neg_balance",
+        "RevPebbling.BalanceIdentity.t_eq_delta_sub_log",
+        "RevPebbling.BalanceIdentity.delta_sub_t_add_lam",
+        "RevPebbling.BalanceIdentity.two_rpow_sub_one_ge"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
