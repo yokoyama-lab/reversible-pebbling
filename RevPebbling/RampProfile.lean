@@ -229,6 +229,73 @@ theorem Iof_quadratic (hm : 0 ≤ m) (hζ : 0 ≤ ζ) (hs : 0 ≤ s) :
   rw [hsplit, hconst, ← hsub] at habs
   exact habs
 
+/-- The backward form: the profile below `ζ` also hugs the tangent. -/
+theorem Iof_quadratic_back (hm : 0 ≤ m) (hs : 0 ≤ s) (h0 : 0 ≤ ζ - s) :
+    |Iof q_h q_hi H m ζ - Iof q_h q_hi H m (ζ - s) - qr q_h q_hi H m ζ * s|
+      ≤ m * s ^ 2 / 2 := by
+  have hrefl : (∫ σ in (0 : ℝ)..s, qr q_h q_hi H m (ζ - σ))
+      = ∫ σ in (ζ - s)..ζ, qr q_h q_hi H m σ := by
+    simpa using intervalIntegral.integral_comp_sub_left (a := (0 : ℝ)) (b := s)
+      (f := qr q_h q_hi H m) (d := ζ)
+  have hsub : Iof q_h q_hi H m ζ - Iof q_h q_hi H m (ζ - s)
+      = ∫ σ in (0 : ℝ)..s, qr q_h q_hi H m (ζ - σ) := by
+    rw [hrefl]; exact Iof_sub h0 (by linarith)
+  set g : ℝ → ℝ := fun σ => qr q_h q_hi H m (ζ - σ) - qr q_h q_hi H m ζ with hg
+  have hcont : Continuous fun σ : ℝ => qr q_h q_hi H m (ζ - σ) :=
+    qr_continuous.comp (continuous_const.sub continuous_id)
+  have hgint : IntervalIntegrable g volume 0 s :=
+    (hcont.intervalIntegrable 0 s).sub intervalIntegrable_const
+  have hgbd : ∀ σ ∈ Set.Icc (0 : ℝ) s, |g σ| ≤ m * σ := by
+    intro σ hσ
+    have h0σ : (0 : ℝ) ≤ σ := hσ.1
+    have hup : qr q_h q_hi H m ζ - qr q_h q_hi H m (ζ - σ) ≤ m * σ := by
+      have := qr_sub_le (q_h := q_h) (q_hi := q_hi) (H := H) hm
+        (x := ζ - σ) (y := ζ) (by linarith)
+      have hid : ζ - (ζ - σ) = σ := by ring
+      rw [hid] at this
+      exact this
+    have hlo : qr q_h q_hi H m (ζ - σ) ≤ qr q_h q_hi H m ζ :=
+      qr_mono (q_h := q_h) (q_hi := q_hi) (H := H) hm (by linarith)
+    rw [abs_of_nonpos (by simp only [hg]; linarith)]
+    simp only [hg]
+    linarith
+  have hconst : (∫ _σ in (0 : ℝ)..s, qr q_h q_hi H m ζ) = qr q_h q_hi H m ζ * s := by
+    rw [intervalIntegral.integral_const, smul_eq_mul, sub_zero, mul_comm]
+  have hsplit : (∫ σ in (0 : ℝ)..s, g σ)
+      = (∫ σ in (0 : ℝ)..s, qr q_h q_hi H m (ζ - σ))
+        - ∫ _σ in (0 : ℝ)..s, qr q_h q_hi H m ζ := by
+    simp only [hg]
+    exact intervalIntegral.integral_sub (hcont.intervalIntegrable 0 s) intervalIntegrable_const
+  have habs := RevPebbling.MarginTransfer.abs_integral_le_half_mul_sq hs hgint hgbd
+  rw [hsplit, hconst, ← hsub] at habs
+  exact habs
+
+/-- **The tangent bound, both directions.**  For any two points at or
+below the front, the profile differs from its tangent at `ζ` by at most
+`m·(y−ζ)²/2`.  This is the form the arc uses: its three positions
+(`ζ−λ`, `ζ−λ+t`, `ζ+δ`) lie on both sides of `ζ`. -/
+theorem Iof_tangent (hm : 0 ≤ m) (hζ : 0 ≤ ζ) (hy : 0 ≤ y) :
+    |Iof q_h q_hi H m y - Iof q_h q_hi H m ζ - qr q_h q_hi H m ζ * (y - ζ)|
+      ≤ m * (y - ζ) ^ 2 / 2 := by
+  rcases le_total ζ y with h | h
+  · have hfwd := Iof_quadratic (q_h := q_h) (q_hi := q_hi) (H := H) (ζ := ζ) hm hζ
+      (s := y - ζ) (by linarith)
+    have hid : ζ + (y - ζ) = y := by ring
+    rw [hid] at hfwd
+    exact hfwd
+  · have hback := Iof_quadratic_back (q_h := q_h) (q_hi := q_hi) (H := H) (ζ := ζ) hm
+      (s := ζ - y) (by linarith) (by linarith)
+    have hid : ζ - (ζ - y) = y := by ring
+    rw [hid] at hback
+    have hsq : (ζ - y) ^ 2 = (y - ζ) ^ 2 := by ring
+    rw [hsq] at hback
+    have hneg : Iof q_h q_hi H m y - Iof q_h q_hi H m ζ
+        - qr q_h q_hi H m ζ * (y - ζ)
+        = -(Iof q_h q_hi H m ζ - Iof q_h q_hi H m y
+            - qr q_h q_hi H m ζ * (ζ - y)) := by ring
+    rw [hneg, abs_neg]
+    exact hback
+
 /-! ## The tail: the telescope of Lemma V₃ -/
 
 /-- **Deep enough, the increment over one level is exactly `q_hi·λ`.**
