@@ -61,6 +61,7 @@ import RevPebbling.ReadoutBridge
 import RevPebbling.Shape
 import RevPebbling.RampProfile
 import RevPebbling.ArcGeometry
+import RevPebbling.ArcMargin
 import RevPebbling.Regions
 import RevPebbling.CriticalRoot197130
 import RevPebbling.CriticalRoot8324
