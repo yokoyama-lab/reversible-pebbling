@@ -1425,6 +1425,22 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "margin_lemma_anchors_and_base": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): Steps 1 and 6 of the margin lemma (Lemma U, companion manuscript notes/lemma_U_clean.md) and Lemma 0. Step 1 (the pure-power reference): the step function of v^q is F q lam = G q (2^{1/q - lam}), so at lam = V q = 1/q - log2 rho_c the argument is exactly rho_c and F q (V q) = 1; everything hinges on 2^{log rho / log 2} = rho. Step 6 (where eps enters): V q0 <= kappa gives lam - V q0 >= eps for lam = kappa + eps, and margin >= B (lam - V q0) with B >= 0 becomes margin >= B eps — the only appearance of eps in the bound, and the reason it is linear in eps. Lemma 0 (the base is automatic): q >= q_h everywhere gives I(Delta) = int_0^Delta q >= q_h Delta, so Delta >= (S0-1)/q_h already yields I(Delta) >= S0 - 1 with NO computation, contrary to the earlier write-up which assumed a numerical check was needed.",
+      "theorems": [
+        "RevPebbling.MarginAnchors.two_rpow_log_div_log",
+        "RevPebbling.MarginAnchors.F_at_V_eq_one",
+        "RevPebbling.MarginAnchors.eps_le_lam_sub_V",
+        "RevPebbling.MarginAnchors.margin_ge_mul_eps",
+        "RevPebbling.MarginAnchors.integral_ge_of_ge",
+        "RevPebbling.MarginAnchors.base_automatic"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
