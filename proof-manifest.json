@@ -1455,6 +1455,18 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "subsolution_double_induction": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): Lemma 2 of the upper-bound programme (companion manuscript notes/lemma_U_clean.md) — the double induction that turns a base and a step into Psi S v <= C S v for all S >= S0 and all v. Stated abstractly over any C obeying the split recursion, then instantiated at the real C S v = countLe (rowIter S) v via count_recursion_split. The outer induction is on S (Nat.le_induction), the inner one is strong induction on v; what makes the inner recursion well-founded is w < v, i.e. u >= 1. The v = 1 clause Psi (S+1) 1 <= 1 + Psi S 1 is a SEPARATE hypothesis because 1 has no split into two positive parts — omitting it makes the lemma false (a counterexample is recorded in the manuscript). The matching count inequality 1 + C s 1 <= C (s+1) 1 comes from the recursion at u = 1, w = 0 with the min dropped by min >= 0, so no fact about C s 0 is needed. NOTE the split ordering is Lean's, min (Psi S u) (Psi (S+1) w) with u at the lower level; the manuscript exchanges u and w. subsolution_le_of_step depends on propext and Quot.sound only (not Classical.choice).",
+      "theorems": [
+        "RevPebbling.Subsolution.subsolution_le_of_step",
+        "RevPebbling.Subsolution.subsolution_le_count"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
