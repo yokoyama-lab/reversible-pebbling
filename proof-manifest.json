@@ -1411,6 +1411,20 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "margin_lemma_transfer_steps": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): the three purely analytic facts that carry Steps 2 and 3 of the margin lemma (Lemma U, companion manuscript notes/lemma_U_clean.md), stated with no reference to the construction. Step 2: if |g s| <= M s on [0,S] then |int_0^S g| <= M S^2/2 (the factor 1/2 is what a LINEAR bound on the integrand buys over a constant one; the constant-bound version M S^2 would not suffice for the margin). Step 3a: 1 - k log 2 <= 2^{-k} for every real k, and its applied form 2^X - 2^X log 2 |K| <= 2^X 2^{-K}, which turns the multiplicative perturbation into an additive one. Step 3b: min a b - max al be <= min (a - al) (b - be), which handles the two branches of the split at once. None of the three mentions eps, which is why the resulting margin bound is uniform in eps.",
+      "theorems": [
+        "RevPebbling.MarginTransfer.one_sub_le_two_rpow_neg",
+        "RevPebbling.MarginTransfer.two_rpow_shift_ge",
+        "RevPebbling.MarginTransfer.min_sub_max_le",
+        "RevPebbling.MarginTransfer.abs_integral_le_half_mul_sq"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
