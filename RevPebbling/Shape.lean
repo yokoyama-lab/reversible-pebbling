@@ -135,6 +135,53 @@ theorem margin_step_Psi {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ} {μ 
   rw [hfm] at h
   exact h
 
+/-! ## A concrete profile: the flat head -/
+
+/-- The flat head `q ≡ q_h` on `[0, H]`, capped before and after.  This is
+the part of the profile the band `0 < ζ < λ` lives in (it needs
+`H ≥ λ + 1/q_h`, `SeamBand.head_long_enough`). -/
+noncomputable def Ihead (q_h H : ℝ) (ζ : ℝ) : ℝ :=
+  if ζ ≤ 0 then 0 else if ζ ≤ H then q_h * ζ else q_h * H
+
+@[simp] theorem Ihead_of_nonpos {q_h H ζ : ℝ} (h : ζ ≤ 0) : Ihead q_h H ζ = 0 := by
+  unfold Ihead; simp [h]
+
+theorem Ihead_of_mem {q_h H ζ : ℝ} (h0 : 0 < ζ) (h1 : ζ ≤ H) :
+    Ihead q_h H ζ = q_h * ζ := by
+  unfold Ihead; simp [not_le.mpr h0, h1]
+
+/-! ## The cap ratio, and the deficit the idealised analysis ignores -/
+
+/-- **`cap S / cap (S+1) < 1/2` — strictly.**  The margin analysis works
+with the *idealised* ratio `1/2`, which therefore **overstates** the
+margin; the deficit is `1/(2^S − 1)` relative.  It is negligible against
+the band's `0.149·ζ` once `ζ ≥ z_cap`, but it is exactly why the cap zone
+(`ζ ≤ z_cap`) has to be handled by `V₀`'s **integer** argument and not by
+the idealised one. -/
+theorem cap_ratio_lt_half {S : ℕ} (hS : 2 ≤ S) :
+    (cap S : ℝ) / (cap (S + 1) : ℝ) < 1 / 2 := by
+  have h1 : (1 : ℕ) ≤ 2 ^ (S - 1) := Nat.one_le_two_pow
+  have hpow : (2 : ℕ) ^ (S - 1) * 2 = 2 ^ S := by
+    rw [← pow_succ]
+    congr 1
+    omega
+  have hden : (0 : ℝ) < (cap (S + 1) : ℝ) := by
+    have : 1 < 2 ^ S := by
+      have : (2:ℕ) ^ 1 ≤ 2 ^ S := Nat.pow_le_pow_right (by norm_num) (by omega)
+      omega
+    unfold cap
+    simp only [Nat.add_sub_cancel]
+    exact_mod_cast Nat.sub_pos_of_lt this
+  rw [div_lt_div_iff₀ hden (by norm_num)]
+  unfold cap
+  simp only [Nat.add_sub_cancel]
+  have hnat : (2 ^ (S - 1) - 1) * 2 < 2 ^ S - 1 + (2 ^ S - 1) - (2 ^ S - 1) + (2 ^ S - 1) := by
+    omega
+  have : ((2 ^ (S - 1) - 1 : ℕ) : ℝ) * 2 < ((2 ^ S - 1 : ℕ) : ℝ) := by
+    have hlt : (2 ^ (S - 1) - 1) * 2 < 2 ^ S - 1 := by omega
+    exact_mod_cast hlt
+  linarith
+
 /-- The cap value is what the readout needs at `ζ ≤ 0`: `Ψ = cap S` and
 `cap S = (rowIter S).length` exactly when `S ≥ 1`, so
 `ReadoutBridge.rowMax_le_of_subsolution` applies there. -/
