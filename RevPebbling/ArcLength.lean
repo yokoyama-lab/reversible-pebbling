@@ -1,4 +1,5 @@
 import RevPebbling.MarginAnchors
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # `S₀(ε)` is finite and explicit
@@ -54,6 +55,52 @@ theorem arc_time_bound {q_h q_hi ε T : ℝ} (hq_h : 0 < q_h) (hε : 0 < ε)
   have hid : (q_hi - q_h) / (q_h / 10 * ε) = 10 * (q_hi - q_h) / (q_h * ε) := by
     field_simp
   rwa [hid] at h
+
+/-! ## Discharging `hclimb` from a rate lower bound
+
+⚠ `arc_time_bound` takes `hclimb : (q_h/10·ε)·T ≤ q_hi − q_h` as a
+hypothesis, which is very nearly its own conclusion — an independent check
+on 2026-08-20 flagged this, together with the deeper point that §2 of the
+manuscript constrains the profile's rate only **from above**, so the
+finiteness of `ζ_sc` had no premise to rest on.
+
+The premise is supplied here explicitly: the schedule is designed so that
+on the ramp
+
+```
+q'(ζ) = γ(q)·(λ − V(q)) ≥ (q_h/10)·ε        (γ(q) = q/10, q ≥ q_h, λ − V ≥ ε)
+```
+
+i.e. a **rate lower bound**, which is a property of the design data and
+not of the conclusion.  The fundamental theorem of calculus then turns it
+into `hclimb`. -/
+
+/-- **The climb hypothesis, discharged.**  A rate bounded below by `m` on
+`[0,T]`, a start at `q_h` or above and an end at `q_hi` or below give
+`m·T ≤ q_hi − q_h`. -/
+theorem climb_of_rate {qq qrate : ℝ → ℝ} {m T q_h q_hi : ℝ} (hT : 0 ≤ T)
+    (hderiv : ∀ x ∈ Set.uIcc (0 : ℝ) T, HasDerivAt qq (qrate x) x)
+    (hint : IntervalIntegrable qrate volume 0 T)
+    (hrate : ∀ σ ∈ Set.Icc (0 : ℝ) T, m ≤ qrate σ)
+    (hstart : q_h ≤ qq 0) (hend : qq T ≤ q_hi) :
+    m * T ≤ q_hi - q_h := by
+  have h1 : m * T ≤ ∫ σ in (0 : ℝ)..T, qrate σ :=
+    RevPebbling.MarginAnchors.integral_ge_of_ge hT hint hrate
+  have h2 : (∫ σ in (0 : ℝ)..T, qrate σ) = qq T - qq 0 :=
+    intervalIntegral.integral_eq_sub_of_hasDerivAt hderiv hint
+  linarith
+
+/-- **The arc is short, from the rate alone.**  `arc_time_bound` with its
+`hclimb` discharged: the only analytic input is the schedule's rate lower
+bound `(q_h/10)·ε` on the ramp. -/
+theorem arc_time_bound_of_rate {qq qrate : ℝ → ℝ} {q_h q_hi ε T : ℝ}
+    (hq_h : 0 < q_h) (hε : 0 < ε) (hT : 0 ≤ T)
+    (hderiv : ∀ x ∈ Set.uIcc (0 : ℝ) T, HasDerivAt qq (qrate x) x)
+    (hint : IntervalIntegrable qrate volume 0 T)
+    (hrate : ∀ σ ∈ Set.Icc (0 : ℝ) T, q_h / 10 * ε ≤ qrate σ)
+    (hstart : q_h ≤ qq 0) (hend : qq T ≤ q_hi) :
+    T ≤ 10 * (q_hi - q_h) / (q_h * ε) :=
+  arc_time_bound hq_h hε (climb_of_rate hT hderiv hint hrate hstart hend)
 
 /-- `I(ζ) ≤ q_hi·ζ` when the shape never exceeds `q_hi`.  (The matching
 lower bound `I(Δ) ≥ q_h·Δ` is `MarginAnchors.integral_ge_of_ge`.) -/
