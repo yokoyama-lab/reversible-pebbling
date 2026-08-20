@@ -2012,6 +2012,514 @@ def main() -> int:
                     "RevPebbling.BlockSim.submult_fRow",
                 ],
             },
+            "kappa_star_le_half_no_enclosure": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): V(q) < 1/2 for EVERY q > 0 "
+                           "and every root of G q, hence kappa* = sup_q V(q) <= 1/2, "
+                           "WITHOUT any enclosure of the critical q and without interval "
+                           "arithmetic, decide, or certificates. CriticalRoot's docstring "
+                           "states that taking the supremum needs the enclosure (which "
+                           "lives in the Rocq layer) because Lean has no rigorous interval "
+                           "arithmetic; that is true for the VALUE of kappa* but not for "
+                           "an UPPER BOUND. Proof: rho_c > 1 (G q 1 = 1 + 2^{-q} > 1); 1 + "
+                           "rho < 2 rho gives (1+rho)^{-q} > (2 rho)^{-q} = 2^{-q} "
+                           "rho^{-q}, so the root equation forces rho^{-q}(1 + 2^{-q}) < "
+                           "1, i.e. rho^q > 1 + 2^{-q}; AM-GM ((1 - 2^{-q/2})^2 >= 0) "
+                           "gives 1 + 2^{-q} >= 2^{1 - q/2}; taking logs yields log rho / "
+                           "log 2 > 1/q - 1/2. Purpose: discharges the constant inequality "
+                           "C7 (kappa* + eps0 <= log2(e ln 2) = 0.9139) of the upper-bound "
+                           "programme for c <= 2^{1+kappa*}, since 1/2 + 1/100 < 0.9139. "
+                           "See notes/lemma_U_clean.md in the companion manuscript "
+                           "repository. "),
+                "theorems": [
+                    "RevPebbling.KappaLtHalf.root_gt_one",
+                    "RevPebbling.KappaLtHalf.one_add_two_rpow_lt",
+                    "RevPebbling.KappaLtHalf.two_rpow_le_one_add",
+                    "RevPebbling.KappaLtHalf.V_lt_half",
+                ],
+            },
+            "kappa_star_lower_from_one_rational_q": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): the two constant "
+                           "inequalities C2 and C3 of the upper-bound programme for c <= "
+                           "2^{1+kappa*}, in log-free form, from a LOWER bound on kappa* "
+                           "obtained at a SINGLE rational q0 = 3/2 (kappa* = sup_q V(q) >= "
+                           "V(q0), so no enclosure of the critical q* is needed). Rational "
+                           "witness rho_c(3/2) <= 6307/5000 via root_le_of_G_le with G "
+                           "(3/2) (6307/5000) <= 1, each term bounded by one integer "
+                           "comparison in the style of CriticalRootRat (x^{-3/2} <= p <=> "
+                           "1 <= p^2 x^3). C2 (q_hi kappa* > 1, q_hi = 16/5) becomes "
+                           "rho^48 < 2^17; C3 (2^{-1/q_h} < 1 - 2^{-kappa*}, q_h = 43/100) "
+                           "becomes 2^{-100/43} + rho * 2^{-2/3} < 1, using 2^{-V(3/2)} = "
+                           "rho * 2^{-2/3}. C4 (q_h H >= 1, H = 27/10) is pure arithmetic. "
+                           "Together with KappaLtHalf (C7) this discharges all four "
+                           "constant inequalities the chain uses, with no interval "
+                           "arithmetic. See notes/lemma_U_clean.md in the companion "
+                           "manuscript repository. "),
+                "theorems": [
+                    "RevPebbling.KappaLowerRat.two_rpow_neg_100_43_le",
+                    "RevPebbling.KappaLowerRat.two_rpow_neg_two_thirds_le",
+                    "RevPebbling.KappaLowerRat.G_at_witness_le_one",
+                    "RevPebbling.KappaLowerRat.root_le_witness",
+                    "RevPebbling.KappaLowerRat.C2_pow",
+                    "RevPebbling.KappaLowerRat.C3_sum_lt_one",
+                    "RevPebbling.KappaLowerRat.C4",
+                ],
+            },
+            "balance_identity_and_two_rpow_convexity": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): the balance identity "
+                           "t(delta*) = delta* - log2 rho (delta* = log2(1+rho), t(delta) "
+                           "= -log2(1 - 2^{-delta})), in the form delta* - t(delta*) + lam "
+                           "= 1/q when rho = 2^{1/q - lam}. This makes the hypothesis "
+                           "delta* > |t(delta*) - lam| of the margin lemma (Step 4 of "
+                           "Lemma U in the companion manuscript, notes/lemma_U_clean.md) "
+                           "hold UNCONDITIONALLY: the slack is 1/q when delta* >= 1/q and "
+                           "2 delta* - 1/q otherwise. An earlier numerical certifier "
+                           "computed that slack with delta and t at one lambda and the "
+                           "subtracted lambda at another, returning an UPPER bound where a "
+                           "lower one is needed; the identity removes the need for "
+                           "numerics there. Also 2^x - 1 >= x ln 2 (convexity of exp), "
+                           "which is the linear lower bound for the seam band 0 < zeta < "
+                           "lambda, where the margin is exactly 2^{q_h zeta} - 1. "),
+                "theorems": [
+                    "RevPebbling.BalanceIdentity.two_rpow_neg_balance",
+                    "RevPebbling.BalanceIdentity.t_eq_delta_sub_log",
+                    "RevPebbling.BalanceIdentity.delta_sub_t_add_lam",
+                    "RevPebbling.BalanceIdentity.two_rpow_sub_one_ge",
+                ],
+            },
+            "margin_lemma_transfer_steps": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): the three purely analytic "
+                           "facts that carry Steps 2 and 3 of the margin lemma (Lemma U, "
+                           "companion manuscript notes/lemma_U_clean.md), stated with no "
+                           "reference to the construction. Step 2: if |g s| <= M s on "
+                           "[0,S] then |int_0^S g| <= M S^2/2 (the factor 1/2 is what a "
+                           "LINEAR bound on the integrand buys over a constant one; the "
+                           "constant-bound version M S^2 would not suffice for the "
+                           "margin). Step 3a: 1 - k log 2 <= 2^{-k} for every real k, and "
+                           "its applied form 2^X - 2^X log 2 |K| <= 2^X 2^{-K}, which "
+                           "turns the multiplicative perturbation into an additive one. "
+                           "Step 3b: min a b - max al be <= min (a - al) (b - be), which "
+                           "handles the two branches of the split at once. None of the "
+                           "three mentions eps, which is why the resulting margin bound is "
+                           "uniform in eps. "),
+                "theorems": [
+                    "RevPebbling.MarginTransfer.one_sub_le_two_rpow_neg",
+                    "RevPebbling.MarginTransfer.two_rpow_shift_ge",
+                    "RevPebbling.MarginTransfer.min_sub_max_le",
+                    "RevPebbling.MarginTransfer.abs_integral_le_half_mul_sq",
+                ],
+            },
+            "margin_lemma_anchors_and_base": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): Steps 1 and 6 of the margin "
+                           "lemma (Lemma U, companion manuscript notes/lemma_U_clean.md) "
+                           "and Lemma 0. Step 1 (the pure-power reference): the step "
+                           "function of v^q is F q lam = G q (2^{1/q - lam}), so at lam = "
+                           "V q = 1/q - log2 rho_c the argument is exactly rho_c and F q "
+                           "(V q) = 1; everything hinges on 2^{log rho / log 2} = rho. "
+                           "Step 6 (where eps enters): V q0 <= kappa gives lam - V q0 >= "
+                           "eps for lam = kappa + eps, and margin >= B (lam - V q0) with B "
+                           ">= 0 becomes margin >= B eps — the only appearance of eps in "
+                           "the bound, and the reason it is linear in eps. Lemma 0 (the "
+                           "base is automatic): q >= q_h everywhere gives I(Delta) = "
+                           "int_0^Delta q >= q_h Delta, so Delta >= (S0-1)/q_h already "
+                           "yields I(Delta) >= S0 - 1 with NO computation, contrary to the "
+                           "earlier write-up which assumed a numerical check was needed. "),
+                "theorems": [
+                    "RevPebbling.MarginAnchors.two_rpow_log_div_log",
+                    "RevPebbling.MarginAnchors.F_at_V_eq_one",
+                    "RevPebbling.MarginAnchors.eps_le_lam_sub_V",
+                    "RevPebbling.MarginAnchors.margin_ge_mul_eps",
+                    "RevPebbling.MarginAnchors.integral_ge_of_ge",
+                    "RevPebbling.MarginAnchors.base_automatic",
+                ],
+            },
+            "margin_lemma_step5_derivative_free": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): Step 5 of the margin lemma "
+                           "(Lemma U, companion manuscript notes/lemma_U_clean.md) WITHOUT "
+                           "derivatives. The write-up derives the linear lower bound on F "
+                           "q lam - 1 from convexity of F in lam (equivalently "
+                           "monotonicity of dF/dlam), which in Lean would need a second "
+                           "derivative and the side condition q rho >= 1. None of that is "
+                           "necessary: F q lam = 2^{q lam - 1} + (1 + 2^{1/q - lam})^{-q}, "
+                           "whose first term is an exponential in lam (tangent line = the "
+                           "already-proved 2^x - 1 >= x log 2, rescaled) and whose second "
+                           "term is INCREASING in lam (lam up => 2^{1/q-lam} down => "
+                           "(1+.)^{-q} up), so it only helps. Hence F q lam - F q V >= "
+                           "2^{qV-1} q log 2 (lam - V) for lam >= V. The constant is "
+                           "smaller than the true dF/dlam at V (0.57 of it at q = 0.43), "
+                           "which is paid for by a smaller slope schedule gamma_j — design "
+                           "data, costing only a longer arc and a larger S0. With the "
+                           "schedule rebuilt from this weaker constant the certified "
+                           "bracket is still positive (>= 0.04) and S0(eps) is still "
+                           "finite (150 / 514 / 2159 / 12280 / 86433 for eps = 1e-2 .. "
+                           "1e-6). "),
+                "theorems": [
+                    "RevPebbling.MarginStep5.second_term_mono",
+                    "RevPebbling.MarginStep5.first_term_tangent",
+                    "RevPebbling.MarginStep5.step5_linear_lower",
+                    "RevPebbling.MarginStep5.step5_of_F_eq_one",
+                ],
+            },
+            "subsolution_double_induction": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): Lemma 2 of the upper-bound "
+                           "programme (companion manuscript notes/lemma_U_clean.md) — the "
+                           "double induction that turns a base and a step into Psi S v <= "
+                           "C S v for all S >= S0 and all v. Stated abstractly over any C "
+                           "obeying the split recursion, then instantiated at the real C S "
+                           "v = countLe (rowIter S) v via count_recursion_split. The outer "
+                           "induction is on S (Nat.le_induction), the inner one is strong "
+                           "induction on v; what makes the inner recursion well-founded is "
+                           "w < v, i.e. u >= 1. The v = 1 clause Psi (S+1) 1 <= 1 + Psi S "
+                           "1 is a SEPARATE hypothesis because 1 has no split into two "
+                           "positive parts — omitting it makes the lemma false (a "
+                           "counterexample is recorded in the manuscript). The matching "
+                           "count inequality 1 + C s 1 <= C (s+1) 1 comes from the "
+                           "recursion at u = 1, w = 0 with the min dropped by min >= 0, so "
+                           "no fact about C s 0 is needed. NOTE the split ordering is "
+                           "Lean's, min (Psi S u) (Psi (S+1) w) with u at the lower level; "
+                           "the manuscript exchanges u and w. subsolution_le_of_step "
+                           "depends on propext and Quot.sound only (not Classical.choice). "),
+                "theorems": [
+                    "RevPebbling.Subsolution.subsolution_le_of_step",
+                    "RevPebbling.Subsolution.subsolution_le_count",
+                ],
+            },
+            "floor_absorption_lemma_V4": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): Lemma V4 of the upper-bound "
+                           "programme (companion manuscript notes/lemma_U_clean.md) — the "
+                           "floors in Psi_S(v) = floor(cap_S 2^{-I}) cost nothing as soon "
+                           "as the RELATIVE margin mu satisfies mu x >= 1, where x is the "
+                           "real value floored on the left. The bookkeeping is exact and "
+                           "off by a factor of two if the +1 is misplaced: the REAL "
+                           "statement drops the +1 of the count recursion (the "
+                           "conservative side), x(1+mu) <= y1 + ym, while the INTEGER "
+                           "statement keeps it, floor x <= 1 + floor y1 + floor ym. Two "
+                           "floors on the right lose at most 1 each, so the right side is "
+                           "> y1 + ym - 1 >= x + mu x - 1, and mu x >= 1 brings that back "
+                           "to >= x >= floor x. The +1 of the recursion buys exactly the "
+                           "one unit that makes mu x >= 1 (rather than >= 2) sufficient. "
+                           "Also floor_min, which lets the min of the two branches be "
+                           "taken before or after flooring. "),
+                "theorems": [
+                    "RevPebbling.FloorAbsorb.floor_min",
+                    "RevPebbling.FloorAbsorb.floor_absorb",
+                    "RevPebbling.FloorAbsorb.floor_absorb_min",
+                    "RevPebbling.FloorAbsorb.mu_mul_ge_one_of_ge",
+                ],
+            },
+            "cap_identity_and_self_closing": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): Lemmas V0 and V3 of the "
+                           "upper-bound programme (companion manuscript "
+                           "notes/lemma_U_clean.md), both exact rather than estimates. V0 "
+                           "(the cap): at the cap all three terms of the step are caps and "
+                           "the step reads cap_S <= 1 + cap_{S-1} + cap_{S-1}; since "
+                           "2^{n+1} - 1 = 1 + (2^n - 1) + (2^n - 1) is an IDENTITY, the "
+                           "cap zone closes with equality and the +1 of the recursion is "
+                           "exactly what closes it (changing the definition of cap breaks "
+                           "it immediately). V3 (self-closing): below the self-closing "
+                           "depth both levels are on the q_hi ramp and the step "
+                           "degenerates to Psi_S(v) <= Psi_{S-1}(v), needing only cap_S "
+                           "2^{-Theta} <= cap_{S-1} with Theta = I_S(zeta) - I_{S-1}(zeta "
+                           "- lam); since cap_S = 2 cap_{S-1} + 1 this is Theta >= 1 + "
+                           "log2(1 + 1/(2 cap_{S-1})), which tends to 1. For a constant "
+                           "eps both levels carry the same shape so Theta = q_hi lam "
+                           "exactly, and Theta > 1 is condition C2. cap_step depends on "
+                           "propext and Quot.sound only. "),
+                "theorems": [
+                    "RevPebbling.CapAndSelfClosing.cap_step",
+                    "RevPebbling.CapAndSelfClosing.cap_step_le",
+                    "RevPebbling.CapAndSelfClosing.self_closing",
+                    "RevPebbling.CapAndSelfClosing.self_closing_cap",
+                    "RevPebbling.CapAndSelfClosing.self_closing_floor",
+                ],
+            },
+            "seam_band_lemma_V0prime": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): the exact part of Lemma V0' "
+                           "of the upper-bound programme (companion manuscript "
+                           "notes/lemma_U_clean.md) — the band 0 < zeta < lam between the "
+                           "cap (V0, zeta <= 0) and the margin lemma (U, zeta >= lam, "
+                           "whose window reaches back lam). That band was NOBODY's in the "
+                           "first write-up; the gap was found by comparing the certified "
+                           "bound with a direct measurement, and its cause was that the "
+                           "flat head was too short (H = 12/5 against a window of lam + "
+                           "1/q_h = 2.6673). With H >= lam + 1/q_h the whole window sits "
+                           "inside the flat head q = q_h, so every exponent is LINEAR in "
+                           "zeta. Choosing delta = 1/q_h - zeta makes both branch "
+                           "exponents equal A = -1 + q_h zeta, so the two terms add to "
+                           "2^{q_h zeta} exactly and margin = 2^{q_h zeta} - 1 >= q_h log "
+                           "2 zeta. No interval arithmetic and no numerics on that "
+                           "sub-band. (The rest of the band up to lam is certified "
+                           "numerically by m63_seam_band.py at margin >= 0.155 zeta "
+                           "uniformly in eps.) "),
+                "theorems": [
+                    "RevPebbling.SeamBand.branch_sum",
+                    "RevPebbling.SeamBand.band_margin_ge",
+                    "RevPebbling.SeamBand.head_long_enough",
+                ],
+            },
+            "readout_lemma_1": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): Lemma 1 of the upper-bound "
+                           "programme (companion manuscript notes/lemma_U_clean.md) — "
+                           "reading c <= 2^{1+lam} off an exponential bound M_S <= K "
+                           "2^{lam S}. The content is the exact identity (log K + lam S "
+                           "log 2)/(S-1) = lam log 2 + (log K + lam log 2)/(S-1): the "
+                           "whole S-dependence sits in one 1/(S-1) term, WHATEVER K is, "
+                           "and that term tends to 0. So K never has to be estimated — "
+                           "which is why the front offset Delta may be taken as large as "
+                           "Lemma 0 wants (Delta >= (S0-1)/q_h) at no cost to c, and why "
+                           "the polynomial factor S from summing m_j is harmless. Combined "
+                           "with c = 2d and d = lim M_S^{1/(S-1)} "
+                           "(Unconditional.tendsto_rowMax_root_uncond) this gives c <= "
+                           "2^{1+lam}. "),
+                "theorems": [
+                    "RevPebbling.Readout.bound_split",
+                    "RevPebbling.Readout.log_root_le",
+                    "RevPebbling.Readout.remainder_tendsto_zero",
+                    "RevPebbling.Readout.bound_tendsto",
+                ],
+            },
+            "margin_bracket_positive_analytic": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): the positivity of the "
+                           "margin bracket B of Lemma U (companion manuscript "
+                           "notes/lemma_U_clean.md) for EVERY q in [q_h, q_hi], proved "
+                           "ANALYTICALLY — replacing a ball-arithmetic scan with adaptive "
+                           "subdivision (35 leaves) by an elementary inequality. Two "
+                           "observations collapse it. (1) log 2 cancels: with the "
+                           "derivative-free constant of MarginStep5, (dF/dlam)(q) = q log "
+                           "2 rho_c^{-q} and the subtracted term carries the same log 2, "
+                           "so B > 0 is q rho_c^{-q} > (gamma_bar/2) v_A(q) rho; with the "
+                           "SIMPLE schedule gamma(q) = q/10 (no band table) the q cancels "
+                           "too. (2) The root equation bounds both powers by 1/2: since 1 "
+                           "+ rho > rho > 0 and x -> x^{-q} is antitone, 1 = rho^{-q} + "
+                           "(1+rho)^{-q} < 2 rho^{-q}, so rho^{-q} > 1/2 and (1+rho)^{-q} "
+                           "< 1/2. The left side is then > 1/2 while the right side is "
+                           "capped at 0.2393 by the rational bounds lam <= 342/1000, q <= "
+                           "16/5, delta^2 <= 612/100, rho <= 3/2 (using 2^{1/10} <= 11/10, "
+                           "one rational comparison). Margin 0.26. No scan, no interval "
+                           "arithmetic, no certificate. UPDATE (same day, after an "
+                           "independent check flagged lam <= 342/1000 as an UNDISCHARGED "
+                           "assumption — KappaLtHalf gives only kappa* < 1/2): the "
+                           "constant is relaxed to lam <= 51/100, which IS supplied (kappa "
+                           "<= 1/2 from V_lt_half, plus eps <= 1/100). The bracket still "
+                           "clears: with 2^{2/3} <= 8/5 the right side is capped at 0.2607 "
+                           "< 1/2. bracket_pos_of_kappa states the result with the lam "
+                           "hypothesis discharged from kappa <= 1/2 and eps <= 1/100. "),
+                "theorems": [
+                    "RevPebbling.BracketPositive.half_lt_rpow",
+                    "RevPebbling.BracketPositive.rpow_succ_lt_half",
+                    "RevPebbling.BracketPositive.two_rpow_two_thirds_le",
+                    "RevPebbling.BracketPositive.two_rpow_factor_le",
+                    "RevPebbling.BracketPositive.bracket_pos",
+                    "RevPebbling.BracketPositive.lam_le_of_kappa_le_half",
+                    "RevPebbling.BracketPositive.bracket_pos_of_kappa",
+                ],
+            },
+            "arc_length_and_S0_explicit": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): the third computational "
+                           "ingredient of the upper-bound programme (companion manuscript "
+                           "notes/lemma_U_clean.md) — S0(eps) is FINITE and EXPLICIT. "
+                           "Lemma V4 needs S >= 1 + I(zeta_sc) + log2(1/mu), so only the "
+                           "finiteness of I(zeta_sc) matters; its size never enters the "
+                           "conclusion c <= 2^{1+kappa*+eps}. With the simple schedule "
+                           "gamma(q) = q/10 of BracketPositive the slope on the ramp obeys "
+                           "dq/dzeta = gamma(q)(lam - V(q)) >= (q_h/10) eps (since q >= "
+                           "q_h there and lam - V(q) >= eps by Step 6), so the climb from "
+                           "q_h to q_hi takes at most 10 (q_hi - q_h)/(q_h eps) octaves, "
+                           "and I(zeta_sc) <= q_hi zeta_sc. Both are explicit rational "
+                           "expressions in eps; the 1/eps is harmless because only S0(eps) "
+                           "< infinity for each fixed eps is needed. The integral half (m "
+                           "T <= int_0^T q' from q' >= m) is "
+                           "MarginAnchors.integral_ge_of_ge; this stage adds the "
+                           "arithmetic packaging and the matching upper bound I <= q_hi "
+                           "zeta. ADDED 2026-08-20 (later session): arc_time_bound took "
+                           "hclimb, which is very nearly its own conclusion, and section 2 "
+                           "of the manuscript bounds the profile's rate only from above. "
+                           "climb_of_rate supplies the missing premise honestly: a rate "
+                           "LOWER bound on the ramp (a property of the schedule design) "
+                           "becomes hclimb by the fundamental theorem of calculus. "),
+                "theorems": [
+                    "RevPebbling.ArcLength.time_le_of_slope_ge",
+                    "RevPebbling.ArcLength.arc_time_bound",
+                    "RevPebbling.ArcLength.integral_le_of_le",
+                    "RevPebbling.ArcLength.S0_explicit",
+                    "RevPebbling.ArcLength.climb_of_rate",
+                    "RevPebbling.ArcLength.arc_time_bound_of_rate",
+                ],
+            },
+            "band_linear_bound_from_C3": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): the band 0 < zeta < lam of "
+                           "the upper-bound programme (companion manuscript "
+                           "notes/lemma_U_clean.md) in ONE piece, and it rests on the "
+                           "corner condition C3 alone. At the BALANCE split the two "
+                           "branches coincide (2^{-t} = rho_h/(1+rho_h) makes 2^{B2} = "
+                           "(1+rho_h)^{-q_h} = 2^{B1}), so margin(zeta) = 2^{q_h zeta - 1} "
+                           "+ (1+rho_h)^{-q_h} - 1 with only the FIRST term depending on "
+                           "zeta. The whole band is therefore controlled by the single "
+                           "number (1+rho_h)^{-q_h}, and (1+rho_h)^{-q_h} >= 1/2 <=> 1 + "
+                           "rho_h <= 2^{1/q_h} <=> 2^{-1/q_h} <= 1 - 2^{-lam} = C3. Given "
+                           "C3, margin(zeta) >= 2^{q_h zeta - 1} - 1/2 = (1/2)(2^{q_h "
+                           "zeta} - 1) >= (q_h log 2 / 2) zeta, the constant being 0.1490 "
+                           "at q_h = 43/100. No scan and no interval arithmetic; the "
+                           "numerical certificate (m63_seam_band.py, margin >= 0.155 zeta) "
+                           "is a sharper version of the same bound. "),
+                "theorems": [
+                    "RevPebbling.BandFromC3.second_branch_ge_half",
+                    "RevPebbling.BandFromC3.band_linear_lower",
+                ],
+            },
+            "readout_bridge_counts_to_rowMax": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): the bridge between the "
+                           "count statement the subsolution delivers and the rowMax "
+                           "statement the growth constant is read off. "
+                           "Subsolution.subsolution_le_count gives Psi_S(v) <= countLe "
+                           "(rowIter S) v (a statement about COUNTS), while "
+                           "Unconditional.tendsto_rowMax_root_uncond says rowMax s ^ "
+                           "(1/(s+1)) -> c/2 (the LARGEST ENTRY). The step between them: "
+                           "row.length <= countLe row v implies listMax row <= v (if v "
+                           "already counts every entry, no entry exceeds v). Composed with "
+                           "the subsolution bound: whenever the subsolution reaches the "
+                           "full row length at v, the row maximum is at most v — and that "
+                           "v is the readout point zeta_half = 1/q_h of Lemma 1. ADDED "
+                           "2026-08-20 (later session): the manuscript's readout runs at "
+                           "the row's MIDPOINT, where the subsolution is only floor(cap/2) "
+                           "and the length <= Psi hypothesis above is FALSE. "
+                           "getElem_le_of_countLe is the quantile statement that does hold "
+                           "(in a non-decreasing list, k+1 <= countLe l v forces l[k] <= "
+                           "v); midv_le_of_subsolution applies it at index 2^s - 2 (s >= 1 "
+                           "is required: at s = 0 the row is [1] and the claim is false); "
+                           "rowMax_le_of_midv_le telescopes the midpoints through "
+                           "rowMax_succ (M_S = m_S + M_{S-1}) into rowMax s <= 1 + s V. "),
+                "theorems": [
+                    "RevPebbling.ReadoutBridge.listMax_le_of_forall",
+                    "RevPebbling.ReadoutBridge.listMax_le_of_countLe",
+                    "RevPebbling.ReadoutBridge.rowMax_le_of_subsolution",
+                    "RevPebbling.ReadoutBridge.getElem_le_of_countLe",
+                    "RevPebbling.ReadoutBridge.midv_le_of_subsolution",
+                    "RevPebbling.ReadoutBridge.rowMax_zero",
+                    "RevPebbling.ReadoutBridge.rowMax_le_of_midv_le",
+                    "RevPebbling.ReadoutBridge.rowMax_le_of_midpoint_subsolution",
+                ],
+            },
+            "upper_bound_pieces_not_yet_composed": {
+                "status": "carried",
+                "scope": ("STATUS NOTE (this work, 2026-08-20), NOT a theorem: the "
+                           "fourteen files added for the upper-bound programme "
+                           "(KappaLtHalf, KappaLowerRat, BalanceIdentity, MarginTransfer, "
+                           "MarginAnchors, MarginStep5, Subsolution, FloorAbsorb, "
+                           "CapAndSelfClosing, SeamBand, Readout, BracketPositive, "
+                           "ArcLength, BandFromC3, ReadoutBridge) are each proved, but "
+                           "they are NOT yet composed into c <= 2^{1+kappa*}. An "
+                           "independent check on 2026-08-20 found: (1) the shape Psi_S(v) "
+                           "= floor(cap_S 2^{-I_S(zeta)}), the profile I and cap have NO "
+                           "definition anywhere in RevPebbling, so the hypotheses "
+                           "hbase/hone/hstep of Subsolution.subsolution_le_of_step cannot "
+                           "even be stated for the real construction; the margin files are "
+                           "free-variable real inequalities standing alone. (2) Readout "
+                           "and BracketPositive are imported by nothing but the root "
+                           "module. (3) FloorAbsorb concludes about Int.floor while "
+                           "Subsolution wants Psi : N -> N -> N; the bridge is missing. "
+                           "(4) BracketPositive.bracket_pos assumes lam <= 342/1000 (i.e. "
+                           "an upper bound on sup V) which no theorem here supplies — "
+                           "KappaLtHalf gives only kappa* < 1/2. (5) "
+                           "ArcLength.arc_time_bound assumes hclimb, which is what should "
+                           "be derived. (6) ReadoutBridge needs length <= Psi (the cap), "
+                           "whereas the manuscript's readout uses the midpoint 2^{S-2}-1 "
+                           "where Psi = floor(cap/2) < length. What IS closed: the count "
+                           "side, Subsolution's hrec matches "
+                           "CountRecursion.count_recursion_split verbatim. "),
+                "theorems": [
+                ],
+            },
+            "shape_definition_and_cap_step": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-20): the shape itself. An "
+                           "independent check found that Psi, I and cap had NO definition "
+                           "anywhere, so the hypotheses of "
+                           "Subsolution.subsolution_le_of_step could not even be STATED "
+                           "for the real construction and the analytic files stood alone "
+                           "as free-variable inequalities. This stage defines cap S = "
+                           "2^{S-1} - 1 and Psi I X S v = floor_N (cap S * 2^{-I (X S - "
+                           "log v / log 2)}), with I (the profile integral) and X (the "
+                           "front) as parameters, and proves the CAP case of the step for "
+                           "the actual Psi: when all three arguments sit above their "
+                           "fronts (I = 0 there) the step is the cap identity 2^{n+1} - 1 "
+                           "= 1 + (2^n - 1) + (2^n - 1) and closes with equality, the min "
+                           "over the two levels being the lower one since cap is "
+                           "increasing. Also cap (s+2) = (rowIter s).length, which is what "
+                           "ReadoutBridge needs. Also proved for the actual Psi: (a) the "
+                           "SELF-CLOSING step — deep enough the level S+1 value is already "
+                           "below the level S value, so the step holds with ANY split and "
+                           "the min is pure slack; (b) the Int.floor -> N bridge "
+                           "nat_floor_absorb, since FloorAbsorb concludes about Int.floor "
+                           "while the subsolution is stated with Nat.floor (for "
+                           "nonnegative arguments the two agree); (c) margin_step_Psi, the "
+                           "step in ANY region where the real margin condition mu x >= 1 "
+                           "and x(1+mu) <= y1 + min(y2,y3) holds, the shape values being "
+                           "nonnegative. A concrete profile is now given: Ihead q_h H, the "
+                           "flat head q = q_h on [0,H], capped before and after — the part "
+                           "the band 0 < zeta < lam lives in. AND a fact the idealised "
+                           "analysis quietly ignored: cap S / cap (S+1) is STRICTLY below "
+                           "1/2 (relative deficit 1/(2^S - 1)), so the idealised ratio 1/2 "
+                           "OVERSTATES the margin. That is negligible against the band's "
+                           "0.149 zeta once zeta >= z_cap, but it is exactly why the cap "
+                           "zone zeta <= z_cap must be handled by V0's INTEGER argument "
+                           "rather than the idealised one. One of the missing links is now "
+                           "closed: self_closing_hyp DERIVES the real inequality that "
+                           "self_closing_step_Psi needs from "
+                           "CapAndSelfClosing.self_closing (with A = cap (S+1), B = cap S, "
+                           "Theta = I(zeta) - I(zeta-lam)), so the analytic file is "
+                           "actually USED by a statement about the shape; "
+                           "self_closing_step_of_transfer packages the step with its "
+                           "hypothesis reduced to the transfer condition Theta >= "
+                           "log2(cap(S+1)/cap S). NOT done: the same discharge for the "
+                           "band and arc regions, i.e. deriving margin_step_Psi's "
+                           "hypothesis from BracketPositive / BandFromC3 / SeamBand with "
+                           "the concrete Ihead. ADDED 2026-08-20 (later session): the "
+                           "band's real margin condition in closed form (band_real_margin: "
+                           "the step inequality is exactly (1+mu)(1 + 1/(2 cap S)) <= "
+                           "2^{q_h zeta}, the 1/(2 cap S) being the cap-ratio deficit the "
+                           "idealised analysis drops), the band step for the real Psi and "
+                           "for the concrete flat head (band_step_Psi / band_step_Ihead, "
+                           "where C4 turns zeta_w <= 1/q_h into zeta_w <= H), and THE "
+                           "GENERAL BRIDGE step_of_idealMargin: an idealised margin "
+                           "clearing the cap-ratio deficit gives the real step in every "
+                           "region, so each region's only remaining obligation is a lower "
+                           "bound on idealMargin. "),
+                "theorems": [
+                    "RevPebbling.Shape.Psi_eq_cap",
+                    "RevPebbling.Shape.cap_step_Psi",
+                    "RevPebbling.Shape.cap_eq_rowIter_length",
+                    "RevPebbling.Shape.self_closing_step_Psi",
+                    "RevPebbling.Shape.nat_floor_absorb",
+                    "RevPebbling.Shape.margin_step_Psi",
+                    "RevPebbling.Shape.Ihead_of_nonpos",
+                    "RevPebbling.Shape.Ihead_of_mem",
+                    "RevPebbling.Shape.cap_ratio_lt_half",
+                    "RevPebbling.Shape.self_closing_hyp",
+                    "RevPebbling.Shape.self_closing_step_of_transfer",
+                    "RevPebbling.Shape.band_real_margin",
+                    "RevPebbling.Shape.band_real_margin_of_linear",
+                    "RevPebbling.Shape.cap_succ",
+                    "RevPebbling.Shape.band_step_Psi",
+                    "RevPebbling.Shape.band_step_Ihead",
+                    "RevPebbling.Shape.step_of_idealMargin",
+                    "RevPebbling.Shape.step_of_margin_lower",
+                ],
+            },
     }
 
     # ---- axiom audit for every listed theorem -----------------------
