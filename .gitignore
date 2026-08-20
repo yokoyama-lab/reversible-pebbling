@@ -11,3 +11,6 @@ rocq/.*.aux
 rocq/.nra.cache
 rocq/.lia.cache
 rocq/gen/__pycache__/
+
+# CLAUDE.md から退避した旧 handoff（絶対パスを含む・ローカル専用）
+.claude/handoff-*.md
