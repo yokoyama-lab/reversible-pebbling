@@ -1509,6 +1509,20 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "readout_lemma_1": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): Lemma 1 of the upper-bound programme (companion manuscript notes/lemma_U_clean.md) — reading c <= 2^{1+lam} off an exponential bound M_S <= K 2^{lam S}. The content is the exact identity (log K + lam S log 2)/(S-1) = lam log 2 + (log K + lam log 2)/(S-1): the whole S-dependence sits in one 1/(S-1) term, WHATEVER K is, and that term tends to 0. So K never has to be estimated — which is why the front offset Delta may be taken as large as Lemma 0 wants (Delta >= (S0-1)/q_h) at no cost to c, and why the polynomial factor S from summing m_j is harmless. Combined with c = 2d and d = lim M_S^{1/(S-1)} (Unconditional.tendsto_rowMax_root_uncond) this gives c <= 2^{1+lam}.",
+      "theorems": [
+        "RevPebbling.Readout.bound_split",
+        "RevPebbling.Readout.log_root_le",
+        "RevPebbling.Readout.remainder_tendsto_zero",
+        "RevPebbling.Readout.bound_tendsto"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }

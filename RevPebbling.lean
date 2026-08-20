@@ -53,6 +53,7 @@ import RevPebbling.Subsolution
 import RevPebbling.FloorAbsorb
 import RevPebbling.CapAndSelfClosing
 import RevPebbling.SeamBand
+import RevPebbling.Readout
 import RevPebbling.CriticalRoot197130
 import RevPebbling.CriticalRoot8324
 import RevPebbling.CriticalRoot25366
