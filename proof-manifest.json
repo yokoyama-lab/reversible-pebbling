@@ -1496,6 +1496,19 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "seam_band_lemma_V0prime": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): the exact part of Lemma V0' of the upper-bound programme (companion manuscript notes/lemma_U_clean.md) — the band 0 < zeta < lam between the cap (V0, zeta <= 0) and the margin lemma (U, zeta >= lam, whose window reaches back lam). That band was NOBODY's in the first write-up; the gap was found by comparing the certified bound with a direct measurement, and its cause was that the flat head was too short (H = 12/5 against a window of lam + 1/q_h = 2.6673). With H >= lam + 1/q_h the whole window sits inside the flat head q = q_h, so every exponent is LINEAR in zeta. Choosing delta = 1/q_h - zeta makes both branch exponents equal A = -1 + q_h zeta, so the two terms add to 2^{q_h zeta} exactly and margin = 2^{q_h zeta} - 1 >= q_h log 2 zeta. No interval arithmetic and no numerics on that sub-band. (The rest of the band up to lam is certified numerically by m63_seam_band.py at margin >= 0.155 zeta uniformly in eps.)",
+      "theorems": [
+        "RevPebbling.SeamBand.branch_sum",
+        "RevPebbling.SeamBand.band_margin_ge",
+        "RevPebbling.SeamBand.head_long_enough"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
