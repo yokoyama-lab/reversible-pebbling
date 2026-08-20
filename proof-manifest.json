@@ -1380,6 +1380,23 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "kappa_star_lower_from_one_rational_q": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): the two constant inequalities C2 and C3 of the upper-bound programme for c <= 2^{1+kappa*}, in log-free form, from a LOWER bound on kappa* obtained at a SINGLE rational q0 = 3/2 (kappa* = sup_q V(q) >= V(q0), so no enclosure of the critical q* is needed). Rational witness rho_c(3/2) <= 6307/5000 via root_le_of_G_le with G (3/2) (6307/5000) <= 1, each term bounded by one integer comparison in the style of CriticalRootRat (x^{-3/2} <= p <=> 1 <= p^2 x^3). C2 (q_hi kappa* > 1, q_hi = 16/5) becomes rho^48 < 2^17; C3 (2^{-1/q_h} < 1 - 2^{-kappa*}, q_h = 43/100) becomes 2^{-100/43} + rho * 2^{-2/3} < 1, using 2^{-V(3/2)} = rho * 2^{-2/3}. C4 (q_h H >= 1, H = 27/10) is pure arithmetic. Together with KappaLtHalf (C7) this discharges all four constant inequalities the chain uses, with no interval arithmetic. See notes/lemma_U_clean.md in the companion manuscript repository.",
+      "theorems": [
+        "RevPebbling.KappaLowerRat.two_rpow_neg_100_43_le",
+        "RevPebbling.KappaLowerRat.two_rpow_neg_two_thirds_le",
+        "RevPebbling.KappaLowerRat.G_at_witness_le_one",
+        "RevPebbling.KappaLowerRat.root_le_witness",
+        "RevPebbling.KappaLowerRat.C2_pow",
+        "RevPebbling.KappaLowerRat.C3_sum_lt_one",
+        "RevPebbling.KappaLowerRat.C4"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
