@@ -1552,6 +1552,18 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "band_linear_bound_from_C3": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): the band 0 < zeta < lam of the upper-bound programme (companion manuscript notes/lemma_U_clean.md) in ONE piece, and it rests on the corner condition C3 alone. At the BALANCE split the two branches coincide (2^{-t} = rho_h/(1+rho_h) makes 2^{B2} = (1+rho_h)^{-q_h} = 2^{B1}), so margin(zeta) = 2^{q_h zeta - 1} + (1+rho_h)^{-q_h} - 1 with only the FIRST term depending on zeta. The whole band is therefore controlled by the single number (1+rho_h)^{-q_h}, and (1+rho_h)^{-q_h} >= 1/2 <=> 1 + rho_h <= 2^{1/q_h} <=> 2^{-1/q_h} <= 1 - 2^{-lam} = C3. Given C3, margin(zeta) >= 2^{q_h zeta - 1} - 1/2 = (1/2)(2^{q_h zeta} - 1) >= (q_h log 2 / 2) zeta, the constant being 0.1490 at q_h = 43/100. No scan and no interval arithmetic; the numerical certificate (m63_seam_band.py, margin >= 0.155 zeta) is a sharper version of the same bound.",
+      "theorems": [
+        "RevPebbling.BandFromC3.second_branch_ge_half",
+        "RevPebbling.BandFromC3.band_linear_lower"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
