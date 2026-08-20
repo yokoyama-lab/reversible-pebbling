@@ -288,6 +288,141 @@ theorem cap_succ (S : ℕ) (hS : 1 ≤ S) : cap (S + 1) = 2 * cap S + 1 := by
   simp only [Nat.add_sub_cancel]
   omega
 
+/-! ## The general bridge: idealised margin → the real step
+
+Every analytic file in this development bounds the **idealised margin**
+
+```
+margin = 2^A + min(2^{B₂}, 2^{B₁}) − 1,
+A = a − b − 1,   B₂ = a − c − 1,   B₁ = a − d
+```
+
+where `a, b, c, d` are the profile values at the four positions (parent,
+lower parent, lower child, upper child) and the `−1`s are the *idealised*
+cap ratio `cap S / cap (S+1) = 1/2`.  The real ratio is strictly smaller
+(`cap_ratio_lt_half`), so the idealised margin **overstates** the real
+one; the deficit is exactly the factor `1 + 1/(2·cap S)`.
+
+This section pays that deficit once and for all: an idealised margin of
+`μ` with `(1+μ_step)(1 + 1/(2·cap S)) ≤ 1 + μ` gives the real step.  Every
+region then only has to supply a lower bound on `idealMargin` — which is
+what `SeamBand`, `BandFromC3`, `BracketPositive` and `MarginStep5` do. -/
+
+/-- The idealised margin at the four profile values (`a` at the parent,
+`b` at the lower parent, `c` at the lower child, `d` at the upper child).
+The two `+1`s in the exponents are the idealised cap ratio `1/2`. -/
+noncomputable def idealMargin (a b c d : ℝ) : ℝ :=
+  (2 : ℝ) ^ (a - (b + 1)) + min ((2 : ℝ) ^ (a - (c + 1))) ((2 : ℝ) ^ (a - d)) - 1
+
+/-- **The bridge.**  An idealised margin large enough to absorb the
+cap-ratio deficit `1 + 1/(2·cap S)` gives the real step for `Ψ`.
+
+This is the statement the independent check (§4.5 of the manuscript)
+found missing: the analytic files bound `idealMargin`, the subsolution
+lemma needs the step, and nothing connected the two. -/
+theorem step_of_idealMargin {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ} {μ : ℝ}
+    (hS : 2 ≤ S)
+    (hμx : 1 ≤ μ * ((cap (S + 1) : ℝ)
+            * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log v / Real.log 2))))))
+    (hμ : (1 + μ) * (1 + 1 / (2 * (cap S : ℝ)))
+        ≤ 1 + idealMargin (I (X (S + 1) - (Real.log v / Real.log 2)))
+              (I (X S - (Real.log v / Real.log 2)))
+              (I (X S - (Real.log u / Real.log 2)))
+              (I (X (S + 1) - (Real.log w / Real.log 2)))) :
+    Psi I X (S + 1) v
+      ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) := by
+  set a := I (X (S + 1) - (Real.log v / Real.log 2)) with ha
+  set b := I (X S - (Real.log v / Real.log 2)) with hb
+  set c := I (X S - (Real.log u / Real.log 2)) with hc
+  set d := I (X (S + 1) - (Real.log w / Real.log 2)) with hd
+  have h1 : 1 ≤ cap S := by
+    unfold cap
+    have h2 : (2 : ℕ) ^ 1 ≤ 2 ^ (S - 1) := Nat.pow_le_pow_right (by norm_num) (by omega)
+    omega
+  have hc0 : (0 : ℝ) < (cap S : ℝ) := by exact_mod_cast h1
+  have hsucc : (cap (S + 1) : ℝ) = 2 * (cap S : ℝ) + 1 := by
+    have := cap_succ S (by omega)
+    exact_mod_cast this
+  -- shorthand
+  set c0 := (cap S : ℝ) with hc0def
+  have hP : (0 : ℝ) < (2 : ℝ) ^ (-a) := Real.rpow_pos_of_pos (by norm_num) _
+  -- `2^{−a} · 2^{a−y} = 2^{−y}` and `2^{−(y+1)} = 2^{−y}/2`
+  have hmul : ∀ y : ℝ, (2 : ℝ) ^ (-a) * (2 : ℝ) ^ (a - y) = (2 : ℝ) ^ (-y) := by
+    intro y
+    rw [← Real.rpow_add (by norm_num : (0:ℝ) < 2)]
+    congr 1
+    ring
+  have hhalf : ∀ y : ℝ, (2 : ℝ) ^ (-(y + 1)) = (2 : ℝ) ^ (-y) / 2 := by
+    intro y
+    have hone : (2 : ℝ) ^ (-1 : ℝ) = 1 / 2 := by
+      rw [Real.rpow_neg (by norm_num), Real.rpow_one]; norm_num
+    rw [show -(y + 1) = -y + (-1 : ℝ) by ring,
+      Real.rpow_add (by norm_num : (0:ℝ) < 2), hone]
+    ring
+  -- the hypothesis, with `idealMargin` unfolded
+  have hμ' : (1 + μ) * (1 + 1 / (2 * c0))
+      ≤ (2 : ℝ) ^ (a - (b + 1))
+        + min ((2 : ℝ) ^ (a - (c + 1))) ((2 : ℝ) ^ (a - d)) := by
+    unfold idealMargin at hμ; linarith
+  refine margin_step_Psi hμx ?_
+  rw [hsucc]
+  -- scale by `2c₀·2^{−a}`; `2c₀ + 1 = 2c₀(1 + 1/(2c₀))`
+  have hid : 2 * c0 + 1 = 2 * c0 * (1 + 1 / (2 * c0)) := by field_simp
+  have hbound : (2 * c0 + 1) * (2 : ℝ) ^ (-a) * (1 + μ)
+      ≤ 2 * c0 * (2 : ℝ) ^ (-a)
+        * ((2 : ℝ) ^ (a - (b + 1))
+            + min ((2 : ℝ) ^ (a - (c + 1))) ((2 : ℝ) ^ (a - d))) := by
+    have hnn : (0 : ℝ) ≤ 2 * c0 * (2 : ℝ) ^ (-a) := by positivity
+    have := mul_le_mul_of_nonneg_left hμ' hnn
+    calc (2 * c0 + 1) * (2 : ℝ) ^ (-a) * (1 + μ)
+        = 2 * c0 * (2 : ℝ) ^ (-a) * ((1 + μ) * (1 + 1 / (2 * c0))) := by
+          rw [hid]; ring
+      _ ≤ _ := this
+  -- evaluate the three products
+  have e1 : 2 * c0 * (2 : ℝ) ^ (-a) * (2 : ℝ) ^ (a - (b + 1)) = c0 * (2 : ℝ) ^ (-b) := by
+    rw [mul_assoc, hmul (b + 1), hhalf b]; ring
+  have e2 : 2 * c0 * (2 : ℝ) ^ (-a) * (2 : ℝ) ^ (a - (c + 1)) = c0 * (2 : ℝ) ^ (-c) := by
+    rw [mul_assoc, hmul (c + 1), hhalf c]; ring
+  have e3 : 2 * c0 * (2 : ℝ) ^ (-a) * (2 : ℝ) ^ (a - d) = 2 * c0 * (2 : ℝ) ^ (-d) := by
+    rw [mul_assoc, hmul d]
+  -- the scaled `min` is below both branches of the real `min`
+  have hmnn : (0 : ℝ) ≤ 2 * c0 * (2 : ℝ) ^ (-a) := by positivity
+  have hm1 : 2 * c0 * (2 : ℝ) ^ (-a)
+        * min ((2 : ℝ) ^ (a - (c + 1))) ((2 : ℝ) ^ (a - d))
+      ≤ c0 * (2 : ℝ) ^ (-c) := by
+    rw [← e2]
+    exact mul_le_mul_of_nonneg_left (min_le_left _ _) hmnn
+  have hm2 : 2 * c0 * (2 : ℝ) ^ (-a)
+        * min ((2 : ℝ) ^ (a - (c + 1))) ((2 : ℝ) ^ (a - d))
+      ≤ (2 * c0 + 1) * (2 : ℝ) ^ (-d) := by
+    have hle : 2 * c0 * (2 : ℝ) ^ (-a)
+          * min ((2 : ℝ) ^ (a - (c + 1))) ((2 : ℝ) ^ (a - d))
+        ≤ 2 * c0 * (2 : ℝ) ^ (-d) := by
+      rw [← e3]
+      exact mul_le_mul_of_nonneg_left (min_le_right _ _) hmnn
+    have hd0 : (0 : ℝ) < (2 : ℝ) ^ (-d) := Real.rpow_pos_of_pos (by norm_num) _
+    nlinarith
+  have hmin : 2 * c0 * (2 : ℝ) ^ (-a)
+        * min ((2 : ℝ) ^ (a - (c + 1))) ((2 : ℝ) ^ (a - d))
+      ≤ min (c0 * (2 : ℝ) ^ (-c)) ((2 * c0 + 1) * (2 : ℝ) ^ (-d)) := le_min hm1 hm2
+  nlinarith [hbound, e1, hmin]
+
+/-- The form each region uses: a lower bound `m` on the idealised margin,
+plus the cap-deficit condition, gives the step.  What remains for a region
+is exactly `m ≤ idealMargin ⋯` — the analytic content. -/
+theorem step_of_margin_lower {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ} {μ m : ℝ}
+    (hS : 2 ≤ S)
+    (hμx : 1 ≤ μ * ((cap (S + 1) : ℝ)
+            * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log v / Real.log 2))))))
+    (hdef : (1 + μ) * (1 + 1 / (2 * (cap S : ℝ))) ≤ 1 + m)
+    (hm : m ≤ idealMargin (I (X (S + 1) - (Real.log v / Real.log 2)))
+            (I (X S - (Real.log v / Real.log 2)))
+            (I (X S - (Real.log u / Real.log 2)))
+            (I (X (S + 1) - (Real.log w / Real.log 2)))) :
+    Psi I X (S + 1) v
+      ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) :=
+  step_of_idealMargin hS hμx (le_trans hdef (by linarith))
+
 /-! ## Assembling the band step: `band_real_margin` → `margin_step_Psi` -/
 
 /-- **The band step, for the actual `Ψ` and an abstract profile.**  In the
