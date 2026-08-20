@@ -1526,13 +1526,15 @@
     },
     "margin_bracket_positive_analytic": {
       "status": "proved_general",
-      "scope": "UNBOUNDED (this work, 2026-08-20): the positivity of the margin bracket B of Lemma U (companion manuscript notes/lemma_U_clean.md) for EVERY q in [q_h, q_hi], proved ANALYTICALLY — replacing a ball-arithmetic scan with adaptive subdivision (35 leaves) by an elementary inequality. Two observations collapse it. (1) log 2 cancels: with the derivative-free constant of MarginStep5, (dF/dlam)(q) = q log 2 rho_c^{-q} and the subtracted term carries the same log 2, so B > 0 is q rho_c^{-q} > (gamma_bar/2) v_A(q) rho; with the SIMPLE schedule gamma(q) = q/10 (no band table) the q cancels too. (2) The root equation bounds both powers by 1/2: since 1 + rho > rho > 0 and x -> x^{-q} is antitone, 1 = rho^{-q} + (1+rho)^{-q} < 2 rho^{-q}, so rho^{-q} > 1/2 and (1+rho)^{-q} < 1/2. The left side is then > 1/2 while the right side is capped at 0.2393 by the rational bounds lam <= 342/1000, q <= 16/5, delta^2 <= 612/100, rho <= 3/2 (using 2^{1/10} <= 11/10, one rational comparison). Margin 0.26. No scan, no interval arithmetic, no certificate.",
+      "scope": "UNBOUNDED (this work, 2026-08-20): the positivity of the margin bracket B of Lemma U (companion manuscript notes/lemma_U_clean.md) for EVERY q in [q_h, q_hi], proved ANALYTICALLY — replacing a ball-arithmetic scan with adaptive subdivision (35 leaves) by an elementary inequality. Two observations collapse it. (1) log 2 cancels: with the derivative-free constant of MarginStep5, (dF/dlam)(q) = q log 2 rho_c^{-q} and the subtracted term carries the same log 2, so B > 0 is q rho_c^{-q} > (gamma_bar/2) v_A(q) rho; with the SIMPLE schedule gamma(q) = q/10 (no band table) the q cancels too. (2) The root equation bounds both powers by 1/2: since 1 + rho > rho > 0 and x -> x^{-q} is antitone, 1 = rho^{-q} + (1+rho)^{-q} < 2 rho^{-q}, so rho^{-q} > 1/2 and (1+rho)^{-q} < 1/2. The left side is then > 1/2 while the right side is capped at 0.2393 by the rational bounds lam <= 342/1000, q <= 16/5, delta^2 <= 612/100, rho <= 3/2 (using 2^{1/10} <= 11/10, one rational comparison). Margin 0.26. No scan, no interval arithmetic, no certificate. UPDATE (same day, after an independent check flagged lam <= 342/1000 as an UNDISCHARGED assumption — KappaLtHalf gives only kappa* < 1/2): the constant is relaxed to lam <= 51/100, which IS supplied (kappa <= 1/2 from V_lt_half, plus eps <= 1/100). The bracket still clears: with 2^{2/3} <= 8/5 the right side is capped at 0.2607 < 1/2. bracket_pos_of_kappa states the result with the lam hypothesis discharged from kappa <= 1/2 and eps <= 1/100.",
       "theorems": [
         "RevPebbling.BracketPositive.half_lt_rpow",
         "RevPebbling.BracketPositive.rpow_succ_lt_half",
-        "RevPebbling.BracketPositive.two_rpow_tenth_le",
+        "RevPebbling.BracketPositive.two_rpow_two_thirds_le",
         "RevPebbling.BracketPositive.two_rpow_factor_le",
-        "RevPebbling.BracketPositive.bracket_pos"
+        "RevPebbling.BracketPositive.bracket_pos",
+        "RevPebbling.BracketPositive.lam_le_of_kappa_le_half",
+        "RevPebbling.BracketPositive.bracket_pos_of_kappa"
       ],
       "native_decide_theorems": [],
       "axiom_free_theorems": [],

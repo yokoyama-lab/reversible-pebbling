@@ -41,7 +41,8 @@ and `x ↦ x^{−q}` is antitone,
 
 So the left side is `> 1/2` while the right side is at most
 `(3/2)/20 · (2^{qλ−1}λ² + δ²/2)`, which the rational bounds
-`λ ≤ 342/1000`, `q ≤ 16/5`, `δ² ≤ 612/100`, `ρ ≤ 3/2` cap at `0.2393`.
+**`λ ≤ 51/100`** (which `KappaLtHalf` supplies: `κ* < 1/2` and `ε ≤ 1/100`),
+`q ≤ 16/5`, `δ² ≤ 612/100`, `ρ ≤ 3/2` cap at `0.2607`.
 
 `1/2 > 0.2393` with room to spare (**margin `0.26`**), so the bracket is
 positive with no scan, no interval arithmetic and no certificate.
@@ -74,25 +75,25 @@ theorem rpow_succ_lt_half (hq : 0 < q) (hρ : 1 ≤ ρ) (hg : G q ρ = 1) :
 
 /-! ## A rational cap on the exponential factor -/
 
-/-- `2^{1/10} ≤ 11/10`, i.e. `2 ≤ (11/10)^10` — one rational comparison. -/
-theorem two_rpow_tenth_le : (2 : ℝ) ^ ((1 : ℝ) / 10) ≤ 11 / 10 := by
-  have hcert : (2 : ℝ) ≤ ((11 : ℝ) / 10) ^ (10 : ℕ) := by norm_num
-  have h := RevPebbling.CriticalRootRat.rpow_div_le (x := (2 : ℝ)) (s := (11 : ℝ) / 10)
-    (by norm_num) (by norm_num) (n := 10) (m := 1) (by norm_num) (by simpa using hcert)
+/-- `2^{2/3} ≤ 8/5`, i.e. `2² ≤ (8/5)³ = 4.096` — one rational comparison. -/
+theorem two_rpow_two_thirds_le : (2 : ℝ) ^ ((2 : ℝ) / 3) ≤ 8 / 5 := by
+  have hcert : ((2 : ℝ)) ^ (2 : ℕ) ≤ ((8 : ℝ) / 5) ^ (3 : ℕ) := by norm_num
+  have h := RevPebbling.CriticalRootRat.rpow_div_le (x := (2 : ℝ)) (s := (8 : ℝ) / 5)
+    (by norm_num) (by norm_num) (n := 3) (m := 2) (by norm_num) (by simpa using hcert)
   simpa using h
 
-/-- `2^{qλ−1} ≤ 11/10` whenever `q·λ ≤ 11/10`. -/
-theorem two_rpow_factor_le (h : q * lam ≤ 11 / 10) :
-    (2 : ℝ) ^ (q * lam - 1) ≤ 11 / 10 := by
-  have hexp : q * lam - 1 ≤ (1 : ℝ) / 10 := by linarith
-  calc (2 : ℝ) ^ (q * lam - 1) ≤ (2 : ℝ) ^ ((1 : ℝ) / 10) :=
+/-- `2^{qλ−1} ≤ 8/5` whenever `q·λ ≤ 5/3`. -/
+theorem two_rpow_factor_le (h : q * lam ≤ 5 / 3) :
+    (2 : ℝ) ^ (q * lam - 1) ≤ 8 / 5 := by
+  have hexp : q * lam - 1 ≤ (2 : ℝ) / 3 := by linarith
+  calc (2 : ℝ) ^ (q * lam - 1) ≤ (2 : ℝ) ^ ((2 : ℝ) / 3) :=
         Real.rpow_le_rpow_of_exponent_le (by norm_num) hexp
-    _ ≤ 11 / 10 := two_rpow_tenth_le
+    _ ≤ 8 / 5 := two_rpow_two_thirds_le
 
 /-! ## The bracket -/
 
 /-- **The bracket is positive.**  With the schedule `γ(q) = q/10`, the
-rational caps `λ ≤ 342/1000`, `q ≤ 16/5`, `δ² ≤ 612/100`, `ρ ≤ 3/2`, and
+rational caps `λ ≤ 51/100`, `q ≤ 16/5`, `δ² ≤ 612/100`, `ρ ≤ 3/2`, and
 `q > 0`, the inequality
 
 ```
@@ -102,7 +103,7 @@ rational caps `λ ≤ 342/1000`, `q ≤ 16/5`, `δ² ≤ 612/100`, `ρ ≤ 3/2`,
 holds at every root — hence `B > 0` on the whole range.  No scan, no
 interval arithmetic, no certificate. -/
 theorem bracket_pos {δ2 R : ℝ} (hq : 0 < q) (hqhi : q ≤ 16 / 5)
-    (hlam0 : 0 ≤ lam) (hlam : lam ≤ 342 / 1000)
+    (hlam0 : 0 ≤ lam) (hlam : lam ≤ 51 / 100)
     (hδ2 : δ2 ≤ 612 / 100) (hδ2' : 0 ≤ δ2)
     (hR : R ≤ 3 / 2) (hR0 : 0 ≤ R)
     (hρ : 1 ≤ ρ) (hg : G q ρ = 1) :
@@ -114,21 +115,49 @@ theorem bracket_pos {δ2 R : ℝ} (hq : 0 < q) (hqhi : q ≤ 16 / 5)
     have hρ0 : (0 : ℝ) < ρ := lt_of_lt_of_le zero_lt_one hρ
     exact Real.rpow_pos_of_pos (by linarith) _
   -- the exponential factor
-  have hql : q * lam ≤ 11 / 10 := by nlinarith
-  have hfac : (2 : ℝ) ^ (q * lam - 1) ≤ 11 / 10 := two_rpow_factor_le hql
+  have hql : q * lam ≤ 5 / 3 := by nlinarith
+  have hfac : (2 : ℝ) ^ (q * lam - 1) ≤ 8 / 5 := two_rpow_factor_le hql
   have hfac0 : (0 : ℝ) < (2 : ℝ) ^ (q * lam - 1) := Real.rpow_pos_of_pos (by norm_num) _
-  -- first summand ≤ (11/10)(342/1000)² < 129/1000
-  have h1 : (2 : ℝ) ^ (q * lam - 1) * lam ^ 2 ≤ 129 / 1000 := by nlinarith
+  -- first summand ≤ (8/5)(51/100)² < 417/1000
+  have h1 : (2 : ℝ) ^ (q * lam - 1) * lam ^ 2 ≤ 417 / 1000 := by nlinarith
   -- second summand < (1/2)(612/100) = 306/100
   have h2 : (1 + ρ) ^ (-q) * δ2 ≤ 306 / 100 := by nlinarith
   -- total, scaled
   have hsum : (R / 20) * ((2 : ℝ) ^ (q * lam - 1) * lam ^ 2 + (1 + ρ) ^ (-q) * δ2)
-      ≤ (3 / 2 / 20) * (129 / 1000 + 306 / 100) := by
+      ≤ (3 / 2 / 20) * (417 / 1000 + 306 / 100) := by
     have hnn : (0 : ℝ) ≤ (2 : ℝ) ^ (q * lam - 1) * lam ^ 2 + (1 + ρ) ^ (-q) * δ2 := by
       have : (0 : ℝ) ≤ (2 : ℝ) ^ (q * lam - 1) * lam ^ 2 := by positivity
       nlinarith
     nlinarith
-  have hnum : (3 / 2 / 20 : ℝ) * (129 / 1000 + 306 / 100) < 1 / 2 := by norm_num
+  have hnum : (3 / 2 / 20 : ℝ) * (417 / 1000 + 306 / 100) < 1 / 2 := by norm_num
   linarith
+
+/-! ## Discharging `λ ≤ 51/100` -/
+
+/-- **The `λ` cap is supplied by `KappaLtHalf`.**  `V_lt_half` gives
+`V(q) < 1/2` for *every* `q`, so any upper bound `κ` for the `V`'s
+satisfies `κ ≤ 1/2`; with `λ = κ + ε` and `ε ≤ 1/100` this is
+`λ ≤ 51/100`, exactly the hypothesis of `bracket_pos`.
+
+The independent check on 2026-08-20 flagged `λ ≤ 342/1000` as an
+undischarged assumption — `KappaLtHalf` gives only `κ* < 1/2`.  Relaxing
+the constant from `342/1000` to `51/100` (the bracket still clears
+`1/2 > 0.2607`) removes the gap. -/
+theorem lam_le_of_kappa_le_half {κ ε lam : ℝ}
+    (hκ : κ ≤ 1 / 2) (hε : ε ≤ 1 / 100) (hlam : lam = κ + ε) :
+    lam ≤ 51 / 100 := by
+  rw [hlam]; linarith
+
+/-- `bracket_pos` with the `λ` hypothesis discharged from `κ ≤ 1/2`. -/
+theorem bracket_pos_of_kappa {δ2 R κ ε : ℝ} (hq : 0 < q) (hqhi : q ≤ 16 / 5)
+    (hκ0 : 0 ≤ κ) (hκ : κ ≤ 1 / 2) (hε0 : 0 ≤ ε) (hε : ε ≤ 1 / 100)
+    (hlam : lam = κ + ε)
+    (hδ2 : δ2 ≤ 612 / 100) (hδ2' : 0 ≤ δ2)
+    (hR : R ≤ 3 / 2) (hR0 : 0 ≤ R)
+    (hρ : 1 ≤ ρ) (hg : G q ρ = 1) :
+    (R / 20) * ((2 : ℝ) ^ (q * lam - 1) * lam ^ 2 + (1 + ρ) ^ (-q) * δ2)
+      < ρ ^ (-q) :=
+  bracket_pos hq hqhi (by rw [hlam]; linarith)
+    (lam_le_of_kappa_le_half hκ hε hlam) hδ2 hδ2' hR hR0 hρ hg
 
 end RevPebbling.BracketPositive
