@@ -71,6 +71,70 @@ theorem cap_step_Psi {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ}
     rw [Nat.min_eq_left hmono]
     exact h
 
+/-! ## The self-closing region: any split will do -/
+
+/-- **The self-closing step, for the actual `Ψ`.**  Deep enough, the level
+`S+1` value is already below the level `S` value, so the step holds with
+*any* split — the `min` term is pure slack.  The real inequality it needs
+is `CapAndSelfClosing.self_closing`. -/
+theorem self_closing_step_Psi {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ}
+    (hle : (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log v / Real.log 2))))
+        ≤ (cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - (Real.log v / Real.log 2))))) :
+    Psi I X (S + 1) v
+      ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) := by
+  have h : Psi I X (S + 1) v ≤ Psi I X S v := Nat.floor_le_floor hle
+  omega
+
+/-! ## The `Int.floor` → `ℕ` bridge that `FloorAbsorb` needs -/
+
+/-- `FloorAbsorb` concludes about `Int.floor`; the subsolution is stated
+with `Nat.floor`.  For nonnegative arguments the two agree, so the
+conclusion transfers. -/
+theorem nat_floor_absorb {x y₁ y_m μ : ℝ} (hx : 0 ≤ x) (hy₁ : 0 ≤ y₁) (hym : 0 ≤ y_m)
+    (hμx : 1 ≤ μ * x) (hreal : x * (1 + μ) ≤ y₁ + y_m) :
+    ⌊x⌋₊ ≤ 1 + ⌊y₁⌋₊ + ⌊y_m⌋₊ := by
+  have hint := RevPebbling.FloorAbsorb.floor_absorb hμx hreal
+  have e1 : (⌊x⌋₊ : ℤ) = ⌊x⌋ := Int.natCast_floor_eq_floor hx
+  have e2 : (⌊y₁⌋₊ : ℤ) = ⌊y₁⌋ := Int.natCast_floor_eq_floor hy₁
+  have e3 : (⌊y_m⌋₊ : ℤ) = ⌊y_m⌋ := Int.natCast_floor_eq_floor hym
+  have : (⌊x⌋₊ : ℤ) ≤ 1 + (⌊y₁⌋₊ : ℤ) + (⌊y_m⌋₊ : ℤ) := by
+    rw [e1, e2, e3]; exact hint
+  exact_mod_cast this
+
+/-- The step for the actual `Ψ` in any region where the real margin
+condition holds: the shape values are nonnegative, so `nat_floor_absorb`
+applies directly. -/
+theorem margin_step_Psi {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ} {μ : ℝ}
+    (hμx : 1 ≤ μ * ((cap (S + 1) : ℝ)
+            * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log v / Real.log 2))))))
+    (hreal : ((cap (S + 1) : ℝ)
+              * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log v / Real.log 2))))) * (1 + μ)
+        ≤ (cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - (Real.log v / Real.log 2))))
+          + min ((cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - (Real.log u / Real.log 2)))))
+              ((cap (S + 1) : ℝ)
+                * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log w / Real.log 2)))))) :
+    Psi I X (S + 1) v
+      ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) := by
+  have hpos : ∀ (T z : ℕ), (0 : ℝ) ≤ (cap T : ℝ)
+      * (2 : ℝ) ^ (-(I (X T - (Real.log z / Real.log 2)))) := by
+    intro T z
+    exact mul_nonneg (Nat.cast_nonneg _)
+      (le_of_lt (Real.rpow_pos_of_pos (by norm_num) _))
+  have hmin0 : (0 : ℝ) ≤ min ((cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - (Real.log u / Real.log 2)))))
+      ((cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log w / Real.log 2))))) :=
+    le_min (hpos S u) (hpos (S + 1) w)
+  have h := nat_floor_absorb (hpos (S + 1) v) (hpos S v) hmin0 hμx hreal
+  have hfm : ⌊min ((cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - (Real.log u / Real.log 2)))))
+      ((cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log w / Real.log 2)))))⌋₊
+      = min (Psi I X S u) (Psi I X (S + 1) w) := by
+    unfold Psi
+    rcases le_total ((cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - (Real.log u / Real.log 2)))))
+        ((cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log w / Real.log 2))))) with hle | hle
+    · rw [min_eq_left hle, min_eq_left (Nat.floor_le_floor hle)]
+    · rw [min_eq_right hle, min_eq_right (Nat.floor_le_floor hle)]
+  rw [hfm] at h
+  exact h
+
 /-- The cap value is what the readout needs at `ζ ≤ 0`: `Ψ = cap S` and
 `cap S = (rowIter S).length` exactly when `S ≥ 1`, so
 `ReadoutBridge.rowMax_le_of_subsolution` applies there. -/
