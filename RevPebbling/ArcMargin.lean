@@ -100,57 +100,54 @@ noncomputable def vA (q lam : ℝ) : ℝ :=
   (2 : ℝ) ^ (q * lam - 1) * lam ^ 2
     + (1 + rhoLam q lam) ^ (-q) * deltaStar q lam ^ 2
 
-/-- **The arc's margin bound.**  With the split at the balance point and
-the design condition `m ≤ (q/10)(λ − V)`, the idealised margin is at
-least `ln 2 · q · (λ − V) · [ρ_c^{−q} − v_A/20]`. -/
-theorem arc_margin_ge {q lam m V ρc a b c d : ℝ}
-    (hq : 0 < q) (hm : 0 ≤ m) (hV : V ≤ lam)
+/-- **The arc's margin bound, with generic error bounds.**  The three
+exponents may deviate from their ideal values by `E_b, E_c, E_d`; the cost
+is `ln 2` times the weighted sum.  Keeping the errors symbolic is what
+lets the assembly add the **integerisation slack** of the split (`u, w`
+are naturals, so their positions miss the ideal ones by
+`log₂(1 + 1/u)`) on top of the profile's curvature. -/
+theorem arc_margin_ge_gen {q lam V ρc a b c d Eb Ec Ed : ℝ}
+    (hq : 0 < q) (hV : V ≤ lam)
     (hρc : 1 ≤ ρc) (hg : G q ρc = 1)
     (hVdef : V = 1 / q - Real.log ρc / Real.log 2)
-    (hab : |(a - b) - q * lam| ≤ m * lam ^ 2 / 2)
-    (hac : |(a - c) - q * (lam - tStar q lam)| ≤ m * deltaStar q lam ^ 2 / 2)
-    (had : |(a - d) + q * deltaStar q lam| ≤ m * deltaStar q lam ^ 2 / 2)
-    (hdesign : m ≤ q / 10 * (lam - V)) :
-    Real.log 2 * q * (lam - V) * (ρc ^ (-q) - vA q lam / 20)
+    (hab : |(a - b) - q * lam| ≤ Eb)
+    (hac : |(a - c) - q * (lam - tStar q lam)| ≤ Ec)
+    (had : |(a - d) + q * deltaStar q lam| ≤ Ed) :
+    ρc ^ (-q) * (q * (lam - V) * Real.log 2)
+        - Real.log 2 * ((2 : ℝ) ^ (q * lam - 1) * Eb
+            + (1 + rhoLam q lam) ^ (-q) * max Ec Ed)
       ≤ RevPebbling.Shape.idealMargin a b c d := by
   have hρc0 : (0 : ℝ) < ρc := lt_of_lt_of_le zero_lt_one hρc
   have hlog2 : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
   set δ := deltaStar q lam with hδ
   set A := q * lam - 1 with hA
   set B := -(q * δ) with hB
-  -- the three perturbations
-  set Eb := q * lam - (a - b) with hEb
-  set Ec := q * (lam - tStar q lam) - (a - c) with hEc
-  set Ed := -(q * δ) - (a - d) with hEd
-  have habs_b : |Eb| ≤ m * lam ^ 2 / 2 := by
+  set Eb' := q * lam - (a - b) with hEb
+  set Ec' := q * (lam - tStar q lam) - (a - c) with hEc
+  set Ed' := -(q * δ) - (a - d) with hEd
+  have habs_b : |Eb'| ≤ Eb := by
     rw [hEb, show q * lam - (a - b) = -((a - b) - q * lam) by ring, abs_neg]
     exact hab
-  have habs_c : |Ec| ≤ m * δ ^ 2 / 2 := by
+  have habs_c : |Ec'| ≤ Ec := by
     rw [hEc, show q * (lam - tStar q lam) - (a - c)
       = -((a - c) - q * (lam - tStar q lam)) by ring, abs_neg]
     exact hac
-  have habs_d : |Ed| ≤ m * δ ^ 2 / 2 := by
+  have habs_d : |Ed'| ≤ Ed := by
     rw [hEd, show -(q * δ) - (a - d) = -((a - d) + q * δ) by ring, abs_neg]
     exact had
-  -- the ideal exponents: the `c` branch also sits at `−qδ`
   have hqlt : q * (lam - tStar q lam) = 1 - q * δ := by
     rw [lam_sub_t, hδ]
     field_simp
-  have hexp_b : a - (b + 1) = A - Eb := by rw [hA, hEb]; ring
-  have hexp_c : a - (c + 1) = B - Ec := by
-    rw [hB, hEc, hqlt]; ring
-  have hexp_d : a - d = B - Ed := by rw [hB, hEd]; ring
-  -- transfer
-  have htrans := margin_transfer_three A B Eb Ec Ed
+  have hexp_b : a - (b + 1) = A - Eb' := by rw [hA, hEb]; ring
+  have hexp_c : a - (c + 1) = B - Ec' := by rw [hB, hEc, hqlt]; ring
+  have hexp_d : a - d = B - Ed' := by rw [hB, hEd]; ring
+  have htrans := margin_transfer_three A B Eb' Ec' Ed'
   have hmargin : RevPebbling.Shape.idealMargin a b c d
-      = (2 : ℝ) ^ (A - Eb) + min ((2 : ℝ) ^ (B - Ec)) ((2 : ℝ) ^ (B - Ed)) - 1 := by
+      = (2 : ℝ) ^ (A - Eb') + min ((2 : ℝ) ^ (B - Ec')) ((2 : ℝ) ^ (B - Ed')) - 1 := by
     unfold RevPebbling.Shape.idealMargin
     rw [hexp_b, hexp_c, hexp_d]
-  -- the ideal margin is `F − 1`
   have hBval : (2 : ℝ) ^ B = (1 + rhoLam q lam) ^ (-q) := by
-    rw [hB, hδ]
-    exact two_rpow_neg_q_delta q lam
-  -- Step 5: `F(q,λ) − 1 ≥ ρ_c^{−q}·q·ln2·(λ−V)`
+    rw [hB, hδ]; exact two_rpow_neg_q_delta q lam
   have hone := F_at_V hq hρc0 hVdef hg
   have hstep5 := RevPebbling.MarginStep5.step5_of_F_eq_one hq hV hone
   have hVpow : (2 : ℝ) ^ (q * V - 1) = ρc ^ (-q) := by
@@ -164,19 +161,41 @@ theorem arc_margin_ge {q lam m V ρc a b c d : ℝ}
       ≤ (2 : ℝ) ^ A + (2 : ℝ) ^ B - 1 := by
     rw [hA, hBval, ← hrho', ← hVpow]
     linarith [hstep5]
-  -- the deviation term, absorbed by the design condition
   have hApos : (0 : ℝ) < (2 : ℝ) ^ A := Real.rpow_pos_of_pos (by norm_num) _
   have hBpos : (0 : ℝ) < (2 : ℝ) ^ B := Real.rpow_pos_of_pos (by norm_num) _
-  have hmaxcd : max |Ec| |Ed| ≤ m * δ ^ 2 / 2 := max_le habs_c habs_d
-  have hdev : (2 : ℝ) ^ A * |Eb| + (2 : ℝ) ^ B * max |Ec| |Ed|
-      ≤ (m / 2) * vA q lam := by
-    have h1 : (2 : ℝ) ^ A * |Eb| ≤ (2 : ℝ) ^ A * (m * lam ^ 2 / 2) := by
-      exact mul_le_mul_of_nonneg_left habs_b (le_of_lt hApos)
-    have h2 : (2 : ℝ) ^ B * max |Ec| |Ed| ≤ (2 : ℝ) ^ B * (m * δ ^ 2 / 2) :=
-      mul_le_mul_of_nonneg_left hmaxcd (le_of_lt hBpos)
-    unfold vA
-    rw [← hBval, ← hδ, ← hA]
+  have hdev : (2 : ℝ) ^ A * |Eb'| + (2 : ℝ) ^ B * max |Ec'| |Ed'|
+      ≤ (2 : ℝ) ^ A * Eb + (2 : ℝ) ^ B * max Ec Ed := by
+    have h1 : (2 : ℝ) ^ A * |Eb'| ≤ (2 : ℝ) ^ A * Eb :=
+      mul_le_mul_of_nonneg_left habs_b (le_of_lt hApos)
+    have h2 : max |Ec'| |Ed'| ≤ max Ec Ed :=
+      max_le (le_trans habs_c (le_max_left _ _)) (le_trans habs_d (le_max_right _ _))
+    have h3 : (2 : ℝ) ^ B * max |Ec'| |Ed'| ≤ (2 : ℝ) ^ B * max Ec Ed :=
+      mul_le_mul_of_nonneg_left h2 (le_of_lt hBpos)
     linarith
+  have hdev' : Real.log 2 * ((2 : ℝ) ^ A * |Eb'| + (2 : ℝ) ^ B * max |Ec'| |Ed'|)
+      ≤ Real.log 2 * ((2 : ℝ) ^ A * Eb + (2 : ℝ) ^ B * max Ec Ed) :=
+    mul_le_mul_of_nonneg_left hdev (le_of_lt hlog2)
+  rw [hmargin, ← hBval]
+  linarith [htrans, hF, hdev']
+
+/-- **The arc's margin bound.**  With the split at the balance point and
+the design condition `m ≤ (q/10)(λ − V)`, the idealised margin is at
+least `ln 2 · q · (λ − V) · [ρ_c^{−q} − v_A/20]`. -/
+theorem arc_margin_ge {q lam m V ρc a b c d : ℝ}
+    (hq : 0 < q) (hm : 0 ≤ m) (hV : V ≤ lam)
+    (hρc : 1 ≤ ρc) (hg : G q ρc = 1)
+    (hVdef : V = 1 / q - Real.log ρc / Real.log 2)
+    (hab : |(a - b) - q * lam| ≤ m * lam ^ 2 / 2)
+    (hac : |(a - c) - q * (lam - tStar q lam)| ≤ m * deltaStar q lam ^ 2 / 2)
+    (had : |(a - d) + q * deltaStar q lam| ≤ m * deltaStar q lam ^ 2 / 2)
+    (hdesign : m ≤ q / 10 * (lam - V)) :
+    Real.log 2 * q * (lam - V) * (ρc ^ (-q) - vA q lam / 20)
+      ≤ RevPebbling.Shape.idealMargin a b c d := by
+  have hlog2 : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
+  have hcore := arc_margin_ge_gen hq hV hρc hg hVdef hab hac had
+  have hmax : max (m * deltaStar q lam ^ 2 / 2) (m * deltaStar q lam ^ 2 / 2)
+      = m * deltaStar q lam ^ 2 / 2 := max_self _
+  rw [hmax] at hcore
   have hvA0 : 0 ≤ vA q lam := by
     unfold vA
     have h1 : (0 : ℝ) ≤ (2 : ℝ) ^ (q * lam - 1) * lam ^ 2 := by positivity
@@ -184,30 +203,28 @@ theorem arc_margin_ge {q lam m V ρc a b c d : ℝ}
       have := one_add_rhoLam_pos (q := q) (lam := lam)
       positivity
     linarith
-  have hmdev : (m / 2) * vA q lam ≤ (q / 20 * (lam - V)) * vA q lam := by
-    have hcoef : m / 2 ≤ q / 20 * (lam - V) := by linarith
-    exact mul_le_mul_of_nonneg_right hcoef hvA0
-  -- combine
-  rw [hmargin]
-  have hchain : Real.log 2 * q * (lam - V) * (ρc ^ (-q) - vA q lam / 20)
-      ≤ (2 : ℝ) ^ A + (2 : ℝ) ^ B - 1
-        - Real.log 2 * ((2 : ℝ) ^ A * |Eb| + (2 : ℝ) ^ B * max |Ec| |Ed|) := by
-    have hdev' : Real.log 2 * ((2 : ℝ) ^ A * |Eb| + (2 : ℝ) ^ B * max |Ec| |Ed|)
-        ≤ Real.log 2 * ((q / 20 * (lam - V)) * vA q lam) :=
-      mul_le_mul_of_nonneg_left (le_trans hdev hmdev) (le_of_lt hlog2)
-    have hid : Real.log 2 * ((q / 20 * (lam - V)) * vA q lam)
-        = Real.log 2 * q * (lam - V) * (vA q lam / 20) := by ring
-    have hF' : Real.log 2 * q * (lam - V) * ρc ^ (-q)
-        ≤ (2 : ℝ) ^ A + (2 : ℝ) ^ B - 1 := by
-      have : ρc ^ (-q) * (q * (lam - V) * Real.log 2)
-          = Real.log 2 * q * (lam - V) * ρc ^ (-q) := by ring
-      linarith [hF, this]
-    rw [hid] at hdev'
-    have hexpand : Real.log 2 * q * (lam - V) * (ρc ^ (-q) - vA q lam / 20)
-        = Real.log 2 * q * (lam - V) * ρc ^ (-q)
-          - Real.log 2 * q * (lam - V) * (vA q lam / 20) := by ring
-    linarith
-  linarith [htrans, hchain]
+  -- the deviation weight is exactly `(m/2)·v_A`
+  have hweight : (2 : ℝ) ^ (q * lam - 1) * (m * lam ^ 2 / 2)
+      + (1 + rhoLam q lam) ^ (-q) * (m * deltaStar q lam ^ 2 / 2)
+      = (m / 2) * vA q lam := by
+    unfold vA; ring
+  rw [hweight] at hcore
+  have hmdev : (m / 2) * vA q lam ≤ (q / 20 * (lam - V)) * vA q lam :=
+    mul_le_mul_of_nonneg_right (by linarith) hvA0
+  have hstep : Real.log 2 * ((m / 2) * vA q lam)
+      ≤ Real.log 2 * ((q / 20 * (lam - V)) * vA q lam) :=
+    mul_le_mul_of_nonneg_left hmdev (le_of_lt hlog2)
+  have hid1 : ρc ^ (-q) * (q * (lam - V) * Real.log 2)
+      = Real.log 2 * q * (lam - V) * ρc ^ (-q) := by ring
+  have hid2 : Real.log 2 * ((q / 20 * (lam - V)) * vA q lam)
+      = Real.log 2 * q * (lam - V) * (vA q lam / 20) := by ring
+  have hexpand : Real.log 2 * q * (lam - V) * (ρc ^ (-q) - vA q lam / 20)
+      = Real.log 2 * q * (lam - V) * ρc ^ (-q)
+        - Real.log 2 * q * (lam - V) * (vA q lam / 20) := by ring
+  rw [hexpand]
+  rw [hid1] at hcore
+  rw [hid2] at hstep
+  linarith
 
 /-! ## The bracket is positive -/
 
