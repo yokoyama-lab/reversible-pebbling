@@ -59,7 +59,7 @@ import RevPebbling.ArcLength
 import RevPebbling.BandFromC3
 import RevPebbling.ReadoutBridge
 import RevPebbling.Shape
-import RevPebbling.Profile
+import RevPebbling.RampProfile
 import RevPebbling.CriticalRoot197130
 import RevPebbling.CriticalRoot8324
 import RevPebbling.CriticalRoot25366
