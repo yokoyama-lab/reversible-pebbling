@@ -135,6 +135,50 @@ theorem margin_step_Psi {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ} {μ 
   rw [hfm] at h
   exact h
 
+/-! ## Discharging the self-closing hypothesis from `CapAndSelfClosing` -/
+
+/-- **The self-closing hypothesis, discharged.**  `self_closing_step_Psi`
+needs the real inequality between the two shape values; here it is,
+derived from `CapAndSelfClosing.self_closing` applied with
+`A = cap (S+1)`, `B = cap S` and `Θ = I(ζ) − I(ζ−λ)` (the transfer).
+
+This is one of the links the independent check flagged as missing: the
+analytic file is now actually *used* by a statement about the shape. -/
+theorem self_closing_hyp {I : ℝ → ℝ} {X : ℕ → ℝ} {S v : ℕ}
+    (hcapS : 0 < (cap S : ℝ)) (hcapS1 : 0 < (cap (S + 1) : ℝ))
+    (hΘ : Real.log ((cap (S + 1) : ℝ) / (cap S : ℝ)) / Real.log 2
+        ≤ I (X (S + 1) - (Real.log v / Real.log 2))
+          - I (X S - (Real.log v / Real.log 2))) :
+    (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log v / Real.log 2))))
+      ≤ (cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - (Real.log v / Real.log 2)))) := by
+  set a := I (X (S + 1) - (Real.log v / Real.log 2)) with ha
+  set b := I (X S - (Real.log v / Real.log 2)) with hb
+  -- `cap(S+1) · 2^{−(a−b)} ≤ cap S`
+  have hkey : (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(a - b)) ≤ (cap S : ℝ) :=
+    RevPebbling.CapAndSelfClosing.self_closing hcapS1 hcapS hΘ
+  -- multiply both sides by `2^{−b} > 0`
+  have hpos : (0 : ℝ) < (2 : ℝ) ^ (-b) := Real.rpow_pos_of_pos (by norm_num) _
+  have hmul := mul_le_mul_of_nonneg_right hkey (le_of_lt hpos)
+  -- `2^{−(a−b)} · 2^{−b} = 2^{−a}`
+  have hsplit : (2 : ℝ) ^ (-(a - b)) * (2 : ℝ) ^ (-b) = (2 : ℝ) ^ (-a) := by
+    rw [← Real.rpow_add (by norm_num)]
+    ring_nf
+  calc (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-a)
+      = (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(a - b)) * (2 : ℝ) ^ (-b) := by
+        rw [mul_assoc, hsplit]
+    _ ≤ (cap S : ℝ) * (2 : ℝ) ^ (-b) := hmul
+
+/-- Packaged: the self-closing **step** for the actual `Ψ`, with its
+hypothesis reduced to the transfer condition `Θ ≥ log₂(cap(S+1)/cap S)`. -/
+theorem self_closing_step_of_transfer {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ}
+    (hcapS : 0 < (cap S : ℝ)) (hcapS1 : 0 < (cap (S + 1) : ℝ))
+    (hΘ : Real.log ((cap (S + 1) : ℝ) / (cap S : ℝ)) / Real.log 2
+        ≤ I (X (S + 1) - (Real.log v / Real.log 2))
+          - I (X S - (Real.log v / Real.log 2))) :
+    Psi I X (S + 1) v
+      ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) :=
+  self_closing_step_Psi (self_closing_hyp hcapS hcapS1 hΘ)
+
 /-! ## A concrete profile: the flat head -/
 
 /-- The flat head `q ≡ q_h` on `[0, H]`, capped before and after.  This is
