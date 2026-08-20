@@ -1,4 +1,5 @@
 import RevPebbling.CapAndSelfClosing
+import RevPebbling.BalanceIdentity
 import RevPebbling.Subsolution
 
 /-!
@@ -225,6 +226,67 @@ theorem cap_ratio_lt_half {S : ℕ} (hS : 2 ≤ S) :
     have hlt : (2 ^ (S - 1) - 1) * 2 < 2 ^ S - 1 := by omega
     exact_mod_cast hlt
   linarith
+
+/-! ## The band `0 < ζ < λ`: the real margin condition, in closed form -/
+
+/-- **The band's real margin condition, discharged.**
+
+With the flat head and the split `δ = 1/q_h − ζ` (so that the upper-level
+child sits exactly at depth `1/q_h`, where `I = 1`), every value is
+explicit:
+
+```
+x  = cap(S+1)·2^{−q_h ζ}      y₁ = cap S            (ζ − λ < 0, so I = 0)
+y₂ = cap S                    y₃ = cap(S+1)·2^{−1}   (ζ + δ = 1/q_h, I = 1)
+```
+
+and `cap S < cap(S+1)/2`, so `min (y₂, y₃) = y₂ = cap S`.  The condition
+`x(1+μ) ≤ y₁ + min(y₂,y₃) = 2·cap S = cap(S+1) − 1` is therefore exactly
+
+```
+(1 + μ)·(1 + 1/(2·cap S))  ≤  2^{q_h ζ}
+```
+
+— **the `1/(2·cap S)` is the cap-ratio deficit** (`cap_ratio_lt_half`),
+the term the idealised analysis drops.  It vanishes as `S` grows, and
+`2^{q_h ζ} ≥ 1 + q_h·ln 2·ζ` (`BalanceIdentity.two_rpow_sub_one_ge`)
+turns the condition into the linear bound the band lemma provides. -/
+theorem band_real_margin {c0 μ ζ q_h : ℝ} (hc0 : 0 < c0)
+    (hμ : (1 + μ) * (1 + 1 / (2 * c0)) ≤ (2 : ℝ) ^ (q_h * ζ)) :
+    (2 * c0 + 1) * (2 : ℝ) ^ (-(q_h * ζ)) * (1 + μ) ≤ c0 + c0 := by
+  have hpow : (0 : ℝ) < (2 : ℝ) ^ (q_h * ζ) := Real.rpow_pos_of_pos (by norm_num) _
+  have h2c0 : (0 : ℝ) < 2 * c0 := by linarith
+  -- `(2c₀+1)(1+μ) ≤ 2c₀·2^{q_h ζ}` is the hypothesis, scaled by `2c₀`
+  have key : (2 * c0 + 1) * (1 + μ) ≤ 2 * c0 * (2 : ℝ) ^ (q_h * ζ) := by
+    have h := mul_le_mul_of_nonneg_left hμ (le_of_lt h2c0)
+    have hid : 2 * c0 * ((1 + μ) * (1 + 1 / (2 * c0))) = (2 * c0 + 1) * (1 + μ) := by
+      field_simp; try ring
+    linarith [hid ▸ h]
+  have hneg : (2 : ℝ) ^ (-(q_h * ζ)) = ((2 : ℝ) ^ (q_h * ζ))⁻¹ :=
+    Real.rpow_neg (by norm_num) _
+  calc (2 * c0 + 1) * (2 : ℝ) ^ (-(q_h * ζ)) * (1 + μ)
+      = ((2 * c0 + 1) * (1 + μ)) / (2 : ℝ) ^ (q_h * ζ) := by
+        rw [hneg]; field_simp; try ring
+    _ ≤ (2 * c0 * (2 : ℝ) ^ (q_h * ζ)) / (2 : ℝ) ^ (q_h * ζ) := by gcongr
+    _ = c0 + c0 := by field_simp; try ring
+
+/-- The linear form: `2^{q_h ζ} ≥ 1 + q_h·ln 2·ζ` reduces the condition to
+one that the band lemmas supply. -/
+theorem band_real_margin_of_linear {c0 μ ζ q_h : ℝ} (hc0 : 0 < c0)
+    (hlin : (1 + μ) * (1 + 1 / (2 * c0)) ≤ 1 + q_h * ζ * Real.log 2) :
+    (2 * c0 + 1) * (2 : ℝ) ^ (-(q_h * ζ)) * (1 + μ) ≤ c0 + c0 := by
+  refine band_real_margin hc0 (le_trans hlin ?_)
+  have := RevPebbling.BalanceIdentity.two_rpow_sub_one_ge (q_h * ζ)
+  linarith
+
+/-- `cap (S+1) = 2·cap S + 1` — the relation the band computation uses. -/
+theorem cap_succ (S : ℕ) (hS : 1 ≤ S) : cap (S + 1) = 2 * cap S + 1 := by
+  unfold cap
+  have h1 : (1 : ℕ) ≤ 2 ^ (S - 1) := Nat.one_le_two_pow
+  have hpow : (2 : ℕ) ^ (S - 1) * 2 = 2 ^ S := by
+    rw [← pow_succ]; congr 1; omega
+  simp only [Nat.add_sub_cancel]
+  omega
 
 /-- The cap value is what the readout needs at `ζ ≤ 0`: `Ψ = cap S` and
 `cap S = (rowIter S).length` exactly when `S ≥ 1`, so
