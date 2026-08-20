@@ -1441,6 +1441,20 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "margin_lemma_step5_derivative_free": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): Step 5 of the margin lemma (Lemma U, companion manuscript notes/lemma_U_clean.md) WITHOUT derivatives. The write-up derives the linear lower bound on F q lam - 1 from convexity of F in lam (equivalently monotonicity of dF/dlam), which in Lean would need a second derivative and the side condition q rho >= 1. None of that is necessary: F q lam = 2^{q lam - 1} + (1 + 2^{1/q - lam})^{-q}, whose first term is an exponential in lam (tangent line = the already-proved 2^x - 1 >= x log 2, rescaled) and whose second term is INCREASING in lam (lam up => 2^{1/q-lam} down => (1+.)^{-q} up), so it only helps. Hence F q lam - F q V >= 2^{qV-1} q log 2 (lam - V) for lam >= V. The constant is smaller than the true dF/dlam at V (0.57 of it at q = 0.43), which is paid for by a smaller slope schedule gamma_j — design data, costing only a longer arc and a larger S0. With the schedule rebuilt from this weaker constant the certified bracket is still positive (>= 0.04) and S0(eps) is still finite (150 / 514 / 2159 / 12280 / 86433 for eps = 1e-2 .. 1e-6).",
+      "theorems": [
+        "RevPebbling.MarginStep5.second_term_mono",
+        "RevPebbling.MarginStep5.first_term_tangent",
+        "RevPebbling.MarginStep5.step5_linear_lower",
+        "RevPebbling.MarginStep5.step5_of_F_eq_one"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
