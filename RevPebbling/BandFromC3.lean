@@ -1,12 +1,14 @@
 import RevPebbling.SeamBand
 
 /-!
-# The band `0 < ζ < λ` is linear-bounded — and it follows from `C3` alone
+# The upper band `λ − t(δ_c) ≤ ζ < λ` is linear-bounded, from `C3` alone
 
-`SeamBand` handles the sub-band where the balance split puts the second
-branch in the cap.  This file covers the band **in one piece**, with a
-cleaner argument, and shows the whole thing rests on the corner condition
-`C3` that the construction already assumes.
+`SeamBand` handles the sub-band `ζ < λ − t(δ_c)` where the balance split
+puts the second branch in the cap.  This file covers **the rest** of the
+band, and shows it rests on the corner condition `C3` that the
+construction already assumes.  ⚠ The two files are **both** needed: the
+expression below is not the margin on `SeamBand`'s sub-band (it is larger
+there), so this file alone does not cover `0 < ζ < λ`.
 
 At the *balance* split the two branches coincide, `B₁ = B₂`: writing
 `ρ_h = 2^{1/q_h − λ}` and `δ_c = log₂(1+ρ_h)`, one has
@@ -89,8 +91,18 @@ theorem second_branch_ge_half (hq : 0 < q_h)
   rw [le_inv_comm₀ (by norm_num) hposq]
   linarith
 
-/-- **The band, in one piece.**  Given `C3`, the margin on `0 ≤ ζ` is at
-least `(q_h·ln 2 / 2)·ζ`. -/
+/-- **The upper part of the band.**  Given `C3`, the *balance-branch value*
+on `0 ≤ ζ` is at least `(q_h·ln 2 / 2)·ζ`.
+
+⚠ **This expression is the margin only for `ζ ≥ λ − t(δ_c)`** (numerically
+`0.01677` at `λ = κ* + 10⁻²`).  Below that the second branch falls in the
+cap, `2^{B₂} = 2^{q_h ζ − 1}`, and the true balance-branch margin is
+`2^{q_h ζ} − 1` — *smaller* than the expression here (at `ζ = 0`: `0`
+against `0.0025`).  **That sub-band is covered by `SeamBand`** with the
+other split `δ₁ = 1/q_h − ζ`, whose margin is exactly `2^{q_h ζ} − 1`.
+So the band is covered by the two files together, **not by this one
+alone** — an earlier docstring claimed "in one piece" and was wrong
+(independent check, 2026-08-20). -/
 theorem band_linear_lower (hq : 0 < q_h) (_hζ : 0 ≤ ζ)
     (hC3 : (2 : ℝ) ^ (-(1 / q_h)) ≤ 1 - (2 : ℝ) ^ (-lam)) :
     q_h * Real.log 2 / 2 * ζ

@@ -156,7 +156,7 @@ theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
 A full build takes about two and a quarter hours
-(55 stages, 667 theorems), nearly all of it three checks: the composition anchor at
+(56 stages, 667 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the

@@ -1577,6 +1577,19 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "upper_bound_pieces_not_yet_composed": {
+      "status": "carried",
+      "scope": "STATUS NOTE (this work, 2026-08-20), NOT a theorem: the fourteen files added for the upper-bound programme (KappaLtHalf, KappaLowerRat, BalanceIdentity, MarginTransfer, MarginAnchors, MarginStep5, Subsolution, FloorAbsorb, CapAndSelfClosing, SeamBand, Readout, BracketPositive, ArcLength, BandFromC3, ReadoutBridge) are each proved, but they are NOT yet composed into c <= 2^{1+kappa*}. An independent check on 2026-08-20 found: (1) the shape Psi_S(v) = floor(cap_S 2^{-I_S(zeta)}), the profile I and cap have NO definition anywhere in RevPebbling, so the hypotheses hbase/hone/hstep of Subsolution.subsolution_le_of_step cannot even be stated for the real construction; the margin files are free-variable real inequalities standing alone. (2) Readout and BracketPositive are imported by nothing but the root module. (3) FloorAbsorb concludes about Int.floor while Subsolution wants Psi : N -> N -> N; the bridge is missing. (4) BracketPositive.bracket_pos assumes lam <= 342/1000 (i.e. an upper bound on sup V) which no theorem here supplies — KappaLtHalf gives only kappa* < 1/2. (5) ArcLength.arc_time_bound assumes hclimb, which is what should be derived. (6) ReadoutBridge needs length <= Psi (the cap), whereas the manuscript's readout uses the midpoint 2^{S-2}-1 where Psi = floor(cap/2) < length. What IS closed: the count side, Subsolution's hrec matches CountRecursion.count_recursion_split verbatim.",
+      "theorems": [],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {
+        "upper bound c <= 2^{1+kappa*}": [
+          "not composed: shape Psi/I/cap undefined"
+        ]
+      },
+      "proves_hypotheses": {}
     }
   }
 }
