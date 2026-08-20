@@ -1481,6 +1481,21 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "cap_identity_and_self_closing": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): Lemmas V0 and V3 of the upper-bound programme (companion manuscript notes/lemma_U_clean.md), both exact rather than estimates. V0 (the cap): at the cap all three terms of the step are caps and the step reads cap_S <= 1 + cap_{S-1} + cap_{S-1}; since 2^{n+1} - 1 = 1 + (2^n - 1) + (2^n - 1) is an IDENTITY, the cap zone closes with equality and the +1 of the recursion is exactly what closes it (changing the definition of cap breaks it immediately). V3 (self-closing): below the self-closing depth both levels are on the q_hi ramp and the step degenerates to Psi_S(v) <= Psi_{S-1}(v), needing only cap_S 2^{-Theta} <= cap_{S-1} with Theta = I_S(zeta) - I_{S-1}(zeta - lam); since cap_S = 2 cap_{S-1} + 1 this is Theta >= 1 + log2(1 + 1/(2 cap_{S-1})), which tends to 1. For a constant eps both levels carry the same shape so Theta = q_hi lam exactly, and Theta > 1 is condition C2. cap_step depends on propext and Quot.sound only.",
+      "theorems": [
+        "RevPebbling.CapAndSelfClosing.cap_step",
+        "RevPebbling.CapAndSelfClosing.cap_step_le",
+        "RevPebbling.CapAndSelfClosing.self_closing",
+        "RevPebbling.CapAndSelfClosing.self_closing_cap",
+        "RevPebbling.CapAndSelfClosing.self_closing_floor"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
