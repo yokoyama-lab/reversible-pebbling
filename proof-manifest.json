@@ -1564,6 +1564,19 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "readout_bridge_counts_to_rowMax": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): the bridge between the count statement the subsolution delivers and the rowMax statement the growth constant is read off. Subsolution.subsolution_le_count gives Psi_S(v) <= countLe (rowIter S) v (a statement about COUNTS), while Unconditional.tendsto_rowMax_root_uncond says rowMax s ^ (1/(s+1)) -> c/2 (the LARGEST ENTRY). The step between them: row.length <= countLe row v implies listMax row <= v (if v already counts every entry, no entry exceeds v). Composed with the subsolution bound: whenever the subsolution reaches the full row length at v, the row maximum is at most v — and that v is the readout point zeta_half = 1/q_h of Lemma 1.",
+      "theorems": [
+        "RevPebbling.ReadoutBridge.listMax_le_of_forall",
+        "RevPebbling.ReadoutBridge.listMax_le_of_countLe",
+        "RevPebbling.ReadoutBridge.rowMax_le_of_subsolution"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }

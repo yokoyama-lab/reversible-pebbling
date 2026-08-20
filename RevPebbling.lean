@@ -57,6 +57,7 @@ import RevPebbling.Readout
 import RevPebbling.BracketPositive
 import RevPebbling.ArcLength
 import RevPebbling.BandFromC3
+import RevPebbling.ReadoutBridge
 import RevPebbling.CriticalRoot197130
 import RevPebbling.CriticalRoot8324
 import RevPebbling.CriticalRoot25366
