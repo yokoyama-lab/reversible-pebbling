@@ -2444,6 +2444,129 @@ def main() -> int:
                 "theorems": [
                 ],
             },
+            "ramp_profile_concrete": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-21): the CONCRETE profile of the "
+                           "upper-bound programme (companion manuscript "
+                           "notes/lemma_U_clean.md). Everything analytic had been stated "
+                           "for an abstract profile I constrained only by inequalities; "
+                           "the composition needs a concrete one, and the manuscript is "
+                           "explicit that the schedule is design data. This fixes q(zeta) "
+                           "= min(q_hi, q_h + m (zeta - H)^+) with I(zeta) = "
+                           "int_0^{zeta^+} q, and proves what the composition uses: the "
+                           "flat head I = q_h zeta, the increment sandwich, the tangent "
+                           "bound |I y - I z - q(z)(y-z)| <= m (y-z)^2/2 in BOTH "
+                           "directions (the arc's three positions straddle the base "
+                           "point), and the telescope I(zeta) - I(zeta-lam) = q_hi lam "
+                           "past saturation (the constancy of Theta that Lemma V3 needs). "
+                           "The rate lower bound m that ArcLength.climb_of_rate needs "
+                           "holds by construction. "),
+                "theorems": [
+                    "RevPebbling.RampProfile.qr_head",
+                    "RevPebbling.RampProfile.le_qr",
+                    "RevPebbling.RampProfile.qr_sub_le",
+                    "RevPebbling.RampProfile.qr_mono",
+                    "RevPebbling.RampProfile.qr_eq_hi",
+                    "RevPebbling.RampProfile.Iof_nonpos",
+                    "RevPebbling.RampProfile.Iof_head",
+                    "RevPebbling.RampProfile.Iof_sub",
+                    "RevPebbling.RampProfile.Iof_sub_ge",
+                    "RevPebbling.RampProfile.Iof_sub_le",
+                    "RevPebbling.RampProfile.Iof_quadratic",
+                    "RevPebbling.RampProfile.Iof_quadratic_back",
+                    "RevPebbling.RampProfile.Iof_tangent",
+                    "RevPebbling.RampProfile.Iof_telescope",
+                ],
+            },
+            "regions_cap_band_tail": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-21): three of the four regions "
+                           "of the case split, for the concrete shape Psi_S(v) = floor(cap "
+                           "S 2^{-I(X S - log2 v)}) with X S = X0 + lam S. The profile "
+                           "hypotheses of Shape's cap, band and self-closing steps are "
+                           "discharged from the POSITIONS alone. In the band, C4 (q_h H >= "
+                           "1) is what puts the upper child inside the flat head. In the "
+                           "tail, log_cap_ratio_le establishes the REAL threshold "
+                           "log2(cap(S+1)/cap S) <= 1.012 for S >= 7 -- the manuscript's "
+                           "point that Theta >= 1 is not enough -- and C2 clears it. "),
+                "theorems": [
+                    "RevPebbling.Regions.Xf_succ",
+                    "RevPebbling.Regions.cap_step_ramp",
+                    "RevPebbling.Regions.band_step_ramp",
+                    "RevPebbling.Regions.cap_ge",
+                    "RevPebbling.Regions.log_cap_ratio_le",
+                    "RevPebbling.Regions.tail_step_ramp",
+                ],
+            },
+            "arc_geometry_split_point": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-21): the arc's split point "
+                           "delta* = log2(1+rho), rho = 2^{1/q-lam}, and t* = delta* - "
+                           "(1/q - lam). Three facts drive the arc: 2^{-q delta*} = "
+                           "(1+rho)^{-q} (the upper child's ideal weight IS the second "
+                           "term of F); lam - t* = 1/q - delta*, so BOTH branches of the "
+                           "min carry the ideal exponent -q delta* (the split sits at the "
+                           "balance point, which is why idealMargin reduces to F - 1); and "
+                           "|lam - t*| <= delta*, so one bound on delta* controls all "
+                           "three positions. delta* <= 7/3 by log(5^3) <= log(2^7) settles "
+                           "the delta-upper-bound conflict recorded in section 4.5 of the "
+                           "manuscript (scanned 2.5079 against the required 2.4739): the "
+                           "truth is log2 5 = 2.3219, so delta*^2 <= 49/9 < 612/100. "),
+                "theorems": [
+                    "RevPebbling.ArcGeometry.two_rpow_delta",
+                    "RevPebbling.ArcGeometry.two_rpow_neg_q_delta",
+                    "RevPebbling.ArcGeometry.lam_sub_t",
+                    "RevPebbling.ArcGeometry.two_rpow_inv_q",
+                    "RevPebbling.ArcGeometry.inv_q_le_two_delta",
+                    "RevPebbling.ArcGeometry.deltaStar_nonneg",
+                    "RevPebbling.ArcGeometry.abs_lam_sub_t_le",
+                    "RevPebbling.ArcGeometry.rhoLam_lt_four",
+                    "RevPebbling.ArcGeometry.delta_le_seven_thirds",
+                    "RevPebbling.ArcGeometry.delta_sq_le",
+                ],
+            },
+            "arc_margin_lower_bound": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-21): the arc's lower bound on "
+                           "the IDEALISED margin -- the last analytic step of the upper "
+                           "bound. margin_transfer_three transfers the three exponent "
+                           "deviations at a cost of ln2 times their weighted sum; F_at_V "
+                           "supplies Step 5's hypothesis from the root equation (2^{qV-1} "
+                           "= rho_c^{-q}); arc_margin_ge_gen keeps the errors symbolic (so "
+                           "the assembly can add the integerisation slack of the split); "
+                           "arc_margin_ge specialises to the profile's curvature and "
+                           "concludes idealMargin >= ln2 q (lam - V) [rho_c^{-q} - v_A/20] "
+                           "under the design condition m <= (q/10)(lam - V), which the "
+                           "linear ramp satisfies. bracket_pos_arc: that bracket is "
+                           "positive, since rho_c^{-q} > 1/2 at a root while v_A/20 <= "
+                           "0.294. With the linear ramp the schedule factor is exactly "
+                           "q/10, so the gamma-bar to gamma(q0) mismatch of section 4.5 "
+                           "does not arise. "),
+                "theorems": [
+                    "RevPebbling.ArcMargin.margin_transfer_three",
+                    "RevPebbling.ArcMargin.F_at_V",
+                    "RevPebbling.ArcMargin.arc_margin_ge_gen",
+                    "RevPebbling.ArcMargin.arc_margin_ge",
+                    "RevPebbling.ArcMargin.bracket_pos_arc",
+                ],
+            },
+            "arc_step_concrete": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-21): the arc step for the "
+                           "concrete shape. err_at bounds one position's exponent error by "
+                           "the curvature m(p-z)^2/2 plus q0 times the slack by which p "
+                           "misses its ideal place -- the integerisation error that u, w "
+                           "being naturals forces, which the manuscript records as a "
+                           "condition to be stated. arc_margin_ramp assembles the three "
+                           "positions; arc_step_of_margin hands the bound to "
+                           "Shape.step_of_margin_lower, which pays the cap-ratio deficit "
+                           "and yields the step for the real Psi. "),
+                "theorems": [
+                    "RevPebbling.ArcStep.err_at",
+                    "RevPebbling.ArcStep.arc_margin_ramp",
+                    "RevPebbling.ArcStep.arc_step_of_margin",
+                ],
+            },
             "shape_definition_and_cap_step": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED (this work, 2026-08-20): the shape itself. An "
