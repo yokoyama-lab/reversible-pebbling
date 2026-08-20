@@ -1538,6 +1538,20 @@
       "axiom_free_theorems": [],
       "carried_hypotheses": {},
       "proves_hypotheses": {}
+    },
+    "arc_length_and_S0_explicit": {
+      "status": "proved_general",
+      "scope": "UNBOUNDED (this work, 2026-08-20): the third computational ingredient of the upper-bound programme (companion manuscript notes/lemma_U_clean.md) — S0(eps) is FINITE and EXPLICIT. Lemma V4 needs S >= 1 + I(zeta_sc) + log2(1/mu), so only the finiteness of I(zeta_sc) matters; its size never enters the conclusion c <= 2^{1+kappa*+eps}. With the simple schedule gamma(q) = q/10 of BracketPositive the slope on the ramp obeys dq/dzeta = gamma(q)(lam - V(q)) >= (q_h/10) eps (since q >= q_h there and lam - V(q) >= eps by Step 6), so the climb from q_h to q_hi takes at most 10 (q_hi - q_h)/(q_h eps) octaves, and I(zeta_sc) <= q_hi zeta_sc. Both are explicit rational expressions in eps; the 1/eps is harmless because only S0(eps) < infinity for each fixed eps is needed. The integral half (m T <= int_0^T q' from q' >= m) is MarginAnchors.integral_ge_of_ge; this stage adds the arithmetic packaging and the matching upper bound I <= q_hi zeta.",
+      "theorems": [
+        "RevPebbling.ArcLength.time_le_of_slope_ge",
+        "RevPebbling.ArcLength.arc_time_bound",
+        "RevPebbling.ArcLength.integral_le_of_le",
+        "RevPebbling.ArcLength.S0_explicit"
+      ],
+      "native_decide_theorems": [],
+      "axiom_free_theorems": [],
+      "carried_hypotheses": {},
+      "proves_hypotheses": {}
     }
   }
 }
