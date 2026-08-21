@@ -1,4 +1,5 @@
 import RevPebbling.ArcStep
+import RevPebbling.RationalData
 
 /-!
 # Assembling the step: the split as natural numbers
@@ -896,6 +897,426 @@ theorem le_pos_of_le {v : ℕ} (hv : 1 ≤ v) {X x : ℝ} (h : (v : ℝ) ≤ (2 
   have : lg (v : ℝ) = Real.log v / Real.log 2 := rfl
   rw [this] at hmono
   linarith
+
+/-! ## Two shorthands for the fixed data -/
+
+/-- The saturation depth `ζ_sat = H + (q_hi − q_h)/m` at `m = (q_h/10)ε`. -/
+noncomputable def Zsat (ε : ℝ) : ℝ := 27 / 10 + ((16 : ℝ) / 5 - 43 / 100) / (43 / 1000 * ε)
+
+theorem Zsat_pos {ε : ℝ} (hε : 0 < ε) : 0 < Zsat ε := by
+  unfold Zsat
+  have : (0 : ℝ) < ((16 : ℝ) / 5 - 43 / 100) / (43 / 1000 * ε) := by positivity
+  linarith
+
+/-! ## The dispatch: every `v ≥ 2` lands in exactly one region
+
+The thresholds are `D = 2^{X_{S+1}−3/1000}`, `B = 2^{X_{S+1}−λ}` and
+`C = 2^{X_{S+1}−ζ_sat−λ}`, and the four cases `v ≥ D`, `B ≤ v < D`,
+`C ≤ v < B`, `v < C` are exhaustive **by trichotomy** — the coverage
+claim is discharged here, not assumed.
+
+Taking the first threshold at `3/1000` rather than at the cap region's
+exact reach is what removes the boundary's one-integer gap in the other
+direction too: `2^{−3/1000} ≥ 0.9975 > 0.9958 ≥ σ₁ + 2^{−λ}`, so `v ≥ D`
+already implies the cap split is feasible, and the band therefore always
+starts at `ζ ≥ 3/1000` — a positive margin, uniform in `ε`. -/
+set_option maxHeartbeats 1000000 in
+theorem hstep_dispatch {ε κ X₀ : ℝ} {s v : ℕ}
+    (hε : 0 < ε) (hε1 : ε ≤ 1 / 100)
+    (hκlo : 33 / 100 ≤ κ) (hκhi : κ ≤ 1 / 2)
+    (hsup : ∀ q ρ : ℝ, 43 / 100 ≤ q → q ≤ 16 / 5 → 1 ≤ ρ →
+      RevPebbling.CriticalRoot.G q ρ = 1 → 1 / q - Real.log ρ / Real.log 2 ≤ κ)
+    (hs7 : 7 ≤ s) (hv2 : 2 ≤ v)
+    (hXsat : Zsat ε + (κ + ε) + 20 ≤ X₀)
+    (hXslack : (20000 : ℝ) / ε ≤ (2 : ℝ) ^ (X₀ - Zsat ε - (κ + ε)))
+    (hScap : (2 : ℝ) ^ ((16 / 5 : ℝ) * (Zsat ε + (κ + ε))) * (100 / ε)
+        ≤ (cap (s + 1) : ℝ))
+    (hSdef : (1 + ε / 100) / (ε / 100) ≤ (cap s : ℝ)) :
+    ∃ u w : ℕ, u + w = v ∧ 1 ≤ u ∧ 1 ≤ w ∧
+      PsiR (43 / 100) (16 / 5) (27 / 10) (43 / 1000 * ε) X₀ (κ + ε) (s + 1) v
+        ≤ 1 + PsiR (43 / 100) (16 / 5) (27 / 10) (43 / 1000 * ε) X₀ (κ + ε) s v
+          + min (PsiR (43 / 100) (16 / 5) (27 / 10) (43 / 1000 * ε) X₀ (κ + ε) s u)
+              (PsiR (43 / 100) (16 / 5) (27 / 10) (43 / 1000 * ε) X₀ (κ + ε) (s + 1) w) := by
+  classical
+  set lam := κ + ε with hlamdef
+  set m : ℝ := 43 / 1000 * ε with hmdef
+  set Zs := Zsat ε with hZsdef
+  -- the standing rational facts
+  have hq : (0 : ℝ) < 43 / 100 := by norm_num
+  have hle : (43 : ℝ) / 100 ≤ 16 / 5 := by norm_num
+  have hm0 : (0 : ℝ) ≤ m := by rw [hmdef]; positivity
+  have hmpos : (0 : ℝ) < m := by rw [hmdef]; positivity
+  have hlam0 : 33 / 100 ≤ lam := by rw [hlamdef]; linarith
+  have hlam1 : lam ≤ 51 / 100 := by rw [hlamdef]; linarith
+  have hlamH : lam ≤ 27 / 10 := by linarith
+  have hqH : (1 : ℝ) ≤ 43 / 100 * (27 / 10) := by norm_num
+  have hC3 := RevPebbling.RationalData.C3 hlam0
+  have hhead := RevPebbling.RationalData.head_fits hlam1
+  have hql := RevPebbling.RationalData.C2_tail hlam0
+  have hZs0 : 0 < Zs := by rw [hZsdef]; exact Zsat_pos hε
+  have hZsm : Zs = 27 / 10 + ((16 : ℝ) / 5 - 43 / 100) / m := by
+    rw [hZsdef, hmdef]; unfold Zsat; ring_nf
+  have hvR : (2 : ℝ) ≤ (v : ℝ) := by exact_mod_cast hv2
+  have hv1 : 1 ≤ v := by omega
+  have hvpos : (0 : ℝ) < (v : ℝ) := by linarith
+  -- the front, and how big it is
+  have hXf1 : Xf X₀ lam (s + 1) = X₀ + lam * (s + 1 : ℕ) := rfl
+  have hXfge : X₀ ≤ Xf X₀ lam (s + 1) := by
+    unfold Xf
+    have : (0 : ℝ) ≤ lam * ((s : ℕ) + 1 : ℕ) := by
+      have : (0 : ℝ) ≤ lam := by linarith
+      positivity
+    push_cast
+    nlinarith [this]
+  have hXbig : (20 : ℝ) ≤ Xf X₀ lam (s + 1) := by
+    have : (20 : ℝ) ≤ X₀ := by linarith [hXsat, hZs0, hlam0]
+    linarith
+  -- the front's value, and the three thresholds as multiples of it
+  set Y := (2 : ℝ) ^ (Xf X₀ lam (s + 1)) with hY
+  have hYpos : (0 : ℝ) < Y := Real.rpow_pos_of_pos (by norm_num) _
+  have h2_20 : (2 : ℝ) ^ (20 : ℝ) = 1048576 := by
+    rw [show (20 : ℝ) = ((20 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+  have hYbig : (1048576 : ℝ) ≤ Y := by
+    have := Real.rpow_le_rpow_of_exponent_le (x := (2:ℝ)) (by norm_num) hXbig
+    rw [h2_20] at this
+    exact this
+  have hsplitY : ∀ a : ℝ, (2 : ℝ) ^ (Xf X₀ lam (s + 1) - a) = Y * (2 : ℝ) ^ (-a) := by
+    intro a
+    rw [hY, ← Real.rpow_add (by norm_num : (0:ℝ) < 2), sub_eq_add_neg]
+  have hXs : Xf X₀ lam s = Xf X₀ lam (s + 1) - lam := by rw [Xf_succ]; ring
+  rcases le_total ((2 : ℝ) ^ (Xf X₀ lam (s + 1) - 3 / 1000)) (v : ℝ) with hD | hD
+  · -- **Region 1 (cap).**  `v ≥ 2^{X−3/1000} ≥ 2^X(σ₁+2^{−λ}) + 1`.
+    refine step_capped (by omega) hq hle hm0 hqH hv1 ?_
+    have hσ := RevPebbling.RationalData.sigma1_add_lam_le hlam0
+    have h3 := RevPebbling.RationalData.le_two_rpow_neg_3_1000
+    have e1 : (2 : ℝ) ^ (Xf X₀ lam (s + 1) - 1 / (43 / 100 : ℝ))
+        = Y * (2 : ℝ) ^ (-(1 / (43 / 100 : ℝ))) := hsplitY _
+    have e2 : (2 : ℝ) ^ (Xf X₀ lam s) = Y * (2 : ℝ) ^ (-lam) := by
+      rw [hXs]; exact hsplitY _
+    have e3 : (2 : ℝ) ^ (Xf X₀ lam (s + 1) - 3 / 1000) = Y * (2 : ℝ) ^ (-(3 : ℝ) / 1000) := by
+      rw [hsplitY]
+      congr 2
+      ring
+    rw [e1, e2]
+    rw [e3] at hD
+    nlinarith only [hσ, h3, hYbig, hYpos, hD]
+  · rcases le_total ((2 : ℝ) ^ (Xf X₀ lam (s + 1) - lam)) (v : ℝ) with hB | hB
+    · -- **Region 2 (band).**  `3/1000 ≤ ζ ≤ λ`.
+      have hζlo : (3 : ℝ) / 1000 ≤ Xf X₀ lam (s + 1) - Real.log v / Real.log 2 := by
+        have h := le_pos_of_le (v := v) (X := Xf X₀ lam (s + 1))
+          (x := Xf X₀ lam (s + 1) - 3 / 1000) hv1 hD
+        linarith
+      have hζlam : Xf X₀ lam (s + 1) - Real.log v / Real.log 2 ≤ lam := by
+        have h := pos_le_of_le (v := v) (X := Xf X₀ lam (s + 1))
+          (x := Xf X₀ lam (s + 1) - lam) hv1 hB
+        linarith
+      -- `v` is astronomically large
+      have hvbig : (20000 : ℝ) / ε ≤ (v : ℝ) := by
+        have hmono : (2 : ℝ) ^ (X₀ - Zs - lam) ≤ (2 : ℝ) ^ (Xf X₀ lam (s + 1) - lam) :=
+          Real.rpow_le_rpow_of_exponent_le (by norm_num) (by linarith [hXfge, hZs0])
+        linarith [hXslack, hmono, hB]
+      have hvlarge : (2000000 : ℝ) ≤ (v : ℝ) := by
+        have hdiv : (20000 : ℝ) / (1 / 100) ≤ 20000 / ε :=
+          div_le_div_of_nonneg_left (by norm_num) hε hε1
+        norm_num at hdiv
+        linarith [hvbig, hdiv]
+      -- the split's slack facts
+      have htlam : tStar (43 / 100 : ℝ) lam ≤ lam :=
+        RevPebbling.Regions.tStar_le_lam hq hC3
+      have htpow : (2 : ℝ) ^ (tStar (43 / 100 : ℝ) lam) ≤ 36 / 25 := by
+        refine le_trans (Real.rpow_le_rpow_of_exponent_le (by norm_num)
+          (le_trans htlam hlam1)) ?_
+        exact RevPebbling.RationalData.two_rpow_51_100_le
+      have htpos : (0 : ℝ) < (2 : ℝ) ^ (tStar (43 / 100 : ℝ) lam) :=
+        Real.rpow_pos_of_pos (by norm_num) _
+      have hbigt : (2 : ℝ) ^ (tStar (43 / 100 : ℝ) lam) * 2 ≤ (v : ℝ) := by
+        linarith only [htpow, hvlarge]
+      have hslackH : 3 * (2 : ℝ) ^ (tStar (43 / 100 : ℝ) lam) / (v : ℝ) ≤ 27 / 10 - lam := by
+        rw [div_le_iff₀ (by linarith only [hvlarge])]
+        have hHl : (2 : ℝ) ≤ 27 / 10 - lam := by linarith only [hlam1]
+        nlinarith only [htpow, hvlarge, hHl]
+      have hroom : 1 + (v : ℝ) * (2 : ℝ) ^ (-(deltaStar (43 / 100 : ℝ) lam)) ≤ (v : ℝ) := by
+        have hsp : (2 : ℝ) ^ (-(deltaStar (43 / 100 : ℝ) lam))
+            + (2 : ℝ) ^ (-(tStar (43 / 100 : ℝ) lam)) = 1 := two_rpow_neg_split
+        have hnt : (2 : ℝ) ^ (-(tStar (43 / 100 : ℝ) lam))
+            = ((2 : ℝ) ^ (tStar (43 / 100 : ℝ) lam))⁻¹ := Real.rpow_neg (by norm_num) _
+        have hinv : (25 : ℝ) / 36 ≤ (2 : ℝ) ^ (-(tStar (43 / 100 : ℝ) lam)) := by
+          rw [hnt, le_inv_comm₀ (by norm_num) htpos]
+          linarith
+        nlinarith only [hsp, hinv, hvlarge]
+      have hL69 : (69 / 100 : ℝ) ≤ Real.log 2 := by
+        have h := Real.log_two_gt_d9
+        norm_num at h
+        linarith
+      have hL1 : Real.log 2 ≤ 1 := by
+        have := Real.log_le_sub_one_of_pos (show (0:ℝ) < 2 by norm_num)
+        linarith
+      refine step_band_upper' (μ := ε / 100) (by omega) hq hle hv1 hC3 (by linarith) hζlam hlamH
+        hhead hbigt hslackH hroom ?_ ?_
+      · -- Lemma V₄'s `μ·x ≥ 1`, with `μ = ε/100`
+        refine mux_of_cap_big (μ := ε / 100) (Ibig := (16 / 5 : ℝ) * (Zs + lam))
+          (by positivity) ?_ ?_
+        · have h1 := Iof_le_top (q_h := (43:ℝ)/100) (q_hi := (16:ℝ)/5) (H := (27:ℝ)/10)
+            (m := m) (ζ := Xf X₀ lam (s + 1) - Real.log v / Real.log 2) (by linarith)
+          nlinarith only [h1, hζlam, hZs0]
+        · have hid : (2 : ℝ) ^ ((16 / 5 : ℝ) * (Zs + lam)) / (ε / 100)
+              = (2 : ℝ) ^ ((16 / 5 : ℝ) * (Zs + lam)) * (100 / ε) := by
+            field_simp
+          rw [hid]; exact hScap
+      · -- the cap-ratio deficit
+        refine cap_deficit_of_big (μ := ε / 100) (by positivity) ?_ hSdef
+        have hηsmall : 3 * (2 : ℝ) ^ (tStar (43 / 100 : ℝ) lam) / (v : ℝ) ≤ 1 / 100000 := by
+          rw [div_le_iff₀ (by linarith)]
+          nlinarith only [htpow, hvlarge, htpos]
+        have hζ3 : (3 : ℝ) / 1000 ≤ Xf X₀ lam (s + 1) - Real.log v / Real.log 2 := hζlo
+        nlinarith only [hL69, hL1, hζ3, hηsmall, hε1, hε]
+    · rcases le_total ((2 : ℝ) ^ (Xf X₀ lam (s + 1) - Zs - lam)) (v : ℝ) with hC | hC
+      · -- **Region 3 (arc).**  `λ ≤ ζ ≤ ζ_sat + λ`.
+        have hζlam : lam ≤ Xf X₀ lam (s + 1) - Real.log v / Real.log 2 := by
+          have h := le_pos_of_le (v := v) (X := Xf X₀ lam (s + 1))
+            (x := Xf X₀ lam (s + 1) - lam) hv1 hB
+          linarith
+        have hζhi : Xf X₀ lam (s + 1) - Real.log v / Real.log 2 ≤ Zs + lam := by
+          have h := pos_le_of_le (v := v) (X := Xf X₀ lam (s + 1))
+            (x := Xf X₀ lam (s + 1) - Zs - lam) hv1 hC
+          linarith
+        have hvbig : (20000 : ℝ) / ε ≤ (v : ℝ) := by
+          have hmono : (2 : ℝ) ^ (X₀ - Zs - lam)
+              ≤ (2 : ℝ) ^ (Xf X₀ lam (s + 1) - Zs - lam) :=
+            Real.rpow_le_rpow_of_exponent_le (by norm_num) (by linarith [hXfge])
+          linarith [hXslack, hmono, hC]
+        have hvlarge : (2000000 : ℝ) ≤ (v : ℝ) := by
+          have hdiv : (20000 : ℝ) / (1 / 100) ≤ 20000 / ε :=
+            div_le_div_of_nonneg_left (by norm_num) hε hε1
+          norm_num at hdiv
+          linarith [hvbig, hdiv]
+        -- the rate at the value, and its root
+        set q₀ := qr (43 / 100 : ℝ) (16 / 5) (27 / 10) m
+          (Xf X₀ lam (s + 1) - Real.log v / Real.log 2) with hq₀def
+        have hq₀lo : (43 : ℝ) / 100 ≤ q₀ := le_qr hle hm0 _
+        have hq₀hi : q₀ ≤ 16 / 5 := qr_le_hi _
+        have hq₀pos : (0 : ℝ) < q₀ := by linarith
+        obtain ⟨ρc, hρc, hg⟩ := RevPebbling.CriticalRoot.exists_root hq₀pos
+        have hVκ : 1 / q₀ - Real.log ρc / Real.log 2 ≤ κ :=
+          hsup q₀ ρc hq₀lo hq₀hi hρc hg
+        have hVeps : (1 / q₀ - Real.log ρc / Real.log 2) + ε ≤ lam := by
+          rw [hlamdef]; linarith
+        -- the split's constants
+        have hδ73 : deltaStar q₀ lam ≤ 7 / 3 := delta_le_seven_thirds hq₀lo hlam0
+        have hδ0 : 0 ≤ deltaStar q₀ lam := deltaStar_nonneg
+        have hinvq : (0 : ℝ) < 1 / q₀ := by positivity
+        have ht3 : tStar q₀ lam ≤ 3 := by
+          unfold tStar
+          linarith [hδ73, hlam1, hinvq]
+        have hd3 : deltaStar q₀ lam ≤ 3 := by linarith
+        have htpow : (2 : ℝ) ^ (tStar q₀ lam) ≤ 8 := by
+          have h := Real.rpow_le_rpow_of_exponent_le (x := (2:ℝ)) (by norm_num) ht3
+          have h8 : (2 : ℝ) ^ (3 : ℝ) = 8 := by
+            rw [show (3 : ℝ) = ((3 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+          rw [h8] at h; exact h
+        have hdpow : (2 : ℝ) ^ (deltaStar q₀ lam) ≤ 8 := by
+          have h := Real.rpow_le_rpow_of_exponent_le (x := (2:ℝ)) (by norm_num) hd3
+          have h8 : (2 : ℝ) ^ (3 : ℝ) = 8 := by
+            rw [show (3 : ℝ) = ((3 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+          rw [h8] at h; exact h
+        have htpos : (0 : ℝ) < (2 : ℝ) ^ (tStar q₀ lam) := Real.rpow_pos_of_pos (by norm_num) _
+        have hdpos : (0 : ℝ) < (2 : ℝ) ^ (deltaStar q₀ lam) :=
+          Real.rpow_pos_of_pos (by norm_num) _
+        refine step_arc (μ := ε / 100) (by omega) hq hle hm0 ?_ (by norm_num) (by norm_num)
+          hlam0 hlam1 hv1 hε hζlam hρc hg rfl hVeps ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_
+        · -- `m ≤ q_h`
+          rw [hmdef]; nlinarith only [hε, hε1]
+        · -- the design condition `m ≤ q₀/10·(λ − V)`
+          rw [hmdef]
+          have hgap : ε ≤ lam - (1 / q₀ - Real.log ρc / Real.log 2) := by linarith
+          nlinarith only [hgap, hq₀lo, hε]
+        · linarith only [htpow, hvlarge]
+        · linarith only [hdpow, hvlarge]
+        · -- room for the lower child
+          have hsp : (2 : ℝ) ^ (-(deltaStar q₀ lam)) + (2 : ℝ) ^ (-(tStar q₀ lam)) = 1 :=
+            two_rpow_neg_split
+          have hnt : (2 : ℝ) ^ (-(tStar q₀ lam)) = ((2 : ℝ) ^ (tStar q₀ lam))⁻¹ :=
+            Real.rpow_neg (by norm_num) _
+          have hinv : (1 : ℝ) / 8 ≤ (2 : ℝ) ^ (-(tStar q₀ lam)) := by
+            rw [hnt, le_inv_comm₀ (by norm_num) htpos]
+            linarith only [htpow]
+          nlinarith only [hsp, hinv, hvlarge]
+        · -- the integerisation slack is below `ε/100`
+          have hvpos' : (0 : ℝ) < (v : ℝ) := by linarith only [hvlarge]
+          have key : 4 * (3 * (2 : ℝ) ^ (tStar q₀ lam) / (v : ℝ)
+                + 3 * (2 : ℝ) ^ (deltaStar q₀ lam) / (v : ℝ))
+              = (12 * (2 : ℝ) ^ (tStar q₀ lam) + 12 * (2 : ℝ) ^ (deltaStar q₀ lam))
+                / (v : ℝ) := by
+            field_simp
+            ring
+          rw [key, div_le_iff₀ hvpos']
+          have hεv : (20000 : ℝ) ≤ ε * (v : ℝ) := by
+            rw [div_le_iff₀ hε] at hvbig
+            linarith only [hvbig]
+          nlinarith only [htpow, hdpow, hεv]
+        · -- and below one
+          rw [div_le_iff₀ (by linarith only [hvlarge])]
+          nlinarith only [htpow, hvlarge]
+        · -- Lemma V₄'s `μ·x ≥ 1`
+          refine mux_of_cap_big (μ := ε / 100) (Ibig := (16 / 5 : ℝ) * (Zs + lam))
+            (by positivity) ?_ ?_
+          · have h1 := Iof_le_top (q_h := (43:ℝ)/100) (q_hi := (16:ℝ)/5) (H := (27:ℝ)/10)
+              (m := m) (ζ := Xf X₀ lam (s + 1) - Real.log v / Real.log 2)
+              (by linarith only [hζlam, hlam0])
+            nlinarith only [h1, hζhi]
+          · have hid : (2 : ℝ) ^ ((16 / 5 : ℝ) * (Zs + lam)) / (ε / 100)
+                = (2 : ℝ) ^ ((16 / 5 : ℝ) * (Zs + lam)) * (100 / ε) := by
+              field_simp
+            rw [hid]; exact hScap
+        · -- the cap-ratio deficit
+          exact cap_deficit_of_big (μ := ε / 100) (by positivity)
+            (by linarith only [hε]) hSdef
+      · -- **Region 4 (tail).**  `ζ − λ ≥ ζ_sat`.
+        have hpos : Zs ≤ Xf X₀ lam s - Real.log v / Real.log 2 := by
+          have h := le_pos_of_le (v := v) (X := Xf X₀ lam (s + 1))
+            (x := Xf X₀ lam (s + 1) - Zs - lam) hv1 hC
+          rw [hXs]
+          linarith
+        refine step_tail hmpos hle (by linarith) hs7 hv2 ?_ ?_ ?_
+        · linarith [hZs0, hpos]
+        · rw [← hZsm]; exact hpos
+        · exact hql
+
+/-- `cap` is monotone, so a lower bound at `S₀` is one at every `s ≥ S₀`. -/
+theorem cap_mono {S T : ℕ} (h : S ≤ T) : cap S ≤ cap T := by
+  unfold cap
+  have : (2 : ℕ) ^ (S - 1) ≤ 2 ^ (T - 1) := Nat.pow_le_pow_right (by norm_num) (by omega)
+  omega
+
+/-! ## The deep end of the concrete shape -/
+
+/-- **`Ψ` vanishes past the front.**  With the front beyond saturation the
+profile grows at `q_hi`, and `C2` (`q_hi·λ > 1`) makes one level's worth of
+front outrun one level's worth of cap. -/
+theorem psiR_eq_zero {ε κ X₀ : ℝ} {S : ℕ} {v : ℕ} (hε : 0 < ε)
+    (hκlo : 33 / 100 ≤ κ) (hκhi : κ ≤ 1 / 2) (hε1 : ε ≤ 1 / 100)
+    (hdeep : Zsat ε + (S : ℝ) / (16 / 5) ≤ Xf X₀ (κ + ε) S - Real.log v / Real.log 2) :
+    PsiR (43 / 100) (16 / 5) (27 / 10) (43 / 1000 * ε) X₀ (κ + ε) S v = 0 := by
+  set lam := κ + ε with hlamdef
+  set m : ℝ := 43 / 1000 * ε with hmdef
+  have hmpos : (0 : ℝ) < m := by rw [hmdef]; positivity
+  have hle : (43 : ℝ) / 100 ≤ 16 / 5 := by norm_num
+  have hZs0 : 0 < Zsat ε := Zsat_pos hε
+  have hZsm : Zsat ε = 27 / 10 + ((16 : ℝ) / 5 - 43 / 100) / m := by
+    rw [hmdef]; unfold Zsat; ring_nf
+  refine psi_eq_zero_of_profile ?_
+  set ζ := Xf X₀ lam S - Real.log v / Real.log 2 with hζ
+  have hsat : 27 / 10 + ((16 : ℝ) / 5 - 43 / 100) / m ≤ ζ := by
+    rw [← hZsm]
+    have : (0 : ℝ) ≤ (S : ℝ) / (16 / 5) := by positivity
+    linarith [hdeep]
+  have hsat0 : (0 : ℝ) ≤ 27 / 10 + ((16 : ℝ) / 5 - 43 / 100) / m := by
+    rw [← hZsm]; linarith
+  have h := RevPebbling.RampProfile.Iof_ge_sat (q_h := (43 : ℝ) / 100) (q_hi := (16 : ℝ) / 5)
+    (H := (27 : ℝ) / 10) (m := m) hmpos hle (by norm_num) hsat hsat0
+  have hgap : (S : ℝ) / (16 / 5) ≤ ζ - (27 / 10 + ((16 : ℝ) / 5 - 43 / 100) / m) := by
+    rw [← hZsm]; linarith [hdeep]
+  have hSnn : (0 : ℝ) ≤ (S : ℝ) := Nat.cast_nonneg _
+  -- `I ≥ q_hi·(ζ − ζ_sat) ≥ q_hi·(S/q_hi) = S`
+  nlinarith only [h, hgap, hSnn]
+
+/-! ## The theorem: the shape is a subsolution of the count -/
+
+/-- **`Ψ ≤ C` for the concrete shape.**
+
+Everything the statement carries is either the construction's *rational
+data* (`q_h = 43/100`, `q_hi = 16/5`, `H = 27/10`, `m = (q_h/10)ε`,
+`λ = κ + ε`), a *range* (`ε ∈ (0,1/100]`, `33/100 ≤ κ ≤ 1/2`), the
+**one** analytic input `hsup` (`V q ≤ κ` on `[q_h, q_hi]` — the enclosure
+of `κ*`, which Lean does not have), or a **lower bound on `X₀` or `S₀`**.
+The step, the margins and the coverage are all proved, not assumed:
+coverage is `hstep_dispatch`'s trichotomy, and each region's split is
+built as an actual pair of natural numbers. -/
+theorem psi_le_count {ε κ X₀ : ℝ} {S₀ : ℕ}
+    (hε : 0 < ε) (hε1 : ε ≤ 1 / 100)
+    (hκlo : 33 / 100 ≤ κ) (hκhi : κ ≤ 1 / 2)
+    (hsup : ∀ q ρ : ℝ, 43 / 100 ≤ q → q ≤ 16 / 5 → 1 ≤ ρ →
+      RevPebbling.CriticalRoot.G q ρ = 1 → 1 / q - Real.log ρ / Real.log 2 ≤ κ)
+    (hS₀ : 7 ≤ S₀)
+    (hXsat : Zsat ε + (κ + ε) + 20 ≤ X₀)
+    (hXslack : (20000 : ℝ) / ε ≤ (2 : ℝ) ^ (X₀ - Zsat ε - (κ + ε)))
+    (hXbase : Zsat ε + Real.log (RevPebbling.RowMax.rowMax S₀) / Real.log 2 + (S₀ : ℝ) ≤ X₀)
+    (hScap : (2 : ℝ) ^ ((16 / 5 : ℝ) * (Zsat ε + (κ + ε))) * (100 / ε) ≤ (cap S₀ : ℝ))
+    (hSdef : (1 + ε / 100) / (ε / 100) ≤ (cap S₀ : ℝ)) :
+    ∀ s, S₀ ≤ s → ∀ v,
+      PsiR (43 / 100) (16 / 5) (27 / 10) (43 / 1000 * ε) X₀ (κ + ε) s v
+        ≤ RevPebbling.CountRecursion.countLe (RevPebbling.CountRecursion.rowIter s) v := by
+  classical
+  set lam := κ + ε with hlamdef
+  have hlam0 : (0 : ℝ) ≤ lam := by rw [hlamdef]; linarith
+  have hZs0 : 0 < Zsat ε := Zsat_pos hε
+  -- the cap bounds propagate upwards
+  have hcapS : ∀ s : ℕ, S₀ ≤ s → (cap S₀ : ℝ) ≤ (cap s : ℝ) := by
+    intro s hs
+    exact_mod_cast Nat.cast_le.mpr (cap_mono hs)
+  -- the front is deep enough at every level: `Ψ = 0` at `v = 0` and `v = 1`
+  have hfront : ∀ s : ℕ, S₀ ≤ s → ∀ v : ℕ, Real.log v = 0 →
+      PsiR (43 / 100) (16 / 5) (27 / 10) (43 / 1000 * ε) X₀ lam (s + 1) v = 0 := by
+    intro s hs v hv
+    refine psiR_eq_zero hε hκlo hκhi hε1 ?_
+    rw [hv]
+    have hXf : Xf X₀ lam (s + 1) = X₀ + lam * ((s : ℝ) + 1) := by
+      unfold Xf; push_cast; ring
+    have hql := RevPebbling.RationalData.C2_tail (lam := lam) (by rw [hlamdef]; linarith)
+    have hs1 : (0 : ℝ) ≤ (s : ℝ) := Nat.cast_nonneg _
+    rw [hXf]
+    simp only [zero_div, sub_zero]
+    -- `λ ≥ 1012/3200 > 5/16 = 1/q_hi` — this is exactly `C2`
+    have hlam516 : (5 : ℝ) / 16 ≤ lam := by linarith only [hql]
+    push_cast
+    nlinarith only [hXsat, hlam516, hs1]
+  refine RevPebbling.Subsolution.subsolution_le_count ?_ ?_ ?_ ?_
+  · -- **the base**: either the shape has already vanished, or `v` is past
+    -- the whole row and the count is the full length
+    intro v
+    rcases le_total (v : ℕ) (RevPebbling.RowMax.rowMax S₀) with hv | hv
+    · have hzero : PsiR (43 / 100) (16 / 5) (27 / 10) (43 / 1000 * ε) X₀ lam S₀ v = 0 := by
+        refine psiR_eq_zero hε hκlo hκhi hε1 ?_
+        have hrow : (1 : ℕ) ≤ RevPebbling.RowMax.rowMax S₀ := RevPebbling.RowMax.rowMax_pos S₀
+        have hrowR : (1 : ℝ) ≤ (RevPebbling.RowMax.rowMax S₀ : ℝ) := by exact_mod_cast hrow
+        have hlgv : Real.log v / Real.log 2
+            ≤ Real.log (RevPebbling.RowMax.rowMax S₀) / Real.log 2 := by
+          rcases Nat.eq_zero_or_pos v with rfl | hvpos
+          · simp only [Nat.cast_zero, Real.log_zero, zero_div]
+            have : (0 : ℝ) ≤ Real.log (RevPebbling.RowMax.rowMax S₀) :=
+              Real.log_nonneg hrowR
+            positivity
+          · have hvR : (0 : ℝ) < (v : ℝ) := by exact_mod_cast hvpos
+            have hvle : (v : ℝ) ≤ (RevPebbling.RowMax.rowMax S₀ : ℝ) := by exact_mod_cast hv
+            have := lg_mono hvR hvle
+            exact this
+        have hXf : Xf X₀ lam S₀ = X₀ + lam * (S₀ : ℝ) := rfl
+        have hS₀nn : (0 : ℝ) ≤ (S₀ : ℝ) := Nat.cast_nonneg _
+        have hlamS : (0 : ℝ) ≤ lam * (S₀ : ℝ) := by positivity
+        rw [hXf]
+        have hS₀16 : (S₀ : ℝ) / (16 / 5) ≤ (S₀ : ℝ) := by
+          rw [div_le_iff₀ (by norm_num)]; linarith [hS₀nn]
+        linarith [hXbase, hlgv, hlamS, hS₀16]
+      rw [hzero]
+      exact Nat.zero_le _
+    · -- `v` is past the row maximum
+      have hcount := countLe_eq_length_of_rowMax_le (s := S₀) (v := v) hv
+      rw [hcount]
+      refine le_trans ?_ (cap_le_rowIter_length S₀)
+      refine psi_le_cap ?_
+      exact RevPebbling.RampProfile.Iof_nonneg (by norm_num) (by positivity) (by norm_num) _
+  · -- **`v = 1`**
+    intro s hs
+    have h := hfront s hs 1 (by simp)
+    rw [h]
+    exact Nat.zero_le _
+  · -- **`v = 0`**
+    intro s hs
+    exact hfront s hs 0 (by simp)
+  · -- **the step**, by the dispatch
+    intro s hs v hv
+    exact hstep_dispatch hε hε1 hκlo hκhi hsup (by omega) hv hXsat hXslack
+      (le_trans hScap (hcapS (s + 1) (by omega))) (le_trans hSdef (hcapS s hs))
 
 end RevPebbling.Assemble
 

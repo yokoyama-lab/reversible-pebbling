@@ -133,6 +133,41 @@ theorem sigma1_add_lam_le {lam : ℝ} (hlam : 33 / 100 ≤ lam) :
   norm_num at h1 h2 ⊢
   linarith
 
+set_option maxHeartbeats 1000000 in
+/-- `2^{−3/1000} ≥ 9975/10000`, from `2^3 ≤ (10000/9975)^1000`.  This is
+what makes the dispatch's threshold `2^{X−3/1000}` sit *above* the cap
+region's feasibility threshold, so the band always starts at
+`ζ ≥ 3/1000` — a positive margin, uniform in everything.
+
+The certificate is proved in two steps rather than by expanding a
+2600-digit rational: Bernoulli gives `(1+1/399)^100 ≥ 499/399`, and
+`(499/399)^10 ≥ 9.3 ≥ 8`. -/
+theorem le_two_rpow_neg_3_1000 : (9975 : ℝ) / 10000 ≤ (2 : ℝ) ^ (-(3 : ℝ) / 1000) := by
+  have hid : ((10000 : ℝ) / 9975) = 1 + 1 / 399 := by norm_num
+  have hbern : (1 : ℝ) + 100 * (1 / 399) ≤ (1 + 1 / 399) ^ (100 : ℕ) :=
+    one_add_mul_le_pow (by norm_num) 100
+  have h10 : ((1 : ℝ) + 100 * (1 / 399)) ^ (10 : ℕ)
+      ≤ ((1 + 1 / 399 : ℝ) ^ (100 : ℕ)) ^ (10 : ℕ) :=
+    pow_le_pow_left₀ (by norm_num) hbern 10
+  have hpow : ((1 + 1 / 399 : ℝ) ^ (100 : ℕ)) ^ (10 : ℕ) = (1 + 1 / 399 : ℝ) ^ (1000 : ℕ) := by
+    rw [← pow_mul]
+  have hnum : (8 : ℝ) ≤ ((1 : ℝ) + 100 * (1 / 399)) ^ (10 : ℕ) := by norm_num
+  have hcert : (2 : ℝ) ^ (3 : ℕ) ≤ ((10000 : ℝ) / 9975) ^ (1000 : ℕ) := by
+    have h8 : (8 : ℝ) ≤ ((1 + 1 / 399 : ℝ) ^ (100 : ℕ)) ^ (10 : ℕ) := by linarith
+    rw [hpow] at h8
+    rw [hid]
+    have h2 : (2 : ℝ) ^ (3 : ℕ) = 8 := by norm_num
+    rw [h2]
+    exact h8
+  have hup : (2 : ℝ) ^ ((3 : ℝ) / 1000) ≤ (10000 : ℝ) / 9975 := by
+    have h := rpow_div_le (x := (2 : ℝ)) (s := (10000 : ℝ) / 9975)
+      (by norm_num) (by norm_num) (n := 1000) (m := 3) (by norm_num) hcert
+    simpa using h
+  have hpos : (0 : ℝ) < (2 : ℝ) ^ ((3 : ℝ) / 1000) := Real.rpow_pos_of_pos (by norm_num) _
+  rw [show (-(3 : ℝ) / 1000) = -((3 : ℝ) / 1000) by ring, Real.rpow_neg (by norm_num)]
+  rw [le_inv_comm₀ (by norm_num) hpos]
+  linarith
+
 /-! ## The corner condition `C3` -/
 
 /-- **`C3`**: `2^{−1/q_h} ≤ 1 − 2^{−λ}` — `0.1996 ≤ 0.2038` — for every
