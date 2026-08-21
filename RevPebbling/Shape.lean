@@ -423,6 +423,44 @@ theorem step_of_margin_lower {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ}
       ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) :=
   step_of_idealMargin hS hμx (le_trans hdef (by linarith))
 
+/-! ## The cap region: the integer identity, not the idealised margin -/
+
+/-- **The cap step with a half-weight upper child.**
+
+In the cap region the value and the lower parent are at full cap, so the
+step needs `min (Ψ_S u) (Ψ_{S+1} w) ≥ cap S`: the lower child capped, and
+the upper child at profile value `≤ 1`, whose weight is then at least
+`⌊cap(S+1)/2⌋ = cap S`.
+
+⚠ This region **cannot** go through `idealMargin`.  At `ζ = 0` the
+idealised margin is exactly `0` (`2^{-1} + 2^{-1} - 1`), so there is
+nothing to pay the cap-ratio deficit with; the region closes only by the
+**integer** identity `2^{n+1} − 1 = 1 + (2^n − 1) + (2^n − 1)`, where the
+recursion's `+1` is exactly the missing half. -/
+theorem cap_step_half_Psi {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ} (hS : 1 ≤ S)
+    (hv : I (X (S + 1) - (Real.log v / Real.log 2)) = 0)
+    (hvp : I (X S - (Real.log v / Real.log 2)) = 0)
+    (hu : I (X S - (Real.log u / Real.log 2)) = 0)
+    (hw : I (X (S + 1) - (Real.log w / Real.log 2)) ≤ 1) :
+    Psi I X (S + 1) v
+      ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) := by
+  rw [Psi_eq_cap hv, Psi_eq_cap hvp, Psi_eq_cap hu]
+  have hsucc : cap (S + 1) = 2 * cap S + 1 := cap_succ S hS
+  -- the upper child is worth at least `⌊cap(S+1)/2⌋ = cap S`
+  have hwge : cap S ≤ Psi I X (S + 1) w := by
+    unfold Psi
+    refine Nat.le_floor ?_
+    have hhalf : (2 : ℝ) ^ (-(1 : ℝ))
+        ≤ (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log w / Real.log 2)))) :=
+      Real.rpow_le_rpow_of_exponent_le (by norm_num) (by linarith)
+    have hval : (2 : ℝ) ^ (-(1 : ℝ)) = 1 / 2 := by
+      rw [Real.rpow_neg (by norm_num), Real.rpow_one]; norm_num
+    have hcap1 : (0 : ℝ) ≤ (cap (S + 1) : ℝ) := Nat.cast_nonneg _
+    have hsucc' : (cap (S + 1) : ℝ) = 2 * (cap S : ℝ) + 1 := by exact_mod_cast hsucc
+    calc (cap S : ℝ) ≤ (cap (S + 1) : ℝ) * (1 / 2) := by rw [hsucc']; linarith
+      _ ≤ _ := by rw [← hval]; exact mul_le_mul_of_nonneg_left hhalf hcap1
+  omega
+
 /-! ## Assembling the band step: `band_real_margin` → `margin_step_Psi` -/
 
 /-- **The band step, for the actual `Ψ` and an abstract profile.**  In the
