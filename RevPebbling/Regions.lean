@@ -265,6 +265,152 @@ theorem band_upper_step_ramp {S u w v : ℕ} {μ M η : ℝ}
   · rw [hIv] at hμx ⊢; exact hμx
   · rw [hIv, hIvp, hIu, hIw]; exact hM
 
+/-- **`δ_c ≤ 1/q_h` is `C3`.**  (Hence also `t(δ_c) ≤ λ`.) -/
+theorem delta_le_inv_q (hq : 0 < q_h)
+    (hC3 : (2 : ℝ) ^ (-(1 / q_h)) ≤ 1 - (2 : ℝ) ^ (-lam)) :
+    deltaStar q_h lam ≤ 1 / q_h := by
+  have hhalf : 1 / 2 ≤ (1 + (2 : ℝ) ^ (1 / q_h - lam)) ^ (-q_h) :=
+    RevPebbling.BandFromC3.second_branch_ge_half hq hC3
+  have hideal : (2 : ℝ) ^ (-(q_h * deltaStar q_h lam))
+      = (1 + rhoLam q_h lam) ^ (-q_h) := two_rpow_neg_q_delta q_h lam
+  have hhalf' : (2 : ℝ) ^ (-(1 : ℝ)) ≤ (2 : ℝ) ^ (-(q_h * deltaStar q_h lam)) := by
+    rw [hideal]
+    have hone : (2 : ℝ) ^ (-(1 : ℝ)) = 1 / 2 := by
+      rw [Real.rpow_neg (by norm_num), Real.rpow_one]; norm_num
+    rw [hone]; exact hhalf
+  have hexp : (-(1 : ℝ)) ≤ -(q_h * deltaStar q_h lam) :=
+    (Real.rpow_le_rpow_left_iff (by norm_num : (1:ℝ) < 2)).mp hhalf'
+  have : q_h * deltaStar q_h lam ≤ 1 := by linarith
+  rw [le_div_iff₀ hq]
+  linarith
+
+/-- `t(δ_c) ≤ λ`: the lower child never reaches deeper than the value. -/
+theorem tStar_le_lam (hq : 0 < q_h)
+    (hC3 : (2 : ℝ) ^ (-(1 / q_h)) ≤ 1 - (2 : ℝ) ^ (-lam)) :
+    tStar q_h lam ≤ lam := by
+  have h := delta_le_inv_q hq hC3
+  unfold tStar
+  linarith
+
+/-! ### The band, without the `pc ≥ 0` requirement
+
+⚠ The version above needs the lower child *strictly inside* the head
+(`0 ≤ pc`), and that leaves a gap of one integer at the boundary with the
+cap region: the cap split needs `v ≥ 2^{X_S} + W + 1` while the band split
+needs `v ≤ 2^{X_S} + W` — the `+1` the manuscript records as the reason
+`z_cap` needs `F_S` large.
+
+The gap closes once one notices that the band's bound does not need the
+exact value of `c`, only an **upper bound**: what is used is
+`min(2^{a−c−1}, 2^{a−d}) ≥ ½(1 − q_h η ln 2)`, and for that
+
+* the `d` branch needs `d ≤ q_h(ζ + δ_c)` and `δ_c ≤ 1/q_h`, which is `C3`
+  (`second_branch_ge_half`);
+* the `c` branch needs `c ≤ q_h(ζ + η)`, which holds whether the lower
+  child is in the head (`c = q_h·pc`, `pc ≤ ζ + η`) **or in the cap**
+  (`c = 0`).
+
+So the same statement covers both sides of the boundary. -/
+theorem band_upper_margin' {ζ c d η : ℝ}
+    (hq : 0 < q_h) (hζ0 : 0 ≤ ζ) (hη : 0 ≤ η)
+    (hC3 : (2 : ℝ) ^ (-(1 / q_h)) ≤ 1 - (2 : ℝ) ^ (-lam))
+    (hc : c ≤ q_h * (ζ + η)) (hd : d ≤ q_h * (ζ + deltaStar q_h lam)) :
+    q_h * Real.log 2 / 2 * ζ - q_h * η * Real.log 2
+      ≤ idealMargin (q_h * ζ) 0 c d := by
+  have hlog2 : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
+  set δc := deltaStar q_h lam with hδc
+  -- the `d` branch: `2^{−q_h δ_c} = (1+ρ_h)^{−q_h} ≥ 1/2` is `C3`
+  have hideal : (2 : ℝ) ^ (-(q_h * δc)) = (1 + rhoLam q_h lam) ^ (-q_h) := by
+    rw [hδc]; exact two_rpow_neg_q_delta q_h lam
+  have hhalf : 1 / 2 ≤ (1 + (2 : ℝ) ^ (1 / q_h - lam)) ^ (-q_h) :=
+    RevPebbling.BandFromC3.second_branch_ge_half hq hC3
+  have hhalf' : 1 / 2 ≤ (2 : ℝ) ^ (-(q_h * δc)) := by rw [hideal]; exact hhalf
+  have hdbr : 1 / 2 ≤ (2 : ℝ) ^ (q_h * ζ - d) := by
+    have hexp : -(q_h * δc) ≤ q_h * ζ - d := by nlinarith
+    exact le_trans hhalf' (Real.rpow_le_rpow_of_exponent_le (by norm_num) hexp)
+  -- the `c` branch: at most `q_h η` below `1/2`
+  have hcbr : (1 : ℝ) / 2 - (1 / 2) * (q_h * η * Real.log 2)
+      ≤ (2 : ℝ) ^ (q_h * ζ - (c + 1)) := by
+    have hexp : -(1 : ℝ) - q_h * η ≤ q_h * ζ - (c + 1) := by nlinarith
+    have hmono : (2 : ℝ) ^ (-(1 : ℝ) - q_h * η) ≤ (2 : ℝ) ^ (q_h * ζ - (c + 1)) :=
+      Real.rpow_le_rpow_of_exponent_le (by norm_num) hexp
+    have hsplit : (2 : ℝ) ^ (-(1 : ℝ) - q_h * η)
+        = (2 : ℝ) ^ (-(1 : ℝ)) * (2 : ℝ) ^ (-(q_h * η)) := by
+      rw [← Real.rpow_add (by norm_num : (0:ℝ) < 2), sub_eq_add_neg]
+    have hone : (2 : ℝ) ^ (-(1 : ℝ)) = 1 / 2 := by
+      rw [Real.rpow_neg (by norm_num), Real.rpow_one]; norm_num
+    have htan : 1 - q_h * η * Real.log 2 ≤ (2 : ℝ) ^ (-(q_h * η)) :=
+      RevPebbling.MarginTransfer.one_sub_le_two_rpow_neg (q_h * η)
+    rw [hsplit, hone] at hmono
+    nlinarith [hmono, htan]
+  have hmin : (1 : ℝ) / 2 - (1 / 2) * (q_h * η * Real.log 2)
+      ≤ min ((2 : ℝ) ^ (q_h * ζ - (c + 1))) ((2 : ℝ) ^ (q_h * ζ - d)) := by
+    refine le_min hcbr ?_
+    have hnn : (0 : ℝ) ≤ (1 / 2) * (q_h * η * Real.log 2) := by positivity
+    linarith
+  -- `2^{q_h ζ − 1} = ½·2^{q_h ζ}` and `2^x − 1 ≥ x ln 2`
+  have hfirst : (2 : ℝ) ^ (q_h * ζ - (0 + 1)) = (2 : ℝ) ^ (q_h * ζ) / 2 := by
+    rw [show q_h * ζ - (0 + 1) = q_h * ζ - 1 by ring,
+      Real.rpow_sub (by norm_num), Real.rpow_one]
+  have htan2 : q_h * ζ * Real.log 2 ≤ (2 : ℝ) ^ (q_h * ζ) - 1 :=
+    RevPebbling.BalanceIdentity.two_rpow_sub_one_ge (q_h * ζ)
+  have hnn : (0 : ℝ) ≤ q_h * η * Real.log 2 := by positivity
+  unfold idealMargin
+  rw [hfirst]
+  linarith [hmin, htan2, hnn]
+
+/-- **The band step, without the `pc ≥ 0` requirement.**  Only upper
+bounds on the two children's positions are needed, so this covers the
+boundary with the cap region as well. -/
+theorem band_upper_step_ramp' {S u w v : ℕ} {μ η : ℝ}
+    (hS : 2 ≤ S) (hq : 0 < q_h) (hle : q_h ≤ q_hi) (hη : 0 ≤ η)
+    (hC3 : (2 : ℝ) ^ (-(1 / q_h)) ≤ 1 - (2 : ℝ) ^ (-lam))
+    (hζpos : 0 < Xf X₀ lam (S + 1) - Real.log v / Real.log 2)
+    (hζlam : Xf X₀ lam (S + 1) - Real.log v / Real.log 2 ≤ lam)
+    (hlamH : lam ≤ H)
+    (hpcH : Xf X₀ lam S - Real.log u / Real.log 2 ≤ H)
+    (hpdH : Xf X₀ lam (S + 1) - Real.log w / Real.log 2 ≤ H)
+    (hpd0 : 0 ≤ Xf X₀ lam (S + 1) - Real.log w / Real.log 2)
+    (hpc : Xf X₀ lam S - Real.log u / Real.log 2
+        ≤ (Xf X₀ lam (S + 1) - Real.log v / Real.log 2) + η)
+    (hpd : Xf X₀ lam (S + 1) - Real.log w / Real.log 2
+        ≤ (Xf X₀ lam (S + 1) - Real.log v / Real.log 2) + deltaStar q_h lam)
+    (hμx : 1 ≤ μ * ((cap (S + 1) : ℝ)
+        * (2 : ℝ) ^ (-(Iof q_h q_hi H m
+            (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)))))
+    (hdef : (1 + μ) * (1 + 1 / (2 * (cap S : ℝ)))
+        ≤ 1 + (q_h * Real.log 2 / 2
+            * (Xf X₀ lam (S + 1) - Real.log v / Real.log 2) - q_h * η * Real.log 2)) :
+    PsiR q_h q_hi H m X₀ lam (S + 1) v
+      ≤ 1 + PsiR q_h q_hi H m X₀ lam S v
+        + min (PsiR q_h q_hi H m X₀ lam S u) (PsiR q_h q_hi H m X₀ lam (S + 1) w) := by
+  set ζ := Xf X₀ lam (S + 1) - Real.log v / Real.log 2 with hζ
+  set pc := Xf X₀ lam S - Real.log u / Real.log 2 with hpcdef
+  set pd := Xf X₀ lam (S + 1) - Real.log w / Real.log 2 with hpddef
+  have hIv : Iof q_h q_hi H m ζ = q_h * ζ :=
+    Iof_head hle (le_of_lt hζpos) (le_trans hζlam hlamH)
+  have hIvp : Iof q_h q_hi H m (Xf X₀ lam S - Real.log v / Real.log 2) = 0 := by
+    refine Iof_nonpos ?_
+    have hx : Xf X₀ lam S = Xf X₀ lam (S + 1) - lam := by rw [Xf_succ]; ring
+    rw [hx]; linarith
+  -- the lower child: in the head **or** in the cap — either way `c ≤ q_h(ζ+η)`
+  have hIu : Iof q_h q_hi H m pc ≤ q_h * (ζ + η) := by
+    rcases le_total pc 0 with h0 | h0
+    · rw [Iof_nonpos h0]
+      have : (0 : ℝ) ≤ ζ + η := by linarith
+      positivity
+    · rw [Iof_head hle h0 hpcH]
+      exact mul_le_mul_of_nonneg_left hpc (le_of_lt hq)
+  have hIw : Iof q_h q_hi H m pd ≤ q_h * (ζ + deltaStar q_h lam) := by
+    rw [Iof_head hle hpd0 hpdH]
+    exact mul_le_mul_of_nonneg_left hpd (le_of_lt hq)
+  have hM := band_upper_margin' (q_h := q_h) (lam := lam) (ζ := ζ)
+    (c := Iof q_h q_hi H m pc) (d := Iof q_h q_hi H m pd) (η := η)
+    hq (le_of_lt hζpos) hη hC3 hIu hIw
+  refine step_of_margin_lower hS ?_ hdef ?_
+  · rw [hIv] at hμx ⊢; exact hμx
+  · rw [hIv, hIvp]; exact hM
+
 /-! ## The self-closing tail `ζ − λ ≥ ζ_sat` -/
 
 /-- `cap S ≥ 63` for `S ≥ 7`. -/
