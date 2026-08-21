@@ -107,6 +107,22 @@ has a closed form.  Only `2/5 ≤ q ≤ 302/100` needs interval arithmetic;
 the two tails are elementary.  Details, and the exact trust base, in
 `rocq/README.md`.
 
+`RevPebbling/Final.lean` now **carries those two Rocq theorems by name**
+rather than restating their numerals: `KappaUpperBound KHI` transcribes
+`kappa_upper` and `KappaAttained KLO` transcribes `kappa_lower`
+(`g q r = 0` is `CriticalRoot.G q r = 1`, and `V` is the same function).
+Given them, `c_bracket_of_rocq` proves **in Lean**
+
+```
+2^(1+KLO) ≤ c ≤ 2^(1+KHI),     KHI − KLO = 10⁻¹⁶
+```
+
+— the upper end through the whole subsolution chain
+(`Assemble.psi_le_count` → the readout → `Readout` → `Unconditional`),
+the lower end through `CriticalRoot.c_ge_two_pow_V`.  The manifest's
+statement audit lists both as carried with no `PROVED by`, so the
+dependency on the interval-arithmetic layer stays visible.
+
 ## Build
 
 ```
@@ -117,7 +133,7 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 746 theorems the
+the rest are general (unbounded) proofs.  Of the 750 theorems the
 manifest lists, **73 rest on a `native_decide` certificate and 17 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
@@ -156,7 +172,7 @@ theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
 A full build takes about two and a quarter hours
-(63 stages, 746 theorems), nearly all of it three checks: the composition anchor at
+(63 stages, 750 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the

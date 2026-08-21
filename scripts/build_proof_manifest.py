@@ -38,7 +38,8 @@ NATIVE_OK = ("Lean.ofReduceBool", "Lean.trustCompiler")
 # "relative to" one exactly when its statement mentions it, which is
 # read off the statements (see the statement audit) instead of being
 # asserted in prose
-CARRIED_HYPOTHESES = ("Submult", "GameOptimal", "GameAttain", "LowerRowExact", "Superadd")
+CARRIED_HYPOTHESES = ("Submult", "GameOptimal", "GameAttain", "LowerRowExact",
+                      "Superadd", "KappaUpperBound", "KappaAttained")
 
 
 def split_conclusion(ty: str) -> tuple:
@@ -2587,6 +2588,10 @@ def main() -> int:
                     "RevPebbling.Final.c_le_of_hsup",
                     "RevPebbling.Final.two_rpow_one_add_V",
                     "RevPebbling.Final.c_eq_of_attained",
+                    "RevPebbling.Final.KHI_bounds",
+                    "RevPebbling.Final.c_le_of_rocq",
+                    "RevPebbling.Final.c_ge_of_rocq",
+                    "RevPebbling.Final.c_bracket_of_rocq",
                 ],
             },
             "arc_step_concrete": {

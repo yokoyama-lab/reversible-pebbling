@@ -589,4 +589,85 @@ theorem c_eq_of_attained {κ q ρ : ℝ}
   rw [hval] at hle ⊢
   linarith
 
+/-! ## The one carried hypothesis: the enclosure of `κ*`
+
+Everything above is conditional on `hsup`, and `hsup` is exactly what the
+**Rocq layer** of this repository proves.  `rocq/KappaStar.v` contains
+
+```coq
+Definition g (q r : R) : R := Rpower r (-q) + Rpower (1 + r) (-q) - 1.
+Definition V (q r : R) : R := / q - ln r / ln 2.
+Notation KLO := (3317423792563105 / 10000000000000000).
+Notation KHI := (3317423792563106 / 10000000000000000).
+
+Theorem kappa_upper (q r : R) : 0 < q -> 0 < r -> g q r = 0 -> V q r <= KHI.
+Theorem kappa_lower : exists r : R, 0 < r /\ g Q0 r = 0 /\ KLO <= V Q0 r.
+```
+
+`g q r = 0` is `CriticalRoot.G q r = 1` and `V` is the same function, so
+the two statements transcribe verbatim into the two predicates below.
+They are **carried, not proved here**: the enclosure rests on CoqInterval
+(and, upstream, on Arb ball arithmetic with a Krawczyk certificate over
+602 boxes), which Lean has no counterpart for.  Recording them as named
+hypotheses keeps the dependency visible instead of hiding it in a
+numeral. -/
+
+/-- The Rocq layer's upper end for `κ*`. -/
+noncomputable def KHI : ℝ := 3317423792563106 / 10000000000000000
+
+/-- The Rocq layer's lower end for `κ*`. -/
+noncomputable def KLO : ℝ := 3317423792563105 / 10000000000000000
+
+/-- **Carried from `rocq/KappaStar.v`, `Theorem kappa_upper`**: `κ` is an
+upper bound for `V` at every root. -/
+def KappaUpperBound (κ : ℝ) : Prop :=
+  ∀ q ρ : ℝ, 0 < q → 0 < ρ → RevPebbling.CriticalRoot.G q ρ = 1 →
+    1 / q - Real.log ρ / Real.log 2 ≤ κ
+
+/-- **Carried from `rocq/KappaStar.v`, `Theorem kappa_lower`** (with
+`root_gt_1` for `1 ≤ r`): `κ` is attained at some slope. -/
+def KappaAttained (κ : ℝ) : Prop :=
+  ∃ q ρ : ℝ, 0 < q ∧ 1 ≤ ρ ∧ RevPebbling.CriticalRoot.G q ρ = 1 ∧
+    κ ≤ 1 / q - Real.log ρ / Real.log 2
+
+theorem KHI_bounds : 33 / 100 ≤ KHI ∧ KHI ≤ 1 / 2 := by
+  unfold KHI
+  constructor <;> norm_num
+
+/-- **The upper bound, from the Rocq enclosure.** -/
+theorem c_le_of_rocq (hrocq : KappaUpperBound KHI) :
+    RevPebbling.BlockSim.c ≤ (2 : ℝ) ^ (1 + KHI) := by
+  obtain ⟨hlo, hhi⟩ := KHI_bounds
+  refine c_le_of_hsup hlo hhi ?_
+  intro q ρ hq _ hρ hg
+  exact hrocq q ρ (by linarith) (lt_of_lt_of_le zero_lt_one hρ) hg
+
+/-- **The lower bound, from attainment.**  `CriticalRoot.c_ge_two_pow_V`
+gives `c ≥ 2·2^{1/q}/ρ = 2^{1+V(q)}` at every root. -/
+theorem c_ge_of_rocq {κ : ℝ} (hatt : KappaAttained κ) :
+    (2 : ℝ) ^ (1 + κ) ≤ RevPebbling.BlockSim.c := by
+  obtain ⟨q, ρ, hq, hρ, hg, hκ⟩ := hatt
+  have hρ0 : (0 : ℝ) < ρ := lt_of_lt_of_le zero_lt_one hρ
+  have hge : 2 * (2 : ℝ) ^ q⁻¹ / ρ ≤ RevPebbling.BlockSim.c :=
+    RevPebbling.CriticalRoot.c_ge_two_pow_V hq hρ hg
+  have hval : (2 : ℝ) ^ (1 + (1 / q - Real.log ρ / Real.log 2)) = 2 * (2 : ℝ) ^ q⁻¹ / ρ :=
+    two_rpow_one_add_V hρ0
+  have hmono : (2 : ℝ) ^ (1 + κ)
+      ≤ (2 : ℝ) ^ (1 + (1 / q - Real.log ρ / Real.log 2)) :=
+    Real.rpow_le_rpow_of_exponent_le (by norm_num) (by linarith)
+  linarith [hval ▸ hmono]
+
+/-- **The bracket, modulo the Rocq layer.**
+
+`2^{1+KLO} ≤ c ≤ 2^{1+KHI}` with `KHI − KLO = 10^{-16}`.  Both ends are
+machine-checked *in Lean*; what is carried from Rocq is the enclosure of
+`κ*` itself — `kappa_upper` for the right end and `kappa_lower` for the
+left.  Evaluating `2^{1+KHI}` as a decimal (`2.517064836893817`) is again
+the Rocq layer's `c_bracket_of_kappa`; no attempt is made to do that here,
+since it is another enclosure. -/
+theorem c_bracket_of_rocq (hup : KappaUpperBound KHI) (hlo : KappaAttained KLO) :
+    (2 : ℝ) ^ (1 + KLO) ≤ RevPebbling.BlockSim.c ∧
+      RevPebbling.BlockSim.c ≤ (2 : ℝ) ^ (1 + KHI) :=
+  ⟨c_ge_of_rocq hlo, c_le_of_rocq hup⟩
+
 end RevPebbling.Final
