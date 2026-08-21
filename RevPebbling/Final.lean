@@ -3,6 +3,8 @@ import RevPebbling.Readout
 import RevPebbling.ReadoutBridge
 import RevPebbling.AnchorGrowth
 import RevPebbling.Unconditional
+import RevPebbling.KappaLtHalf
+import RevPebbling.KappaLowerRat
 
 /-!
 # The readout, and `c ≤ 2^{1+λ}`
@@ -669,5 +671,169 @@ theorem c_bracket_of_rocq (hup : KappaUpperBound KHI) (hlo : KappaAttained KLO) 
     (2 : ℝ) ^ (1 + KLO) ≤ RevPebbling.BlockSim.c ∧
       RevPebbling.BlockSim.c ≤ (2 : ℝ) ^ (1 + KHI) :=
   ⟨c_ge_of_rocq hlo, c_le_of_rocq hup⟩
+
+/-! ## `κ*` as a supremum — the enclosure is not needed for the equality
+
+The two hypotheses above are carried because the *decimal value* of `κ*`
+needs interval arithmetic.  The **equality** `c = 2^{1+κ*}` does not:
+define `κ*` as the supremum of `V` over all roots, and
+
+* the upper side is the definition of a supremum (`le_csSup`), with
+  `KappaLtHalf.V_lt_half` giving the bound above that makes it exist;
+* the lower side is `CriticalRoot.c_ge_two_pow_V` at every root, turned
+  into a bound on the supremum by taking logarithms.
+
+Neither needs a numeral.  What the Rocq layer adds is what `κ*` *is*, to
+sixteen places — not that the two ends meet. -/
+
+/-- The values of `V` at the roots. -/
+def Vset : Set ℝ :=
+  {x : ℝ | ∃ q ρ : ℝ, 0 < q ∧ 1 ≤ ρ ∧ RevPebbling.CriticalRoot.G q ρ = 1 ∧
+    x = 1 / q - Real.log ρ / Real.log 2}
+
+/-- **`κ* = sup_q V(q)`.** -/
+noncomputable def kappaStar : ℝ := sSup Vset
+
+theorem Vset_nonempty : Vset.Nonempty := by
+  obtain ⟨ρ, hρ, hg⟩ := RevPebbling.CriticalRoot.exists_root (q := (3 : ℝ) / 2) (by norm_num)
+  exact ⟨1 / ((3 : ℝ) / 2) - Real.log ρ / Real.log 2,
+    ⟨3 / 2, ρ, by norm_num, hρ, hg, rfl⟩⟩
+
+theorem Vset_bddAbove : BddAbove Vset := by
+  refine ⟨1 / 2, ?_⟩
+  rintro x ⟨q, ρ, hq, hρ, hg, rfl⟩
+  exact le_of_lt (RevPebbling.KappaLtHalf.V_lt_half hq hρ hg)
+
+/-- Every `V` value is below `κ*` — this **is** `hsup`, with no enclosure. -/
+theorem V_le_kappaStar {q ρ : ℝ} (hq : 0 < q) (hρ : 1 ≤ ρ)
+    (hg : RevPebbling.CriticalRoot.G q ρ = 1) :
+    1 / q - Real.log ρ / Real.log 2 ≤ kappaStar :=
+  le_csSup Vset_bddAbove ⟨q, ρ, hq, hρ, hg, rfl⟩
+
+theorem kappaStar_le_half : kappaStar ≤ 1 / 2 := by
+  refine csSup_le Vset_nonempty ?_
+  rintro x ⟨q, ρ, hq, hρ, hg, rfl⟩
+  exact le_of_lt (RevPebbling.KappaLtHalf.V_lt_half hq hρ hg)
+
+/-- `(6307/5000)^300 ≤ 2^101`, by a ladder of small powers — `norm_num`
+cannot expand a 300th power of a four-digit rational, but three steps of
+tenth and third powers cost nothing. -/
+theorem witness_pow_le : ((6307 : ℝ) / 5000) ^ (300 : ℕ) ≤ (2 : ℝ) ^ (101 : ℕ) := by
+  have h1 : ((6307 : ℝ) / 5000) ^ (10 : ℕ) ≤ 41 / 4 := by norm_num
+  have h2 : ((41 : ℝ) / 4) ^ (10 : ℕ) ≤ 13000000000 := by norm_num
+  have h3 : ((13000000000 : ℝ)) ^ (3 : ℕ) ≤ (2 : ℝ) ^ (101 : ℕ) := by norm_num
+  have hA0 : (0 : ℝ) ≤ ((6307 : ℝ) / 5000) ^ (10 : ℕ) := by positivity
+  have hstep1 : (((6307 : ℝ) / 5000) ^ (10 : ℕ)) ^ (10 : ℕ) ≤ 13000000000 :=
+    le_trans (pow_le_pow_left₀ hA0 h1 10) h2
+  have hB0 : (0 : ℝ) ≤ (((6307 : ℝ) / 5000) ^ (10 : ℕ)) ^ (10 : ℕ) := by positivity
+  have hstep2 : ((((6307 : ℝ) / 5000) ^ (10 : ℕ)) ^ (10 : ℕ)) ^ (3 : ℕ)
+      ≤ (2 : ℝ) ^ (101 : ℕ) := le_trans (pow_le_pow_left₀ hB0 hstep1 3) h3
+  calc ((6307 : ℝ) / 5000) ^ (300 : ℕ)
+      = ((((6307 : ℝ) / 5000) ^ (10 : ℕ)) ^ (10 : ℕ)) ^ (3 : ℕ) := by
+        rw [← pow_mul, ← pow_mul]
+    _ ≤ (2 : ℝ) ^ (101 : ℕ) := hstep2
+
+/-- **`33/100 ≤ κ*`**, from the `q = 3/2` witness: `ρ_c(3/2) ≤ 6307/5000`
+(`KappaLowerRat.root_le_witness`) and `log₂(6307/5000) ≤ 101/300`, so
+`V(3/2) ≥ 2/3 − 101/300 = 33/100` exactly. -/
+theorem kappaStar_ge : 33 / 100 ≤ kappaStar := by
+  obtain ⟨ρ, hρ, hg⟩ := RevPebbling.CriticalRoot.exists_root (q := (3 : ℝ) / 2) (by norm_num)
+  have hρ0 : (0 : ℝ) < ρ := lt_of_lt_of_le zero_lt_one hρ
+  have hle : ρ ≤ 6307 / 5000 := RevPebbling.KappaLowerRat.root_le_witness hρ0 hg
+  -- `ρ ≤ 2^{101/300}`
+  have hpow : ρ ^ (300 : ℕ) ≤ (2 : ℝ) ^ (101 : ℕ) :=
+    le_trans (pow_le_pow_left₀ (le_of_lt hρ0) hle 300) witness_pow_le
+  have hrpow : ρ ≤ (2 : ℝ) ^ ((101 : ℝ) / 300) := by
+    have h := RevPebbling.CriticalRootRat.le_rpow_div (x := ρ) (s := (2 : ℝ))
+      (by norm_num) (n := 300) (m := 101) (by norm_num) hpow
+    simpa using h
+  -- hence `log₂ ρ ≤ 101/300`
+  have hlog2 : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
+  have hlogle : Real.log ρ / Real.log 2 ≤ 101 / 300 := by
+    have h1 : Real.log ρ ≤ Real.log ((2 : ℝ) ^ ((101 : ℝ) / 300)) :=
+      Real.log_le_log hρ0 hrpow
+    rw [Real.log_rpow (by norm_num)] at h1
+    rw [div_le_iff₀ hlog2]
+    linarith
+  have hV : (33 : ℝ) / 100 ≤ 1 / ((3 : ℝ) / 2) - Real.log ρ / Real.log 2 := by
+    have : (1 : ℝ) / ((3 : ℝ) / 2) = 2 / 3 := by norm_num
+    rw [this]
+    linarith
+  exact le_trans hV (V_le_kappaStar (by norm_num) hρ hg)
+
+/-! ## The equality, unconditionally -/
+
+theorem c_pos : 0 < RevPebbling.BlockSim.c := by
+  obtain ⟨ρ, hρ, hg⟩ := RevPebbling.CriticalRoot.exists_root (q := (3 : ℝ) / 2) (by norm_num)
+  have hρ0 : (0 : ℝ) < ρ := lt_of_lt_of_le zero_lt_one hρ
+  have hge := RevPebbling.CriticalRoot.c_ge_two_pow_V (by norm_num : (0:ℝ) < 3 / 2) hρ hg
+  have hpos : (0 : ℝ) < 2 * (2 : ℝ) ^ ((3 : ℝ) / 2)⁻¹ / ρ := by positivity
+  linarith
+
+/-- `2^{1+V(q)} ≤ c` at every root — `CriticalRoot.c_ge_two_pow_V` in the
+form the supremum needs. -/
+theorem two_rpow_le_c {x : ℝ} (hx : x ∈ Vset) : (2 : ℝ) ^ (1 + x) ≤ RevPebbling.BlockSim.c := by
+  obtain ⟨q, ρ, hq, hρ, hg, rfl⟩ := hx
+  have hρ0 : (0 : ℝ) < ρ := lt_of_lt_of_le zero_lt_one hρ
+  rw [two_rpow_one_add_V hρ0]
+  exact RevPebbling.CriticalRoot.c_ge_two_pow_V hq hρ hg
+
+/-- Taking logarithms turns the family of lower bounds into one bound on
+the supremum. -/
+theorem kappaStar_le_log : kappaStar ≤ Real.log RevPebbling.BlockSim.c / Real.log 2 - 1 := by
+  refine csSup_le Vset_nonempty ?_
+  intro x hx
+  have hlog2 : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
+  have h := two_rpow_le_c hx
+  have hpos : (0 : ℝ) < (2 : ℝ) ^ (1 + x) := Real.rpow_pos_of_pos (by norm_num) _
+  have hlog : Real.log ((2 : ℝ) ^ (1 + x)) ≤ Real.log RevPebbling.BlockSim.c :=
+    Real.log_le_log hpos h
+  rw [Real.log_rpow (by norm_num)] at hlog
+  rw [le_sub_iff_add_le, le_div_iff₀ hlog2]
+  linarith
+
+/-- **`c = 2^{1+κ*}`, with `κ*` the supremum — no enclosure, no carried
+hypothesis.**
+
+The upper half is the whole subsolution chain, applied at `κ = κ*`, where
+`hsup` is `le_csSup`; the lower half is `CriticalRoot.c_ge_two_pow_V` at
+every root, turned into a bound on the supremum by `csSup_le`.  The only
+numeral needed anywhere is `33/100 ≤ κ*`, which comes from the `q = 3/2`
+root bound already in Lean (`KappaLowerRat.root_le_witness`) through the
+ladder `witness_pow_le`.
+
+The Rocq layer's enclosure says *what* `κ*` is
+(`κ* ∈ [0.3317423792563105, 0.3317423792563106]`, hence
+`c ∈ [2.517064836893816, 2.517064836893817]`).  It is not needed for the
+identity. -/
+theorem c_eq_two_rpow_kappaStar :
+    RevPebbling.BlockSim.c = (2 : ℝ) ^ (1 + kappaStar) := by
+  have hle : RevPebbling.BlockSim.c ≤ (2 : ℝ) ^ (1 + kappaStar) := by
+    refine c_le_of_hsup kappaStar_ge kappaStar_le_half ?_
+    intro q ρ hq _ hρ hg
+    exact V_le_kappaStar (by linarith) hρ hg
+  have hge : (2 : ℝ) ^ (1 + kappaStar) ≤ RevPebbling.BlockSim.c := by
+    have hlog2 : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
+    have hval : (2 : ℝ) ^ (Real.log RevPebbling.BlockSim.c / Real.log 2)
+        = RevPebbling.BlockSim.c :=
+      RevPebbling.MarginAnchors.two_rpow_log_div_log c_pos
+    have hexp : 1 + kappaStar ≤ Real.log RevPebbling.BlockSim.c / Real.log 2 := by
+      linarith [kappaStar_le_log]
+    calc (2 : ℝ) ^ (1 + kappaStar)
+        ≤ (2 : ℝ) ^ (Real.log RevPebbling.BlockSim.c / Real.log 2) :=
+          Real.rpow_le_rpow_of_exponent_le (by norm_num) hexp
+      _ = RevPebbling.BlockSim.c := hval
+  linarith
+
+/-- The Rocq enclosure, read against the identity: `κ*` is pinned to
+sixteen places, hence so is `c`. -/
+theorem kappaStar_mem_enclosure (hup : KappaUpperBound KHI) (hlo : KappaAttained KLO) :
+    KLO ≤ kappaStar ∧ kappaStar ≤ KHI := by
+  constructor
+  · obtain ⟨q, ρ, hq, hρ, hg, hκ⟩ := hlo
+    exact le_trans hκ (V_le_kappaStar hq hρ hg)
+  · refine csSup_le Vset_nonempty ?_
+    rintro x ⟨q, ρ, hq, hρ, hg, rfl⟩
+    exact hup q ρ hq (lt_of_lt_of_le zero_lt_one hρ) hg
 
 end RevPebbling.Final

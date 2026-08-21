@@ -123,6 +123,22 @@ the lower end through `CriticalRoot.c_ge_two_pow_V`.  The manifest's
 statement audit lists both as carried with no `PROVED by`, so the
 dependency on the interval-arithmetic layer stays visible.
 
+**The enclosure is not needed for the identity, though.**  Define `κ*` as
+the supremum of `V` over the roots (`Final.kappaStar`) and
+
+```
+c = 2^(1+κ*)          -- Final.c_eq_two_rpow_kappaStar, no hypotheses
+```
+
+holds outright: the upper side is the subsolution chain applied at
+`κ = κ*`, where `hsup` is `le_csSup` and the bound above that makes the
+supremum exist is `KappaLtHalf.V_lt_half`; the lower side is
+`CriticalRoot.c_ge_two_pow_V` at every root, turned into a bound on the
+supremum by `csSup_le`.  The only numeral anywhere is `33/100 ≤ κ*`, from
+the `q = 3/2` root bound already in Lean.  What Rocq adds is *what `κ*`
+is* — `kappaStar_mem_enclosure` reads its enclosure back against the
+identity.
+
 ## Build
 
 ```
@@ -133,7 +149,7 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 750 theorems the
+the rest are general (unbounded) proofs.  Of the 761 theorems the
 manifest lists, **73 rest on a `native_decide` certificate and 17 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
@@ -172,7 +188,7 @@ theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
 A full build takes about two and a quarter hours
-(63 stages, 750 theorems), nearly all of it three checks: the composition anchor at
+(63 stages, 761 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the

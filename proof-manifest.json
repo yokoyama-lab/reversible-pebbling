@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "979f29647030e3a2595dcaa8ede7181dc5bcaf24fd5bff3fb4edb7557ef4526f",
+ "proof_bundle_sha256": "84f224f565b912cba8bc7ae9fd7d9732bf092038e66286189594aab2767b1c6e",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -63,7 +63,7 @@
   "RevPebbling/DispersionRecover.lean": "5394771ac0163f94a2dc24bd9cb8a7cd1d3e9fb6887d70d25381cd746e73e86f",
   "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
   "RevPebbling/FactorialBound.lean": "d330b3ca8ec882019b64c0d76b9ebab65fe2fe3133fb8e9d9521b5bd64bda099",
-  "RevPebbling/Final.lean": "a452da4a79b1ab7390a889c321f21891a6684ddedf6dff695280998f7fcc8643",
+  "RevPebbling/Final.lean": "528cd80ab0925329287a4426bdc0839b3e2aeaeb708264c66ff2f54a19ec9f57",
   "RevPebbling/FloorAbsorb.lean": "d80eae89b31ac21464b4119a3c7cd16d20c18ce2cc07908b82d6455a9333d823",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
   "RevPebbling/FullWindow.lean": "7609fec87b57e9fd45efffcf8e8427d0073a6f347e7826b9a71d4c612dd4c503",
@@ -148,12 +148,12 @@
   },
   "KappaAttained RevPebbling.Final.KLO": {
    "status": "carried",
-   "carried_by": 1,
+   "carried_by": 2,
    "proved_by": []
   },
   "KappaUpperBound RevPebbling.Final.KHI": {
    "status": "carried",
-   "carried_by": 2,
+   "carried_by": 3,
    "proved_by": []
   },
   "LowerRowExact": {
@@ -1731,20 +1731,33 @@
     "RevPebbling.Final.KHI_bounds",
     "RevPebbling.Final.c_le_of_rocq",
     "RevPebbling.Final.c_ge_of_rocq",
-    "RevPebbling.Final.c_bracket_of_rocq"
+    "RevPebbling.Final.c_bracket_of_rocq",
+    "RevPebbling.Final.Vset_nonempty",
+    "RevPebbling.Final.Vset_bddAbove",
+    "RevPebbling.Final.V_le_kappaStar",
+    "RevPebbling.Final.kappaStar_le_half",
+    "RevPebbling.Final.witness_pow_le",
+    "RevPebbling.Final.kappaStar_ge",
+    "RevPebbling.Final.c_pos",
+    "RevPebbling.Final.two_rpow_le_c",
+    "RevPebbling.Final.kappaStar_le_log",
+    "RevPebbling.Final.c_eq_two_rpow_kappaStar",
+    "RevPebbling.Final.kappaStar_mem_enclosure"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
    "carried_hypotheses": {
     "KappaUpperBound RevPebbling.Final.KHI": [
      "RevPebbling.Final.c_bracket_of_rocq",
-     "RevPebbling.Final.c_le_of_rocq"
+     "RevPebbling.Final.c_le_of_rocq",
+     "RevPebbling.Final.kappaStar_mem_enclosure"
     ],
     "KappaAttained": [
      "RevPebbling.Final.c_ge_of_rocq"
     ],
     "KappaAttained RevPebbling.Final.KLO": [
-     "RevPebbling.Final.c_bracket_of_rocq"
+     "RevPebbling.Final.c_bracket_of_rocq",
+     "RevPebbling.Final.kappaStar_mem_enclosure"
     ]
    },
    "proves_hypotheses": {}
