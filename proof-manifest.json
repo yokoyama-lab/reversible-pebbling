@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "c421457f7e50415f1beb8d917f9359e5498de1f31843fbdbd8afa0767be16928",
+ "proof_bundle_sha256": "086ab7d70877ac38836e9d6f6f717ca455d1cf1f1095f5499041db0a524489b1",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -63,6 +63,7 @@
   "RevPebbling/DispersionRecover.lean": "5394771ac0163f94a2dc24bd9cb8a7cd1d3e9fb6887d70d25381cd746e73e86f",
   "RevPebbling/DoublingLower.lean": "c1bae07eed7e6c7d29cec011021a358018297ccae4fda8ab15983d56fdb6b1e6",
   "RevPebbling/FactorialBound.lean": "d330b3ca8ec882019b64c0d76b9ebab65fe2fe3133fb8e9d9521b5bd64bda099",
+  "RevPebbling/Final.lean": "df69665901cd1c60eda1bcde6f27642e0c876a8f48eca922bcfc3ac6de87d20d",
   "RevPebbling/FloorAbsorb.lean": "d80eae89b31ac21464b4119a3c7cd16d20c18ce2cc07908b82d6455a9333d823",
   "RevPebbling/FrontDP.lean": "920708ea5d065eabf84a0c1d9e2212be68230b34f339fe5a54fe41bbede37da3",
   "RevPebbling/FullWindow.lean": "7609fec87b57e9fd45efffcf8e8427d0073a6f347e7826b9a71d4c612dd4c503",
@@ -123,7 +124,7 @@
   "RevPebbling/UnconditionalLink1.lean": "b2592a347249d23eece02a004cd84b06f49c6c6a9a49d7743b5f6ccc3b0c1e68",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "5afdd81491e990d298c8c57297017e631d03aa2d32e7a83b5686d21c70d24d29"
+  "RevPebbling.lean": "4ca8ed765e632c283feaabd2058d22a7047ada7f277cacd2f67230b5011239ea"
  },
  "hypotheses": {
   "GameAttain": {
@@ -1688,6 +1689,25 @@
     "RevPebbling.ArcMargin.arc_margin_ge_gen",
     "RevPebbling.ArcMargin.arc_margin_ge",
     "RevPebbling.ArcMargin.bracket_pos_arc"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "readout_and_final_bound": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (this work, 2026-08-22): the readout and the upper bound c <= 2^{1+kappa+eps}. psi_le_count_shift moves the subsolution to the index the readout needs -- Lean's rowIter s has length 2^{s+1}-1 while cap s = 2^{s-1}-1 is BELOW the midpoint threshold 2^s-1, so the shape is used at s+2, where cap(s+2) is exactly the row length. psi_at_readout: at the readout point v_s = ceil(2^{X_{s+2}-1/q_h}) -- inside the flat head by C4, profile <= 1 -- the shape reaches floor(cap(s+2)/2) = 2^s - 1, the threshold EXACTLY with no slack. rowMax_le_geom: the polynomial factor s of ReadoutBridge.rowMax_le_of_midv_le cannot fit Readout.log_root_le's pure form K 2^{lam S}, and does not have to -- the midpoint bounds are geometric, so the maxima are a geometric sum and K really is a constant. c_le then runs log_root_le / bound_tendsto against Unconditional.tendsto_rowMax_root_uncond. The hypotheses are exactly those of psi_le_count: rational data, ranges, the single analytic input hsup (V q <= kappa on [q_h,q_hi], the enclosure of kappa* that Lean does not have), and lower bounds on X0 and S0. ",
+   "theorems": [
+    "RevPebbling.Final.psi_le_count_shift",
+    "RevPebbling.Final.one_le_vRead",
+    "RevPebbling.Final.psi_at_readout",
+    "RevPebbling.Final.midv_le_vRead",
+    "RevPebbling.Final.rowMax_le_geom",
+    "RevPebbling.Final.vRead_le",
+    "RevPebbling.Final.vRead_geom",
+    "RevPebbling.Final.rowMax_le_exp",
+    "RevPebbling.Final.c_le"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],

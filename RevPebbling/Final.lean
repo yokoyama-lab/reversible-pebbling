@@ -1,6 +1,8 @@
 import RevPebbling.Assemble
 import RevPebbling.Readout
 import RevPebbling.ReadoutBridge
+import RevPebbling.AnchorGrowth
+import RevPebbling.Unconditional
 
 /-!
 # The readout, and `c ≤ 2^{1+λ}`
@@ -278,5 +280,161 @@ theorem vRead_geom (X₀ lam : ℝ) (s : ℕ) :
     ← Real.rpow_add (by norm_num : (0:ℝ) < 2)]
   congr 1
   ring
+
+/-! ## `M_S ≤ K·2^{λS}` and the limit -/
+
+/-- **The exponential bound on the row maxima.**  Every midpoint is below
+its readout point, the readout points are geometric, and the maxima are
+their partial sums — so `rowMax s ≤ K·2^{λ(s+2)}` with `K` a constant. -/
+theorem rowMax_le_exp {ε κ X₀ : ℝ} {S₀ : ℕ}
+    (hε : 0 < ε) (hε1 : ε ≤ 1 / 100)
+    (hκlo : 33 / 100 ≤ κ) (hκhi : κ ≤ 1 / 2)
+    (hsup : ∀ q ρ : ℝ, 43 / 100 ≤ q → q ≤ 16 / 5 → 1 ≤ ρ →
+      RevPebbling.CriticalRoot.G q ρ = 1 → 1 / q - Real.log ρ / Real.log 2 ≤ κ)
+    (hS₀ : 7 ≤ S₀)
+    (hXsat : Zsat ε + (κ + ε) + 20 ≤ X₀)
+    (hXslack : (20000 : ℝ) / ε ≤ (2 : ℝ) ^ (X₀ - Zsat ε - (κ + ε)))
+    (hXbase : Zsat ε + Real.log (rowMax S₀) / Real.log 2 + (S₀ : ℝ) ≤ X₀)
+    (hScap : (2 : ℝ) ^ ((16 / 5 : ℝ) * (Zsat ε + (κ + ε))) * (100 / ε) ≤ (cap S₀ : ℝ))
+    (hSdef : (1 + ε / 100) / (ε / 100) ≤ (cap S₀ : ℝ)) :
+    ∃ K : ℝ, 0 < K ∧ ∀ s : ℕ,
+      (rowMax s : ℝ) ≤ K * (2 : ℝ) ^ ((κ + ε) * ((s : ℝ) + 2)) := by
+  classical
+  set lam := κ + ε with hlamdef
+  have hlampos : (0 : ℝ) < lam := by rw [hlamdef]; linarith
+  set r : ℝ := (2 : ℝ) ^ lam with hrdef
+  have hr1 : 1 < r := by
+    rw [hrdef]
+    have h := Real.rpow_lt_rpow_of_exponent_lt (x := (2:ℝ)) (by norm_num)
+      (show (0:ℝ) < lam by linarith)
+    simpa using h
+  have hrpos : (0 : ℝ) < r := by linarith
+  set A₀ : ℝ := (2 : ℝ) ^ (X₀ + 2 * lam - 1 / (43 / 100 : ℝ)) with hA₀
+  have hA₀pos : (0 : ℝ) < A₀ := Real.rpow_pos_of_pos (by norm_num) _
+  set A : ℝ := max (A₀ + 1) ((RevPebbling.AnchorGrowth.midvMax S₀ : ℕ) : ℝ) with hA
+  have hApos : (0 : ℝ) < A := lt_of_lt_of_le (by linarith) (le_max_left _ _)
+  refine ⟨1 + A / (r - 1), by positivity, ?_⟩
+  intro s
+  -- every midpoint is below `A·r^j`
+  have hmid : ∀ j : ℕ, 1 ≤ j → j ≤ s → (midv j : ℝ) ≤ A * r ^ j := by
+    intro j hj1 hjs
+    have hrj : (1 : ℝ) ≤ r ^ j := one_le_pow₀ (le_of_lt hr1)
+    rcases lt_or_ge j S₀ with hj | hj
+    · -- below `S₀`: a constant
+      have hmem : j ∈ List.range S₀ := List.mem_range.mpr hj
+      have h1 : midv j ≤ RevPebbling.AnchorGrowth.midvMax S₀ := by
+        unfold RevPebbling.AnchorGrowth.midvMax
+        exact RevPebbling.AnchorGrowth.le_foldr_max hmem
+      have h2 : (midv j : ℝ) ≤ ((RevPebbling.AnchorGrowth.midvMax S₀ : ℕ) : ℝ) := by
+        exact_mod_cast h1
+      have h3 : ((RevPebbling.AnchorGrowth.midvMax S₀ : ℕ) : ℝ) ≤ A := le_max_right _ _
+      nlinarith [h2, h3, hrj, hApos]
+    · -- past `S₀`: the readout point bounds it
+      have h1 : midv j ≤ vRead X₀ lam j :=
+        midv_le_vRead hε hε1 hκlo hκhi hsup hS₀ hXsat hXslack hXbase hScap hSdef hj
+      have h2 : (midv j : ℝ) ≤ (vRead X₀ lam j : ℝ) := by exact_mod_cast h1
+      have h3 := vRead_le X₀ lam j
+      have h4 := vRead_geom X₀ lam j
+      rw [h4, ← hA₀, ← hrdef] at h3
+      have h5 : (midv j : ℝ) ≤ A₀ * r ^ j + 1 := le_trans h2 h3
+      have h6 : A₀ * r ^ j + 1 ≤ (A₀ + 1) * r ^ j := by nlinarith [hrj, hA₀pos]
+      have h7 : (A₀ + 1) * r ^ j ≤ A * r ^ j :=
+        mul_le_mul_of_nonneg_right (le_max_left _ _) (by positivity)
+      linarith
+  have hgeom := rowMax_le_geom (le_of_lt hApos) hr1 s hmid
+  -- `r^{s+1} ≤ 2^{λ(s+2)}` and `1 ≤ 2^{λ(s+2)}`
+  have hrs : r ^ (s + 1) ≤ (2 : ℝ) ^ (lam * ((s : ℝ) + 2)) := by
+    rw [hrdef, ← Real.rpow_natCast ((2:ℝ) ^ lam) (s + 1),
+      ← Real.rpow_mul (by norm_num : (0:ℝ) ≤ 2)]
+    refine Real.rpow_le_rpow_of_exponent_le (by norm_num) ?_
+    push_cast
+    nlinarith [hlampos]
+  have hone : (1 : ℝ) ≤ (2 : ℝ) ^ (lam * ((s : ℝ) + 2)) := by
+    have h := Real.rpow_le_rpow_of_exponent_le (x := (2:ℝ)) (by norm_num)
+      (show (0:ℝ) ≤ lam * ((s : ℝ) + 2) by positivity)
+    simpa using h
+  have hdiv : A * r ^ (s + 1) / (r - 1) ≤ A / (r - 1) * (2 : ℝ) ^ (lam * ((s : ℝ) + 2)) := by
+    rw [div_mul_eq_mul_div, div_le_div_iff₀ (by linarith) (by linarith)]
+    have hstep := mul_le_mul_of_nonneg_right
+      (mul_le_mul_of_nonneg_left hrs (le_of_lt hApos))
+      (show (0:ℝ) ≤ r - 1 by linarith)
+    linarith only [hstep]
+  have hexp : (1 + A / (r - 1)) * (2 : ℝ) ^ (lam * ((s : ℝ) + 2))
+      = (2 : ℝ) ^ (lam * ((s : ℝ) + 2)) + A / (r - 1) * (2 : ℝ) ^ (lam * ((s : ℝ) + 2)) := by
+    ring
+  linarith [hgeom, hone, hdiv, hexp]
+
+/-! ## The theorem -/
+
+open Filter Topology
+
+/-- **`c ≤ 2^{1+κ+ε}`.**
+
+The chain: `Assemble.psi_le_count` (the shape is a subsolution) →
+`psi_le_count_shift` (at the index the readout needs) → `psi_at_readout`
+and `ReadoutBridge` (the row's midpoint is below the readout point) →
+`rowMax_le_exp` (the maxima are the partial sums of a geometric series) →
+`Readout.log_root_le` / `bound_tendsto` (the whole `S`-dependence sits in
+one `1/(S−1)` term, so `K` never has to be estimated) →
+`Unconditional.tendsto_rowMax_root_uncond` (that limit *is* `c/2`).
+
+The hypotheses are those of `psi_le_count`, unchanged: the rational data,
+the ranges, the single analytic input `hsup` — `V q ≤ κ` on `[q_h, q_hi]`,
+which is the enclosure of `κ*` that Lean does not have — and lower bounds
+on `X₀` and `S₀`. -/
+theorem c_le {ε κ X₀ : ℝ} {S₀ : ℕ}
+    (hε : 0 < ε) (hε1 : ε ≤ 1 / 100)
+    (hκlo : 33 / 100 ≤ κ) (hκhi : κ ≤ 1 / 2)
+    (hsup : ∀ q ρ : ℝ, 43 / 100 ≤ q → q ≤ 16 / 5 → 1 ≤ ρ →
+      RevPebbling.CriticalRoot.G q ρ = 1 → 1 / q - Real.log ρ / Real.log 2 ≤ κ)
+    (hS₀ : 7 ≤ S₀)
+    (hXsat : Zsat ε + (κ + ε) + 20 ≤ X₀)
+    (hXslack : (20000 : ℝ) / ε ≤ (2 : ℝ) ^ (X₀ - Zsat ε - (κ + ε)))
+    (hXbase : Zsat ε + Real.log (rowMax S₀) / Real.log 2 + (S₀ : ℝ) ≤ X₀)
+    (hScap : (2 : ℝ) ^ ((16 / 5 : ℝ) * (Zsat ε + (κ + ε))) * (100 / ε) ≤ (cap S₀ : ℝ))
+    (hSdef : (1 + ε / 100) / (ε / 100) ≤ (cap S₀ : ℝ)) :
+    RevPebbling.BlockSim.c ≤ (2 : ℝ) ^ (1 + (κ + ε)) := by
+  set lam := κ + ε with hlamdef
+  obtain ⟨K, hKpos, hK⟩ := rowMax_le_exp hε hε1 hκlo hκhi hsup hS₀ hXsat hXslack hXbase
+    hScap hSdef
+  -- pointwise, the root is below the exponential of `Readout`'s bound
+  have hpt : ∀ s : ℕ, (rowMax s : ℝ) ^ (((s : ℝ) + 1)⁻¹)
+      ≤ Real.exp (lam * Real.log 2
+          + (Real.log K + lam * Real.log 2) / (((s : ℝ) + 2) - 1)) := by
+    intro s
+    have hM : (0 : ℝ) < (rowMax s : ℝ) := by exact_mod_cast rowMax_pos s
+    have hSnn : (0 : ℝ) ≤ (s : ℝ) := Nat.cast_nonneg _
+    have hS : (1 : ℝ) < (s : ℝ) + 2 := by linarith
+    have hlog := RevPebbling.Readout.log_root_le hM hKpos hS (hK s)
+    rw [Real.rpow_def_of_pos hM]
+    refine Real.exp_le_exp.mpr ?_
+    have hid : Real.log (rowMax s) * (((s : ℝ) + 1)⁻¹)
+        = Real.log (rowMax s) / (((s : ℝ) + 2) - 1) := by
+      rw [div_eq_mul_inv]
+      congr 2
+      ring
+    rw [hid]
+    exact hlog
+  -- both sides converge
+  have hSat : Tendsto (fun s : ℕ => ((s : ℝ) + 2)) atTop atTop :=
+    tendsto_atTop_add_const_right _ 2 tendsto_natCast_atTop_atTop
+  have hg := (RevPebbling.Readout.bound_tendsto K lam).comp hSat
+  have hexp : Tendsto (fun s : ℕ => Real.exp (lam * Real.log 2
+      + (Real.log K + lam * Real.log 2) / (((s : ℝ) + 2) - 1))) atTop
+      (𝓝 (Real.exp (lam * Real.log 2))) := by
+    exact (Real.continuous_exp.tendsto _).comp hg
+  have hf := RevPebbling.Unconditional.tendsto_rowMax_root_uncond
+  have hle : RevPebbling.BlockSim.c / 2 ≤ Real.exp (lam * Real.log 2) :=
+    le_of_tendsto_of_tendsto' hf hexp hpt
+  -- `exp(λ ln 2) = 2^λ` and `2^{1+λ} = 2·2^λ`
+  have h2 : Real.exp (lam * Real.log 2) = (2 : ℝ) ^ lam := by
+    rw [Real.rpow_def_of_pos (by norm_num)]
+    congr 1
+    ring
+  have h3 : (2 : ℝ) ^ (1 + lam) = 2 * (2 : ℝ) ^ lam := by
+    rw [Real.rpow_add (by norm_num), Real.rpow_one]
+  rw [h2] at hle
+  rw [h3]
+  linarith
 
 end RevPebbling.Final

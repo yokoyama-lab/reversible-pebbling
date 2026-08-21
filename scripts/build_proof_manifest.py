@@ -2550,6 +2550,40 @@ def main() -> int:
                     "RevPebbling.ArcMargin.bracket_pos_arc",
                 ],
             },
+            "readout_and_final_bound": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-22): the readout and the upper "
+                           "bound c <= 2^{1+kappa+eps}. psi_le_count_shift moves the "
+                           "subsolution to the index the readout needs -- Lean's rowIter s "
+                           "has length 2^{s+1}-1 while cap s = 2^{s-1}-1 is BELOW the "
+                           "midpoint threshold 2^s-1, so the shape is used at s+2, where "
+                           "cap(s+2) is exactly the row length. psi_at_readout: at the "
+                           "readout point v_s = ceil(2^{X_{s+2}-1/q_h}) -- inside the flat "
+                           "head by C4, profile <= 1 -- the shape reaches "
+                           "floor(cap(s+2)/2) = 2^s - 1, the threshold EXACTLY with no "
+                           "slack. rowMax_le_geom: the polynomial factor s of "
+                           "ReadoutBridge.rowMax_le_of_midv_le cannot fit "
+                           "Readout.log_root_le's pure form K 2^{lam S}, and does not have "
+                           "to -- the midpoint bounds are geometric, so the maxima are a "
+                           "geometric sum and K really is a constant. c_le then runs "
+                           "log_root_le / bound_tendsto against "
+                           "Unconditional.tendsto_rowMax_root_uncond. The hypotheses are "
+                           "exactly those of psi_le_count: rational data, ranges, the "
+                           "single analytic input hsup (V q <= kappa on [q_h,q_hi], the "
+                           "enclosure of kappa* that Lean does not have), and lower bounds "
+                           "on X0 and S0. "),
+                "theorems": [
+                    "RevPebbling.Final.psi_le_count_shift",
+                    "RevPebbling.Final.one_le_vRead",
+                    "RevPebbling.Final.psi_at_readout",
+                    "RevPebbling.Final.midv_le_vRead",
+                    "RevPebbling.Final.rowMax_le_geom",
+                    "RevPebbling.Final.vRead_le",
+                    "RevPebbling.Final.vRead_geom",
+                    "RevPebbling.Final.rowMax_le_exp",
+                    "RevPebbling.Final.c_le",
+                ],
+            },
             "arc_step_concrete": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED (this work, 2026-08-21): the arc step for the "

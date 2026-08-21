@@ -117,7 +117,7 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 732 theorems the
+the rest are general (unbounded) proofs.  Of the 741 theorems the
 manifest lists, **73 rest on a `native_decide` certificate and 17 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
@@ -156,7 +156,7 @@ theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
 A full build takes about two and a quarter hours
-(62 stages, 732 theorems), nearly all of it three checks: the composition anchor at
+(63 stages, 741 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the
@@ -234,7 +234,7 @@ committed `proof-manifest.json` is reproduced byte for byte.
   `σ = ρ_c(q)^{1/r}` rounded **up** to 20 decimals keeps `ρ` and
   `λ = L/D` exactly rational and is itself what leaves the slack
   `E = L − D − B ≥ 1` that absorbs the `+1` of the recursion.  With
-  `λ₀ = 12585324184473205104/10¹⁹`, the largest 19-digit rational that
+  `λ₀ = 12585324184474105104/10¹⁹`, the largest 19-digit rational that
   passes the master inequality, `c_ge_2_5170648368936010208` gives
   **`2.5170648368936010208 ≤ c`** — `2.2·10⁻¹³` below the conjectured
   value, and what is left is the deficit of the exponent, not slack in
