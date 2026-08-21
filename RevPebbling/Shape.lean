@@ -423,6 +423,63 @@ theorem step_of_margin_lower {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ}
       ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) :=
   step_of_idealMargin hS hμx (le_trans hdef (by linarith))
 
+/-! ## Both children at full weight: the step is free -/
+
+/-- **When both children can be given full weight, the step needs no
+margin at all.**
+
+If the profile is nonnegative at the value (it always is — `Iof` is an
+integral of a nonnegative rate), the lower parent is still capped
+(`I = 0` at `X_S − log₂ v`, i.e. `ζ ≤ λ`), the lower child is capped, and
+the upper child sits at profile value `≤ 1`, then
+
+```
+Ψ_{S+1}(v) ≤ cap(S+1) = 1 + cap S + cap S ≤ 1 + Ψ_S(v) + min(Ψ_S u, Ψ_{S+1} w)
+```
+
+with no reference to `μ`, the margin, or the cap-ratio deficit: the
+recursion's `+1` is exactly the missing half.  This closes the whole
+region `ζ ≤ z_cap` — and `z_cap` is precisely where it stops, because past
+it `v` is too small to give **both** children their weight. -/
+theorem capped_children_step_Psi {I : ℝ → ℝ} {X : ℕ → ℝ} {S u w v : ℕ} (hS : 1 ≤ S)
+    (hv0 : 0 ≤ I (X (S + 1) - (Real.log v / Real.log 2)))
+    (hvp : I (X S - (Real.log v / Real.log 2)) = 0)
+    (hu : I (X S - (Real.log u / Real.log 2)) = 0)
+    (hw : I (X (S + 1) - (Real.log w / Real.log 2)) ≤ 1) :
+    Psi I X (S + 1) v
+      ≤ 1 + Psi I X S v + min (Psi I X S u) (Psi I X (S + 1) w) := by
+  rw [Psi_eq_cap hvp, Psi_eq_cap hu]
+  have hsucc : cap (S + 1) = 2 * cap S + 1 := cap_succ S hS
+  -- the value is at most the cap, because `2^{−I} ≤ 1` for `I ≥ 0`
+  have hvle : Psi I X (S + 1) v ≤ cap (S + 1) := by
+    unfold Psi
+    have hle1 : (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log v / Real.log 2)))) ≤ 1 := by
+      have h := Real.rpow_le_rpow_of_exponent_le (x := (2:ℝ)) (by norm_num)
+        (show -(I (X (S + 1) - (Real.log v / Real.log 2))) ≤ 0 by linarith)
+      simpa using h
+    have hcap : (0 : ℝ) ≤ (cap (S + 1) : ℝ) := Nat.cast_nonneg _
+    have hmul : (cap (S + 1) : ℝ)
+        * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log v / Real.log 2))))
+        ≤ (cap (S + 1) : ℝ) := by nlinarith
+    calc ⌊(cap (S + 1) : ℝ)
+          * (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log v / Real.log 2))))⌋₊
+        ≤ ⌊((cap (S + 1) : ℕ) : ℝ)⌋₊ := Nat.floor_le_floor hmul
+      _ = cap (S + 1) := Nat.floor_natCast _
+  -- the upper child is worth at least `⌊cap(S+1)/2⌋ = cap S`
+  have hwge : cap S ≤ Psi I X (S + 1) w := by
+    unfold Psi
+    refine Nat.le_floor ?_
+    have hhalf : (2 : ℝ) ^ (-(1 : ℝ))
+        ≤ (2 : ℝ) ^ (-(I (X (S + 1) - (Real.log w / Real.log 2)))) :=
+      Real.rpow_le_rpow_of_exponent_le (by norm_num) (by linarith)
+    have hval : (2 : ℝ) ^ (-(1 : ℝ)) = 1 / 2 := by
+      rw [Real.rpow_neg (by norm_num), Real.rpow_one]; norm_num
+    have hcap1 : (0 : ℝ) ≤ (cap (S + 1) : ℝ) := Nat.cast_nonneg _
+    have hsucc' : (cap (S + 1) : ℝ) = 2 * (cap S : ℝ) + 1 := by exact_mod_cast hsucc
+    calc (cap S : ℝ) ≤ (cap (S + 1) : ℝ) * (1 / 2) := by rw [hsucc']; linarith
+      _ ≤ _ := by rw [← hval]; exact mul_le_mul_of_nonneg_left hhalf hcap1
+  omega
+
 /-! ## The cap region: the integer identity, not the idealised margin -/
 
 /-- **The cap step with a half-weight upper child.**

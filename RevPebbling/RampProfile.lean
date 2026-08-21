@@ -179,6 +179,17 @@ theorem Iof_sub_le (hx : 0 ≤ x) (hxy : x ≤ y) :
     rw [intervalIntegral.integral_const, smul_eq_mul, mul_comm]
   linarith
 
+/-- The profile is nonnegative: it is the integral of a nonnegative rate. -/
+theorem Iof_nonneg (hle : q_h ≤ q_hi) (hm : 0 ≤ m) (hq : 0 ≤ q_h) (ζ : ℝ) :
+    0 ≤ Iof q_h q_hi H m ζ := by
+  rcases le_total ζ 0 with h | h
+  · rw [Iof_nonpos h]
+  · have h0 : Iof q_h q_hi H m 0 = 0 := Iof_nonpos (le_refl 0)
+    have hsub := Iof_sub_ge (q_h := q_h) (q_hi := q_hi) (H := H) (m := m)
+      hle hm (le_refl (0 : ℝ)) h
+    have : 0 ≤ q_h * (ζ - 0) := by positivity
+    linarith [hsub, h0]
+
 /-! ## The quadratic deviation — Step 2 of the margin lemma, made concrete -/
 
 /-- **The profile deviates from its tangent by at most `m·s²/2`.**
