@@ -2582,6 +2582,11 @@ def main() -> int:
                     "RevPebbling.Final.vRead_geom",
                     "RevPebbling.Final.rowMax_le_exp",
                     "RevPebbling.Final.c_le",
+                    "RevPebbling.Final.exists_cap_ge",
+                    "RevPebbling.Final.exists_witnesses",
+                    "RevPebbling.Final.c_le_of_hsup",
+                    "RevPebbling.Final.two_rpow_one_add_V",
+                    "RevPebbling.Final.c_eq_of_attained",
                 ],
             },
             "arc_step_concrete": {

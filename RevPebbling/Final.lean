@@ -437,4 +437,156 @@ theorem c_le {ε κ X₀ : ℝ} {S₀ : ℕ}
   rw [h3]
   linarith
 
+/-! ## The hypotheses are satisfiable, and `ε` may be taken to `0`
+
+Every hypothesis of `c_le` beyond `hsup` and the ranges is a **lower
+bound** on `X₀` or on `cap S₀`, so witnesses always exist: `cap` is
+unbounded and `X₀` is ours to choose.  Since `c` is one fixed real and the
+bound holds for every `ε ∈ (0, 1/100]`, it holds in the limit. -/
+
+/-- The cap is unbounded, so any lower bound on it is met at some level. -/
+theorem exists_cap_ge (C : ℝ) : ∃ S₀ : ℕ, 7 ≤ S₀ ∧ C ≤ (cap S₀ : ℝ) := by
+  obtain ⟨n, hn⟩ := pow_unbounded_of_one_lt (max C 0 + 1) (by norm_num : (1:ℝ) < 2)
+  refine ⟨max 7 (n + 1), le_max_left _ _, ?_⟩
+  set S₀ := max 7 (n + 1) with hS₀
+  have hS₀n : n ≤ S₀ - 1 := by
+    have : n + 1 ≤ S₀ := le_max_right _ _
+    omega
+  have hpow : (2 : ℕ) ^ n ≤ 2 ^ (S₀ - 1) := Nat.pow_le_pow_right (by norm_num) hS₀n
+  have h1 : (1 : ℕ) ≤ 2 ^ (S₀ - 1) := Nat.one_le_two_pow
+  have hcapN : cap S₀ = 2 ^ (S₀ - 1) - 1 := rfl
+  have hcast : (cap S₀ : ℝ) = ((2 ^ (S₀ - 1) : ℕ) : ℝ) - 1 := by
+    rw [hcapN, Nat.cast_sub h1]; norm_num
+  have hpowR : ((2 : ℕ) ^ n : ℝ) ≤ ((2 ^ (S₀ - 1) : ℕ) : ℝ) := by exact_mod_cast hpow
+  have hnR : max C 0 + 1 < (2 : ℝ) ^ n := hn
+  have hcastn : ((2 : ℕ) ^ n : ℝ) = (2 : ℝ) ^ n := by push_cast; ring
+  rw [hcast]
+  have hCmax : C ≤ max C 0 := le_max_left _ _
+  rw [hcastn] at hpowR
+  linarith
+
+/-- **Witnesses for every `ε`.**  All of `c_le`'s data hypotheses are
+lower bounds, so they can be met. -/
+theorem exists_witnesses (ε κ : ℝ) (hε : 0 < ε) :
+    ∃ (S₀ : ℕ) (X₀ : ℝ), 7 ≤ S₀ ∧
+      Zsat ε + (κ + ε) + 20 ≤ X₀ ∧
+      (20000 : ℝ) / ε ≤ (2 : ℝ) ^ (X₀ - Zsat ε - (κ + ε)) ∧
+      Zsat ε + Real.log (rowMax S₀) / Real.log 2 + (S₀ : ℝ) ≤ X₀ ∧
+      (2 : ℝ) ^ ((16 / 5 : ℝ) * (Zsat ε + (κ + ε))) * (100 / ε) ≤ (cap S₀ : ℝ) ∧
+      (1 + ε / 100) / (ε / 100) ≤ (cap S₀ : ℝ) := by
+  obtain ⟨S₀, hS₀7, hcap⟩ := exists_cap_ge
+    (max ((2 : ℝ) ^ ((16 / 5 : ℝ) * (Zsat ε + (κ + ε))) * (100 / ε))
+      ((1 + ε / 100) / (ε / 100)))
+  set L : ℝ := Real.log (20000 / ε) / Real.log 2 with hL
+  refine ⟨S₀, max (max (Zsat ε + (κ + ε) + 20)
+      (Zsat ε + Real.log (rowMax S₀) / Real.log 2 + (S₀ : ℝ)))
+      (Zsat ε + (κ + ε) + L), hS₀7, ?_, ?_, ?_, ?_, ?_⟩
+  · exact le_trans (le_max_left _ _) (le_max_left _ _)
+  · -- the slack bound: `2^{log₂ t} = t`
+    have hpos : (0 : ℝ) < 20000 / ε := by positivity
+    have hval : (2 : ℝ) ^ L = 20000 / ε :=
+      RevPebbling.MarginAnchors.two_rpow_log_div_log hpos
+    have hge : L ≤ (max (max (Zsat ε + (κ + ε) + 20)
+        (Zsat ε + Real.log (rowMax S₀) / Real.log 2 + (S₀ : ℝ)))
+        (Zsat ε + (κ + ε) + L)) - Zsat ε - (κ + ε) := by
+      have := le_max_right (max (Zsat ε + (κ + ε) + 20)
+        (Zsat ε + Real.log (rowMax S₀) / Real.log 2 + (S₀ : ℝ)))
+        (Zsat ε + (κ + ε) + L)
+      linarith
+    calc (20000 : ℝ) / ε = (2 : ℝ) ^ L := hval.symm
+      _ ≤ _ := Real.rpow_le_rpow_of_exponent_le (by norm_num) hge
+  · exact le_trans (le_max_right _ _) (le_max_left _ _)
+  · exact le_trans (le_max_left _ _) hcap
+  · exact le_trans (le_max_right _ _) hcap
+
+/-- **`c ≤ 2^{1+κ}`.**  The bound holds for every `ε ∈ (0, 1/100]` with
+witnesses supplied by `exists_witnesses`, and `c` is one fixed real, so it
+holds in the limit `ε → 0`.
+
+This is the upper half of the theorem, **conditional on `hsup` only**:
+`V q ≤ κ` on `[q_h, q_hi]`.  At `κ = κ*` that is the enclosure of the
+critical value, which lives in the ball-arithmetic layer and not in Lean;
+at `κ = 1/2` it is `KappaLtHalf` and the conclusion is true but weaker
+than the unconditional `Unconditional.c_bracket`. -/
+theorem c_le_of_hsup {κ : ℝ} (hκlo : 33 / 100 ≤ κ) (hκhi : κ ≤ 1 / 2)
+    (hsup : ∀ q ρ : ℝ, 43 / 100 ≤ q → q ≤ 16 / 5 → 1 ≤ ρ →
+      RevPebbling.CriticalRoot.G q ρ = 1 → 1 / q - Real.log ρ / Real.log 2 ≤ κ) :
+    RevPebbling.BlockSim.c ≤ (2 : ℝ) ^ (1 + κ) := by
+  -- the bound at every `ε` of the sequence `1/(100(n+1))`
+  have hstep : ∀ n : ℕ, RevPebbling.BlockSim.c
+      ≤ (2 : ℝ) ^ (1 + (κ + 1 / (100 * ((n : ℝ) + 1)))) := by
+    intro n
+    have hnn : (0 : ℝ) ≤ (n : ℝ) := Nat.cast_nonneg _
+    have hε : (0 : ℝ) < 1 / (100 * ((n : ℝ) + 1)) := by positivity
+    have hε1 : 1 / (100 * ((n : ℝ) + 1)) ≤ 1 / 100 := by
+      rw [div_le_div_iff₀ (by positivity) (by norm_num)]
+      linarith
+    obtain ⟨S₀, X₀, hS₀, hXsat, hXslack, hXbase, hScap, hSdef⟩ :=
+      exists_witnesses (1 / (100 * ((n : ℝ) + 1))) κ hε
+    exact c_le hε hε1 hκlo hκhi hsup hS₀ hXsat hXslack hXbase hScap hSdef
+  -- and `2^{1+κ+ε_n} → 2^{1+κ}`
+  have hcont : Continuous (fun x : ℝ => (2 : ℝ) ^ x) := by
+    have hid : (fun x : ℝ => (2 : ℝ) ^ x) = fun x : ℝ => Real.exp (Real.log 2 * x) := by
+      funext x
+      rw [Real.rpow_def_of_pos (by norm_num)]
+    rw [hid]
+    exact Real.continuous_exp.comp (continuous_const.mul continuous_id)
+  have hseq : Filter.Tendsto (fun n : ℕ => 1 + (κ + 1 / (100 * ((n : ℝ) + 1))))
+      Filter.atTop (𝓝 (1 + (κ + 0))) := by
+    refine Filter.Tendsto.const_add _ (Filter.Tendsto.const_add _ ?_)
+    have hden : Filter.Tendsto (fun n : ℕ => 100 * ((n : ℝ) + 1)) Filter.atTop
+        Filter.atTop := by
+      refine Filter.Tendsto.const_mul_atTop (by norm_num) ?_
+      exact Filter.tendsto_atTop_add_const_right _ 1 tendsto_natCast_atTop_atTop
+    exact Filter.Tendsto.div_atTop tendsto_const_nhds hden
+  have hlim : Filter.Tendsto (fun n : ℕ => (2 : ℝ) ^ (1 + (κ + 1 / (100 * ((n : ℝ) + 1)))))
+      Filter.atTop (𝓝 ((2 : ℝ) ^ (1 + (κ + 0)))) :=
+    (hcont.tendsto _).comp hseq
+  have := ge_of_tendsto hlim (Filter.Eventually.of_forall hstep)
+  simpa using this
+
+/-! ## Meeting the lower bound -/
+
+/-- `2^{1+V(q)} = 2·2^{1/q}/ρ` at a root — the form the lower bound
+(`CriticalRoot.c_ge_two_pow_V`) is stated in. -/
+theorem two_rpow_one_add_V {q ρ : ℝ} (hρ : 0 < ρ) :
+    (2 : ℝ) ^ (1 + (1 / q - Real.log ρ / Real.log 2)) = 2 * (2 : ℝ) ^ q⁻¹ / ρ := by
+  have hlogρ : (2 : ℝ) ^ (Real.log ρ / Real.log 2) = ρ :=
+    RevPebbling.MarginAnchors.two_rpow_log_div_log hρ
+  have hsplit : (1 : ℝ) + (1 / q - Real.log ρ / Real.log 2)
+      = (1 + 1 / q) + -(Real.log ρ / Real.log 2) := by ring
+  rw [hsplit, Real.rpow_add (by norm_num : (0:ℝ) < 2),
+    Real.rpow_neg (by norm_num : (0:ℝ) ≤ 2), hlogρ,
+    Real.rpow_add (by norm_num : (0:ℝ) < 2), Real.rpow_one, one_div]
+  field_simp
+
+/-- **`c = 2^{1+κ}` when `κ` is attained.**
+
+The upper half is `c_le_of_hsup`; the lower half is
+`CriticalRoot.c_ge_two_pow_V` at the `q` where the bound is attained.  So
+the two ends meet exactly when `κ` is both an upper bound for `V` on the
+window `[q_h, q_hi]` **and** achieved there — i.e. when `κ` is the
+window's `κ*`.
+
+⚠ Neither half is unconditional: both rest on `hsup`, and the attainment
+hypothesis `hattain` names the maximiser.  What Lean still lacks is the
+*enclosure* of `κ*` that would discharge them; that is the ball-arithmetic
+layer's result, not a gap in this chain. -/
+theorem c_eq_of_attained {κ q ρ : ℝ}
+    (hκlo : 33 / 100 ≤ κ) (hκhi : κ ≤ 1 / 2)
+    (hsup : ∀ q ρ : ℝ, 43 / 100 ≤ q → q ≤ 16 / 5 → 1 ≤ ρ →
+      RevPebbling.CriticalRoot.G q ρ = 1 → 1 / q - Real.log ρ / Real.log 2 ≤ κ)
+    (hq : 0 < q) (hρ : 1 ≤ ρ) (hg : RevPebbling.CriticalRoot.G q ρ = 1)
+    (hattain : 1 / q - Real.log ρ / Real.log 2 = κ) :
+    RevPebbling.BlockSim.c = (2 : ℝ) ^ (1 + κ) := by
+  have hρ0 : (0 : ℝ) < ρ := lt_of_lt_of_le zero_lt_one hρ
+  have hge : 2 * (2 : ℝ) ^ q⁻¹ / ρ ≤ RevPebbling.BlockSim.c :=
+    RevPebbling.CriticalRoot.c_ge_two_pow_V hq hρ hg
+  have hval : (2 : ℝ) ^ (1 + κ) = 2 * (2 : ℝ) ^ q⁻¹ / ρ := by
+    rw [← hattain]
+    exact two_rpow_one_add_V hρ0
+  have hle : RevPebbling.BlockSim.c ≤ (2 : ℝ) ^ (1 + κ) := c_le_of_hsup hκlo hκhi hsup
+  rw [hval] at hle ⊢
+  linarith
+
 end RevPebbling.Final
