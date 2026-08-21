@@ -325,6 +325,26 @@ theorem Iof_telescope (hm : 0 < m) (hle : q_h ≤ q_hi) {lam : ℝ} (hlam : 0 �
   rw [hcongr, intervalIntegral.integral_const, smul_eq_mul]
   ring
 
+/-- **Past saturation the profile grows at the full rate `q_hi`**:
+`I(x) ≥ q_hi·(x − ζ_sat)`.  This is what makes `Ψ` vanish at the deep end
+(and hence `Ψ_S(0) = Ψ_S(1) = 0`), via `C2`: one level costs `λ` octaves
+and buys `q_hi·λ > 1` of profile. -/
+theorem Iof_ge_sat (hm : 0 < m) (hle : q_h ≤ q_hi) (hq : 0 ≤ q_h) {x : ℝ}
+    (hsat : H + (q_hi - q_h) / m ≤ x) (hsat0 : 0 ≤ H + (q_hi - q_h) / m) :
+    q_hi * (x - (H + (q_hi - q_h) / m)) ≤ Iof q_h q_hi H m x := by
+  set ζs := H + (q_hi - q_h) / m with hζs
+  have htel : Iof q_h q_hi H m x - Iof q_h q_hi H m (x - (x - ζs))
+      = q_hi * (x - ζs) := by
+    refine Iof_telescope hm hle (by linarith) ?_ ?_
+    · have : x - (x - ζs) = ζs := by ring
+      rw [this]; exact hsat0
+    · have : x - (x - ζs) = ζs := by ring
+      rw [this]
+  have hid : x - (x - ζs) = ζs := by ring
+  rw [hid] at htel
+  have hnn : 0 ≤ Iof q_h q_hi H m ζs := Iof_nonneg hle (le_of_lt hm) hq ζs
+  linarith
+
 /-- The saturation depth is the arc length of `ArcLength.arc_time_bound`:
 with `m = (q_h/10)·ε` it is `H + 10(q_hi − q_h)/(q_h·ε)`. -/
 theorem sat_depth_eq {ε : ℝ} (hq : 0 < q_h) (hε : 0 < ε) :

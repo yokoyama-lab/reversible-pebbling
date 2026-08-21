@@ -269,6 +269,75 @@ theorem pos_upper_ge {v : ℕ} (hv : 1 ≤ v) {X δ : ℝ} (hδ : 0 ≤ δ)
   have hxval : 3 * x = 3 * (2 : ℝ) ^ δ / (v : ℝ) := by rw [hx]; ring
   linarith [hmono, hlgx, hxval]
 
+/-! ## The deep end: `Ψ` vanishes, and the base case -/
+
+/-- `Ψ = 0` where the profile has outrun the cap. -/
+theorem psi_eq_zero {I : ℝ → ℝ} {X : ℕ → ℝ} {S v : ℕ}
+    (h : (cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - Real.log v / Real.log 2))) < 1) :
+    Psi I X S v = 0 := by
+  unfold Psi
+  exact Nat.floor_eq_zero.mpr h
+
+/-- The shape vanishes once the profile exceeds `S`: `cap S < 2^S ≤ 2^I`. -/
+theorem psi_eq_zero_of_profile {I : ℝ → ℝ} {X : ℕ → ℝ} {S v : ℕ}
+    (h : (S : ℝ) ≤ I (X S - Real.log v / Real.log 2)) : Psi I X S v = 0 := by
+  refine psi_eq_zero ?_
+  set J := I (X S - Real.log v / Real.log 2) with hJ
+  have hcap : (cap S : ℝ) < (2 : ℝ) ^ (S : ℝ) := by
+    have h1 : cap S < 2 ^ S := by
+      unfold cap
+      have hmono : (2 : ℕ) ^ (S - 1) ≤ 2 ^ S := Nat.pow_le_pow_right (by norm_num) (by omega)
+      have hpos : 0 < (2 : ℕ) ^ S := Nat.two_pow_pos S
+      omega
+    have h2 : ((cap S : ℕ) : ℝ) < ((2 ^ S : ℕ) : ℝ) := by exact_mod_cast h1
+    have h3 : (((2 : ℕ) ^ S : ℕ) : ℝ) = (2 : ℝ) ^ (S : ℝ) := by
+      push_cast
+      rw [Real.rpow_natCast]
+    rwa [h3] at h2
+  have hmono : (2 : ℝ) ^ (S : ℝ) ≤ (2 : ℝ) ^ J :=
+    Real.rpow_le_rpow_of_exponent_le (by norm_num) h
+  have hJpos : (0 : ℝ) < (2 : ℝ) ^ J := Real.rpow_pos_of_pos (by norm_num) _
+  have hneg : (2 : ℝ) ^ (-J) = ((2 : ℝ) ^ J)⁻¹ := Real.rpow_neg (by norm_num) _
+  rw [hneg]
+  rw [mul_inv_lt_iff₀ hJpos, one_mul]
+  linarith [hcap, hmono]
+
+/-- If every entry of the row is `≤ v`, the count is the whole length. -/
+theorem countLe_eq_length_of_rowMax_le {s v : ℕ}
+    (h : RevPebbling.RowMax.rowMax s ≤ v) :
+    RevPebbling.CountRecursion.countLe (RevPebbling.CountRecursion.rowIter s) v
+      = (RevPebbling.CountRecursion.rowIter s).length := by
+  unfold RevPebbling.CountRecursion.countLe
+  refine List.countP_eq_length.mpr ?_
+  intro x hx
+  have hle : x ≤ RevPebbling.RowMax.rowMax s := RevPebbling.RowMax.le_listMax hx
+  simp only [decide_eq_true_eq]
+  omega
+
+/-- `cap s ≤ (rowIter s).length`: the shape never reaches the row length,
+so at the deep end the count dominates it trivially. -/
+theorem cap_le_rowIter_length (s : ℕ) :
+    cap s ≤ (RevPebbling.CountRecursion.rowIter s).length := by
+  rw [RevPebbling.CountRecursion.rowIter_length]
+  unfold cap
+  have : (2 : ℕ) ^ (s - 1) ≤ 2 ^ (s + 1) := Nat.pow_le_pow_right (by norm_num) (by omega)
+  omega
+
+/-- `Ψ ≤ cap` always (the profile is nonnegative). -/
+theorem psi_le_cap {I : ℝ → ℝ} {X : ℕ → ℝ} {S v : ℕ}
+    (h0 : 0 ≤ I (X S - Real.log v / Real.log 2)) : Psi I X S v ≤ cap S := by
+  unfold Psi
+  have hle1 : (2 : ℝ) ^ (-(I (X S - Real.log v / Real.log 2))) ≤ 1 := by
+    have h := Real.rpow_le_rpow_of_exponent_le (x := (2:ℝ)) (by norm_num)
+      (show -(I (X S - Real.log v / Real.log 2)) ≤ 0 by linarith)
+    simpa using h
+  have hcap : (0 : ℝ) ≤ (cap S : ℝ) := Nat.cast_nonneg _
+  have hmul : (cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - Real.log v / Real.log 2)))
+      ≤ (cap S : ℝ) := by nlinarith
+  calc ⌊(cap S : ℝ) * (2 : ℝ) ^ (-(I (X S - Real.log v / Real.log 2)))⌋₊
+      ≤ ⌊((cap S : ℕ) : ℝ)⌋₊ := Nat.floor_le_floor hmul
+    _ = cap S := Nat.floor_natCast _
+
 /-! ## Region 1: both children at full weight (`ζ ≤ z_cap`)
 
 The condition is stated as **feasibility of the split** rather than by a
@@ -733,4 +802,100 @@ theorem step_tail {q_h q_hi H m X₀ lam : ℝ} {S v : ℕ}
   refine ⟨1, v - 1, by omega, le_refl 1, by omega, ?_⟩
   exact tail_step_ramp hm hle hlam hS h0 hsat hql
 
+/-! ## Discharging the two `μ` conditions -/
+
+/-- `I(ζ) ≤ q_hi·ζ` for `ζ ≥ 0`: the profile never outruns the top rate. -/
+theorem Iof_le_top {q_h q_hi H m ζ : ℝ} (hζ : 0 ≤ ζ) :
+    Iof q_h q_hi H m ζ ≤ q_hi * ζ := by
+  have h := Iof_sub_le (q_h := q_h) (q_hi := q_hi) (H := H) (m := m)
+    (x := 0) (y := ζ) (le_refl 0) hζ
+  rw [Iof_nonpos (le_refl (0 : ℝ))] at h
+  simpa using h
+
+/-- **Lemma V₄'s `μ·x ≥ 1`.**  The shape's real value at `ζ` is at least
+`cap(S+1)·2^{−q_hi ζ}`, so a cap big enough against the deepest profile
+value in play discharges the condition. -/
+theorem mux_of_cap_big {q_h q_hi H m X₀ lam μ Ibig : ℝ} {S v : ℕ}
+    (hμ : 0 < μ)
+    (hI : Iof q_h q_hi H m (Xf X₀ lam (S + 1) - Real.log v / Real.log 2) ≤ Ibig)
+    (hcap : (2 : ℝ) ^ Ibig / μ ≤ (cap (S + 1) : ℝ)) :
+    1 ≤ μ * ((cap (S + 1) : ℝ)
+      * (2 : ℝ) ^ (-(Iof q_h q_hi H m
+          (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)))) := by
+  set J := Iof q_h q_hi H m (Xf X₀ lam (S + 1) - Real.log v / Real.log 2) with hJ
+  have hIbigpos : (0 : ℝ) < (2 : ℝ) ^ Ibig := Real.rpow_pos_of_pos (by norm_num) _
+  have hmono : (2 : ℝ) ^ (-Ibig) ≤ (2 : ℝ) ^ (-J) :=
+    Real.rpow_le_rpow_of_exponent_le (by norm_num) (by linarith)
+  have hneg : (2 : ℝ) ^ (-Ibig) = ((2 : ℝ) ^ Ibig)⁻¹ := Real.rpow_neg (by norm_num) _
+  have hcapnn : (0 : ℝ) ≤ (cap (S + 1) : ℝ) := Nat.cast_nonneg _
+  have hstep : (2 : ℝ) ^ Ibig / μ * (2 : ℝ) ^ (-Ibig) ≤ (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-J) := by
+    have h1 : (2 : ℝ) ^ Ibig / μ * (2 : ℝ) ^ (-Ibig)
+        ≤ (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-Ibig) :=
+      mul_le_mul_of_nonneg_right hcap (le_of_lt (Real.rpow_pos_of_pos (by norm_num) _))
+    have h2 : (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-Ibig) ≤ (cap (S + 1) : ℝ) * (2 : ℝ) ^ (-J) :=
+      mul_le_mul_of_nonneg_left hmono hcapnn
+    linarith
+  have hval : (2 : ℝ) ^ Ibig / μ * (2 : ℝ) ^ (-Ibig) = 1 / μ := by
+    rw [hneg]; field_simp
+  rw [hval] at hstep
+  have := mul_le_mul_of_nonneg_left hstep (le_of_lt hμ)
+  rw [mul_one_div, div_self (ne_of_gt hμ)] at this
+  exact this
+
+/-- **The cap-deficit condition**, from a lower bound on `cap S`.  Both
+`μ`-carrying regions use it with `μ = ε/100`. -/
+theorem cap_deficit_of_big {μ M : ℝ} {S : ℕ} (hμ : 0 < μ) (hM : 2 * μ ≤ M)
+    (hcap : (1 + μ) / μ ≤ (cap S : ℝ)) :
+    (1 + μ) * (1 + 1 / (2 * (cap S : ℝ))) ≤ 1 + M := by
+  have hμ1 : (0 : ℝ) < 1 + μ := by linarith
+  have hcappos : (0 : ℝ) < (cap S : ℝ) := lt_of_lt_of_le (by positivity) hcap
+  have hkey : (1 + μ) * (1 / (2 * (cap S : ℝ))) ≤ μ := by
+    rw [mul_one_div, div_le_iff₀ (by positivity)]
+    have h1 : (1 + μ) ≤ (cap S : ℝ) * μ := by
+      rw [div_le_iff₀ hμ] at hcap
+      exact hcap
+    nlinarith [h1, hμ, hcappos]
+  nlinarith [hkey, hM]
+
+/-! ## The dispatch: the four regions cover every `v ≥ 2`
+
+The case split is on `v` against three thresholds, which is the same as
+splitting on `ζ = X_{S+1} − log₂ v` but keeps the arithmetic on the side
+where the constructions live:
+
+```
+A = 2^{X_{S+1}−1/q_h} + 2^{X_S} + 1     the cap split is feasible
+B = 2^{X_{S+1}−λ}                        ζ ≤ λ
+C = 2^{X_{S+1}−ζ_sat−λ}                  ζ ≤ ζ_sat + λ
+```
+
+`C ≤ B ≤ A`, and the four cases `v ≥ A`, `B ≤ v < A`, `C ≤ v < B`,
+`v < C` are exhaustive by trichotomy — that is where the coverage claim
+is discharged, and nothing is assumed about it. -/
+
+/-- `lg (2^x) = x`, the one fact the thresholds need. -/
+theorem lg_two_rpow (x : ℝ) : lg ((2 : ℝ) ^ x) = x := by
+  have h := lg_mul_rpow (x := (1 : ℝ)) (a := x) (by norm_num)
+  simpa [lg, Real.log_one] using h
+
+/-- From a threshold on `v` to a bound on the position, and back. -/
+theorem pos_le_of_le {v : ℕ} (hv : 1 ≤ v) {X x : ℝ} (h : (2 : ℝ) ^ x ≤ (v : ℝ)) :
+    X - Real.log v / Real.log 2 ≤ X - x := by
+  have hpos : (0 : ℝ) < (2 : ℝ) ^ x := Real.rpow_pos_of_pos (by norm_num) _
+  have hmono : lg ((2 : ℝ) ^ x) ≤ lg (v : ℝ) := lg_mono hpos h
+  rw [lg_two_rpow] at hmono
+  have : lg (v : ℝ) = Real.log v / Real.log 2 := rfl
+  rw [this] at hmono
+  linarith
+
+theorem le_pos_of_le {v : ℕ} (hv : 1 ≤ v) {X x : ℝ} (h : (v : ℝ) ≤ (2 : ℝ) ^ x) :
+    X - x ≤ X - Real.log v / Real.log 2 := by
+  have hvR : (0 : ℝ) < (v : ℝ) := by exact_mod_cast hv
+  have hmono : lg (v : ℝ) ≤ lg ((2 : ℝ) ^ x) := lg_mono hvR h
+  rw [lg_two_rpow] at hmono
+  have : lg (v : ℝ) = Real.log v / Real.log 2 := rfl
+  rw [this] at hmono
+  linarith
+
 end RevPebbling.Assemble
+

@@ -100,6 +100,39 @@ theorem head_fits {lam : ℝ} (hlam : lam ≤ 51 / 100) :
     rw [hsum]; exact head_fits_pow hlam
   exact (Real.rpow_le_rpow_left_iff (by norm_num : (1:ℝ) < 2)).mp hle
 
+/-- `σ₁ = 2^{−1/q_h} ≤ 100/501`. -/
+theorem sigma1_le : (2 : ℝ) ^ (-(1 / (43 / 100 : ℝ))) ≤ 100 / 501 := by
+  have hinv : (1 : ℝ) / (43 / 100 : ℝ) = (100 : ℝ) / 43 := by norm_num
+  rw [hinv, Real.rpow_neg (by norm_num)]
+  have hpos : (0 : ℝ) < (2 : ℝ) ^ ((100 : ℝ) / 43) := Real.rpow_pos_of_pos (by norm_num) _
+  rw [inv_le_comm₀ hpos (by norm_num)]
+  have := le_two_rpow_100_43
+  linarith
+
+/-- `2^{−λ} ≤ 125/157` for `λ ≥ 33/100`. -/
+theorem two_rpow_neg_lam_le {lam : ℝ} (hlam : 33 / 100 ≤ lam) :
+    (2 : ℝ) ^ (-lam) ≤ 125 / 157 := by
+  have hmono : (2 : ℝ) ^ (-lam) ≤ (2 : ℝ) ^ (-(33 : ℝ) / 100) :=
+    Real.rpow_le_rpow_of_exponent_le (by norm_num) (by linarith)
+  have hval : (2 : ℝ) ^ (-(33 : ℝ) / 100) ≤ 125 / 157 := by
+    rw [show (-(33 : ℝ) / 100) = -((33 : ℝ) / 100) by ring, Real.rpow_neg (by norm_num)]
+    have hpos : (0 : ℝ) < (2 : ℝ) ^ ((33 : ℝ) / 100) := Real.rpow_pos_of_pos (by norm_num) _
+    rw [inv_le_comm₀ hpos (by norm_num)]
+    have := le_two_rpow_33_100
+    linarith
+  linarith
+
+/-- **The cap zone is nonempty**: `σ₁ + 2^{−λ} ≤ 0.9958 < 1`.  This is the
+quantitative form of `C3` the dispatch uses — it is what makes the
+threshold `2^{X_{S+1}}(σ₁ + 2^{−λ}) + 1` sit *below* `2^{X_{S+1}}`, i.e.
+what makes the value's own position positive throughout the band. -/
+theorem sigma1_add_lam_le {lam : ℝ} (hlam : 33 / 100 ≤ lam) :
+    (2 : ℝ) ^ (-(1 / (43 / 100 : ℝ))) + (2 : ℝ) ^ (-lam) ≤ 9958 / 10000 := by
+  have h1 := sigma1_le
+  have h2 := two_rpow_neg_lam_le hlam
+  norm_num at h1 h2 ⊢
+  linarith
+
 /-! ## The corner condition `C3` -/
 
 /-- **`C3`**: `2^{−1/q_h} ≤ 1 − 2^{−λ}` — `0.1996 ≤ 0.2038` — for every
