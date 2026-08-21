@@ -30,7 +30,7 @@ lower child matters, and `X_S ≳ 210`.
 
 namespace RevPebbling.Assemble
 
-open RevPebbling.Shape RevPebbling.RampProfile RevPebbling.Regions
+open RevPebbling.Shape RevPebbling.RampProfile RevPebbling.Regions RevPebbling.ArcGeometry
 
 /-! ## `log₂`, on the nose -/
 
@@ -308,6 +308,97 @@ theorem step_capped {q_h q_hi H m X₀ lam : ℝ} {S v : ℕ}
         exact hqζw
     exact capped_children_step_Psi hS
       (Iof_nonneg hle hm (le_of_lt hq) _) hIvp hIu hIw
+
+/-! ## Region 2: the upper band — the lower child is in the head -/
+
+/-- **The upper band's split.**  Past `z_cap` the lower child can no
+longer be capped, so the split is the balance one `δ_c = log₂(1+ρ_h)`:
+`w = ⌈v·2^{−δ_c}⌉`, `u = v − w`.  Both children land in the flat head
+(the head is long enough by `hhead`, which is `RationalData.head_fits`),
+and the lower child's integerisation slack `η = 3·2^{t_c}/v` is exactly
+the error term `Regions.band_upper_margin` carries. -/
+theorem step_band_upper {q_h q_hi H m X₀ lam μ : ℝ} {S v : ℕ}
+    (hS : 2 ≤ S) (hq : 0 < q_h) (hle : q_h ≤ q_hi) (hv : 1 ≤ v)
+    (hqlam : lam ≤ 1 / q_h)
+    (hC3 : (2 : ℝ) ^ (-(1 / q_h)) ≤ 1 - (2 : ℝ) ^ (-lam))
+    (hζpos : 0 < Xf X₀ lam (S + 1) - Real.log v / Real.log 2)
+    (hζlam : Xf X₀ lam (S + 1) - Real.log v / Real.log 2 ≤ lam)
+    (hlamH : lam ≤ H)
+    (hhead : lam + deltaStar q_h lam ≤ H)
+    (hlow0 : 0 ≤ (Xf X₀ lam (S + 1) - Real.log v / Real.log 2) - lam + tStar q_h lam)
+    (hbig : (2 : ℝ) ^ (tStar q_h lam) * 2 ≤ (v : ℝ))
+    (hslack : 3 * (2 : ℝ) ^ (tStar q_h lam) / (v : ℝ) ≤ lam)
+    (hroom : 1 + (v : ℝ) * (2 : ℝ) ^ (-(deltaStar q_h lam)) ≤ (v : ℝ))
+    (hμx : 1 ≤ μ * ((cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(Iof q_h q_hi H m
+            (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)))))
+    (hdef : (1 + μ) * (1 + 1 / (2 * (cap S : ℝ)))
+        ≤ 1 + (q_h * Real.log 2 / 2 * (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)
+              - q_h * (3 * (2 : ℝ) ^ (tStar q_h lam) / (v : ℝ)) * Real.log 2)) :
+    ∃ u w : ℕ, u + w = v ∧ 1 ≤ u ∧ 1 ≤ w ∧
+      PsiR q_h q_hi H m X₀ lam (S + 1) v
+        ≤ 1 + PsiR q_h q_hi H m X₀ lam S v
+          + min (PsiR q_h q_hi H m X₀ lam S u) (PsiR q_h q_hi H m X₀ lam (S + 1) w) := by
+  set δc := deltaStar q_h lam with hδc
+  set tc := tStar q_h lam with htc
+  set ζ := Xf X₀ lam (S + 1) - Real.log v / Real.log 2 with hζ
+  set η := 3 * (2 : ℝ) ^ tc / (v : ℝ) with hη
+  have hδ0 : 0 ≤ δc := deltaStar_nonneg
+  have hsplit : (2 : ℝ) ^ (-δc) + (2 : ℝ) ^ (-tc) = 1 := two_rpow_neg_split
+  have hvR : (0 : ℝ) < (v : ℝ) := by exact_mod_cast hv
+  refine ⟨usplit v δc, wsplit v δc, split_add v hδ0, ?_, one_le_wsplit hv δc, ?_⟩
+  · exact one_le_usplit hδ0 hroom
+  · -- the two children's positions
+    set u := usplit v δc with hu
+    set w := wsplit v δc with hw
+    have hu1 : 1 ≤ u := one_le_usplit hδ0 hroom
+    have hw1 : 1 ≤ w := one_le_wsplit hv δc
+    have huR : (0 : ℝ) < (u : ℝ) := by exact_mod_cast hu1
+    have hwR : (0 : ℝ) < (w : ℝ) := by exact_mod_cast hw1
+    have hηnn : 0 ≤ η := by rw [hη]; positivity
+    have hlgu : lg (u : ℝ) = Real.log u / Real.log 2 := rfl
+    have hlgw : lg (w : ℝ) = Real.log w / Real.log 2 := rfl
+    have hlgv : lg (v : ℝ) = Real.log v / Real.log 2 := rfl
+    have hXS : Xf X₀ lam S = Xf X₀ lam (S + 1) - lam := by rw [Xf_succ]; ring
+    -- upper child: `pos_w ≤ ζ + δ_c`, and `pos_w ≥ ζ > 0`
+    have hpd : Xf X₀ lam (S + 1) - Real.log w / Real.log 2 ≤ ζ + δc := by
+      have h := pos_upper (v := v) (X := Xf X₀ lam (S + 1)) (δ := δc) hv
+      rw [hlgw, hlgv] at h
+      rw [hζ]; exact h
+    have hpd0 : 0 ≤ Xf X₀ lam (S + 1) - Real.log w / Real.log 2 := by
+      have hwv : (w : ℝ) ≤ (v : ℝ) := by exact_mod_cast wsplit_le v hδ0
+      have hmono : lg (w : ℝ) ≤ lg (v : ℝ) := lg_mono hwR hwv
+      rw [hlgw, hlgv] at hmono
+      have : ζ ≤ Xf X₀ lam (S + 1) - Real.log w / Real.log 2 := by rw [hζ]; linarith
+      linarith [hζpos]
+    have hpdH : Xf X₀ lam (S + 1) - Real.log w / Real.log 2 ≤ H := by
+      linarith [hpd, hζlam, hhead]
+    -- lower child: `ζ − λ + t_c ≤ pos_u ≤ ζ − λ + t_c + η`
+    have hule : (u : ℝ) ≤ (v : ℝ) * (2 : ℝ) ^ (-tc) := usplit_le hδ0 hsplit
+    have huge : (v : ℝ) * (2 : ℝ) ^ (-tc) - 1 ≤ (u : ℝ) := usplit_ge hδ0 hsplit
+    have hpc : Xf X₀ lam S - Real.log u / Real.log 2 ≤ (ζ - lam + tc) + η := by
+      have h := pos_lower (v := v) (u := u) (X := Xf X₀ lam S) (t := tc) hu1 huge hbig
+      rw [hlgu, hlgv] at h
+      rw [hζ, hXS, hη]
+      linarith
+    have hpc0 : 0 ≤ Xf X₀ lam S - Real.log u / Real.log 2 := by
+      have h := pos_lower_ge (v := v) (u := u) (X := Xf X₀ lam S) (t := tc) hu1 hule hv
+      rw [hlgu, hlgv] at h
+      have : ζ - lam + tc ≤ Xf X₀ lam S - Real.log u / Real.log 2 := by
+        rw [hζ, hXS]; linarith
+      linarith [hlow0]
+    have hpcH : Xf X₀ lam S - Real.log u / Real.log 2 ≤ H := by
+      -- `pos_u ≤ (ζ−λ) + t_c + η ≤ t_c + η ≤ δ_c + η ≤ (H − λ) + λ = H`
+      have htδ : tc ≤ δc := by
+        rw [htc, hδc]
+        unfold tStar
+        have : 0 ≤ 1 / q_h - lam := by
+          have : lam ≤ 1 / q_h := hqlam
+          linarith
+        linarith
+      linarith [hpc, hζlam, hhead, hslack]
+    -- `M` is an unused implicit of that theorem; pin it to keep elaboration total
+    exact band_upper_step_ramp (M := 0) hS hq hle hηnn hC3 hζpos hζlam hlamH
+      hpc0 hpcH hpd0 hpdH hpc hpd hμx hdef
 
 /-! ## Region 4: the self-closing tail — any split works -/
 

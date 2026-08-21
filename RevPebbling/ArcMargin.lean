@@ -2,6 +2,7 @@ import RevPebbling.ArcGeometry
 import RevPebbling.MarginStep5
 import RevPebbling.BracketPositive
 import RevPebbling.Shape
+import Mathlib.Analysis.Complex.ExponentialBounds
 
 /-!
 # The arc: a lower bound on the idealised margin
@@ -264,5 +265,131 @@ theorem bracket_pos_arc {q lam ρc : ℝ} (hq : 0 < q) (hqhi : q ≤ 16 / 5)
     linarith
   have hnum : (8 / 5 * (51 / 100) ^ 2 + 612 / 100 : ℝ) / 20 < 1 / 2 := by norm_num
   linarith
+
+/-- The bracket is not merely positive but at least `1/5`: `ρ_c^{−q} >
+1/2` while `v_A/20 ≤ 0.294` (using `δ*² ≤ 49/9`, the sharp bound of
+`ArcGeometry.delta_le_seven_thirds`, not the slack `612/100`). -/
+theorem bracket_ge_fifth {q lam ρc : ℝ} (hq : 0 < q) (hqhi : q ≤ 16 / 5)
+    (hlam0 : 33 / 100 ≤ lam) (hlam : lam ≤ 51 / 100) (hqlo : 43 / 100 ≤ q)
+    (hρc : 1 ≤ ρc) (hg : G q ρc = 1) :
+    1 / 5 ≤ ρc ^ (-q) - vA q lam / 20 := by
+  have hhalf : 1 / 2 < ρc ^ (-q) := RevPebbling.BracketPositive.half_lt_rpow hq hρc hg
+  have hql : q * lam ≤ 5 / 3 := by nlinarith
+  have hfac : (2 : ℝ) ^ (q * lam - 1) ≤ 8 / 5 :=
+    RevPebbling.BracketPositive.two_rpow_factor_le hql
+  have hρ1 : (1 : ℝ) ≤ 1 + rhoLam q lam := by
+    have := rhoLam_pos (q := q) (lam := lam); linarith
+  have hsec : (1 + rhoLam q lam) ^ (-q) ≤ 1 :=
+    Real.rpow_le_one_of_one_le_of_nonpos hρ1 (by linarith)
+  have hsec0 : (0 : ℝ) < (1 + rhoLam q lam) ^ (-q) :=
+    Real.rpow_pos_of_pos (by linarith) _
+  have hδ0 : 0 ≤ deltaStar q lam := deltaStar_nonneg
+  have hδle : deltaStar q lam ≤ 7 / 3 := delta_le_seven_thirds hqlo hlam0
+  have hδ2 : deltaStar q lam ^ 2 ≤ 49 / 9 := by nlinarith
+  have hfac0 : (0 : ℝ) < (2 : ℝ) ^ (q * lam - 1) := Real.rpow_pos_of_pos (by norm_num) _
+  have hbound : vA q lam ≤ 8 / 5 * (51 / 100) ^ 2 + 49 / 9 := by
+    unfold vA
+    have h1 : (2 : ℝ) ^ (q * lam - 1) * lam ^ 2 ≤ 8 / 5 * (51 / 100) ^ 2 := by nlinarith
+    have h2 : (1 + rhoLam q lam) ^ (-q) * deltaStar q lam ^ 2 ≤ 49 / 9 := by
+      nlinarith [sq_nonneg (deltaStar q lam)]
+    linarith
+  have hnum : (8 / 5 * (51 / 100) ^ 2 + 49 / 9 : ℝ) / 20 ≤ 1 / 2 - 1 / 5 := by norm_num
+  linarith
+
+/-- **The arc's margin, in the uniform form the assembly uses.**
+
+With the rational data, the design condition and an integerisation slack
+`η ≤ ε/100`, the idealised margin on the arc is at least `ε/20`:
+
+```
+margin ≥ ln2·q·[(λ−V)/5 − η] ≥ (0.69)(0.43)(0.19 ε) = 0.0564 ε ≥ ε/20.
+```
+
+`ε` enters only through `λ − V ≥ ε` (Step 6) — which is where `hsup` is
+used; everything else is a constant of the construction. -/
+theorem arc_margin_ge_eps {q lam V ρc a b c d ε m η : ℝ}
+    (hqlo : 43 / 100 ≤ q) (hqhi : q ≤ 16 / 5)
+    (hlam0 : 33 / 100 ≤ lam) (hlam : lam ≤ 51 / 100)
+    (hε : 0 < ε) (hVeps : V + ε ≤ lam)
+    (hρc : 1 ≤ ρc) (hg : G q ρc = 1)
+    (hVdef : V = 1 / q - Real.log ρc / Real.log 2)
+    (hm : 0 ≤ m) (hdesign : m ≤ q / 10 * (lam - V))
+    (hη : 0 ≤ η) (hηsmall : η ≤ ε / 100)
+    (hab : |(a - b) - q * lam| ≤ m * lam ^ 2 / 2)
+    (hac : |(a - c) - q * (lam - tStar q lam)| ≤ m * deltaStar q lam ^ 2 / 2 + q * η)
+    (had : |(a - d) + q * deltaStar q lam| ≤ m * deltaStar q lam ^ 2 / 2 + q * η) :
+    ε / 20 ≤ RevPebbling.Shape.idealMargin a b c d := by
+  have hq : 0 < q := by linarith
+  have hV : V ≤ lam := by linarith
+  have hlamV : ε ≤ lam - V := by linarith
+  have hlamV0 : (0 : ℝ) ≤ lam - V := le_trans (le_of_lt hε) hlamV
+  have hL : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
+  have hLlo : (69 / 100 : ℝ) ≤ Real.log 2 := by
+    have h := Real.log_two_gt_d9
+    norm_num at h
+    linarith
+  have hLhi : Real.log 2 ≤ 1 := by
+    have := Real.log_le_sub_one_of_pos (show (0:ℝ) < 2 by norm_num)
+    linarith
+  have hcore := arc_margin_ge_gen hq hV hρc hg hVdef hab hac had
+  rw [max_self] at hcore
+  have hρ1 : (1 : ℝ) ≤ 1 + rhoLam q lam := by
+    have := rhoLam_pos (q := q) (lam := lam); linarith
+  have hsec : (1 + rhoLam q lam) ^ (-q) ≤ 1 :=
+    Real.rpow_le_one_of_one_le_of_nonpos hρ1 (by linarith)
+  have hsec0 : (0 : ℝ) < (1 + rhoLam q lam) ^ (-q) := Real.rpow_pos_of_pos (by linarith) _
+  have hvA0 : 0 ≤ vA q lam := by
+    unfold vA
+    have h1 : (0 : ℝ) ≤ (2 : ℝ) ^ (q * lam - 1) * lam ^ 2 := by positivity
+    have h2 : (0 : ℝ) ≤ (1 + rhoLam q lam) ^ (-q) * deltaStar q lam ^ 2 := by positivity
+    linarith
+  -- the error splits into curvature (absorbed by `v_A`) and slack
+  have hweight : (2 : ℝ) ^ (q * lam - 1) * (m * lam ^ 2 / 2)
+      + (1 + rhoLam q lam) ^ (-q) * (m * deltaStar q lam ^ 2 / 2 + q * η)
+      = (m / 2) * vA q lam + (1 + rhoLam q lam) ^ (-q) * (q * η) := by
+    unfold vA; ring
+  rw [hweight] at hcore
+  have hqη : (0 : ℝ) ≤ q * η := by positivity
+  have hslack : (1 + rhoLam q lam) ^ (-q) * (q * η) ≤ q * η := by nlinarith
+  have hmdev : (m / 2) * vA q lam ≤ (q / 20 * (lam - V)) * vA q lam :=
+    mul_le_mul_of_nonneg_right (by linarith) hvA0
+  have hbr : 1 / 5 ≤ ρc ^ (-q) - vA q lam / 20 :=
+    bracket_ge_fifth hq hqhi hlam0 hlam hqlo hρc hg
+  -- `main − curvature = ln2·q·(λ−V)·bracket ≥ ln2·q·(λ−V)/5`
+  have hnnLq : (0 : ℝ) ≤ Real.log 2 * q * (lam - V) := by positivity
+  have hbig : Real.log 2 * q * (lam - V) * (1 / 5)
+      ≤ Real.log 2 * q * (lam - V) * (ρc ^ (-q) - vA q lam / 20) :=
+    mul_le_mul_of_nonneg_left hbr hnnLq
+  have hid : ρc ^ (-q) * (q * (lam - V) * Real.log 2)
+      - Real.log 2 * ((q / 20 * (lam - V)) * vA q lam)
+      = Real.log 2 * q * (lam - V) * (ρc ^ (-q) - vA q lam / 20) := by ring
+  -- `ln2·q·[(λ−V)/5 − η] ≥ 0.69·0.43·0.19·ε ≥ ε/20`
+  have hprod : (69 / 100 : ℝ) * (43 / 100) ≤ Real.log 2 * q :=
+    mul_le_mul hLlo hqlo (by norm_num) (by linarith)
+  have hgap : (19 / 100 : ℝ) * ε ≤ (lam - V) * (1 / 5) - η := by
+    have h1 : ε * (1 / 5) ≤ (lam - V) * (1 / 5) := by linarith
+    linarith
+  have hfinal : ε / 20 ≤ Real.log 2 * q * ((lam - V) * (1 / 5) - η) := by
+    have hnn : (0 : ℝ) ≤ (19 / 100 : ℝ) * ε := by positivity
+    have h1 : (69 / 100 : ℝ) * (43 / 100) * ((19 / 100) * ε)
+        ≤ Real.log 2 * q * ((19 / 100) * ε) :=
+      mul_le_mul_of_nonneg_right hprod hnn
+    have h2 : Real.log 2 * q * ((19 / 100) * ε)
+        ≤ Real.log 2 * q * ((lam - V) * (1 / 5) - η) := by
+      have hLq : (0 : ℝ) ≤ Real.log 2 * q := by positivity
+      exact mul_le_mul_of_nonneg_left hgap hLq
+    have h3 : ε / 20 ≤ (69 / 100 : ℝ) * (43 / 100) * ((19 / 100) * ε) := by nlinarith
+    linarith
+  -- assemble
+  have hexp : Real.log 2 * q * ((lam - V) * (1 / 5) - η)
+      = Real.log 2 * q * (lam - V) * (1 / 5) - Real.log 2 * (q * η) := by ring
+  have hsteperr : Real.log 2 * ((m / 2) * vA q lam
+        + (1 + rhoLam q lam) ^ (-q) * (q * η))
+      ≤ Real.log 2 * ((q / 20 * (lam - V)) * vA q lam) + Real.log 2 * (q * η) := by
+    have h := mul_le_mul_of_nonneg_left
+      (show (m / 2) * vA q lam + (1 + rhoLam q lam) ^ (-q) * (q * η)
+          ≤ (q / 20 * (lam - V)) * vA q lam + q * η by linarith) (le_of_lt hL)
+    linarith [h]
+  linarith [hcore, hbig, hid, hfinal, hexp, hsteperr]
 
 end RevPebbling.ArcMargin
