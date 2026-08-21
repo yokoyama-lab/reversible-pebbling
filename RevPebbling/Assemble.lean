@@ -31,6 +31,7 @@ lower child matters, and `X_S ≳ 210`.
 namespace RevPebbling.Assemble
 
 open RevPebbling.Shape RevPebbling.RampProfile RevPebbling.Regions RevPebbling.ArcGeometry
+open RevPebbling.ArcStep
 
 /-! ## `log₂`, on the nose -/
 
@@ -214,6 +215,59 @@ theorem pos_lower_ge {v u : ℕ} (hu : 1 ≤ u) {X t : ℝ}
   have h1 : lg u ≤ lg ((v : ℝ) * (2 : ℝ) ^ (-t)) := lg_mono hu' hup
   rw [lg_mul_rpow hv'] at h1
   linarith
+
+/-- The upper child is not much *shallower* than ideal either: the
+ceiling adds at most one pebble, worth `3·2^δ/v` octaves. -/
+theorem pos_upper_ge {v : ℕ} (hv : 1 ≤ v) {X δ : ℝ} (hδ : 0 ≤ δ)
+    (hbig : (2 : ℝ) ^ δ * 2 ≤ (v : ℝ)) :
+    (X - lg v) + δ - 3 * (2 : ℝ) ^ δ / (v : ℝ) ≤ X - lg (wsplit v δ) := by
+  have hL : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
+  have hLlo : (69 / 100 : ℝ) ≤ Real.log 2 := by
+    have h := Real.log_two_gt_d9
+    norm_num at h
+    linarith
+  have hpδ : (0 : ℝ) < (2 : ℝ) ^ δ := Real.rpow_pos_of_pos (by norm_num) _
+  have hv' : (0 : ℝ) < (v : ℝ) := by linarith
+  have hnδ : (2 : ℝ) ^ (-δ) = ((2 : ℝ) ^ δ)⁻¹ := Real.rpow_neg (by norm_num) _
+  set x : ℝ := (2 : ℝ) ^ δ / (v : ℝ) with hx
+  have hx0 : 0 < x := by positivity
+  have hxhalf : x ≤ 1 / 2 := by
+    rw [hx, div_le_div_iff₀ hv' (by norm_num)]; linarith
+  -- `w ≤ v 2^{−δ} + 1 = v 2^{−δ} (1 + x)`
+  have hceil : (wsplit v δ : ℝ) ≤ (v : ℝ) * (2 : ℝ) ^ (-δ) + 1 := by
+    unfold wsplit
+    have hnn : (0 : ℝ) ≤ (v : ℝ) * (2 : ℝ) ^ (-δ) := by positivity
+    exact le_of_lt (Nat.ceil_lt_add_one hnn)
+  have hfac : (v : ℝ) * (2 : ℝ) ^ (-δ) + 1 = ((v : ℝ) * (2 : ℝ) ^ (-δ)) * (1 + x) := by
+    rw [hnδ, hx]; field_simp
+  have hw1 : 1 ≤ wsplit v δ := one_le_wsplit hv δ
+  have hwR : (0 : ℝ) < (wsplit v δ : ℝ) := by exact_mod_cast hw1
+  have hposR : (0 : ℝ) < ((v : ℝ) * (2 : ℝ) ^ (-δ)) * (1 + x) := by
+    have h2 : (0 : ℝ) < (2 : ℝ) ^ (-δ) := Real.rpow_pos_of_pos (by norm_num) _
+    positivity
+  have hmono : lg (wsplit v δ : ℝ) ≤ lg (((v : ℝ) * (2 : ℝ) ^ (-δ)) * (1 + x)) :=
+    lg_mono hwR (by rw [← hfac]; exact hceil)
+  -- `lg(v 2^{−δ}(1+x)) = lg v − δ + lg(1+x)` and `lg(1+x) ≤ 3x`
+  have hsplitlg : lg (((v : ℝ) * (2 : ℝ) ^ (-δ)) * (1 + x))
+      = lg ((v : ℝ) * (1 + x)) + (-δ) := by
+    rw [show ((v : ℝ) * (2 : ℝ) ^ (-δ)) * (1 + x) = ((v : ℝ) * (1 + x)) * (2 : ℝ) ^ (-δ) by
+      ring]
+    exact lg_mul_rpow (by positivity)
+  have hlgx : lg ((v : ℝ) * (1 + x)) ≤ lg v + 3 * x := by
+    have hmul : lg ((v : ℝ) * (1 + x)) = lg v + Real.log (1 + x) / Real.log 2 := by
+      unfold lg
+      rw [Real.log_mul (ne_of_gt hv') (by positivity)]
+      ring
+    have hlog : Real.log (1 + x) ≤ x := by
+      have := Real.log_le_sub_one_of_pos (show (0:ℝ) < 1 + x by linarith)
+      linarith
+    have hdiv : Real.log (1 + x) / Real.log 2 ≤ 3 * x := by
+      rw [div_le_iff₀ hL]
+      nlinarith [hlog, hx0, hLlo]
+    rw [hmul]; linarith
+  rw [hsplitlg] at hmono
+  have hxval : 3 * x = 3 * (2 : ℝ) ^ δ / (v : ℝ) := by rw [hx]; ring
+  linarith [hmono, hlgx, hxval]
 
 /-! ## Region 1: both children at full weight (`ζ ≤ z_cap`)
 
@@ -399,6 +453,197 @@ theorem step_band_upper {q_h q_hi H m X₀ lam μ : ℝ} {S v : ℕ}
     -- `M` is an unused implicit of that theorem; pin it to keep elaboration total
     exact band_upper_step_ramp (M := 0) hS hq hle hηnn hC3 hζpos hζlam hlamH
       hpc0 hpcH hpd0 hpdH hpc hpd hμx hdef
+
+/-! ## Region 3: the arc — both levels on the climbing profile -/
+
+/-- **The arc's split.**  `w = ⌈v·2^{−δ*}⌉`, `u = v − w` at the balance
+point of `q₀ = q(ζ)`.  Both children's positions are pinned to their ideal
+places up to the integerisation slack, and `ArcMargin.arc_margin_ge_eps`
+turns that into a margin of `ε/20`. -/
+theorem step_arc {q_h q_hi H m X₀ lam μ ε V ρc : ℝ} {S v : ℕ}
+    (hS : 2 ≤ S) (hq : 0 < q_h) (hle : q_h ≤ q_hi) (hm0 : 0 ≤ m) (hmq : m ≤ q_h)
+    (hqlo : 43 / 100 ≤ q_h) (hqhi : q_hi ≤ 16 / 5)
+    (hlam0 : 33 / 100 ≤ lam) (hlam1 : lam ≤ 51 / 100)
+    (hv : 1 ≤ v) (hε : 0 < ε)
+    (hζlam : lam ≤ Xf X₀ lam (S + 1) - Real.log v / Real.log 2)
+    (hρc : 1 ≤ ρc)
+    (hg : RevPebbling.CriticalRoot.G
+        (qr q_h q_hi H m (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)) ρc = 1)
+    (hVdef : V = 1 / qr q_h q_hi H m (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)
+        - Real.log ρc / Real.log 2)
+    (hVeps : V + ε ≤ lam)
+    (hdesign : m ≤ qr q_h q_hi H m
+        (Xf X₀ lam (S + 1) - Real.log v / Real.log 2) / 10 * (lam - V))
+    (hbigt : (2 : ℝ) ^ (tStar (qr q_h q_hi H m
+        (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)) lam) * 2 ≤ (v : ℝ))
+    (hbigd : (2 : ℝ) ^ (deltaStar (qr q_h q_hi H m
+        (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)) lam) * 2 ≤ (v : ℝ))
+    (hroom : 1 + (v : ℝ) * (2 : ℝ) ^ (-(deltaStar (qr q_h q_hi H m
+        (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)) lam)) ≤ (v : ℝ))
+    (hslack : 4 * (3 * (2 : ℝ) ^ (tStar (qr q_h q_hi H m
+          (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)) lam) / (v : ℝ)
+        + 3 * (2 : ℝ) ^ (deltaStar (qr q_h q_hi H m
+          (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)) lam) / (v : ℝ)) ≤ ε / 100)
+    (hslack1 : 3 * (2 : ℝ) ^ (tStar (qr q_h q_hi H m
+        (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)) lam) / (v : ℝ) ≤ 1)
+    (hμx : 1 ≤ μ * ((cap (S + 1) : ℝ) * (2 : ℝ) ^ (-(Iof q_h q_hi H m
+            (Xf X₀ lam (S + 1) - Real.log v / Real.log 2)))))
+    (hdef : (1 + μ) * (1 + 1 / (2 * (cap S : ℝ))) ≤ 1 + ε / 20) :
+    ∃ u w : ℕ, u + w = v ∧ 1 ≤ u ∧ 1 ≤ w ∧
+      PsiR q_h q_hi H m X₀ lam (S + 1) v
+        ≤ 1 + PsiR q_h q_hi H m X₀ lam S v
+          + min (PsiR q_h q_hi H m X₀ lam S u) (PsiR q_h q_hi H m X₀ lam (S + 1) w) := by
+  set ζ := Xf X₀ lam (S + 1) - Real.log v / Real.log 2 with hζ
+  set q₀ := qr q_h q_hi H m ζ with hq₀
+  set δ := deltaStar q₀ lam with hδ
+  set t := tStar q₀ lam with ht
+  set ηc := 3 * (2 : ℝ) ^ t / (v : ℝ) with hηc
+  set ηd := 3 * (2 : ℝ) ^ δ / (v : ℝ) with hηd
+  set η := 4 * (ηc + ηd) with hη
+  have hvR : (0 : ℝ) < (v : ℝ) := by exact_mod_cast hv
+  have hq₀lo : q_h ≤ q₀ := le_qr hle hm0 ζ
+  have hq₀hi : q₀ ≤ q_hi := qr_le_hi ζ
+  have hq₀pos : 0 < q₀ := lt_of_lt_of_le hq hq₀lo
+  have hq₀43 : 43 / 100 ≤ q₀ := le_trans hqlo hq₀lo
+  have hq₀16 : q₀ ≤ 16 / 5 := le_trans hq₀hi hqhi
+  have hδ0 : 0 ≤ δ := deltaStar_nonneg
+  have hδ73 : δ ≤ 7 / 3 := delta_le_seven_thirds hq₀43 hlam0
+  have habs : |lam - t| ≤ δ := abs_lam_sub_t_le hq₀pos (by linarith)
+  have hsplit : (2 : ℝ) ^ (-δ) + (2 : ℝ) ^ (-t) = 1 := two_rpow_neg_split
+  have hηcnn : 0 ≤ ηc := by rw [hηc]; positivity
+  have hηdnn : 0 ≤ ηd := by rw [hηd]; positivity
+  have hηnn : 0 ≤ η := by rw [hη]; linarith
+  -- the abbreviations are large terms; keep the equations but hide the bodies,
+  -- or `linarith`/`nlinarith` unfold them and blow up on `isDefEq`
+  clear_value η ηd ηc t δ q₀ ζ
+  refine ⟨usplit v δ, wsplit v δ, split_add v hδ0, one_le_usplit hδ0 hroom,
+    one_le_wsplit hv δ, ?_⟩
+  set u := usplit v δ with hu
+  set w := wsplit v δ with hw
+  have hu1 : 1 ≤ u := one_le_usplit hδ0 hroom
+  have hw1 : 1 ≤ w := one_le_wsplit hv δ
+  have hwR : (0 : ℝ) < (w : ℝ) := by exact_mod_cast hw1
+  have hlgu : lg (u : ℝ) = Real.log u / Real.log 2 := rfl
+  have hlgw : lg (w : ℝ) = Real.log w / Real.log 2 := rfl
+  have hlgv : lg (v : ℝ) = Real.log v / Real.log 2 := rfl
+  have hXS : Xf X₀ lam S = Xf X₀ lam (S + 1) - lam := by rw [Xf_succ]; ring
+  set pc := Xf X₀ lam S - Real.log u / Real.log 2 with hpc
+  set pd := Xf X₀ lam (S + 1) - Real.log w / Real.log 2 with hpd
+  -- the two children's positions, both ways
+  have hpc_le : pc ≤ (ζ - lam + t) + ηc := by
+    have h := pos_lower (v := v) (u := u) (X := Xf X₀ lam S) (t := t) hu1
+      (usplit_ge hδ0 hsplit) hbigt
+    rw [hlgu, hlgv] at h
+    rw [hpc, hζ, hXS, hηc]; linarith
+  have hpc_ge : (ζ - lam + t) ≤ pc := by
+    have h := pos_lower_ge (v := v) (u := u) (X := Xf X₀ lam S) (t := t) hu1
+      (usplit_le hδ0 hsplit) hv
+    rw [hlgu, hlgv] at h
+    rw [hpc, hζ, hXS]; linarith
+  have hpd_le : pd ≤ ζ + δ := by
+    have h := pos_upper (v := v) (X := Xf X₀ lam (S + 1)) (δ := δ) hv
+    rw [hlgw, hlgv] at h
+    rw [hpd, hζ]; exact h
+  have hpd_ge : ζ + δ - ηd ≤ pd := by
+    have h := pos_upper_ge (v := v) (X := Xf X₀ lam (S + 1)) (δ := δ) hv hδ0 hbigd
+    rw [hlgw, hlgv] at h
+    rw [hpd, hζ, hηd]; linarith
+  have hpd_ge0 : ζ ≤ pd := by
+    have hwv : (w : ℝ) ≤ (v : ℝ) := by exact_mod_cast wsplit_le v hδ0
+    have hmono : lg (w : ℝ) ≤ lg (v : ℝ) := lg_mono hwR hwv
+    rw [hlgw, hlgv] at hmono
+    rw [hpd, hζ]; linarith
+  have hζ0 : 0 ≤ ζ := le_trans (by linarith) hζlam
+  have hpb0 : 0 ≤ ζ - lam := by linarith
+  have hpc0 : 0 ≤ pc := by linarith [hpc_ge, tStar_pos (q := q₀) (lam := lam)]
+  have hpd0 : 0 ≤ pd := by linarith
+  -- the three exponent errors
+  have hq₀nn : 0 ≤ q₀ := le_of_lt hq₀pos
+  -- `err_at` speaks of `qr q_h q_hi H m ζ`; fold it back to the opaque `q₀`
+  have hq₀nn' : 0 ≤ qr q_h q_hi H m ζ := by rw [← hq₀]; exact hq₀nn
+  have hb := err_at (q_h := q_h) (q_hi := q_hi) (H := H) (m := m)
+    (ζ := ζ) (p := ζ - lam) (off := -lam) hm0 hζ0 hpb0 hq₀nn'
+  rw [← hq₀] at hb
+  have hbz : |(ζ - lam) - (ζ + -lam)| = 0 := by
+    rw [show (ζ - lam) - (ζ + -lam) = 0 by ring, abs_zero]
+  rw [hbz, mul_zero, add_zero, show ((ζ - lam) - ζ) ^ 2 = lam ^ 2 by ring] at hb
+  have hab : |(Iof q_h q_hi H m ζ - Iof q_h q_hi H m (ζ - lam)) - q₀ * lam|
+      ≤ m * lam ^ 2 / 2 := by
+    have hid : (Iof q_h q_hi H m ζ - Iof q_h q_hi H m (ζ - lam)) - q₀ * lam
+        = (Iof q_h q_hi H m ζ - Iof q_h q_hi H m (ζ - lam)) + q₀ * (-lam) := by ring
+    rw [hid]; exact hb
+  have hc := err_at (q_h := q_h) (q_hi := q_hi) (H := H) (m := m)
+    (ζ := ζ) (p := pc) (off := t - lam) hm0 hζ0 hpc0 hq₀nn'
+  rw [← hq₀] at hc
+  have hd := err_at (q_h := q_h) (q_hi := q_hi) (H := H) (m := m)
+    (ζ := ζ) (p := pd) (off := δ) hm0 hζ0 hpd0 hq₀nn'
+  rw [← hq₀] at hd
+  -- bound the curvature and slack of the `c` branch
+  have hcslack : |pc - (ζ + (t - lam))| ≤ ηc := by
+    rw [abs_le]; constructor <;> linarith only [hpc_le, hpc_ge, hηcnn]
+  have hcsq : (pc - ζ) ^ 2 ≤ δ ^ 2 + 6 * ηc := by
+    have habs' := habs
+    rw [abs_le] at habs'
+    obtain ⟨habs1, habs2⟩ := habs'
+    have h1 : pc - ζ ≤ δ + ηc := by linarith only [hpc_le, habs1, habs2]
+    have h2 : -(δ + ηc) ≤ pc - ζ := by linarith only [hpc_ge, habs1, habs2, hηcnn]
+    have hsq : (pc - ζ) ^ 2 ≤ (δ + ηc) ^ 2 := sq_le_sq' h2 h1
+    have hexp : (δ + ηc) ^ 2 = δ ^ 2 + 2 * δ * ηc + ηc ^ 2 := by ring
+    have h2δ : 2 * δ * ηc ≤ 14 / 3 * ηc :=
+      mul_le_mul_of_nonneg_right (by linarith only [hδ73]) hηcnn
+    have hηsq : ηc ^ 2 ≤ ηc := by
+      rw [pow_two]
+      simpa using mul_le_mul_of_nonneg_right hslack1 hηcnn
+    linarith only [hsq, hexp, h2δ, hηsq, hηcnn]
+  have hac : |(Iof q_h q_hi H m ζ - Iof q_h q_hi H m pc) - q₀ * (lam - t)|
+      ≤ m * δ ^ 2 / 2 + q₀ * η := by
+    have hid : (Iof q_h q_hi H m ζ - Iof q_h q_hi H m pc) - q₀ * (lam - t)
+        = (Iof q_h q_hi H m ζ - Iof q_h q_hi H m pc) + q₀ * (t - lam) := by ring
+    rw [hid]
+    refine le_trans hc ?_
+    have hcurv : m * (pc - ζ) ^ 2 ≤ m * (δ ^ 2 + 6 * ηc) :=
+      mul_le_mul_of_nonneg_left hcsq hm0
+    have hmq₀ : m ≤ q₀ := le_trans hmq hq₀lo
+    have h3m : m * ηc ≤ q₀ * ηc := mul_le_mul_of_nonneg_right hmq₀ hηcnn
+    have hsl : q₀ * |pc - (ζ + (t - lam))| ≤ q₀ * ηc :=
+      mul_le_mul_of_nonneg_left hcslack hq₀nn
+    have hηge : 4 * ηc ≤ η := by rw [hη]; linarith
+    have hq₀η : q₀ * (4 * ηc) ≤ q₀ * η := mul_le_mul_of_nonneg_left hηge hq₀nn
+    have hexp : q₀ * (4 * ηc) = 4 * (q₀ * ηc) := by ring
+    linarith only [hcurv, h3m, hsl, hq₀η, hexp]
+  have hdsq : (pd - ζ) ^ 2 ≤ δ ^ 2 := by
+    have h1 : 0 ≤ pd - ζ := by linarith only [hpd_ge0]
+    have h2 : pd - ζ ≤ δ := by linarith only [hpd_le]
+    nlinarith only [h1, h2]
+  have had : |(Iof q_h q_hi H m ζ - Iof q_h q_hi H m pd) + q₀ * δ|
+      ≤ m * δ ^ 2 / 2 + q₀ * η := by
+    refine le_trans hd ?_
+    have hcurv : m * (pd - ζ) ^ 2 ≤ m * δ ^ 2 := mul_le_mul_of_nonneg_left hdsq hm0
+    have hdslack : |pd - (ζ + δ)| ≤ ηd := by
+      rw [abs_le]; constructor <;> linarith only [hpd_le, hpd_ge, hηdnn]
+    have hsl : q₀ * |pd - (ζ + δ)| ≤ q₀ * ηd :=
+      mul_le_mul_of_nonneg_left hdslack hq₀nn
+    have hηge : ηd ≤ η := by rw [hη]; linarith
+    have hq₀η : q₀ * ηd ≤ q₀ * η := mul_le_mul_of_nonneg_left hηge hq₀nn
+    linarith only [hcurv, hsl, hq₀η]
+  -- the uniform margin, then the step
+  -- fold the abbreviations back for the margin lemma's statement
+  rw [ht] at hac
+  rw [hδ] at hac had
+  have hM := RevPebbling.ArcMargin.arc_margin_ge_eps (q := q₀) (lam := lam) (V := V)
+    (ρc := ρc) (a := Iof q_h q_hi H m ζ) (b := Iof q_h q_hi H m (ζ - lam))
+    (c := Iof q_h q_hi H m pc) (d := Iof q_h q_hi H m pd) (ε := ε) (m := m) (η := η)
+    hq₀43 hq₀16 hlam0 hlam1 hε hVeps hρc hg hVdef hm0 hdesign hηnn
+    hslack hab hac had
+  have hIvp : Iof q_h q_hi H m (Xf X₀ lam S - Real.log v / Real.log 2)
+      = Iof q_h q_hi H m (ζ - lam) := by
+    congr 1
+    rw [hζ, hXS]
+    ring
+  -- unfold the abbreviations for the step lemma's statement
+  rw [hpc, hpd, ← hIvp, hζ] at hM
+  rw [hζ] at hμx
+  exact RevPebbling.ArcStep.arc_step_of_margin hS hμx hdef hM
 
 /-! ## Region 4: the self-closing tail — any split works -/
 
