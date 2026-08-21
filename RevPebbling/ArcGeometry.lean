@@ -76,6 +76,46 @@ theorem lam_sub_t (q lam : ℝ) : lam - tStar q lam = 1 / q - deltaStar q lam :=
   unfold tStar
   ring
 
+/-- `2^{−δ*} = 1/(1+ρ)`. -/
+theorem two_rpow_neg_delta_eq : (2 : ℝ) ^ (-(deltaStar q lam)) = (1 + rhoLam q lam)⁻¹ :=
+  RevPebbling.BalanceIdentity.two_rpow_neg_balance rhoLam_pos
+
+/-- `2^{−t*} = ρ/(1+ρ)`. -/
+theorem two_rpow_neg_t_eq :
+    (2 : ℝ) ^ (-(tStar q lam)) = rhoLam q lam / (1 + rhoLam q lam) := by
+  have hpos : (0 : ℝ) < 1 + rhoLam q lam := one_add_rhoLam_pos
+  have hsplit : -(tStar q lam) = -(deltaStar q lam) + (1 / q - lam) := by
+    unfold tStar; ring
+  rw [hsplit, Real.rpow_add (by norm_num : (0:ℝ) < 2), two_rpow_neg_delta_eq]
+  unfold rhoLam
+  field_simp
+
+/-- **The split is a splitting**: `2^{−δ*} + 2^{−t*} = 1`, so the two
+children of `v` at the balance point really do add up to `v`. -/
+theorem two_rpow_neg_split :
+    (2 : ℝ) ^ (-(deltaStar q lam)) + (2 : ℝ) ^ (-(tStar q lam)) = 1 := by
+  have hpos : (0 : ℝ) < 1 + rhoLam q lam := one_add_rhoLam_pos
+  rw [two_rpow_neg_delta_eq, two_rpow_neg_t_eq]
+  field_simp
+
+/-- `t* > 0`: the lower child is genuinely below the value. -/
+theorem tStar_pos : 0 < tStar q lam := by
+  have hpos : (0 : ℝ) < 1 + rhoLam q lam := one_add_rhoLam_pos
+  have hρ : (0 : ℝ) < rhoLam q lam := rhoLam_pos
+  have hsum := two_rpow_neg_split (q := q) (lam := lam)
+  have hδ : (2 : ℝ) ^ (-(deltaStar q lam)) = (1 + rhoLam q lam)⁻¹ := two_rpow_neg_delta_eq
+  have hlt : (2 : ℝ) ^ (-(tStar q lam)) < 1 := by
+    have hδpos : (0 : ℝ) < (2 : ℝ) ^ (-(deltaStar q lam)) :=
+      Real.rpow_pos_of_pos (by norm_num) _
+    linarith
+  by_contra hcon
+  push_neg at hcon
+  have : (1 : ℝ) ≤ (2 : ℝ) ^ (-(tStar q lam)) := by
+    have h := Real.rpow_le_rpow_of_exponent_le (x := (2:ℝ)) (by norm_num)
+      (show (0:ℝ) ≤ -(tStar q lam) by linarith)
+    simpa using h
+  linarith
+
 /-! ## One bound controls all three positions -/
 
 /-- `2^{1/q} = ρ·2^λ`. -/

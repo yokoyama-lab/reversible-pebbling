@@ -177,6 +177,44 @@ theorem pos_lower {v u : ℕ} (hu : 1 ≤ u) {X t : ℝ}
   have hxval : 3 * x = 3 * (2 : ℝ) ^ t / (v : ℝ) := by rw [hx]; ring
   linarith [hmono, hlgx, hxval]
 
+/-- The lower child never *exceeds* its ideal weight, so its position is
+never *shallower* than ideal.  (With `2^{−δ} + 2^{−t} = 1`.) -/
+theorem usplit_le {v : ℕ} {δ t : ℝ} (hδ : 0 ≤ δ)
+    (hsplit : (2 : ℝ) ^ (-δ) + (2 : ℝ) ^ (-t) = 1) :
+    (usplit v δ : ℝ) ≤ (v : ℝ) * (2 : ℝ) ^ (-t) := by
+  have hWv : wsplit v δ ≤ v := wsplit_le v hδ
+  have hceil : (v : ℝ) * (2 : ℝ) ^ (-δ) ≤ (wsplit v δ : ℝ) := Nat.le_ceil _
+  have hcast : (usplit v δ : ℝ) = (v : ℝ) - (wsplit v δ : ℝ) := by
+    unfold usplit; rw [Nat.cast_sub hWv]
+  rw [hcast]
+  nlinarith [hceil]
+
+/-- And it falls short of it by at most one. -/
+theorem usplit_ge {v : ℕ} {δ t : ℝ} (hδ : 0 ≤ δ)
+    (hsplit : (2 : ℝ) ^ (-δ) + (2 : ℝ) ^ (-t) = 1) :
+    (v : ℝ) * (2 : ℝ) ^ (-t) - 1 ≤ (usplit v δ : ℝ) := by
+  have hWv : wsplit v δ ≤ v := wsplit_le v hδ
+  have hceil : (wsplit v δ : ℝ) ≤ (v : ℝ) * (2 : ℝ) ^ (-δ) + 1 := by
+    unfold wsplit
+    have hnn : (0 : ℝ) ≤ (v : ℝ) * (2 : ℝ) ^ (-δ) := by
+      have := Real.rpow_pos_of_pos (show (0:ℝ) < 2 by norm_num) (-δ)
+      positivity
+    exact le_of_lt (Nat.ceil_lt_add_one hnn)
+  have hcast : (usplit v δ : ℝ) = (v : ℝ) - (wsplit v δ : ℝ) := by
+    unfold usplit; rw [Nat.cast_sub hWv]
+  rw [hcast]
+  nlinarith [hceil]
+
+/-- The lower child's position is never shallower than ideal. -/
+theorem pos_lower_ge {v u : ℕ} (hu : 1 ≤ u) {X t : ℝ}
+    (hup : (u : ℝ) ≤ (v : ℝ) * (2 : ℝ) ^ (-t)) (hv : 1 ≤ v) :
+    (X - lg v) + t ≤ X - lg u := by
+  have hv' : (0 : ℝ) < (v : ℕ) := by exact_mod_cast hv
+  have hu' : (0 : ℝ) < (u : ℕ) := by exact_mod_cast hu
+  have h1 : lg u ≤ lg ((v : ℝ) * (2 : ℝ) ^ (-t)) := lg_mono hu' hup
+  rw [lg_mul_rpow hv'] at h1
+  linarith
+
 /-! ## Region 1: both children at full weight (`ζ ≤ z_cap`)
 
 The condition is stated as **feasibility of the split** rather than by a
