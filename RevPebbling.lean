@@ -66,6 +66,7 @@ import RevPebbling.ArcStep
 import RevPebbling.RationalData
 import RevPebbling.Assemble
 import RevPebbling.Final
+import RevPebbling.KappaAttainment
 import RevPebbling.Regions
 import RevPebbling.CriticalRoot197130
 import RevPebbling.CriticalRoot8324

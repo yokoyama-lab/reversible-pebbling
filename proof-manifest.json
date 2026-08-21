@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "84f224f565b912cba8bc7ae9fd7d9732bf092038e66286189594aab2767b1c6e",
+ "proof_bundle_sha256": "881cac1f35bcfefed235760a2f307f5c67dcfd0f78552f9ff5956241cae23611",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -84,6 +84,7 @@
   "RevPebbling/HalvedDifference.lean": "2ba5f839c8a603897aee353b911e59aa99cfeb6a95ff4da810a15300a2076df1",
   "RevPebbling/HpkResolved.lean": "83ac206c2061c6fbe321cfed135bdcaacc78ab36f59900c59e3762bb65697dba",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
+  "RevPebbling/KappaAttainment.lean": "ffaebc51f08906873a40d60b12d05398226535e42b86140cd446230ec53e9f82",
   "RevPebbling/KappaLowerRat.lean": "057ac4a3e5ff48bd0a4614263e1afe8b7a2283d3424bb441be124881e21d8927",
   "RevPebbling/KappaLtHalf.lean": "230b18245c7922bf06769d24dccf7ca18ea1808f1128a227dfa816cb85887170",
   "RevPebbling/KnillObs.lean": "561e280c41c9995298119896f7134331762bfebc69b0d584886a8332c7ca1cad",
@@ -124,7 +125,7 @@
   "RevPebbling/UnconditionalLink1.lean": "b2592a347249d23eece02a004cd84b06f49c6c6a9a49d7743b5f6ccc3b0c1e68",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "4ca8ed765e632c283feaabd2058d22a7047ada7f277cacd2f67230b5011239ea"
+  "RevPebbling.lean": "500c0de9c175b85a21664a5307572949ea4ce01a8e3758c9cdd2fb3f814c697b"
  },
  "hypotheses": {
   "GameAttain": {
@@ -150,6 +151,13 @@
    "status": "carried",
    "carried_by": 2,
    "proved_by": []
+  },
+  "KappaAttained RevPebbling.Final.kappaStar": {
+   "status": "proved",
+   "carried_by": 0,
+   "proved_by": [
+    "RevPebbling.KappaAttainment.kappaAttained_kappaStar"
+   ]
   },
   "KappaUpperBound RevPebbling.Final.KHI": {
    "status": "carried",
@@ -1709,6 +1717,34 @@
    "axiom_free_theorems": [],
    "carried_hypotheses": {},
    "proves_hypotheses": {}
+  },
+  "kappa_star_attained": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (this work, 2026-08-22): kappa* is ATTAINED -- the supremum of Final.kappaStar is a maximum. rhoc is the critical root as a FUNCTION of q (unique by root_unique); it is continuous on (0,inf) not by an implicit-function theorem but by order: G q . is strictly decreasing, so the root at rho0 is pinned between rho0 +- eps by two strict inequalities that persist under small changes of q, and the intermediate value theorem plus uniqueness places rhoc q inside (rhoc_continuousAt). Vf is then continuous. Both tails are below V(3/2) >= 33/100: V(q) <= 1/q <= 1/4 for q >= 4, and V(q) <= 3/10 for q <= 1/2 -- the delicate one, since KappaLtHalf's bound tends to 1/2; one more Bernoulli step (1+rho)^{-q} >= rho^{-q}/(1+q/rho) gives rho^q >= 2 - q/rho and V(q) <= 1/(ln2 (2 rho - q)) with rho >= 2.89 there. exists_max takes the maximum over the compact [1/2,4]; isGreatest_kappaStar records sup = max; kappaAttained_kappaStar discharges the attainment hypothesis Final carried from Rocq; c_eq_at_maximiser states c = 2^{1+V(q1)} with an explicit maximiser, as the manuscript does. ",
+   "theorems": [
+    "RevPebbling.KappaAttainment.rhoc_spec",
+    "RevPebbling.KappaAttainment.rhoc_eq",
+    "RevPebbling.KappaAttainment.mem_Vset_iff",
+    "RevPebbling.KappaAttainment.Vf_le_inv",
+    "RevPebbling.KappaAttainment.Vf_le_of_small",
+    "RevPebbling.KappaAttainment.Vf_three_halves_ge",
+    "RevPebbling.KappaAttainment.G_continuous_q",
+    "RevPebbling.KappaAttainment.rhoc_continuousAt",
+    "RevPebbling.KappaAttainment.Vf_continuousOn",
+    "RevPebbling.KappaAttainment.exists_max",
+    "RevPebbling.KappaAttainment.kappaStar_mem_Vset",
+    "RevPebbling.KappaAttainment.isGreatest_kappaStar",
+    "RevPebbling.KappaAttainment.kappaAttained_kappaStar",
+    "RevPebbling.KappaAttainment.c_eq_at_maximiser"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {
+    "KappaAttained RevPebbling.Final.kappaStar": [
+     "RevPebbling.KappaAttainment.kappaAttained_kappaStar"
+    ]
+   }
   },
   "readout_and_final_bound": {
    "status": "proved_general",

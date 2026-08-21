@@ -2551,6 +2551,45 @@ def main() -> int:
                     "RevPebbling.ArcMargin.bracket_pos_arc",
                 ],
             },
+            "kappa_star_attained": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-22): kappa* is ATTAINED -- the "
+                           "supremum of Final.kappaStar is a maximum. rhoc is the critical "
+                           "root as a FUNCTION of q (unique by root_unique); it is "
+                           "continuous on (0,inf) not by an implicit-function theorem but "
+                           "by order: G q . is strictly decreasing, so the root at rho0 is "
+                           "pinned between rho0 +- eps by two strict inequalities that "
+                           "persist under small changes of q, and the intermediate value "
+                           "theorem plus uniqueness places rhoc q inside "
+                           "(rhoc_continuousAt). Vf is then continuous. Both tails are "
+                           "below V(3/2) >= 33/100: V(q) <= 1/q <= 1/4 for q >= 4, and "
+                           "V(q) <= 3/10 for q <= 1/2 -- the delicate one, since "
+                           "KappaLtHalf's bound tends to 1/2; one more Bernoulli step "
+                           "(1+rho)^{-q} >= rho^{-q}/(1+q/rho) gives rho^q >= 2 - q/rho "
+                           "and V(q) <= 1/(ln2 (2 rho - q)) with rho >= 2.89 there. "
+                           "exists_max takes the maximum over the compact [1/2,4]; "
+                           "isGreatest_kappaStar records sup = max; "
+                           "kappaAttained_kappaStar discharges the attainment hypothesis "
+                           "Final carried from Rocq; c_eq_at_maximiser states c = "
+                           "2^{1+V(q1)} with an explicit maximiser, as the manuscript "
+                           "does. "),
+                "theorems": [
+                    "RevPebbling.KappaAttainment.rhoc_spec",
+                    "RevPebbling.KappaAttainment.rhoc_eq",
+                    "RevPebbling.KappaAttainment.mem_Vset_iff",
+                    "RevPebbling.KappaAttainment.Vf_le_inv",
+                    "RevPebbling.KappaAttainment.Vf_le_of_small",
+                    "RevPebbling.KappaAttainment.Vf_three_halves_ge",
+                    "RevPebbling.KappaAttainment.G_continuous_q",
+                    "RevPebbling.KappaAttainment.rhoc_continuousAt",
+                    "RevPebbling.KappaAttainment.Vf_continuousOn",
+                    "RevPebbling.KappaAttainment.exists_max",
+                    "RevPebbling.KappaAttainment.kappaStar_mem_Vset",
+                    "RevPebbling.KappaAttainment.isGreatest_kappaStar",
+                    "RevPebbling.KappaAttainment.kappaAttained_kappaStar",
+                    "RevPebbling.KappaAttainment.c_eq_at_maximiser",
+                ],
+            },
             "readout_and_final_bound": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED (this work, 2026-08-22): the readout and the upper "
