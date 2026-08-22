@@ -2417,31 +2417,14 @@ def main() -> int:
             },
             "upper_bound_pieces_not_yet_composed": {
                 "status": "carried",
-                "scope": ("STATUS NOTE (this work, 2026-08-20), NOT a theorem: the "
-                           "fourteen files added for the upper-bound programme "
-                           "(KappaLtHalf, KappaLowerRat, BalanceIdentity, MarginTransfer, "
-                           "MarginAnchors, MarginStep5, Subsolution, FloorAbsorb, "
-                           "CapAndSelfClosing, SeamBand, Readout, BracketPositive, "
-                           "ArcLength, BandFromC3, ReadoutBridge) are each proved, but "
-                           "they are NOT yet composed into c <= 2^{1+kappa*}. An "
-                           "independent check on 2026-08-20 found: (1) the shape Psi_S(v) "
-                           "= floor(cap_S 2^{-I_S(zeta)}), the profile I and cap have NO "
-                           "definition anywhere in RevPebbling, so the hypotheses "
-                           "hbase/hone/hstep of Subsolution.subsolution_le_of_step cannot "
-                           "even be stated for the real construction; the margin files are "
-                           "free-variable real inequalities standing alone. (2) Readout "
-                           "and BracketPositive are imported by nothing but the root "
-                           "module. (3) FloorAbsorb concludes about Int.floor while "
-                           "Subsolution wants Psi : N -> N -> N; the bridge is missing. "
-                           "(4) BracketPositive.bracket_pos assumes lam <= 342/1000 (i.e. "
-                           "an upper bound on sup V) which no theorem here supplies — "
-                           "KappaLtHalf gives only kappa* < 1/2. (5) "
-                           "ArcLength.arc_time_bound assumes hclimb, which is what should "
-                           "be derived. (6) ReadoutBridge needs length <= Psi (the cap), "
-                           "whereas the manuscript's readout uses the midpoint 2^{S-2}-1 "
-                           "where Psi = floor(cap/2) < length. What IS closed: the count "
-                           "side, Subsolution's hrec matches "
-                           "CountRecursion.count_recursion_split verbatim. "),
+                "scope": ("STATUS NOTE, superseded (2026-08-22): the note of 2026-08-20 recorded that the "
+                          "upper-bound files were not composed (no Psi/I/cap, no step for the real "
+                          "shape, no readout). All of that is now done -- see the stages "
+                          "shape_definition_and_cap_step, regions_cap_band_tail, arc_*, "
+                          "assembly_of_the_upper_bound, readout_and_final_bound and "
+                          "kappa_star_attained; the headline is Final.c_eq_two_rpow_kappaStar "
+                          "with no hypotheses. Kept as a record of what the independent check "
+                          "found on 2026-08-20."),
                 "theorems": [
                 ],
             },
@@ -2588,6 +2571,89 @@ def main() -> int:
                     "RevPebbling.KappaAttainment.isGreatest_kappaStar",
                     "RevPebbling.KappaAttainment.kappaAttained_kappaStar",
                     "RevPebbling.KappaAttainment.c_eq_at_maximiser",
+                ],
+            },
+            "assembly_of_the_upper_bound": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-21): the ASSEMBLY of the upper "
+                           "bound -- found missing from the manifest by the third "
+                           "independent check (2026-08-22), the same type of hole as the "
+                           "17 hand-added stages of 2026-08-20. wsplit/usplit build the "
+                           "split u + w = v as naturals, pos_lower/pos_upper pin the "
+                           "children's positions with the integerisation slack eta = "
+                           "3*2^t/v; step_capped / step_band_upper' / step_arc / step_tail "
+                           "give the four regions' exists u w; hstep_dispatch covers every "
+                           "v >= 2 BY TRICHOTOMY on three thresholds (the coverage is "
+                           "derived, not assumed); psiR_eq_zero kills v = 0, 1 past "
+                           "saturation via C2; psi_le_count feeds "
+                           "Subsolution.subsolution_le_count. Hypotheses: rational data, "
+                           "eps in (0,1/100], 33/100 <= kappa <= 1/2, hsup (V <= kappa on "
+                           "[q_h,q_hi]), and lower bounds on X0 and S0 -- nothing about "
+                           "steps, margins or coverage. "),
+                "theorems": [
+                    "RevPebbling.Assemble.lg_mono",
+                    "RevPebbling.Assemble.lg_mul_rpow",
+                    "RevPebbling.Assemble.wsplit_le",
+                    "RevPebbling.Assemble.split_add",
+                    "RevPebbling.Assemble.one_le_wsplit",
+                    "RevPebbling.Assemble.one_le_usplit",
+                    "RevPebbling.Assemble.pos_upper",
+                    "RevPebbling.Assemble.pos_lower",
+                    "RevPebbling.Assemble.usplit_le",
+                    "RevPebbling.Assemble.usplit_ge",
+                    "RevPebbling.Assemble.pos_lower_ge",
+                    "RevPebbling.Assemble.pos_upper_ge",
+                    "RevPebbling.Assemble.psi_eq_zero",
+                    "RevPebbling.Assemble.psi_eq_zero_of_profile",
+                    "RevPebbling.Assemble.countLe_eq_length_of_rowMax_le",
+                    "RevPebbling.Assemble.cap_le_rowIter_length",
+                    "RevPebbling.Assemble.psi_le_cap",
+                    "RevPebbling.Assemble.step_capped",
+                    "RevPebbling.Assemble.step_band_upper",
+                    "RevPebbling.Assemble.step_band_upper'",
+                    "RevPebbling.Assemble.step_arc",
+                    "RevPebbling.Assemble.step_tail",
+                    "RevPebbling.Assemble.Iof_le_top",
+                    "RevPebbling.Assemble.mux_of_cap_big",
+                    "RevPebbling.Assemble.cap_deficit_of_big",
+                    "RevPebbling.Assemble.lg_two_rpow",
+                    "RevPebbling.Assemble.pos_le_of_le",
+                    "RevPebbling.Assemble.le_pos_of_le",
+                    "RevPebbling.Assemble.Zsat_pos",
+                    "RevPebbling.Assemble.hstep_dispatch",
+                    "RevPebbling.Assemble.cap_mono",
+                    "RevPebbling.Assemble.psiR_eq_zero",
+                    "RevPebbling.Assemble.psi_le_count",
+                ],
+            },
+            "rational_data_of_the_construction": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-21): the rational data q_h = "
+                           "43/100, q_hi = 16/5, H = 27/10 and the numeric facts the "
+                           "assembly needs, each one integer comparison: head_fits (lam + "
+                           "delta_c <= H in the lam-separable form 2^lam + 2^{1/q_h} <= "
+                           "2^H, 6.46 <= 6.49 -- the crude route H >= lam + 1/q_h FAILS at "
+                           "lam = 0.51), C3 (0.1996 <= 0.2038), C2_tail (q_hi lam >= "
+                           "1.012), C4, sigma1_add_lam_le (sigma1 + 2^{-lam} <= 0.9958, "
+                           "the cap zone is nonempty) and le_two_rpow_neg_3_1000 "
+                           "(2^{-3/1000} >= 0.9975, proved by a Bernoulli ladder since "
+                           "norm_num cannot expand a 1000th power). Also found missing "
+                           "from the manifest by the third check. "),
+                "theorems": [
+                    "RevPebbling.RationalData.two_rpow_51_100_le",
+                    "RevPebbling.RationalData.two_rpow_100_43_le",
+                    "RevPebbling.RationalData.le_two_rpow_100_43",
+                    "RevPebbling.RationalData.le_two_rpow_27_10",
+                    "RevPebbling.RationalData.le_two_rpow_33_100",
+                    "RevPebbling.RationalData.head_fits_pow",
+                    "RevPebbling.RationalData.head_fits",
+                    "RevPebbling.RationalData.sigma1_le",
+                    "RevPebbling.RationalData.two_rpow_neg_lam_le",
+                    "RevPebbling.RationalData.sigma1_add_lam_le",
+                    "RevPebbling.RationalData.le_two_rpow_neg_3_1000",
+                    "RevPebbling.RationalData.C3",
+                    "RevPebbling.RationalData.C2_tail",
+                    "RevPebbling.RationalData.C4",
                 ],
             },
             "readout_and_final_bound": {
