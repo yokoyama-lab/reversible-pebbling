@@ -54,11 +54,16 @@ CONSTANT_ALLOW = {
                  "run but still listed in the README table of "
                  "certificates (see data/anchor_T98500_m11.txt)",
     "2.924": "the bound f_4 = 25 gives on paper, quoted for comparison",
-    "0.3317423792563106": "the upper end of the kappa* enclosure, proved "
-                          "in the Rocq layer (rocq/KappaStar.v, kappa_upper); "
-                          "the checker only reads the Lean sources",
-    "2.517064836893817": "2^(1+kappa*) at that upper end, likewise from "
-                         "rocq/KappaStar.v (c_bracket_of_kappa)",
+    "0.3317423792563106": "the upper end of the kappa* enclosure. Proved in "
+                          "Lean since 2026-08-22 "
+                          "(KappaEnclosure.kappaStar_le_hi) and independently "
+                          "in Rocq (rocq/KappaStar.v, kappa_upper); the Lean "
+                          "source writes it as a fraction, so the decimal "
+                          "spelling still has to be allowed here",
+    "2.517064836893817": "2^(1+kappa*) at that upper end. Proved in Lean since "
+                         "2026-08-22 (KappaEnclosure.c_decimal_bracket) and "
+                         "independently in rocq/KappaStar.v "
+                         "(c_bracket_of_kappa); written as a fraction there too",
     "0.002047": "the smallest certified ledger value over the Zone I cover, "
                 "from the Rocq layer (rocq/LedgerCoverP*.v, re-derived by "
                 "rocq/gen/check_tiling.py); the checker reads only Lean sources",

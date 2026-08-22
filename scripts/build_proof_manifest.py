@@ -2573,6 +2573,97 @@ def main() -> int:
                     "RevPebbling.KappaAttainment.c_eq_at_maximiser",
                 ],
             },
+            "kappa_star_enclosure_lean": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-22): kappa* enclosed INSIDE "
+                           "LEAN to sixteen places, discharging the two hypotheses "
+                           "Final carried from rocq/KappaStar.v -- "
+                           "KappaUpperBound Final.KHI and KappaAttained Final.KLO. "
+                           "Lean has no interval-arithmetic tactic and the integer-power "
+                           "route of CriticalRootRat is unusable (the witness slope has a "
+                           "sixteen-digit denominator, so its certificates would be "
+                           "10^16-th powers). The single numerical primitive is instead a "
+                           "rational enclosure of Real.log of a rational, from Mathlib's "
+                           "Real.abs_log_sub_add_sum_range_le (log_enclose), with range "
+                           "reduction by powers of two. UPPER BOUND: Gibbs' inequality "
+                           "eliminates the implicit root function -- rho^{-q} + "
+                           "(1+rho)^{-q} <= 1 is Kraft's inequality for the lengths log "
+                           "rho and log (1+rho), so weighted AM-GM against any theta in "
+                           "(0,1) gives H(theta) <= q (theta log rho + (1-theta) log "
+                           "(1+rho)), hence V(q) <= Lam(theta,rho), an EXPLICIT function "
+                           "of rho alone (V_le_Lam). Lam(theta,.) is convex in log rho "
+                           "(log_one_add_convex, again two AM-GMs and no derivative), so "
+                           "on an interval it is at most its larger endpoint value "
+                           "(Lam_le_max) -- which is what makes a finite grid a proof. "
+                           "34 intervals cover rho in [1, 9/5], each with its own theta, "
+                           "and rho >= 9/5 is closed by theta = 1/2, where Lam(1/2,rho) = "
+                           "log2(1 + 1/rho)/2 decreases (Lam_half_le). The 34 intervals "
+                           "are the cost of the tangency at rho*: their widths run from "
+                           "4e-11 to 0.36. LOWER BOUND: the same inequality backwards. "
+                           "For a rational a in (1/2,1) and t = log(1-a)/log a > 1, the "
+                           "root of rho^t = 1 + rho (exists_root_t, intermediate value "
+                           "theorem) with q = -log a / log rho makes rho^{-q} = a and "
+                           "(1+rho)^{-q} = 1-a EXACTLY, so (q,rho) is a genuine root of G "
+                           "and V(q) = log rho (-1/log a - 1/log 2). A rational lower "
+                           "bound B <= rho follows from t log B <= log (1+B) alone, since "
+                           "x |-> t log x - log (1+x) is strictly increasing for t > 1 "
+                           "(le_root) -- elementary, not a derivative. So the lower bound "
+                           "needs five logarithms and no covering. Besides the theorems "
+                           "listed, the file contains 219 machine-generated table "
+                           "entries (lgtwo, lgv0..lgv217), 68 endpoint checks "
+                           "(chk0a..chk33b) and 34 covering lemmas (cover0..cover33), all "
+                           "kernel-checked but not listed one by one; the generator "
+                           "scripts/gen_kappa_enclosure.py verifies the same inequality "
+                           "chain in exact rational arithmetic before emitting it. "
+                           "No native_decide, no sorry: the three standard axioms only. "
+                           "FINALLY, c itself as a decimal: c = exp(log 2 (1+kappa*)), "
+                           "the enclosure bounds the exponent between two rationals, and "
+                           "two applications of exp_enclose (Real.exp_bound, 24 terms) "
+                           "give c_decimal_bracket: 2.517064836893816 <= c <= "
+                           "2.517064836893817 -- the step rocq/KappaStar.v's "
+                           "c_bracket_of_kappa did with the interval tactic. "),
+                "theorems": [
+                    "RevPebbling.KappaEnclosure.log_enclose",
+                    "RevPebbling.KappaEnclosure.log_shift_mul",
+                    "RevPebbling.KappaEnclosure.log_shift_div",
+                    "RevPebbling.KappaEnclosure.exp_enclose",
+                    "RevPebbling.KappaEnclosure.Hf_pos",
+                    "RevPebbling.KappaEnclosure.gm2",
+                    "RevPebbling.KappaEnclosure.V_le_Lam",
+                    "RevPebbling.KappaEnclosure.log_one_add_convex",
+                    "RevPebbling.KappaEnclosure.Lam_le_max",
+                    "RevPebbling.KappaEnclosure.Lam_le_of_bounds",
+                    "RevPebbling.KappaEnclosure.Hf_half",
+                    "RevPebbling.KappaEnclosure.Lam_half_le",
+                    "RevPebbling.KappaEnclosure.KHI'_eq",
+                    "RevPebbling.KappaEnclosure.KLO'_eq",
+                    "RevPebbling.KappaEnclosure.root_gt_one'",
+                    "RevPebbling.KappaEnclosure.coverTail",
+                    "RevPebbling.KappaEnclosure.V_le_KHI'",
+                    "RevPebbling.KappaEnclosure.kappaStar_le_hi",
+                    "RevPebbling.KappaEnclosure.kappaUpperBound_KHI",
+                    "RevPebbling.KappaEnclosure.aW_pos",
+                    "RevPebbling.KappaEnclosure.aW_lt_one",
+                    "RevPebbling.KappaEnclosure.log_aW",
+                    "RevPebbling.KappaEnclosure.log_one_sub_aW",
+                    "RevPebbling.KappaEnclosure.log_BW",
+                    "RevPebbling.KappaEnclosure.log_one_add_BW",
+                    "RevPebbling.KappaEnclosure.log_aW_neg",
+                    "RevPebbling.KappaEnclosure.tW_ge_three",
+                    "RevPebbling.KappaEnclosure.tW_gt_one",
+                    "RevPebbling.KappaEnclosure.tW_le",
+                    "RevPebbling.KappaEnclosure.tW_mul",
+                    "RevPebbling.KappaEnclosure.exists_root_t",
+                    "RevPebbling.KappaEnclosure.le_root",
+                    "RevPebbling.KappaEnclosure.kappaStar_ge_lo",
+                    "RevPebbling.KappaEnclosure.kappaAttained_KLO",
+                    "RevPebbling.KappaEnclosure.kappaStar_enclosure",
+                    "RevPebbling.KappaEnclosure.c_bracket_unconditional",
+                    "RevPebbling.KappaEnclosure.expXlo",
+                    "RevPebbling.KappaEnclosure.expXhi",
+                    "RevPebbling.KappaEnclosure.c_decimal_bracket",
+                ],
+            },
             "assembly_of_the_upper_bound": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED (this work, 2026-08-21): the ASSEMBLY of the upper "
@@ -2825,9 +2916,9 @@ def main() -> int:
             name: {a.strip() for a in body.replace("\n", " ").split(",")
                    if a.strip()}
             for name, body in re.findall(
-                r"'([^\s']+'?)' depends on axioms: \[(.*?)\]", res.stdout, re.S)
+                r"'([^\s]+?)' depends on axioms: \[(.*?)\]", res.stdout, re.S)
         }
-        for name in re.findall(r"'([^\s']+'?)' does not depend on any axioms",
+        for name in re.findall(r"'([^\s]+?)' does not depend on any axioms",
                                res.stdout):
             axioms[name] = set()
         unseen = [t for t in thms if t not in axioms]

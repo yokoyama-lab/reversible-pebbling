@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "881cac1f35bcfefed235760a2f307f5c67dcfd0f78552f9ff5956241cae23611",
+ "proof_bundle_sha256": "5c782fdc6e487c3b2350deaf86dcffccbdae65b787c5f4aaf18be57005cf76c7",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -85,6 +85,7 @@
   "RevPebbling/HpkResolved.lean": "83ac206c2061c6fbe321cfed135bdcaacc78ab36f59900c59e3762bb65697dba",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
   "RevPebbling/KappaAttainment.lean": "ffaebc51f08906873a40d60b12d05398226535e42b86140cd446230ec53e9f82",
+  "RevPebbling/KappaEnclosure.lean": "cb788bb99439b06f9377439d7529cbbfa38fcde6ec9a1888cd72a768e378b1ef",
   "RevPebbling/KappaLowerRat.lean": "057ac4a3e5ff48bd0a4614263e1afe8b7a2283d3424bb441be124881e21d8927",
   "RevPebbling/KappaLtHalf.lean": "230b18245c7922bf06769d24dccf7ca18ea1808f1128a227dfa816cb85887170",
   "RevPebbling/KnillObs.lean": "561e280c41c9995298119896f7134331762bfebc69b0d584886a8332c7ca1cad",
@@ -125,7 +126,7 @@
   "RevPebbling/UnconditionalLink1.lean": "b2592a347249d23eece02a004cd84b06f49c6c6a9a49d7743b5f6ccc3b0c1e68",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "500c0de9c175b85a21664a5307572949ea4ce01a8e3758c9cdd2fb3f814c697b"
+  "RevPebbling.lean": "371a3adfcd88829a1a328ddec6acdb1d08603079291514f4d2954850e22798ab"
  },
  "hypotheses": {
   "GameAttain": {
@@ -148,9 +149,11 @@
    "proved_by": []
   },
   "KappaAttained RevPebbling.Final.KLO": {
-   "status": "carried",
+   "status": "proved",
    "carried_by": 2,
-   "proved_by": []
+   "proved_by": [
+    "RevPebbling.KappaEnclosure.kappaAttained_KLO"
+   ]
   },
   "KappaAttained RevPebbling.Final.kappaStar": {
    "status": "proved",
@@ -160,9 +163,11 @@
    ]
   },
   "KappaUpperBound RevPebbling.Final.KHI": {
-   "status": "carried",
+   "status": "proved",
    "carried_by": 3,
-   "proved_by": []
+   "proved_by": [
+    "RevPebbling.KappaEnclosure.kappaUpperBound_KHI"
+   ]
   },
   "LowerRowExact": {
    "status": "proved",
@@ -1743,6 +1748,62 @@
    "proves_hypotheses": {
     "KappaAttained RevPebbling.Final.kappaStar": [
      "RevPebbling.KappaAttainment.kappaAttained_kappaStar"
+    ]
+   }
+  },
+  "kappa_star_enclosure_lean": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (this work, 2026-08-22): kappa* enclosed INSIDE LEAN to sixteen places, discharging the two hypotheses Final carried from rocq/KappaStar.v -- KappaUpperBound Final.KHI and KappaAttained Final.KLO. Lean has no interval-arithmetic tactic and the integer-power route of CriticalRootRat is unusable (the witness slope has a sixteen-digit denominator, so its certificates would be 10^16-th powers). The single numerical primitive is instead a rational enclosure of Real.log of a rational, from Mathlib's Real.abs_log_sub_add_sum_range_le (log_enclose), with range reduction by powers of two. UPPER BOUND: Gibbs' inequality eliminates the implicit root function -- rho^{-q} + (1+rho)^{-q} <= 1 is Kraft's inequality for the lengths log rho and log (1+rho), so weighted AM-GM against any theta in (0,1) gives H(theta) <= q (theta log rho + (1-theta) log (1+rho)), hence V(q) <= Lam(theta,rho), an EXPLICIT function of rho alone (V_le_Lam). Lam(theta,.) is convex in log rho (log_one_add_convex, again two AM-GMs and no derivative), so on an interval it is at most its larger endpoint value (Lam_le_max) -- which is what makes a finite grid a proof. 34 intervals cover rho in [1, 9/5], each with its own theta, and rho >= 9/5 is closed by theta = 1/2, where Lam(1/2,rho) = log2(1 + 1/rho)/2 decreases (Lam_half_le). The 34 intervals are the cost of the tangency at rho*: their widths run from 4e-11 to 0.36. LOWER BOUND: the same inequality backwards. For a rational a in (1/2,1) and t = log(1-a)/log a > 1, the root of rho^t = 1 + rho (exists_root_t, intermediate value theorem) with q = -log a / log rho makes rho^{-q} = a and (1+rho)^{-q} = 1-a EXACTLY, so (q,rho) is a genuine root of G and V(q) = log rho (-1/log a - 1/log 2). A rational lower bound B <= rho follows from t log B <= log (1+B) alone, since x |-> t log x - log (1+x) is strictly increasing for t > 1 (le_root) -- elementary, not a derivative. So the lower bound needs five logarithms and no covering. Besides the theorems listed, the file contains 219 machine-generated table entries (lgtwo, lgv0..lgv217), 68 endpoint checks (chk0a..chk33b) and 34 covering lemmas (cover0..cover33), all kernel-checked but not listed one by one; the generator scripts/gen_kappa_enclosure.py verifies the same inequality chain in exact rational arithmetic before emitting it. No native_decide, no sorry: the three standard axioms only. FINALLY, c itself as a decimal: c = exp(log 2 (1+kappa*)), the enclosure bounds the exponent between two rationals, and two applications of exp_enclose (Real.exp_bound, 24 terms) give c_decimal_bracket: 2.517064836893816 <= c <= 2.517064836893817 -- the step rocq/KappaStar.v's c_bracket_of_kappa did with the interval tactic. ",
+   "theorems": [
+    "RevPebbling.KappaEnclosure.log_enclose",
+    "RevPebbling.KappaEnclosure.log_shift_mul",
+    "RevPebbling.KappaEnclosure.log_shift_div",
+    "RevPebbling.KappaEnclosure.exp_enclose",
+    "RevPebbling.KappaEnclosure.Hf_pos",
+    "RevPebbling.KappaEnclosure.gm2",
+    "RevPebbling.KappaEnclosure.V_le_Lam",
+    "RevPebbling.KappaEnclosure.log_one_add_convex",
+    "RevPebbling.KappaEnclosure.Lam_le_max",
+    "RevPebbling.KappaEnclosure.Lam_le_of_bounds",
+    "RevPebbling.KappaEnclosure.Hf_half",
+    "RevPebbling.KappaEnclosure.Lam_half_le",
+    "RevPebbling.KappaEnclosure.KHI'_eq",
+    "RevPebbling.KappaEnclosure.KLO'_eq",
+    "RevPebbling.KappaEnclosure.root_gt_one'",
+    "RevPebbling.KappaEnclosure.coverTail",
+    "RevPebbling.KappaEnclosure.V_le_KHI'",
+    "RevPebbling.KappaEnclosure.kappaStar_le_hi",
+    "RevPebbling.KappaEnclosure.kappaUpperBound_KHI",
+    "RevPebbling.KappaEnclosure.aW_pos",
+    "RevPebbling.KappaEnclosure.aW_lt_one",
+    "RevPebbling.KappaEnclosure.log_aW",
+    "RevPebbling.KappaEnclosure.log_one_sub_aW",
+    "RevPebbling.KappaEnclosure.log_BW",
+    "RevPebbling.KappaEnclosure.log_one_add_BW",
+    "RevPebbling.KappaEnclosure.log_aW_neg",
+    "RevPebbling.KappaEnclosure.tW_ge_three",
+    "RevPebbling.KappaEnclosure.tW_gt_one",
+    "RevPebbling.KappaEnclosure.tW_le",
+    "RevPebbling.KappaEnclosure.tW_mul",
+    "RevPebbling.KappaEnclosure.exists_root_t",
+    "RevPebbling.KappaEnclosure.le_root",
+    "RevPebbling.KappaEnclosure.kappaStar_ge_lo",
+    "RevPebbling.KappaEnclosure.kappaAttained_KLO",
+    "RevPebbling.KappaEnclosure.kappaStar_enclosure",
+    "RevPebbling.KappaEnclosure.c_bracket_unconditional",
+    "RevPebbling.KappaEnclosure.expXlo",
+    "RevPebbling.KappaEnclosure.expXhi",
+    "RevPebbling.KappaEnclosure.c_decimal_bracket"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {
+    "KappaUpperBound RevPebbling.Final.KHI": [
+     "RevPebbling.KappaEnclosure.kappaUpperBound_KHI"
+    ],
+    "KappaAttained RevPebbling.Final.KLO": [
+     "RevPebbling.KappaEnclosure.kappaAttained_KLO"
     ]
    }
   },

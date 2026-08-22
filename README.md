@@ -119,9 +119,50 @@ Given them, `c_bracket_of_rocq` proves **in Lean**
 
 — the upper end through the whole subsolution chain
 (`Assemble.psi_le_count` → the readout → `Readout` → `Unconditional`),
-the lower end through `CriticalRoot.c_ge_two_pow_V`.  The manifest's
-statement audit lists both as carried with no `PROVED by`, so the
-dependency on the interval-arithmetic layer stays visible.
+the lower end through `CriticalRoot.c_ge_two_pow_V`.  Both hypotheses
+were **carried**, and the manifest's statement audit listed them with no
+`PROVED by`, until the file described next discharged them.
+
+### The same enclosure, with no interval arithmetic at all
+
+`RevPebbling/KappaEnclosure.lean` proves both of those hypotheses **in
+Lean**, so the sixteen-digit value of `c` no longer rests on the Rocq
+layer:
+
+```
+KappaEnclosure.kappaStar_enclosure     : KLO ≤ κ* ≤ KHI
+KappaEnclosure.kappaUpperBound_KHI     : Final.KappaUpperBound Final.KHI
+KappaEnclosure.kappaAttained_KLO       : Final.KappaAttained Final.KLO
+KappaEnclosure.c_bracket_unconditional : 2^(1+KLO) ≤ c ≤ 2^(1+KHI)
+KappaEnclosure.c_decimal_bracket       : 2.517064836893816 ≤ c ≤ 2.517064836893817
+```
+
+Lean still has no interval-arithmetic tactic; what replaces it is
+Gibbs' inequality.  At a root, `ρ^(−q) + (1+ρ)^(−q) = 1` is Kraft's
+inequality for the two lengths `log ρ` and `log (1+ρ)`, so weighted
+AM–GM against **any** weight `θ ∈ (0,1)` bounds `V(q)` by
+
+```
+Λ(θ, ρ) = (θ·log ρ + (1−θ)·log (1+ρ)) / H(θ) − log ρ / log 2
+```
+
+— an explicit function of `ρ` alone, with the implicit root function
+gone.  `Λ(θ, ·)` is convex in `log ρ` (two more applications of AM–GM,
+no derivative anywhere), so over an interval it never exceeds its larger
+endpoint value, which is what makes a finite grid a proof: 34 intervals
+cover `ρ ∈ [1, 9/5]`, each with its own `θ`, and `θ = 1/2` closes
+`ρ ≥ 9/5`.  Their widths run from 4·10⁻¹¹ at the tangency to 0.36.  The
+lower bound reads the same inequality backwards — fixing the weight
+first makes one point of the root curve *exact* — and needs no covering.
+
+The single numerical primitive is a rational enclosure of `Real.log` of
+a rational, from Mathlib's `Real.abs_log_sub_add_sum_range_le`; the file
+uses 219 of them.  The last line needs one more: `c = exp(log 2·(1+κ*))`,
+so two applications of `Real.exp_bound` (`exp_enclose`, 24 terms each)
+turn the enclosure into the decimal — the step `KappaStar.v` did with
+`interval`.  No `native_decide`, no carried hypothesis, the three
+standard axioms.  `rocq/KappaStar.v` is now an independent second check
+of the same interval rather than the only one.
 
 **The enclosure is not needed for the identity, though.**  Define `κ*` as
 the supremum of `V` over the roots (`Final.kappaStar`) and
@@ -149,7 +190,7 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 822 theorems the
+the rest are general (unbounded) proofs.  Of the 861 theorems the
 manifest lists, **73 rest on a `native_decide` certificate and 17 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
@@ -188,7 +229,7 @@ theorem names in it — agrees with the manifest and the sources; CI runs
 it, so a claim cannot quietly go out of date.
 
 A full build takes about two and a quarter hours
-(66 stages, 822 theorems), nearly all of it three checks: the composition anchor at
+(67 stages, 861 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the
