@@ -2825,9 +2825,9 @@ def main() -> int:
             name: {a.strip() for a in body.replace("\n", " ").split(",")
                    if a.strip()}
             for name, body in re.findall(
-                r"'([^']+)' depends on axioms: \[(.*?)\]", res.stdout, re.S)
+                r"'([^\s']+'?)' depends on axioms: \[(.*?)\]", res.stdout, re.S)
         }
-        for name in re.findall(r"'([^']+)' does not depend on any axioms",
+        for name in re.findall(r"'([^\s']+'?)' does not depend on any axioms",
                                res.stdout):
             axioms[name] = set()
         unseen = [t for t in thms if t not in axioms]
