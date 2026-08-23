@@ -115,7 +115,8 @@ example : ¬ Run 2 2 (sinkPebble 2) [⟨.pebble, 0⟩, ⟨.unpebble, 1⟩] allEm
 
 /-! ## `ghost` だけは前提を持たない（測定）
 
-これは Quist–Laarman Def 2.2 の逐語。`ghost` に前提を付けてしまうと落ちる検査。
+遷移規則は **KSS Def 2.6/2.7 に対応**する（出典表示は 2026-08-18 の commit `2657264` で
+訂正した。QL Def 2.2 とは一致していない）。`ghost` に前提を付けてしまうと落ちる検査。
 -/
 
 /-- $v_0$ が空のまま `ghost v₁` を打てる（そのあと `unghost` には $v_0$ が要る）。 -/

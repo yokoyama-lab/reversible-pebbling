@@ -17,9 +17,11 @@ arXiv:2401.10579, **Definition 2.2** の逐語」と書いていたが、監査
 * KSS Def 2.6/2.7 は `‖P_i △ P_{i+1}‖ = 1` を課し ghost を**導出**する。
   この下では下の 4 条件は**定義から従う**
 
-⚠ **KSS とも 1 点だけずれる（既知・未解消）**: KSS では `remove(v)` が ghost を作るか否かが
-`parents(v) ⊆ P` で**自動決定され選べない**が、下の `.ghost` は `ready` が真でも打てる。
-したがって**本形式化のモデルは KSS より広い**。帰結:
+**KSS とのずれは解消済み**（2026-08-18・commit `20b1c49`。下の経緯は記録として残す）。
+
+KSS では `remove(v)` が ghost を作るか否かが `parents(v) ⊆ P` で**自動決定され選べない**が、
+下の `.ghost` は `ready` が真でも打てる。したがって**本形式化のモデルは KSS より広い**。
+そのままだと帰結が片側だけになる:
 
 * **下界（定理A・D・E、分解の `≥` 方向）は KSS へそのまま移る**
   （手順が多いほど最小値は小さいので `T_本形式化 ≤ T_KSS`）
@@ -27,11 +29,14 @@ arXiv:2401.10579, **Definition 2.2** の逐語」と書いていたが、監査
   実際 `sweep 2 = [pebble 0, pebble 1, ghost 0]` の `ghost 0` と、`placeUpto` の `ghost i`
   （`g (i-1) = pebble` のとき）は **`ready` が真の状態で打っている**
 
-**正規化補題（未証明・`SlopeTight` 等とは独立の TODO）**: `ready` が真のときの `ghost v` を
-`unpebble v` に、対応する後続の `unghost v` を `pebble v` に置き換えると、**前提条件も
-長さも `pcount` も変わらない**（`unghost` と `pebble` はどちらも `ready c v` を要求し、
-ghost も empty も `pcount` に寄与しない）。これを証明すれば `T` が一致し、上界も
-KSS の定理になる。
+**この隙を埋める正規化補題は `KSSModel.lean` で証明済みである。** `ready` が真のときの
+`ghost v` を `unpebble v` に、対応する後続の `unghost v` を `pebble v` に置き換えると、
+**前提条件も長さも `pcount` も変わらない**（`unghost` と `pebble` はどちらも `ready c v` を
+要求し、ghost も empty も `pcount` に寄与しない）。`KSSModel.lean` は KSS Def 2.6/2.7 の
+意味論を `legalK`/`okK`/`RunK` として書き、正規化 `tweakK`/`stripK` と `stripK_ok` を証明し、
+`UPLengthsK_eq` / `UGLengthsK_eq` / `PLengthsK_eq`、したがって
+**`TUP_eq_K` / `TUG_eq_K` / `TP_eq_K`（3 量とも一致）**を出す。
+⇒ **上界も下界も KSS の意味論の定理として読める。**
 
 本ファイルは**鎖（線グラフ）**に特化する: 頂点は `0, 1, …, n-1`、辺は `i → i+1`。
 

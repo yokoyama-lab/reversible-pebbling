@@ -24,12 +24,16 @@
 > 強制するので **QL に対し狭い**。KSS Def 2.6/2.7（`‖P_i △ P_{i+1}‖ = 1`）の下では
 > その 4 条件は定義から従う。
 >
-> **KSS とも 1 点ずれる（未解消）**: KSS は `remove(v)` が ghost を作るか否かを
-> `parents(v) ⊆ P` で自動決定するが、本形式化の `.ghost` は `ready` が真でも打てるので
-> **KSS より広い**。よって **下界はそのまま KSS へ移るが、上界は自動では移らない**
+> **KSS とのずれは 2026-08-18（commit `20b1c49`）に解消した。**
+> KSS は `remove(v)` が ghost を作るか否かを `parents(v) ⊆ P` で自動決定するが、
+> 本形式化の `.ghost` は `ready` が真でも打てるので **KSS より広い**。
+> そのままだと **下界はそのまま KSS へ移るが、上界は自動では移らない**
 > （実際 `sweep 2` と `placeUpto` は `ready` が真の状態で `ghost` を打っている）。
-> 解消には正規化補題（`ready` が真の `ghost v` → `unpebble v`、後続の `unghost v` → `pebble v`。
-> 前提条件も長さも `pcount` も不変）が要る。詳細は `SpookyPebbling/Defs.lean` の冒頭。
+> **これを埋める正規化補題（`ready` が真の `ghost v` → `unpebble v`、後続の
+> `unghost v` → `pebble v`。前提条件も長さも `pcount` も不変）は `KSSModel.lean` で
+> 証明済みで、`TUP_eq_K` / `TUG_eq_K` / `TP_eq_K` により 3 量とも一致する。**
+> ⇒ **上界も下界も KSS の意味論の定理として読める。**
+> 詳細は `SpookyPebbling/Defs.lean` の冒頭と `KSSModel.lean`。
 
 ## 層（何が機械証明されているか）
 
@@ -122,13 +126,31 @@ Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる
 層の表に必ず書く）。緑が本物かは変異注入で確かめること（`lake build` の沈黙は
 成功と OOM を区別しない）。
 
+## 検査ゲート（2026-08-24・独立セッションによる再検証）
+
+`notes/spooky-pebbling/paper-ieice` の原稿執筆セッションが、**このリポジトリを読み取りだけで
+扱いつつ**、`/work/tmp` の作業コピーで白紙から検証した。生データは
+`notes/spooky-pebbling/paper-ieice/{build_report.json,probe_summary.txt,mutate.sh}`。
+
+| 点 | 結果 |
+|---|---|
+| **白紙ビルド** | `git clone` して `.lake/build` が空の状態から `lake build SpookyPebbling` が **rc=0**。**olean 33 本すべてをその実行で生成**（`find -newermt` で確認）。9 分 34 秒・最大 2,911 MB |
+| 元リポジトリ | **無改変**（`git status` と `find .lake -newermt` が 0 件） |
+| `sorry` / `admit` / `axiom` 宣言 / `native_decide` / `set_option` | 全 33 モジュールで **すべて 0 件** |
+| 公理検査 | 原稿が名指しする **56 宣言**に `#print axioms`。標準 3 公理の外は **0**・`sorryAx` **0**（内訳: 標準3つ 49 / `[Quot.sound, propext]` 2 / `[propext]` 2 / **公理なし 3**） |
+| 同（白紙ビルドの olean に対して） | **同一の結果**。⇒ キャッシュ再生ではない |
+| 変異注入（独立に実施） | **変異 3/3 を棄却・対照 2/2 が緑**（区間を `B4 s` まで広げる／到達不能性を `n≥2` に緩める／`TUG_cap2` の値を 1 ずらす） |
+
+⚠ **README が下に挙げる変異 51 種のうち、この再検証で独立に再現したのは上の 3 種だけ**である。
+残りは自己申告のまま（監査 `exp/audit/D_spooky_lean.md` §3-1 も同じことを書いている）。
+
 ## 検査ゲート（2026-08-14 実施）
 
 | 点 | 結果 |
 |---|---|
 | ビルド | `lake build SpookyPebbling` rc=0 |
 | 成果物の実在 | olean 32 本を確認（`find .lake/build/lib/lean/SpookyPebbling -name '*.olean' | wc -l`） |
-| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（18 ファイルすべて） |
+| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（当時 18 ファイル。2026-08-24 時点で 33 モジュールすべて 0 件） |
 | 公理検査 | `decomp_ge` を含む主要定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
 | 変異A（偽の補題 `probe : False`） | **検出**（ビルドが落ちる） |
 | 変異B（`ghost` に前提条件を付ける） | **検出**。うち `Tests.lean` だけで 14 か所（`by decide` が定義の変異を捕まえる） |
@@ -208,7 +230,7 @@ echo 'import SpookyPebbling
 
 | ファイル | 内容 |
 |---|---|
-| `Defs.lean` | 遷移規則（Quist–Laarman Def 2.2 の逐語）、`Run`、`TP`/`TUP`/`TUG`、`< n` 依存性 |
+| `Defs.lean` | 遷移規則（**KSS Def 2.6/2.7 に対応**）、`Run`、`TP`/`TUP`/`TUG`、`< n` 依存性 |
 | `Parity.lean` | パリティ不変量 → `TUG_ne_TUP` |
 | `Ghost.lean` | 補題G（余分なゴーストは損にならない） |
 | `Project.lean` | 軌跡・`valid`/上限の分離・添字ずらし・頭/尻尾への射影 |
