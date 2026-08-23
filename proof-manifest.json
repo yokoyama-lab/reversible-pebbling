@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "5c782fdc6e487c3b2350deaf86dcffccbdae65b787c5f4aaf18be57005cf76c7",
+ "proof_bundle_sha256": "7ef03c94aa97046b24d6a29717e3b633f617209cb5de824ad4fa4346f122abee",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -81,6 +81,7 @@
   "RevPebbling/GrowthClosedForm.lean": "9e411c49017a9db6907865d7520fde394c34fe2ec99a20e57299ead54d5d62ee",
   "RevPebbling/GrowthLower.lean": "15332a5a8e23d4dcbb72557042b898a66d59e9821f3a33dfefe603f48b09e797",
   "RevPebbling/GrowthRate.lean": "4e63c74cec74165853845a2afca25e6a076902aa79b1fcbf0c15f2337afd0988",
+  "RevPebbling/HalfReach.lean": "f20f164dcd5be9b2df3b0c54169eb9e499394623b7c9207debbca7610a022f27",
   "RevPebbling/HalvedDifference.lean": "2ba5f839c8a603897aee353b911e59aa99cfeb6a95ff4da810a15300a2076df1",
   "RevPebbling/HpkResolved.lean": "83ac206c2061c6fbe321cfed135bdcaacc78ab36f59900c59e3762bb65697dba",
   "RevPebbling/IntRoot.lean": "6dd97e030230881a4dd1302b0ca79f80a4863da713e1b560a4035ef7d57c0d6d",
@@ -126,7 +127,7 @@
   "RevPebbling/UnconditionalLink1.lean": "b2592a347249d23eece02a004cd84b06f49c6c6a9a49d7743b5f6ccc3b0c1e68",
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
-  "RevPebbling.lean": "371a3adfcd88829a1a328ddec6acdb1d08603079291514f4d2954850e22798ab"
+  "RevPebbling.lean": "2991f2b9c6147af974cae87ad0aaececc0b2672d4ba1619e893b37ab27a6106c"
  },
  "hypotheses": {
   "GameAttain": {
