@@ -479,3 +479,40 @@ Demaine+ ITCS 2016 §7 が求めた "minimum time-space-energy trade-off" の下
 実際 $h=4$ を地平線 124（$=4n$）で回して INFEASIBLE を得た（真の値は 155）。
 `cpsat_pebble.py` の docstring が警告しているとおりで、**429 秒を捨てた**。
 既定を $8n$ に上げ、INFEASIBLE のときは警告を出すようにした。
+
+## §13 層1（Lean）— 何が機械証明されたか
+
+置き場は `lean/`（`AbandonPebbling/Defs.lean` と `Instances.lean`）。Lean 4.31.0 + mathlib。
+
+| 主張 | 形式化の名前 | 状態 |
+|---|---|---|
+| 模型（out-tree の可逆ペブルゲーム、訪問要求、空盤→空盤） | `OutTree` / `legal` / `trace` / `Run` | 定義 |
+| 真になった頂点には place が打たれている | `place_of_true` | ✅ |
+| `remove v` が無ければ真は最後まで残る | `stays_true` | ✅ |
+| 各頂点に place が現れる | `Run.place_mem` | ✅ |
+| 各頂点に remove が現れる | `Run.remove_mem` | ✅ |
+| **定理 1a: 妥当な手順は $2n$ 手以上** | `Run.two_mul_le_length` | ✅ |
+| 深さ 1 の深さ優先巡回が $p=2$ で妥当・6 手 $=2n$ | `tour1_run` | ✅（`decide`） |
+| 深さ 2 の深さ優先巡回が $p=3$ で妥当・14 手 $=2n$ | `tour2_run` | ✅（`decide`） |
+
+⇒ **深さ 1・2 では最小手数が $2n$ に確定**（下界は一般定理、上界は検査済みの手順）。
+
+### 検査
+
+| ゲート | 結果 |
+|---|---|
+| `lake build` | ✅ `Built AbandonPebbling`（olean 生成を確認） |
+| `sorry` / `admit` / `native_decide` | **0**（`decide` のみ。コンパイラを信頼に加えない） |
+| `#print axioms` | `propext` / `Quot.sound` / `Classical.choice` の**標準 3 つだけ** |
+| 陰性対照 | 親を置かずに子を置く手が違法（`legal T2 emptyC (pl 1) = false`）／根は常に置ける／$p=2$ では深さ 2 の巡回が**不成立** |
+| **変異注入 3 件**（検出力の測定） | **3/3 検出**: ① `legal` から `ready`（親の要求）を外す → 陰性対照が落ちる ② 下界を $2n+1$ に強める → 証明が落ちる ③ `final`（最後が空盤）を `True` に弱める → `remove_mem` が落ちる |
+
+### まだ層1 でないもの
+
+- **定理 1b・1c**（区間の入れ子と「$2n$ は $p\ge d+1$ に限る」）— 紙のみ（§9）
+- **定理 2**（最小空間 $\ge\log_2(d+2)$）— 紙のみ（§10）。Královič 定理 3.1 の Lean 化が要る
+- 深さ 3 以上の巡回の `decide`（手数 30 で kernel 評価が重くなる見込み）
+
+⚠ **mathlib は `spooky-pebbling-lean/.lake/packages/mathlib` を path で借りている**
+（6.7GB の olean を二重に持たないため）。**あの repo を消すか toolchain を上げると壊れる。**
+独立させるときは `lakefile.toml` の `path` を `[[require]] scope = "leanprover-community"` に戻す。
