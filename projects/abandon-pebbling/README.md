@@ -51,20 +51,108 @@ DAG 上のすべての頂点は最終的に役に立つ。**$\lvert R\rvert > 1$
 `abandon.py` — Dijkstra による**厳密**最小コスト（状態 = ペブル集合 × 訪問済み × 消去回数）。
 族: `tree d`（全葉訪問）・`treeroot d`（根を作る従来型）・`chain n`・`chainall n`。
 
-## §3 先行研究（2026-08-25 に確認。**まだ全数ではない**）
+## §3 先行研究（2026-08-25 に確定。**模型は新しくない。空いているのは下界と定数**）
 
-| 何 | どこまで占有しているか | 層 |
+### 3-0 ⭐ **「全部訪問して空盤で終わる」は Královič 2004 の標準の約束**（最重要）
+
+Královič 2004（*Time and space complexity of reversible pebbling*, ITA 38:137–161）§2 の
+**complete computation** が逐語で「最初と最後の配置が空」かつ「各頂点がいつか覆われる」。
+**§1 の模型（訪問要求＋盤を空にする）は、これそのもの。**
+⇒ **「訪問要求を複数にする」ことに新規性は無い。** 2004 年の標準の定義である。
+校正は §5-7（$S^{-1}(p)=2^p-1$ を 3 点で再現）。
+
+残る違いは 3 つだけで、**新規性を主張してよいのはここだけ**:
+
+1. **族の向き**: Královič の完全二分木は **in-tree**（葉が入力・根が出力＝mergesort）。
+   本プロジェクトの `tree d` は **out-tree**（根が出発点・葉が探索先）＝**バックトラック探索の形**。
+2. **消去予算** $e$（Královič には無い）
+3. **値段** $c_{\text{hold}}$（空間×時間を手数と同じ天秤に載せる。Královič は硬い上限）
+
+### 3-1 「訪問要求が複数」は多シンク可逆ペブリングとしても定義されている
+
+**de Rezende–Meir–Nordström–Robere, "Nullstellensatz Size-Degree Trade-offs from Reversible
+Pebbling"（CCC 2019 / arXiv:2001.02481）§4** に逐語で:
+
+> We define a (reversible) pebbling of a multi-sink graph to be a (reversible) pebbling that
+> **places pebbles on each sink at some point** (the pebbles do not need to be present in the
+> last configuration).
+
+**§1 の「訪問要求」と字義どおり同じ。定義を新規と書いてはいけない。**
+
+ただし彼らはこれを **Prop 4.8 の道具**として使うだけ — Carlson–Savage グラフは全シンクが
+対称なので「シンク 1 個の戦略を $c$ 回まわす」に還元でき、$\mathrm{time}(P)=c\cdot\mathrm{time}(P')$ で終わる。
+**共有がある族ではこの還元が破れる**: 完全二分木で葉ごとに根から作り直すと
+$2(d+1)2^d$（$d=3$ で **64**）だが、実測の最適は **30**。
+⇒ **多シンクは定義されているが、量として研究されていない。**
+前方引用 5 件（OpenAlex、2026-08-25）はすべて proof complexity で、多シンクを対象にしたものは無い。
+
+⚠ **慣習が 3 つあり、量が違う。混ぜないこと。**
+
+| 慣習 | 終了時 | 出所 |
 |---|---|---|
-| **SQUARE** (Ding+, ISCA 2020, arXiv:2004.08539) | **三択そのものをコンパイラで扱っている。** baseline を "Eager"（= Recursive Recomputation）と "Lazy"（= Qubit Reservation）と名付け、AQV を目的にして選ぶ。ただし逐語「**SQUARE is a heuristic-based greedy algorithm.**」「we could end up in a **sub-optimal** situation」「the naïve way for finding the optimal strategy by exhaustively enumerating all possible decisions is **far from efficient**」＝**最適値は出していないと自分で書いている** | 本文 PDF で確認 |
-| **BTV 1997**（quant-ph/9703009） | 不可逆ステップ数と空間のトレードオフ。ただし non-clean 側（$\tau$） | 既確認（`docs/24`） |
-| `reach(p,e)`（当研究室） | 消去予算つき clean 到達。**到達可能性**の量で、コストの量ではない | 手元・層1 部分あり |
-| spooky pebble game（KSS / Quist–Laarman、当研究室 Q7） | 測定で外して後で借金を返す。**放棄も訪問要求も無い** | 層1 の資産あり |
-| 最適チェックポイント（revolve, Beaumont+, Checkmate） | 再計算 vs 保存の最適化。**ただし捨てるのが無料な古典模型**で、逆走という選択肢が無い | 既確認（`revnet-pebbling-novelty`） |
-| **オンライン・チェックポイント**（Stumm–Walther, SISC 2010） | 全長が未知のときの checkpoint 配置。**ほぼ最適**であることまで示されている。**古典模型** | 要現物確認 |
-| 量子バックトラック（Montanaro 系, Qrisp 2024 等） | 失敗枝の uncompute は「やらなければならない作業」として扱う。**配分の最適化はしていない** | 要現物確認 |
+| 各シンクをいつか（残らなくてよい） | 任意 | de Rezende+ 2019 ／**本プロジェクト**（さらに「盤を空に」を課す） |
+| 全シンクが**同時に**ペブル済み | $P_m=O$ | Meuli+ 2019（DATE/ISMVL、LUT 網） |
+| シンク 1 個 | $P_m=\{r\}$ | KSS 2019 ほか大半の理論 |
 
-⚠ **まだ調べていない**: 「訪問要求が複数ある可逆ペブリング」に既に名前が付いていないか
-（multi-output / multi-sink pebbling、Merkle 木走査の可逆版）。**§7-1 が最優先。**
+### 3-2 時間・空間・エネルギーの三通貨は **Demaine+ ITCS 2016** が持っている
+
+**Demaine–Lynch–Mirano–Tyagi, "Energy-Efficient Algorithms"（ITCS 2016）**。
+energy = Landauer（消したビット数）で、**半可逆計算（semi-reversible）**を提唱。
+
+- **Cor 6.11: Reversible Depth First Search は $\Theta(V+E)$ time, $\Theta(V)$ space, 0 energy**
+  （Frank の博士論文 1999「BFS/DFS は可逆にできる」を彼らのモデルで再現）。
+  ⇒ **「可逆な探索は定数倍で済む」は既知。私の測った 2 倍はその定数。**
+- Thm 6.18（semi-reversible APSP）が「energy と space の非自明なトレードオフ」の実例。
+- ⭐ **§7 Future Directions に逐語**:
+  > a major open direction is to obtain **lower bounds**. The additional constraints on
+  > semi-reversible algorithm design might allow showing algorithms cannot be obtained
+  > without some **minimum time-space-energy trade-off**.
+
+  ⇒ **著者自身が下界を空白と宣言している。** 前方引用 33 件（OpenAlex）を題名で走査し、
+  下界を扱いうる 2 件を本文で確認した範囲では埋まっていない
+  （Wolpert, SIGACT News 2018 は物理側の問題提起／Jayapaul+, WALCOM 2023 は
+  **比較のエネルギーと精度**のトレードオフで Landauer 消去ではない）。
+  **これが本プロジェクトの売り場。**
+
+### 3-3 木の可逆ペブリングの理論は **KSS** が持っている（そして open を 1 つ残している）
+
+**Komarath–Sarma–Sawlani, "Pebbling meets coloring: Reversible pebble game on trees"
+（MFCS 2015 / JCSS 2019, arXiv:1604.05510）**。シンクは **1 個**と明記。
+
+- 主定理: **可逆ペブリング数 = 台の無向木の edge rank coloring 数 $+1$**（多項式時間で計算可能）
+- ⭐ 逐語: 最適ペブル数での手数は「complete binary trees have optimal pebblings that take at
+  most $n^{O(\log\log n)}$ steps … **It remains open whether complete binary trees can be
+  pebbled in polynomial number of steps.**」（$(1+\epsilon)$ 近似なら多項式は言えている）
+- 前方引用 9 件（Semantic Scholar、2026-08-25）に解決した形跡は無い
+  （最も近い Zhang–Li–Ying, IEEE TCAD 2025 は**発見的手法**で qubit 90% 減・演算 3〜4 倍）
+
+### 3-4 その他
+
+| 何 | どこまで占有しているか |
+|---|---|
+| **SQUARE**（Ding+, ISCA 2020） | 三択をコンパイラで扱う（Eager=再計算 / Lazy=保存、AQV を目的に）。逐語「heuristic-based greedy algorithm」「the naïve way for finding the optimal strategy … is far from efficient」＝**最適値は自認して放棄** |
+| BTV 1997 | 不可逆ステップ数と空間のトレードオフ（non-clean 側 $\tau$） |
+| `reach(p,e)`（当研究室） | 消去予算つき clean 到達。**到達可能性**の量 |
+| spooky pebble game（Q7） | 測定で外して後で借金を返す。放棄も訪問要求も無い |
+| 最適チェックポイント（revolve / Beaumont+ / Checkmate）・"Saving Memory in DNNs by Recomputing"（2023, survey） | 再計算 vs 保存。**捨てるのが無料な古典模型**で逆走という選択肢が無い |
+| Stumm–Walther, SISC 2010 | 全長未知のオンライン checkpoint。ほぼ最適まで。**古典模型** |
+| Merkle 木走査 | 古典側は手元の資産（最小記憶 $2H-1$、下界は DRAT 済み）。**可逆版は見当たらない**（Schoenmakers 151 本の全数走査は既済） |
+
+⚠ **Chung 1989 系の "graph pebbling"（optimal pebbling number・$t$-pebbling）は全く別のゲーム。**
+検索でよく混ざる。引く前に定義を見ること。
+
+### 3-5 結論（模型は続行、売り方を変える）
+
+- ❌ **模型・定義は新しくない。** 訪問要求＋空盤 = **Královič 2004 の complete computation**、
+  多シンク = de Rezende+ 2019、三通貨（時間・空間・エネルギー）= Demaine+ 2016、
+  可逆 DFS の $\Theta$ = Frank 1999 / Demaine+ 2016。
+  **「新しい模型を作った」と書いたら 4 方向から刺される。**
+- ✅ **空いているのは厳密な下界と定数**（Demaine+ が §7 で自分で宣言した open direction）、
+  **out-tree の traversal**（Královič は in-tree のみ）、**消去予算**、**値段による相図**、
+  そして **オンライン版**（放棄されるか事前に知らない）。
+- ✅ 校正が 4 本通った（§5-5 の KSS 定理、§5-7 の Královič 定理、§5 の $\mathrm{reach}$ と
+  オイラー巡回）⇒ **道具は信用してよい。**
+- ⚠ **$h=4$ で予想 C1 が死んだ**（§5-6）。**3 点で規則を宣言しない**運用がまた効いた。
 
 ## §4 事前登録した予想（測定の前に書く）
 
@@ -77,6 +165,7 @@ DAG 上のすべての頂点は最終的に役に立つ。**$\lvert R\rvert > 1$
 | **B2** | 保存→逆走→再計算 の切り替え閾値は $c_{\text{hold}}/c_{\text{move}}$ だけで決まり、$d$ に依存しない | **検定できない形だった**（§5-3。$d=3$ では第 2 の閾値が**存在しない** — $p=2$ が実行不能なので。予想を「閾値は実行可能な空間の階段ごとに決まる」へ書き換える） |
 | **B3** | 消去を許すと、どの値段でも peak は最小空間（$\lceil\log_2(d+1)\rceil+1$）まで落ちる | **未検定** |
 | **B4** | 葉を左から順に訪問するのは WLOG（`--order-lr` が最適値を変えない） | **6 点で成立**（§5-4） |
+| **C1** | **最適ペブル数**で完全二分木（高さ $h$）の**根**をペブルする最小手数は $2\cdot3^h-1$ | ❌ **$h=4$ で棄却**（予測 161・実測 **155**）。§5-6 |
 
 ## §5 初回の実測（2026-08-25、層3）
 
@@ -152,6 +241,71 @@ $d\in\{2,3\}$・$p\in\{2,3,4\}$ の 6 点で、`--order-lr`（葉を左から順
 ⇒ 以降の $d\ge4$ の測定は `--order-lr` で行う。**ただしこれは 6 点の観測で、定理ではない。**
 $d=4$ 以上で自由順を測っていないので、$d\ge4$ の値は**上界**として読むこと。
 
+### §5-5 校正3: KSS の主定理との一致（独立な 2 つの計算）
+
+`calib_kss.py` が edge rank coloring 数 $\chi'_e$ を**枝刈りつき全探索で独立に**求め、
+`abandon.py` の `treeroot`（シンク 1 個＝KSS と同じ約束）の最小実行可能ペブル数と比べる。
+
+| $h$ | $\chi'_e$（独立計算） | $\chi'_e+1$ | 最小 $p$（実測） | その $p$ での最小手数 |
+|---|---|---|---|---|
+| 1 | 2 | 3 | **3** ✓ | 5 |
+| 2 | 4 | 5 | **5** ✓ | 17 |
+| 3 | 5 | 6 | **6** ✓ | 53 |
+
+**3 点で KSS の「可逆ペブリング数 = $\chi'_e+1$」に一致。**
+これは §5 の他の測定とは別の族・別の量なので、**道具が正しいことの独立な裏づけ**になる。
+
+### §5-6 予想 C1 は $h=4$ で棄却された（**3 点で宣言しなくてよかった**）
+
+`treeroot`（シンク 1 個・KSS の約束）で**最適ペブル数**での最小手数を測ると:
+
+| $h$ | 最小 $p$ | 最小手数 | $2\cdot3^h-1$ |
+|---|---|---|---|
+| 1 | 3 | 5 | 5 |
+| 2 | 5 | 17 | 17 |
+| 3 | 6 | 53 | 53 |
+| **4** | **7** | **155** | ~~161~~ ❌ |
+
+$h\le3$ の 3 点は $a_{h+1}=3a_h+2$（閉形式 $2\cdot3^h-1$）にきれいに乗るが、
+**$h=4$ で 155 になり崩れた**（$a_h+1$ が $6,18,54,\mathbf{156}$ で、$162$ ではない）。
+
+⚠ **これは Merkle 側で起きた事故と同型**（予想 P2 を $H=3$ で宣言して $H=4$ で反例。
+[[merkle-traversal-exact-bound]]）。今回は **§4 に予測値 161 を書いてから測った**ので、
+外れたことがその場で分かった。**測定前に数を書く運用は守ること。**
+
+⚠ したがって「KSS が open と書いた『完全二分木を多項式手数でペブルできるか』に
+規則が見えた」は**書けない**。$5,17,53,155$ は $n^{1.585}$ にも $n\lg n$ にも乗りうる
+（$h=4$ で $n=31$: $n^{1.585}=245$、$n\lg n=153$。実測 155 は**後者に近い**）。
+次に測るべきは $h=5$（$n=63$: $n\lg n=378$ 対 $n^{1.585}=650$）。**ここで初めて分かれる。**
+
+### §5-7 校正4: Královič 2004 の定義は**本模型そのもの**で、$S^{-1}(p)=2^p-1$ も一致
+
+Královič 2004（*Time and space complexity of reversible pebbling*, ITA 38:137–161）の
+**complete computation** の定義（本文 §2）は逐語で:
+
+> A computation $K$ is a **complete computation** if and only if the first and the last
+> configurations of $K$ are **empty** … and **for each vertex $v$ there exists a configuration
+> $C$ in $K$ such that $v$ is covered in $C$**.
+
+**＝ 空盤から始めて全頂点をいつか訪問し、空盤で終わる。§1 の「訪問要求＋`--final clean`」と同じ。**
+⇒ **「訪問要求を複数にする」ことは 2004 年の標準の約束であって、新しくない。**
+
+彼の Theorem 3.1（$S^{-1}(p)=2^p-1$）を鎖で追試した（`--final clean`）:
+
+| $p$ | 実行可能な最大 $n$（実測） | $2^p-1$ | その $n$ での最小手数 |
+|---|---|---|---|
+| 2 | **3** ✓ | 3 | 8 |
+| 3 | **7** ✓ | 7 | 26 |
+| 4 | **15** ✓ | 15 | 76 |
+
+**3 点で一致。** さらに彼の Theorem 3.4 の漸化式
+$T(S^{-1}(p{+}1),p{+}1)\ge 2S^{-1}(p)+2+2T(S^{-1}(p),p)$ も満たす（$26\ge24$、$76\ge68$）。
+
+⚠ **約束が 2 つある。取り違えると値が変わる。**
+`--final keep`（目標だけ残す＝当研究室の `reach`）では $\mathrm{reach}(p,0)=2^{p-1}$、
+`--final clean`（空盤＝Královič）では $S^{-1}(p)=2^p-1$。
+**同じ道具で両方を再現できたので、食い違いは約束の違いであって誤りではない**と確定した。
+
 ## §6 検証の状態
 
 | 何 | どうやったか |
@@ -159,6 +313,8 @@ $d=4$ 以上で自由順を測っていないので、$d\ge4$ の値は**上界*
 | 到達性 | $\mathrm{reach}(p,0)=2^{p-1}$ と一致（別リポの独立実装が出した値） |
 | $p\ge d+1$ の可逆コスト | `euler_tour_cost()` と一致（同じファイル内の独立な数え方） |
 | 古典側 | $p\ge d+1$ で $n$（各頂点をちょうど 1 回置く）と一致 |
+| **KSS の主定理** | `treeroot` の最小 $p$ が $\chi'_e+1$ と 3 点で一致（§5-5。$\chi'_e$ は独立計算） |
+| **Královič の定理 3.1** | `chain --final clean` の最大長が $2^p-1$ と 3 点で一致、定理 3.4 の漸化式も満たす（§5-7） |
 | `--order-lr` が WLOG か | $d\le3$ の 6 点で最適値が一致（§5-4）。$d\ge4$ では未検定＝**$d\ge4$ の値は上界** |
 | **未実施** | 変異注入（検出力の測定）・$d\ge5$・Lean 形式化・$d=4$ の古典側（実行中） |
 
@@ -169,20 +325,23 @@ $d=4$ 以上で自由順を測っていないので、$d\ge4$ の値は**上界*
    （手元に `merkle-traversal-exact-bound` の資産がある＝古典側の最適が既知なので、
    比 2 倍の主張がそのまま「可逆 Merkle 走査の厳密コスト」になる）。
    **ここが埋まっていたら以下は全部やり直しになるので最優先。**
-2. **⭐ $d\ge5$ を SAT へ（1 日）**: `--order-lr` で $d=4$ は素の Dijkstra で届いた
+2. **⭐⭐ $h=5$ を測る（最優先の測定）**: $5,17,53,155$ が $n\lg n$ 側か $n^{1.585}$ 側かは
+   **$h=5$ で初めて分かれる**（$n=63$: 378 対 650）。KSS の open problem に触れるかどうかが決まる。
+   `treeroot 5 --final keep` は $p=8$ 前後・状態数 $10^8$ 規模なので **SAT+DRAT が要る**。
+3. **⭐ $d\ge5$ を SAT へ（1 日）**: `--order-lr` で $d=4$ は素の Dijkstra で届いた
    （$p=5$ で 110 万状態）が、$d=5$ は $2^{63}$ で届かない。
    **`exact-rev-complexity` の `sat_pebble.py`（SAT+DRAT）に載せる**。
    下界側は証明ログが要る（[[machine-checkable-work-ladder]]）。
    同時に $d=4$ で自由順を測り、B4 が $d=4$ でも成り立つかを確かめる（上界が厳密値に昇格する）。
-3. **相図の閾値を閉形式で（1〜2 日）**: $d=2,3$ の切り替え閾値を集め、
+4. **相図の閾値を閉形式で（1〜2 日）**: $d=2,3$ の切り替え閾値を集め、
    $c_{\text{hold}}/c_{\text{move}}$ の関数として予想を立てる。**閾値は定理になりうる形**
    （「$c_{\text{hold}} < 1$ なら保存が最適」は交換論法で言える見込み）。
-4. **オンライン版（本命・1 週）**: 放棄されるかどうかを**事前に知らない**設定。
+5. **オンライン版（本命・1 週）**: 放棄されるかどうかを**事前に知らない**設定。
    枝を計算し終えるまで「要る／要らない」が分からない。
    競合比（オンライン最適 / オフライン最適）を求める。
    **可逆ペブリングにオンラインの結果は見当たらない**（§3）ので、
    ここが一番大きい。校正: 消去無料なら Stumm–Walther のオンライン checkpoint に一致するはず。
-5. **層1 へ**: $p\ge d+1$ で $\text{可逆} = 2\times\text{古典}$ を Lean で証明する
+6. **層1 へ**: $p\ge d+1$ で $\text{可逆} = 2\times\text{古典}$ を Lean で証明する
    （下界は交換論法、上界はオイラー巡回の構成）。**$d\le3$ の実測を定理にする最初の一歩。**
 
 ## §8 書いてはいけないこと（過大主張の予防）
