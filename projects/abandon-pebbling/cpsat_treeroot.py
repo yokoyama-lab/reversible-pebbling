@@ -42,12 +42,16 @@ def main() -> int:
     dag, root = cbt_in_tree(args.h)
     horizon = args.horizon
     if horizon is None:
-        horizon = 4 * dag.n  # 既定（2n+p+4）は最適ペブル数の設定では小さすぎる
+        # ⚠ 地平線が足りないと INFEASIBLE が返る。これは「不可能」ではなく「未測定」。
+        # 実測（h=1..4 で 5,17,53,155）は 4n では足りない（h=4 で 124 < 155）ので 8n を既定にする。
+        horizon = 8 * dag.n
     t0 = time.monotonic()
     r = cpsat_pebble.solve(dag, root, args.p, 0, horizon=horizon,
                            max_seconds=args.seconds, workers=args.workers,
                            want_schedule=False)
     tight = "⚠ 地平線に張り付き（伸ばして再確認が要る）" if r.horizon_tight else "余裕あり"
+    if r.status == "INFEASIBLE":
+        tight = "⚠ INFEASIBLE は『不可能』ではなく**地平線不足の疑い**。伸ばして再確認すること"
     print(f"h={args.h} n={dag.n} p={args.p} 地平線={horizon}: "
           f"status={r.status} 手数={r.moves} ({time.monotonic() - t0:.1f}s) {tight}")
     return 0 if r.status == "OPTIMAL" else 2
