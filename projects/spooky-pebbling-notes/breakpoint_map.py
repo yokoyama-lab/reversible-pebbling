@@ -132,6 +132,43 @@ def model_series(s_val: int, upto: int) -> dict[int, int] | None:
     return out
 
 
+def recurrence_check(sweeps: dict, ones: dict) -> int:
+    """**測る前に、既にある漸化式が何と言うかを見る。**
+
+    `closed.py` の KSS Cor 4.12（層1）＋ δ 則（層3）は厳密値を即座に出す。
+    SAT の測定は値を知る手段ではなく、**δ 則が大きい n でも保つかの検定**である。
+    2026-08-28 にこれを見ずに折れ目の法則を「発見」と書いた
+    （知見 check-own-repo-theorems-before-claiming-new）。
+    """
+    import sys
+    sys.setrecursionlimit(200000)
+    try:
+        import closed
+    except ImportError:
+        print("closed.py が読めない（このリポの中で実行すること）")
+        return 1
+    tot = bad = 0
+    for (kind, s_val) in sorted(sweeps, key=lambda x: (x[1], x[0])):
+        f = closed.T_UG if kind == "UG" else closed.T_UP
+        miss = []
+        for n, v in sorted(sweeps[(kind, s_val)].items()):
+            tot += 1
+            if f(n, s_val) != v:
+                miss.append((n, v, f(n, s_val)))
+        bad += len(miss)
+        print(f"{kind} s={s_val}: {len(sweeps[(kind, s_val)])} 点  破れ {len(miss)} 件 {miss[:3]}")
+    print(f"\n掃引 合計 {tot} 点・**破れ {bad} 件**")
+    print("\n=== 1 点判定と漸化式 ===")
+    for (kind, s_val, n) in sorted(ones, key=lambda x: (x[1], x[0], x[2])):
+        f = closed.T_UG if kind == "UG" else closed.T_UP
+        val, why = pin(ones[(kind, s_val, n)]["SAT"], ones[(kind, s_val, n)]["UNSAT"])
+        pred = int(f(n, s_val))
+        mark = "—" if val is None else ("一致" if val == pred else "⚠ **破れ**")
+        print(f"{kind} s={s_val} n={n}: 漸化式 {pred} / 実測 {val if val is not None else '—'}"
+              f"（{why}）{mark}")
+    return 1 if bad else 0
+
+
 def selftest() -> int:
     bad = 0
 
@@ -201,6 +238,8 @@ def main() -> int:
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--sweeps", nargs="*", default=None)
     ap.add_argument("--oneT", default=os.path.join(HERE, "oneT_results.csv"))
+    ap.add_argument("--recurrence", action="store_true",
+                    help="closed.py の漸化式（Cor 4.12＋δ）と実測を突き合わせる")
     ap.add_argument("--model", type=int, default=None,
                     help="折れ目の法則から数列を再生し、掃引の実測と 1 点ずつ突き合わせる")
     a = ap.parse_args()
@@ -228,6 +267,9 @@ def main() -> int:
         if val is not None and n - 1 in base:
             note = f"  階差 {val - base[n - 1]}（T({n-1})={base[n-1]}）"
         print(f"{kind} s={s} n={n}: T={val if val is not None else '—'}  [{why}]{note}")
+
+    if a.recurrence:
+        return recurrence_check(sweeps, ones)
 
     if a.model:
         ms = model_series(a.model, 4000)
