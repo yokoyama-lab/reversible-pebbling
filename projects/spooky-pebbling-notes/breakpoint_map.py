@@ -107,6 +107,31 @@ def formula_s4(k: int) -> int:
     return 2 * k * k + 2 * k + 6
 
 
+def model_series(s_val: int, upto: int) -> dict[int, int] | None:
+    """折れ目の法則から T(n) の数列を再生する（定数の平行移動は呼び出し側で吸収）。
+
+    **なぜ生成するのか**: 漸近の係数を手で書くと間違える。法則どおりに数列を作って
+    実測と 1 点ずつ突き合わせれば、「合っている」が数で言える（知見 six-point-fit-broke）。
+    """
+    f = {3: formula_s3, 4: formula_s4}.get(s_val)
+    if f is None:
+        return None
+    bps, k = set(), 1
+    while True:
+        b = f(k)
+        if b > upto:
+            break
+        bps.add(b)
+        k += 1
+    out, t, d = {}, 0, 4
+    for n in range(1, upto + 1):
+        if n in bps:
+            d += 2
+        t += d
+        out[n] = t
+    return out
+
+
 def selftest() -> int:
     bad = 0
 
@@ -162,6 +187,11 @@ def selftest() -> int:
     # 予測式が既知の折れ目を再現するか（当てはめの検算）
     chk("s3 の式", [formula_s3(k) for k in range(1, 9)], [6, 9, 13, 18, 24, 31, 39, 48])
     chk("s4 の式", [formula_s4(k) for k in range(1, 4)], [10, 18, 30])
+    # 再生した数列が、折れ目の位置をそのまま持っているか
+    ms = model_series(3, 60)
+    chk("再生列の折れ目 (s=3)", [b[0] for b in breakpoints(ms)][:8],
+        [6, 9, 13, 18, 24, 31, 39, 48])
+    chk("未対応の s は None", model_series(9, 50), None)
     print(f"selftest: {'🟢 合格' if bad == 0 else f'🔴 {bad} 件失敗'}")
     return 1 if bad else 0
 
@@ -171,6 +201,8 @@ def main() -> int:
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--sweeps", nargs="*", default=None)
     ap.add_argument("--oneT", default=os.path.join(HERE, "oneT_results.csv"))
+    ap.add_argument("--model", type=int, default=None,
+                    help="折れ目の法則から数列を再生し、掃引の実測と 1 点ずつ突き合わせる")
     a = ap.parse_args()
     if a.selftest:
         return selftest()
@@ -196,6 +228,24 @@ def main() -> int:
         if val is not None and n - 1 in base:
             note = f"  階差 {val - base[n - 1]}（T({n-1})={base[n-1]}）"
         print(f"{kind} s={s} n={n}: T={val if val is not None else '—'}  [{why}]{note}")
+
+    if a.model:
+        ms = model_series(a.model, 4000)
+        if ms is None:
+            print(f"s={a.model} の折れ目の式はまだ無い")
+            return 1
+        for kind in ("UP", "UG"):
+            meas = sweeps.get((kind, a.model), {})
+            ns = [n for n in sorted(meas) if n >= 10]
+            if not ns:
+                continue
+            off = meas[ns[0]] - ms[ns[0]]
+            bad = [(n, meas[n], ms[n] + off) for n in ns if meas[n] != ms[n] + off]
+            print(f"{kind} s={a.model}: n={ns[0]}..{ns[-1]} {len(ns)} 点 / "
+                  f"平行移動 {off:+d} / **不一致 {len(bad)} 件** {bad[:5]}")
+        for n in (100, 1000, 4000):
+            print(f"  n={n}: T/n^1.5 = {ms[n] / n ** 1.5:.4f}")
+        return 0
 
     print("\n=== 予測式との突き合わせ（層3） ===")
     for s, f, name in ((3, formula_s3, "(k+1)(k+2)/2 + 3"), (4, formula_s4, "2k²+2k+6")):
