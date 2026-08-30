@@ -123,3 +123,4 @@ import RevPebbling.UpperPersist
 import RevPebbling.XLift
 import RevPebbling.RetentionPremium
 import RevPebbling.NearFull
+import RevPebbling.TieBand
