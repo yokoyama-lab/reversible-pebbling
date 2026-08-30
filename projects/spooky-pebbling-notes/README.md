@@ -614,7 +614,7 @@ BFS の限界 $n=15$ を超えて計算できる:
 
 | 先行 | 何をやったか | 残したもの |
 |---|---|---|
-| Kornerup–Sadun–Soloveichik, *Tight Bounds on the Spooky Pebble Game*, Quantum 9:1636 (2025), arXiv:2110.08973 | **線グラフのみ**。漸近的にタイトな time–qubit トレードオフ: 時間 $T$・空間 $S$ の古典計算を $O(T/\varepsilon)$ gates と $O(T^{\varepsilon}S^{1-\varepsilon})$ qubits で | **big-O 止まり。厳密定数・厳密値は無い** |
+| Kornerup–Sadun–Soloveichik, *Tight Bounds on the Spooky Pebble Game*, Quantum 9:1636 (2025), arXiv:2110.08973 | **線グラフのみ**。漸近的にタイトな time–qubit トレードオフ: 時間 $T$・空間 $S$ の古典計算を $O(T/\varepsilon)$ gates と $O(T^{\varepsilon}S^{1-\varepsilon})$ qubits で | ⚠ **「big-O 止まり」は誤り**（2026-08-12 に訂正済み。26 行目・212 行目を見よ）。**線グラフの厳密漸化式を 2 本持つ**（Cor 4.7・Cor 4.12）。空きは**厳密値そのもの**（小さい $n,s$ の最適値）と、**$T_{UP}$ の厳密漸化式**（KSS の体系では閉じていない）。§6 Future work で**完全二分木のトレードオフ**を名指しで空けている |
 | Quist–Laarman, *Trade-offs between classical and quantum space using spooky pebbling*, LMCS 21:4 (2025), arXiv:2401.10579（初出 RC 2023） | **一般 DAG を扱った初の研究**。spooky pebbling の求解が **PSPACE 完全**。SAT **＋ヒューリスティック最適化**の solver（初の solver） | **最適性を証明していない**。本文に「SAT が見つける解は必ずしも最適でない」と明記。改善は「SAT のみ比 39%」という相対値 |
 
 ⚠ **当初「厳密値の表が無いのは確実」と見立てたが、それは甘かった。**
