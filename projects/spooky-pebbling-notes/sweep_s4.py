@@ -22,6 +22,8 @@ from __future__ import annotations
 import argparse
 import csv
 import os
+import signal
+import sys
 import time
 from pathlib import Path
 
@@ -193,8 +195,28 @@ def main() -> int:
             if prev and p2:
                 step = prev - p2
         print(f"種: prev(n={a.n0 - 1})={prev} step={step}", flush=True)
+        # ⚠ **外から殺されたときに 1 行も書かないと、CSV の最後の行が最前線に見える。**
+        #    2026-09-01 に 4 台（t1=OOM・<host>=OOM・m1/sf1=時間上限）で同じ誤読が起きかけた。
+        #    **「行が無い」は「その n を測っていない」なのに、読み手には区別がつかない。**
+        #    SIGTERM/SIGINT を受けたら、いま測っている n を「中断」として書いてから死ぬ。
+        def _on_term(signum, _frame):
+            nm = {signal.SIGTERM: "SIGTERM", signal.SIGINT: "SIGINT"}.get(signum, str(signum))
+            cur = _state.get("n")
+            if cur is not None and not _state.get("written"):
+                sec = int(time.time() - _state.get("t0", time.time()))
+                w.writerow([a.kind, a.s, cur, "", sec,
+                            f"中断（{nm} を受けた）。**打ち切りでも OOM でもなく未測定**。"
+                            f"{_state.get('hint','')}"])
+                fh.flush(); os.fsync(fh.fileno())
+                print(f"🔶 n={cur} を中断として記録した（{nm}・{sec}s）", flush=True)
+            sys.exit(143 if signum == signal.SIGTERM else 130)
+        _state = {}
+        signal.signal(signal.SIGTERM, _on_term)
+        signal.signal(signal.SIGINT, _on_term)
+
         for n in range(a.n0, a.n1 + 1):
             t0 = time.time()
+            _state.update(n=n, t0=t0, written=False, hint="")
             lo = (prev + 1) if prev else 1
             hi = lo + 60
             guess = (prev + step) if (prev and step) else None
@@ -206,6 +228,7 @@ def main() -> int:
                 #    OOM で殺されただけのものをそう書くと台帳に嘘が載る。
                 sec = int(time.time() - t0)
                 w.writerow([a.kind, a.s, n, "", sec, f"ソルバ異常({e})"])
+                _state["written"] = True
                 fh.flush()
                 print(f"🔴 n={n} でソルバが異常終了: {e}\n"
                       f"   これは打ち切りではない。メモリを疑う"
@@ -223,6 +246,7 @@ def main() -> int:
                     msg = (f"🔴 窓 lo={lo}..hi={hi} に答えが無い（{sec}s）。"
                            f"種が違う可能性が高い。--step か CSV の直前の値を確かめる")
                 w.writerow([a.kind, a.s, n, "", sec, note])
+                _state["written"] = True
                 fh.flush()
                 print(f"🔶 n={n} は{msg}", flush=True)
                 return 0
@@ -230,6 +254,7 @@ def main() -> int:
             bad = ss.exact(n, a.s, a.kind, T, a.proofs)
             note = "両側確認" if not bad else "⚠ exact と不一致"
             w.writerow([a.kind, a.s, n, T, int(time.time() - t0), note])
+            _state["written"] = True
             fh.flush()
             if prev:
                 step = T - prev      # 次の n の予測に使う
