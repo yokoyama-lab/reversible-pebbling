@@ -632,11 +632,20 @@ submultiplicativity and positivity as arguments; both are now theorems.
 
 We call this number the **Knill constant**: `f_p = F(2^{p-1}, p)` is
 Knill's space-optimal cost, and `c` is its growth rate.  The name is
-attached to THIS object, which provably exists (Fekete's lemma on
-`log f_p`, which is subadditive by `submult_fRow`) and which the
-development brackets as `2.5170648368938161205 ≤ c ≤ 2.5171540`.  It is
-NOT attached to `2^{1+κ*} = 2.5170648368938161206…`, which is the
-CONJECTURED value of `c` (`CriticalRoot`, `rocq/KappaStar.v`). -/
+attached to THIS object, which provably exists by Fekete's lemma on
+`log f_p`, subadditive by `submult_fRow`.
+
+`c = 2^{1+κ*}` is now a THEOREM, not a conjecture:
+`Final.c_eq_two_rpow_kappaStar`, with `κ* = sup_q V(q)` as
+`Final.kappaStar` and the supremum attained
+(`KappaAttainment.exists_max`).  The identity carries no hypothesis and
+needs no numeral.  Separately, `KappaEnclosure.c_decimal_bracket` pins
+`2.517064836893816 ≤ c ≤ 2.517064836893817` inside Lean, so nothing
+here is carried from the Rocq layer any more.
+
+(Historical note: until 2026-08 this docstring called `2^{1+κ*}` the
+conjectured value of `c`, and the development only bracketed
+`2.5170648368938161205 ≤ c ≤ 2.5171540`.) -/
 noncomputable def c : ℝ := growth submult_fRow pos_fRow
 
 /-- `c ≤ 2.6106` — the published upper bound, unconditional. -/

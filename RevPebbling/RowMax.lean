@@ -289,7 +289,19 @@ def fRow : Nat → Nat
   | p + 2 => 1 + 2 * (rowIter p).sum
 
 /-- Known small values `f_S = 3, 9, 25, 71, 193` for `S = 2..6`
-(cf. `RLEPebble.rle_f_small` and `PebblingTheory.fval`). -/
+(cf. `RLEPebble.rle_f_small` and `PebblingTheory.fval`).
+
+**This is the faithfulness anchor.**  The kernel decides these values
+from `fRow`, hence from `rowIter` and `gen`, hence from the merge
+identity (1) alone.  Agreement with the values of `F(n,S)` tabulated in
+the manuscript is therefore evidence that the formal definitions are
+the manuscript's definitions and not merely similar ones: a wrong index
+shift or a wrong branch in `gen` would move these numbers.
+
+Checked against the manuscript by a human (T. Yokoyama, 2026-09-02):
+`f_2 = 3`, `f_3 = 9`, `f_4 = 25`, `f_5 = 71` agree with the boldface
+right-hand entries of the `F(n,S)` table.  `f_6 = 193` was not checked
+by hand, being off the table. -/
 example : fRow 2 = 3 ∧ fRow 3 = 9 ∧ fRow 4 = 25 ∧ fRow 5 = 71 ∧
     fRow 6 = 193 := by decide
 
