@@ -7,8 +7,12 @@ Growth Rate of Space-Optimal Simulation"* (in preparation).
 
 Its subject is the **Knill constant** `c`, the growth rate of Knill's
 space-optimal cost `f_p = F(2^{p-1}, p)`.  The name is attached to `c`
-itself (`BlockSim.c`), which provably exists and is bracketed below;
-`2^{1+κ*}` is its *conjectured* value, not its definition.
+itself (`BlockSim.c`), which provably exists.  That `c = 2^{1+κ*}` is a
+theorem here (`Final.c_eq_two_rpow_kappaStar`, no hypotheses, with the
+supremum attained by `KappaAttainment.exists_max`), and `κ*` is pinned
+to sixteen places inside Lean, so
+`2.517064836893816 ≤ c ≤ 2.517064836893817`
+(`KappaEnclosure.c_decimal_bracket`).
 
 To our knowledge this is the first machine-checked treatment of the
 reversible-pebbling literature (Knill 1995, Královič 2004,
@@ -46,13 +50,17 @@ interval of width more than one half.  What a sharp value buys:
   recurs in other pebble games and in min-max divide-and-conquer
   recurrences.
 
-Two honest limits.  *Pinning* `c` means proving the conjecture
-`c = 2^{1+κ*}`; the lower bound already agrees to nineteen decimals, so
-what is missing is an analytic upper bound — the anchor DP cannot get
-there, its error being the `ln T/T` correction above.  And `c` is the
-constant of a **chain**; pebbling general DAGs is PSPACE-hard, so what
-generalises is the method and the exact answer at the extreme point of
-the trade-off, not the number.
+One honest limit.  `c` is the constant of a **chain**; pebbling general
+DAGs is PSPACE-hard, so what generalises is the method and the exact
+answer at the extreme point of the trade-off, not the number.
+
+A second limit stood here until 2026-08: `c = 2^{1+κ*}` was a
+conjecture, the certified lower bound agreeing to nineteen decimals
+while the upper side was open.  It closed not by pushing the anchor DP,
+whose error is the `ln T/T` correction above, but by an explicit
+profile subsolution of the count recursion.  The bracketing bounds
+below are kept because they are independent of that argument and
+because they are what the anchor machinery certifies on its own.
 
 ## `data/` — numerical certificates
 
@@ -76,8 +84,8 @@ Together with `CriticalRoot25366` this brackets the growth rate as
   **2.5170648368938161205 ≤ c ≤ 2.5171539807**,
 
 a window of 8.9·10⁻⁵ — all of it on the upper side — around the
-conjectured exact value `2^{1+κ*} = 2.5170648368938161205744…`, which
-the lower bound now matches to **nineteen decimal places**.
+exact value `2^{1+κ*} = 2.5170648368938161205744…` (a theorem, above),
+which this lower bound matches to **nineteen decimal places**.
 Note that a finer grid beats a longer run: `anchor_T141000_m10.txt`
 uses 43% more time steps than `anchor_T98500_m11.txt` and is still the
 weaker bound, because the round-down loss per step scales with the
@@ -279,7 +287,7 @@ committed `proof-manifest.json` is reproduced byte for byte.
   certifying `c ≥ 2^{5/3}·10¹⁶/112308717² = 2.5170377412` — within
   3.4·10⁻⁸ of the q = 3/2 ceiling `2^{5/3}/ρ_c(3/2) = 2.5170377753`.
   At q = 3/2 the rational rounding of ρ therefore costs essentially
-  nothing; the whole remaining 2.7·10⁻⁵ shortfall to the conjectured
+  nothing; the whole remaining 2.7·10⁻⁵ shortfall to the
   exact value `2^{1+κ*} = 2.5170648369` is the choice of q itself
   (`q* = 1.5153832…`).
 - `RevPebbling/IntRoot.lean` + `RevPebbling/DispersionBound4731.lean` —
@@ -289,7 +297,7 @@ committed `proof-manifest.json` is reproduced byte for byte.
   of it.  With `s = 1007357123/10⁹`, `ρ = s³¹`, `λ = s⁴⁷ = L/10⁴²³` and
   `W v = ⌊10⁸·v^{47/31}⌋ = iroot 31 (10²⁴⁸·v⁴⁷)`, `dispersion4731_main`
   certifies `c ≥ 2^{1+31/47}·10²⁷⁹/1007357123³¹ = 2.5170647241` —
-  **within 1.1·10⁻⁷ of the conjectured exact `2^{1+κ*}`**, so the
+  **within 1.1·10⁻⁷ of the exact `2^{1+κ*}`**, so the
   rational dispersion family now matches it to eight decimals.
 - `RevPebbling/DispersionGeneral.lean` +
   `RevPebbling/DispersionBound197130.lean` +
@@ -309,7 +317,7 @@ committed `proof-manifest.json` is reproduced byte for byte.
   `E = L − D − B ≥ 1` that absorbs the `+1` of the recursion.  With
   `λ₀ = 12585324184474105104/10¹⁹`, the largest 19-digit rational that
   passes the master inequality, `c_ge_2_5170648368936010208` gives
-  **`2.5170648368936010208 ≤ c`** — `2.2·10⁻¹³` below the conjectured
+  **`2.5170648368936010208 ≤ c`** — `2.2·10⁻¹³` below the exact
   value, and what is left is the deficit of the exponent, not slack in
   `λ₀`.  No `native_decide`; `master` needs no axiom but `propext`.
 - `RevPebbling/DispersionReal.lean` +
@@ -353,7 +361,7 @@ committed `proof-manifest.json` is reproduced byte for byte.
   `5·10⁵` digits at `197/130` and about `7·10⁸` at the next one.
   `CriticalRoot25366.c_ge_2_5170648368938161205` gives
   **`2.5170648368938161205 ≤ c`**, nineteen decimal places of the
-  conjectured `2^{1+κ*}`, where the rational-instance family stopped at
+  exact `2^{1+κ*}`, where the rational-instance family stopped at
   thirteen.  **We stop there** for reasons that are not about
   certificate size: the bound saturates in the digits one would quote;
   the certified enclosure of `κ*` pins the target to only sixteen

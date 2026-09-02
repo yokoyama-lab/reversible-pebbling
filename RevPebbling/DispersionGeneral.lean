@@ -20,8 +20,9 @@ delivers
   `c ≥ 2^{1 + 1/q − log₂ ρ_c(q)} = 2^{1 + V(q)}`,
 
 and `κ* = sup_{q>0} V(q)` by definition.  So the family of instances
-approaches `2^{1+κ*} = 2.5170648369…` — the conjectured exact value of
-`c` — and its supremum *is* that value.  With the bound available at
+approaches `2^{1+κ*} = 2.5170648369…` — the exact value of
+`c` (`Final.c_eq_two_rpow_kappaStar`) — and its supremum *is* that
+value.  With the bound available at
 every rational `q`, `c ≥ 2^{1+κ*}` follows by taking the supremum
 instead of by adding one more 92 KB file.
 

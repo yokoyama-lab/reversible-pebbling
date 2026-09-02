@@ -31,7 +31,7 @@ against `2.5169802…` for `σ = 11231/10⁴` (`DispersionBound32b`),
 for `q = 1` (`DispersionBound`).  This is within `3.4 · 10⁻⁸` of the
 `q = 3/2` ceiling `2^{5/3}/ρ_c(3/2) = 2.51703777525972…`, so at this q
 essentially nothing is left on the table: the remaining shortfall to the
-conjectured exact `c = 2^{1+κ*} = 2.5170648368938…` is the choice of
+exact `c = 2^{1+κ*} = 2.5170648368938…` is the choice of
 `q` itself (`q* = 1.5153832…`), not the rational rounding of `ρ`.
 -/
 

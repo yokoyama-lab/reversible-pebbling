@@ -22,7 +22,7 @@ rational that passes — this gives
 
 the sharpest lower bound in this development.  It improves
 `Dispersion4731Growth.growth_ge_2_51706472` by `1.1·10⁻⁸` and sits
-`2.2·10⁻¹³` below the conjectured `2^(1+κ*) = 2.5170648368938161206`.
+`2.2·10⁻¹³` below the exact `2^(1+κ*) = 2.5170648368938161206`.
 The remaining gap is not slack in `λ₀`: it is the deficit of the
 exponent itself, `2^(1+κ*) − 2^(1+V(197/130))`, and closing it needs the
 next convergent `8324/5493`, whose constants are out of reach (see

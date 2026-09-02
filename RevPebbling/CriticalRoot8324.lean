@@ -4,7 +4,7 @@ import RevPebbling.CriticalRootRat
 # `c ≥ 2.5170648368938160702` at `q = 8324/5493` (this work)
 
 The convergent after `197/130`, and the sharpest lower bound in this
-development.  It sits **`5.0 × 10⁻¹⁷`** below the conjectured
+development.  It sits **`5.0 × 10⁻¹⁷`** below the exact value
 `2^{1+κ*} = 2.5170648368938161206`, against `2.2 × 10⁻¹³` for
 `197/130`.
 

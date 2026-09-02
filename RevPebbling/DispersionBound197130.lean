@@ -37,7 +37,7 @@ The bound this delivers is
   `c ≥ 2·(2D/L)^(r/n) = 2.5170648368936010209…`
 
 against `2.5170648301510146886…` from `q = 50/33` and
-`2.5170647740391802928…` from `q = 47/31`: the gap to the conjectured
+`2.5170647740391802928…` from `q = 47/31`: the gap to the exact
 `2^(1+κ*) = 2.5170648368938161206…` falls from `6.7·10⁻⁹` to
 `2.2·10⁻¹³`.
 

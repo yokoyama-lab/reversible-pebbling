@@ -4,7 +4,7 @@ import RevPebbling.CriticalRootRat
 # `c ≥ 2.5170648368938161205` at `q = 25366/16739` (this work)
 
 The sharpest lower bound in this development.  It agrees with the
-conjectured `2^{1+κ*} = 2.5170648368938161205744…` to **19 decimal
+exact value `2^{1+κ*} = 2.5170648368938161205744…` to **19 decimal
 places**, the deficit being `4.7 × 10⁻²⁰`.
 
 ## Why this is the stopping point
@@ -27,7 +27,9 @@ second (measured).  Two other things stop us.
 Above all, **this does not narrow the bracket**: the window
 `[2.5170648368938161205, 2.5171540]` has width `8.9 × 10⁻⁵`, all of it
 on the upper side.  Sharpening the lower bound past this point buys
-evidence for the conjecture `c = 2^{1+κ*}`, not a better interval.
+independent corroboration of `Final.c_eq_two_rpow_kappaStar`, not a
+better interval.  (When this file was written that identity was still a
+conjecture and the bound was its main evidence.)
 -/
 
 set_option exponentiation.threshold 100000
@@ -66,7 +68,7 @@ theorem cert_s2 : S ^ 25366 * T ^ 16739 ≤ s2 ^ 16739 * (S + u) ^ 25366 := by d
 theorem cert_sum : s1 + s2 ≤ T := by decide
 
 /-- **`2.5170648368938161205 ≤ c`**, the sharpest bound here: nineteen
-decimal places of the conjectured `2^{1+κ*}`. -/
+decimal places of the exact `2^{1+κ*}`. -/
 theorem c_ge_2_5170648368938161205 :
     (25170648368938161205 / 10000000000000000000 : ℝ) ≤ RevPebbling.BlockSim.c := by
   have hu : (0 : ℝ) < u := by norm_num [u]

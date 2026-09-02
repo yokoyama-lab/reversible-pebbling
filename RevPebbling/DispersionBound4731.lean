@@ -7,7 +7,7 @@ import RevPebbling.IntRoot
 The `q = 3/2` instances (`DispersionBound32`, `32b`, `32c`) exhaust what
 the potential `v^{3/2}` can give: at `q = 3/2` the certified constant
 cannot exceed `2^{5/3}/ρ_c(3/2) = 2.5170377753…`, still `2.7·10⁻⁵`
-short of the conjectured exact `c = 2^{1+κ*} = 2.5170648369…`, because
+short of the exact `c = 2^{1+κ*} = 2.5170648369…`, because
 `V(q) = 1/q − log₂ ρ_c(q)` is maximised not at `3/2` but at
 `q* = 1.5153832361…`.  This file removes that last loss by moving the
 whole dispersion argument to `q = 47/31 = 1.5161290323…`, the convergent of
@@ -57,7 +57,7 @@ by `scripts/m35_instance_constants.py` (paper repository).
 against `2.5170377412…` at `q = 3/2` (`DispersionBound32c`).  The
 remaining shortfall to `2^{1+κ*} = 2.5170648369…` is `1.1e-7`, i.e.
 the *rational* dispersion family now certifies `c` to eight decimal
-digits of the conjectured exact value.
+digits of the exact value.
 -/
 
 set_option maxRecDepth 1000000
@@ -351,7 +351,7 @@ the paper side `d ≥ 2^{31/47} · 10^{279}/(2 · 1007357123^31)` and
 
 improving `2.5170377412…` (`q = 3/2`, `DispersionBound32c`).  The
 `q = 47/31` ceiling is `2^{1+31/47}/ρ_c(47/31)`, and the whole
-family's supremum is the conjectured exact `2^{1+κ*} = 2.5170648369…`,
+family's supremum is the exact `2^{1+κ*} = 2.5170648369…`,
 now matched to `1.1e-7`. -/
 theorem dispersion4731_midpoint_pow (s : Nat) :
     ((1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000:Nat) ^ s * (2 ^ s - 1)) ^ 31
