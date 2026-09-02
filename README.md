@@ -256,6 +256,18 @@ committed `proof-manifest.json` is reproduced byte for byte.
   law, cumulative correction P₃ ≡ 1), the midpoint sandwich and
   amplification, and the tail-invariance base S = 11 / step S = 12 on
   1024/2048-wide tables.
+- `RevPebbling/HalfReachRecurrence.lean` — the exact half-reach
+  recurrence at the bounded-cost predicate level.  `halfReach_compose`
+  constructs a play from a clean checkpoint and a shifted half-reach;
+  `halfReach_decompose` cuts every half-reach into those two disjoint
+  move sets; `halfReach_iff_decomposition` combines the directions into
+  an exact equivalence.  These are general theorems, with no bounded
+  search and no proof holes.
+- `RevPebbling/HalfReachMerge.lean` — the discrete consequence of that
+  min-plus recurrence: sorted marginal lists merge by the exchange
+  principle, and the threshold count of their iterated union is exactly
+  one base entry per clean row plus the clean-row counts at the halved
+  threshold (`halfMarginals_countLe`).
 
 - `RevPebbling/MinimaxDuality.lean` — ZERO duality gap: the elementary
   minimax duality identity for monotone functions

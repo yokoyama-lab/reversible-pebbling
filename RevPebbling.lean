@@ -90,6 +90,9 @@ import RevPebbling.GameReach
 import RevPebbling.GameStructure
 import RevPebbling.GrowthBounds
 import RevPebbling.HalvedDifference
+import RevPebbling.HalfReachRecurrence
+import RevPebbling.HalfReachMerge
+import RevPebbling.HalfReachBridge
 import RevPebbling.GrowthCertified
 import RevPebbling.GrowthClosedForm
 import RevPebbling.GrowthLower
