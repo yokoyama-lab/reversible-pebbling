@@ -1,6 +1,8 @@
 import RevPebbling.CompleteReach
 import RevPebbling.GameCompleteCost
 import RevPebbling.CutPlays
+import RevPebbling.HalfReachRecurrence
+import RevPebbling.ReachLimit
 
 /-!
 # Towards the rate transfer `T(n,S) = n^{log₂ c + o(1)}` (this work, 2026-09)
@@ -32,7 +34,7 @@ namespace RevPebbling.RateTransfer
 
 open RevPebbling.PebblingFoundations RevPebbling.GameReach
 open RevPebbling.CompleteReach RevPebbling.GameCompleteCost
-open RevPebbling.CutPlays
+open RevPebbling.CutPlays RevPebbling.HalfReachRecurrence RevPebbling.ReachLimit
 
 -- ------------------------------------------------------------------
 -- Restricting a complete computation to a shorter chain
@@ -98,5 +100,66 @@ theorem Smin_spec {n : Nat} (hn : 1 ≤ n) :
   refine ⟨?_, fun S hS hle => Smin_le (completeIn_of_le S n hS hn hle)⟩
   have hc := completeIn_Smin hn
   exact le_two_pow_sub_one_of_completeIn hc
+
+-- ------------------------------------------------------------------
+-- The half-reach limit
+-- ------------------------------------------------------------------
+
+/-- With no pebbles nothing can be reached: a half-reach of a nonempty
+chain needs at least one pebble on the board at the moment its far end
+is covered. -/
+theorem eq_zero_of_halfReachIn_zero {n t : Nat} (h : HalfReachIn n 0 t) :
+    n = 0 := by
+  rcases h with rfl | ⟨s, _, _, _, hend, hpk⟩
+  · rfl
+  · by_contra hn
+    have h1 : 1 ≤ ones (execB (emptyBoard n) s) := ones_pos_of_nth hend
+    have h2 : ones (execB (emptyBoard n) (s.take s.length)) ≤
+        maxOnes (emptyBoard n) s := ones_prefix_le_maxOnes s (emptyBoard n) s.length
+    rw [List.take_of_length_le (Nat.le_refl _)] at h2
+    omega
+
+/-- **THE HALF-REACH LIMIT.**  `S` pebbles half-reach at most `2^S - 1`
+cells, one short of twice the clean limit `2^(S-1)`.
+
+The clean limit is `ReachLimit.le_two_pow_of_reachIn`; this is its
+half-reach counterpart, and it is *not* the same number, which is the
+point: a half-reach may keep its checkpoint pebbles, so it goes about
+twice as far as a clean reach with the same budget.  The proof is the
+decomposition half of (H): the lower part is a clean reach and so is at
+most `2^(S-1)`, and the upper part is a half-reach with one pebble
+fewer, so at most `2^(S-1) - 1` by induction. -/
+theorem le_two_pow_sub_one_of_halfReachIn :
+    ∀ (S : Nat) {n t : Nat}, HalfReachIn n S t → n ≤ 2 ^ S - 1
+  | 0, n, t, h => by
+      rw [eq_zero_of_halfReachIn_zero h]
+      simp
+  | S + 1, n, t, h => by
+      rcases Nat.eq_zero_or_pos n with rfl | hn
+      · simp
+      obtain ⟨m, tf, th, hm, hmn, hf, hh, _⟩ :=
+        halfReach_decompose hn (Nat.succ_le_succ (Nat.zero_le S)) h
+      have hlow : m ≤ 2 ^ S := by
+        simpa using le_two_pow_of_reachIn hm hf
+      have hh' : HalfReachIn (n - m) S th := by simpa using hh
+      have hup : n - m ≤ 2 ^ S - 1 := le_two_pow_sub_one_of_halfReachIn S hh'
+      have hpow : 1 ≤ 2 ^ S := Nat.one_le_two_pow
+      have hsplit : 2 ^ (S + 1) = 2 ^ S * 2 := Nat.pow_succ 2 S
+      omega
+
+/-- **The half-reach limit is sharp, and is not the clean limit.**
+Two pebbles half-reach `2^2 - 1 = 3` cells, whereas the clean limit at
+the same budget is `2^(2-1) = 2`.  Following this project's rule that a
+bound is checked on a witness rather than asserted, the witness is the
+play `[0,1,0,2]`: `···` → `T··` → `TT·` → `·T·` → `·TT`.
+
+This is what makes `le_two_pow_sub_one_of_halfReachIn` the right
+statement: reading the clean limit into the half-reach case would be off
+by a factor of about two. -/
+theorem halfReachIn_three_two : HalfReachIn 3 2 4 := by
+  refine Or.inr ⟨[0, 1, 0, 2], ?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- The clean limit at the same budget is strictly smaller. -/
+example : (2 : Nat) ^ (2 - 1) < 2 ^ 2 - 1 := by decide
 
 end RevPebbling.RateTransfer
