@@ -149,6 +149,9 @@ def main() -> int:
     ap.add_argument("--hours", type=float, default=40.0, help="全体の時間予算")
     ap.add_argument("--step", type=int, default=None,
                     help="初回の予測に使う階差（既知の直近の階差。既定は KNOWN から推定）")
+    ap.add_argument("--checkpoint-exit", type=int, default=None, metavar="CODE",
+                    help="1 点測るごとに CODE で抜ける（HTCondor の self-checkpointing。"
+                         "既定は 85＝Linux の ERESTART）。**残りが無ければ 0 で終わる**")
     a = ap.parse_args()
 
     # ── 1. 校正。ここが赤なら 1 点も測らない ─────────────────
@@ -225,6 +228,16 @@ def main() -> int:
         MIN_BUDGET_SEC = 60
 
         for n in range(a.n0, a.n1 + 1):
+            # ⚠ **既に値がある n は測り直さない。** これが無いと、同じ窓を
+            #    もう一度回したとき**先頭から全部計算し直す**。実害を確認している:
+            #    `s3:s3_UG.csv` には n=41(464) と n=43(500) と n=44(518) が
+            #    **2 度ずつ**記録されていた（13873s と 13580s など）。
+            #    自己退避（--checkpoint-exit）は「抜けて再開」を繰り返すので、
+            #    **ここが無いと退避のたびに最初からになり、永久に終わらない**。
+            if n in measured:
+                print(f"↷ n={n} は測定済み（T={measured[n]}）。飛ばす", flush=True)
+                prev = measured[n]
+                continue
             t0 = time.time()
             _state.update(n=n, t0=t0, written=False, hint="")
             left = deadline - time.time()
@@ -286,6 +299,19 @@ def main() -> int:
             print(f"✅ T({n},{a.s},{a.kind}) = {T}  [{note}]"
                   + (f" 階差 {step}" if step else ""), flush=True)
             prev = T
+            measured[n] = T
+            # ⚠ **自己退避（self-checkpointing）。** 1 点は不可分な仕事の単位なので、
+            #    ここが唯一の安全な中断点である。CSV 自体が退避物になっており、
+            #    再開時は上の「測定済みは飛ばす」で続きから入る。
+            #    これがあると **窓の予算切れ（未着手）も外からの中断も構造的に消える**——
+            #    残り時間で測れる点まで測って抜け、次の起動が続きを測るため。
+            #    HTCondor では `checkpoint_exit_code = 85` がこの符号を待つ。
+            if a.checkpoint_exit is not None and n < a.n1:
+                os.fsync(fh.fileno())
+                print(f"⏸ 退避して抜ける（rc={a.checkpoint_exit}）。"
+                      f"残り n={n + 1}..{a.n1}。**打ち切りでも中断でもない**",
+                      flush=True)
+                return a.checkpoint_exit
     return 0
 
 
