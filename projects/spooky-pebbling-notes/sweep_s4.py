@@ -214,9 +214,29 @@ def main() -> int:
         signal.signal(signal.SIGTERM, _on_term)
         signal.signal(signal.SIGINT, _on_term)
 
+        # **1 点に要る最小の予算**。これを切ったら「未着手」と書いて止まる。
+        # ⚠ 2026-09-02 に m2 で `UP,7,32,,0,打ち切り` を見つけた。**0 秒の打ち切りは
+        #   測定ではない**——予算が尽きた状態で n=32 に入り、探索が即 None を返し、
+        #   下の `time.time() > deadline` が真になって「打ち切り」と書かれていた。
+        #   「時間内に決着しなかった（＝下界の主張）」と「そもそも試していない」を
+        #   同じ札で書くと、`refill.py` が**一度も試していない点を壁と読んで
+        #   その線を永久に止める**。→ memory: cutoff-reading-as-result /
+        #   skipped-check-must-not-report-ok
+        MIN_BUDGET_SEC = 60
+
         for n in range(a.n0, a.n1 + 1):
             t0 = time.time()
             _state.update(n=n, t0=t0, written=False, hint="")
+            left = deadline - time.time()
+            if left < MIN_BUDGET_SEC:
+                w.writerow([a.kind, a.s, n, "", 0,
+                            f"未着手（予算切れ・残り {int(left)}s < {MIN_BUDGET_SEC}s）。"
+                            f"**打ち切りではない。この n は一度も試していない**。"
+                            f"--hours を増やせば測れる"])
+                _state["written"] = True
+                fh.flush()
+                print(f"🔶 n={n} は未着手（予算切れ）。**打ち切りと混同しない**", flush=True)
+                return 0
             lo = (prev + 1) if prev else 1
             hi = lo + 60
             guess = (prev + step) if (prev and step) else None
@@ -239,7 +259,12 @@ def main() -> int:
                 # ⚠ **「打ち切り」と「窓外」は別物。** 前者は時間が足りない、
                 #    後者は答えが lo..hi の外にある（種の取り違え＝こちらの誤り）。
                 #    2026-08-23 に窓外を打ち切りと書いて 22 秒で止まった。
-                if time.time() > deadline:
+                if time.time() > deadline and sec < MIN_BUDGET_SEC:
+                    # 予算の境目で入ってしまった場合の保険。**0 秒台は測定ではない**
+                    note = f"未着手（予算切れ・{sec}s）"
+                    msg = (f"未着手（予算切れ・{sec}s）。"
+                           f"**打ち切りではない。一度も試していない**")
+                elif time.time() > deadline:
                     note, msg = "打ち切り", f"打ち切り（{sec}s）。以降はもっと重いので停止"
                 else:
                     note = f"窓外(lo={lo},hi={hi})"
