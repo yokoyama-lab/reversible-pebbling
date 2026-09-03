@@ -46,14 +46,25 @@ supplies it and closes the transfer
 
 The merge machinery of `HalfReachMerge` — the marginal list
 `halfMarginals` and the threshold identity `halfMarginals_countLe`,
-i.e. `D_S(x) = S + Σ_{i≤S} C_i(⌊x/2⌋)` — is **not** needed here, and the
-row family is never connected to it.  That route asks for a dispersion
-bound on the *sum* `Σ_{i≤S} C_i`, which the lower rows alone push close
-to the whole prefix length `2^{S−1}`.  The capacity pigeonhole avoids the
-sum entirely: it throws away every checkpoint but the longest one, at a
-cost of a constant factor (empirically the bound of step 1 is about
-`0.20·H(2^{S−1},S)`, stable in `S`), which the exponential rate does not
-see.  So the left endpoint closes with the top row only.
+i.e. `D_S(x) = S + Σ_{i≤S} C_i(⌊x/2⌋)` — is **not** used here, and the
+row family is still not connected to it.
+
+That is a choice of cost, not a repair.  The manuscript's route through
+`D_S` is sound: the dispersion bound `C_i(v) ≤ M v^q λ^i` is geometric
+in `i`, so `Σ_{i≤S} C_i(x_S/2) = O(2^{qS(λ + log₂ρ)}) = o(2^S)` whenever
+`λ < 1/q − log₂ρ`, and `H(2^{S−1},S) ≥ (2^{S−1} − D_S(x_S))·x_S` then
+gives the same exponent — with a *better* constant than the route taken
+here (measured outside Lean: about `0.45·H(2^{S−1},S)` against `0.20`).
+What that route additionally needs is the identification of the marginal
+stream of `H` with the sorted multiset union of the marginal streams of
+`F(·,i)` for the actual row family, i.e. the discrete-convex infimal
+convolution step; that is the expensive missing piece, and none of it is
+in Lean.
+
+The capacity pigeonhole sidesteps the identification entirely: it throws
+away every checkpoint but the longest one, so only the top row is ever
+mentioned, and the constant-factor loss is invisible to the exponential
+rate.
 
 Nor is the right endpoint `RateTransfer.gameT_full` needed for the lower
 half; it enters only through the upper half, via `sumF_le_two_mul`.
