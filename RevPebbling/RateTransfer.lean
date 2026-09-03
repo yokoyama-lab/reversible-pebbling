@@ -17,8 +17,12 @@ minimal-space interval.  This file builds the part of that step which is
 independent of the dispersion machinery:
 
 * `Smin n` — the minimal feasible pebble budget of a complete
-  computation on `n` cells, and `Smin_eq_iff` / `Smin_interval`, which
-  say that `Smin` is constant on `2^(S-1) ≤ n ≤ 2^S - 1`;
+  computation on `n` cells, characterised by `Smin_spec`: `n ≤ 2^(Smin n) - 1`,
+  and `Smin n ≤ S` for every feasible `S`.  (An earlier version of this
+  docstring named `Smin_eq_iff` / `Smin_interval` here.  **No such
+  theorems exist**; what the transfer actually uses is `Smin_spec`
+  together with `RateTransferLow.two_pow_Smin_sub_one_le`, which pins
+  `n` into `2^(Smin n - 1) ≤ n ≤ 2^(Smin n) - 1`.)
 * `gameT_mono_len` — `T` is nondecreasing in the chain length at a fixed
   budget, so the two endpoints of a minimal-space interval sandwich
   every `n` inside it.
@@ -26,12 +30,14 @@ independent of the dispersion machinery:
 ## STATUS
 
 **This file does not prove the transfer.**  What it supplies is the
-sandwich; what is still missing is the growth of `T` at the two
-endpoints, and in particular the lower bound at the left endpoint
-`n = 2^(S-1)`, which is the step that genuinely needs the min-plus
-recurrence (`HalfReachRecurrence.halfReach_iff_decomposition`) and the
-marginal merge (`HalfReachMerge.halfMarginals_countLe`).  Nothing here
-should be read as certifying the asymptotics.
+sandwich and the right endpoint.  What was missing when it was written —
+the growth of `T` at the *left* endpoint `n = 2^(S-1)` — was supplied on
+2026-09-03 by `RateTransferLow.tendsto_log_gameT_Smin`, which does need
+the min-plus recurrence (`HalfReachRecurrence.halfReach_iff_decomposition`)
+but, contrary to what this paragraph first said, does **not** use the
+marginal merge (`HalfReachMerge.halfMarginals_countLe`): it goes through
+a capacity pigeonhole instead.  Nothing in *this* file should be read as
+certifying the asymptotics.
 -/
 
 namespace RevPebbling.RateTransfer

@@ -46,8 +46,8 @@ supplies it and closes the transfer
 
 The merge machinery of `HalfReachMerge` — the marginal list
 `halfMarginals` and the threshold identity `halfMarginals_countLe`,
-i.e. `D_S(x) = S + Σ_{i≤S} C_i(⌊x/2⌋)` — is **not** used here, and the
-row family is still not connected to it.
+i.e. `D_S(x) = S + Σ_{i≤S} C_i(⌊x/2⌋)` — is **not** used here, and in
+this build the row family is not connected to it.
 
 That is a choice of cost, not a repair.  The manuscript's route through
 `D_S` is sound: the dispersion bound `C_i(v) ≤ M v^q λ^i` is geometric
@@ -58,8 +58,19 @@ here (measured outside Lean: about `0.45·H(2^{S−1},S)` against `0.20`).
 What that route additionally needs is the identification of the marginal
 stream of `H` with the sorted multiset union of the marginal streams of
 `F(·,i)` for the actual row family, i.e. the discrete-convex infimal
-convolution step; that is the expensive missing piece, and none of it is
-in Lean.
+convolution step.
+
+⚠ **Correction (2026-09-03, superseding the first version of this
+paragraph.)**  That step was called "the expensive missing piece" here.
+It was not expensive: the discrete-convex content was already in the
+repository in general form, as
+`DifferenceMergeProperty.merged_prefix_is_min_split`, and the weights
+were already on `RowExact.gameF_eq_row`.  It was closed the same day, on
+the separate branch `half-reach-merge` (module `HalfReachQuantile`,
+which is *not* part of this build), and the measured constant there
+beats the pigeonhole by about 2.6×.  So the sentence below is a
+statement about *this file*, not about what is formalisable: the
+pigeonhole was the cheaper thing to write, not the only thing available.
 
 The capacity pigeonhole sidesteps the identification entirely: it throws
 away every checkpoint but the longest one, so only the top row is ever
