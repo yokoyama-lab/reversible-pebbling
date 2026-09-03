@@ -7,7 +7,11 @@
 **したがって B2（証明埋め）のセッションは、この段については不要である。**
 
 ⚠ 骨格を歪めていないことの確認: 補題の分割・仮定・名前は「先に設計した形」のままで、
-証明を通すために言明を弱めた箇所はない。弱めていたら壊れることを変異 M6・M8 で実測した（後述）。
+証明を通すために言明を弱めた箇所はない。弱めていたら壊れることを変異 M6・M8・M9 で実測した（後述）。
+
+**追記（同セッション・第 2 依頼「進めて」= 次の一手 2 番）**: 最小空間区間の系を追加した。
+原稿の「uniformly for `S = S^T_min(n)`」に対応する `gameT_Smin` と、その前提である
+`Smin` の区間性 `Smin_eq_iff` を証明した（§9）。ファイルは 563 → 659 行、`#print axioms` は 10 → 14 本。
 
 ---
 
@@ -83,6 +87,12 @@ def halfCost (S n : Nat) : Nat := ((halfMarginals (rowsDownFrom S)).take n).sum
 - **`countLe_halfMarginals_eq_dCount (S x) (1 ≤ x) : countLe (halfMarginals (rowsDownFrom S)) x = dCount S x`**
   ＝ 原稿の (4)。`HalfReachMerge.halfMarginals_countLe`（仮定 `(hx : 1 ≤ x)`）を `rowsDownFrom` で具体化したもの。
 
+**§9 最小空間区間（第 2 依頼で追加）**
+- `Smin_eq_iff {n S} (1 ≤ n) (1 ≤ S) : Smin n = S ↔ 2^(S−1) ≤ n ∧ n ≤ 2^S − 1`
+- `gameH_Smin (n) (1 ≤ n) : gameH n (Smin n) = halfCost (Smin n) n`
+- **`gameT_Smin (n) (1 ≤ n) : gameT n (Smin n) = 2 * halfCost (Smin n) n`**
+- `gameT_of_interval {n S} (1 ≤ n) (1 ≤ S) (2^(S−1) ≤ n) (n ≤ 2^S − 1) : Smin n = S ∧ gameT n S = 2 * halfCost S n`
+
 ### `sorry` の一覧
 
 **なし（0 本）。** 骨格として `sorry` を置く予定だったのは次の 2 本で、両方とも埋まった:
@@ -109,11 +119,15 @@ halfCost_le_of_halfReachIn : ∀ (S : ℕ) {n t : ℕ},
 gameF_eq_Fcost : ∀ (S m : ℕ), 1 ≤ S → 1 ≤ m → m ≤ 2 ^ (S - 1) →
   RevPebbling.GameCost.gameF m S = Fcost (rowOf S) m
 halfCost_full : ∀ (S : ℕ), halfCost S (2 ^ S - 1) = RevPebbling.RateTransfer.sumF S
+Smin_eq_iff : ∀ {n S : ℕ}, 1 ≤ n → 1 ≤ S →
+  (RevPebbling.RateTransfer.Smin n = S ↔ 2 ^ (S - 1) ≤ n ∧ n ≤ 2 ^ S - 1)
+gameT_Smin : ∀ (n : ℕ), 1 ≤ n →
+  gameT n (RevPebbling.RateTransfer.Smin n) = 2 * halfCost (RevPebbling.RateTransfer.Smin n) n
 countLe_halfMarginals_eq_dCount : ∀ (S x : ℕ), 1 ≤ x →
   countLe (halfMarginals (rowsDownFrom S)) x = dCount S x
 ```
 
-`#print axioms`（ファイル末尾に常設。10 本すべて）:
+`#print axioms`（ファイル末尾に常設。14 本すべて）:
 
 ```
 gameF_eq_Fcost              : [propext, Classical.choice, Quot.sound]
@@ -124,9 +138,15 @@ halfReachIn_halfCost        : [propext, Classical.choice, Quot.sound]
 halfCost_le_of_halfReachIn  : [propext, Classical.choice, Quot.sound]
 gameH_eq_halfCost           : [propext, Classical.choice, Quot.sound]
 gameT_eq_two_mul_halfCost   : [propext, Classical.choice, Quot.sound]
+Smin_eq_iff                 : [propext, Classical.choice, Quot.sound]
+gameH_Smin                  : [propext, Classical.choice, Quot.sound]
+gameT_Smin                  : [propext, Classical.choice, Quot.sound]
+gameT_of_interval           : [propext, Classical.choice, Quot.sound]
 countLe_halfMarginals       : [propext, Classical.choice, Quot.sound]
 countLe_halfMarginals_eq_dCount : [propext, Classical.choice, Quot.sound]
 ```
+
+（`#print axioms` は 14 本。上は実測の全文。）
 
 **`sorryAx` は出ない。`Lean.ofReduceBool` も出ない**（`native_decide` は使っていない）。
 `sorryAx` が出るのは変異注入したときだけで、実際に出た（§6）。
@@ -138,20 +158,24 @@ countLe_halfMarginals_eq_dCount : [propext, Classical.choice, Quot.sound]
 | 実行 | jobs | 所要 | 最大メモリ |
 |---|---|---|---|
 | 起点（新ファイル前、`18175bb`） | 3487 | 0h00m28s | 294 MB |
-| 新ファイル追加後・olean 削除して再ビルド | **3488** | **0h00m33s** | **711 MB** |
-| 単体 `lake env lean RevPebbling/HalfReachQuantile.lean` | — | 約 4s | 456–470 MB |
+| 新ファイル ＋ `RevPebbling.lean` 変更後（ルートも再 elaborate） | 3488 | 0h01m56s | 2582 MB |
+| 最終版・olean 削除して再ビルド（3487 replay ＋ 1 compile） | **3488** | 0h00m15s 〜 **0h01m49s** | 579 〜 **3107 MB** |
+| 単体 `lake env lean RevPebbling/HalfReachQuantile.lean` | — | 約 4s | 431–470 MB |
 
 すべて `runcap -m 12 -t 3600 -- nice -n 19 …`（`lean-lowend` の資源指示に従い `-m 40` → `-m 12`）。
 
 **成果物の実在とタイムスタンプ**（`verify-build` の §1 に従い、終了コードでなく成果物で確認）:
 
 ```
-ビルド開始 (UTC)  2026-09-03T06:21:58Z
--rw-rw-r-- 1 a a 693408 2026-09-03 15:22:28.019741451 +0900
+ビルド開始 (UTC)  2026-09-03T06:46:56Z
+-rw-rw-r-- 1 a a 827352 2026-09-03 15:47:56.698312611 +0900
   .lake/build/lib/lean/RevPebbling/HalfReachQuantile.olean
 ```
 
-開始 30 秒後の生成。ビルド前に olean を明示的に削除しているので、
+開始 60 秒後の生成。所要とメモリの幅（15s/579MB 〜 1m49s/3107MB）は、ルートモジュール
+`RevPebbling.lean`（全モジュールを import する）の再 elaborate が入るかどうかと、
+共用機の同時負荷（別セッションが `-verify` で proof-gatekeeper を実行中）による。
+**上限 12 GB には到達していない**（`runcap` が実測を報告する）。ビルド前に olean を明示的に削除しているので、
 前回の残骸ではない。`Build completed successfully (3488 jobs).`
 
 ---
@@ -221,14 +245,18 @@ countLe_halfMarginals_eq_dCount : [propext, Classical.choice, Quot.sound]
 | M6 | `gameH_eq_halfCost` の仮定を `n ≤ 2^S` に弱める | ✔ 5 errors | `gameH_eq_halfCost` L459 |
 | M7 | `dCount` から基底項 `1 +` を落とす | ✔ 4 errors | `predictedCount_rowsDownFrom` L490 |
 | M8 | `halfCost_le_split` の仮定を `k ≤ 2^S` に弱める | ✔ 3 errors | `halfCost_le_split` L349 |
+| M9 | `Smin_eq_iff` の区間下端を `2^(S−2) ≤ n` に誤る | ✔ 3 errors | `Smin_eq_iff` L554 |
+| M10 | 区間アンカーの値を `[5,7,9,13]` → `[5,7,9,12]` に | ✔ 1 error | `decide` アンカー L592 |
 
-**検出率 8/8 = 100%。誤検出 0/1（対照は無警告で通る）。**
+**検出率 10/10 = 100%。誤検出 0/1（対照は無警告で通る）。**
 
 読み取れること:
-- **アンカーだけで捕まるのは 4/8**（M1・M3・M4・M5）。**M2・M6・M8 は証明でしか捕まらない。**
-  すなわち数値アンカーは行族の同定には効くが、`m = 0` の境界と仮定の強さには効かない。
-- **M6・M8 が落ちることが「骨格を歪めていない」ことの実測**である。
-  仮定 `n ≤ 2^S − 1` と `k ≤ 2^S − 1` はどちらも荷重を担っている。
+- **アンカーだけで捕まるのは 5/10**（M1・M3・M4・M5・M10）。
+  **M2・M6・M8・M9 は証明でしか捕まらない。**
+  すなわち数値アンカーは行族の同定と区間の値には効くが、`m = 0` の境界・仮定の強さ・
+  区間の端の位置には効かない。
+- **M6・M8・M9 が落ちることが「骨格を歪めていない」ことの実測**である。
+  仮定 `n ≤ 2^S − 1`・`k ≤ 2^S − 1`・区間下端 `2^(S−1)` はいずれも荷重を担っている。
 - M1・M3・M5 は `sorryAx` を 7〜8 本出す（後続が芋づるで壊れる）。M0 は 0 本。
 
 ---
@@ -242,7 +270,8 @@ countLe_halfMarginals_eq_dCount : [propext, Classical.choice, Quot.sound]
 | 1 時間反転 `T = 2H` | 既存（`HalfReach.gameT_eq_two_mul_gameH`） |
 | 2 min-plus 漸化式 (H) | 既存（`HalfReachRecurrence.halfReach_iff_decomposition`） |
 | **3 `B_S` は `A_i` の整列多重集合和 → 閾値計数 (4)** | **本ファイルで閉じた**（`gameH_eq_halfCost` ＋ `countLe_halfMarginals_eq_dCount`） |
-| 4 dispersion 上界を (4) に当てて下界 | 既存（`DispersionReal.dispersion_real` ほか）だが **(4) 経由では未接続**（§8） |
+| 4 dispersion 上界を (4) に当てて下界 | 既存（`DispersionReal.dispersion_real` ほか）だが **(4) 経由では未接続**（§10 の 1） |
+| 結び「Monotonicity sandwiches every `2^{S−1} ≤ n ≤ 2^S − 1`」 | **挟み撃ちが不要になった**。`gameT_Smin` が区間内の全ての `n` で `T` の**正確な値**を与える（§9）。`RateTransfer.gameT_mono_len` による sandwich は、増大率の議論には引き続き使えるが、値を出すのにはもう要らない |
 
 **なぜ「高価な欠落」ではなかったか**: 原稿が離散凸性の議論として書いている内容は、
 リポジトリでは `merged_prefix_is_min_split`（任意の非減少リストに対する交換定理）として
@@ -259,13 +288,13 @@ countLe_halfMarginals_eq_dCount : [propext, Classical.choice, Quot.sound]
    `dCount S x` と dispersion の `C_i(v)`（`countLe (rowIter (i−2)) v`）を結ぶ補題も無い。
    **指数そのものは `RateTransferLow` が別経路（容量ピジョンホール）で既に取っている**ので、
    ここで得られるのは指数ではなく**定数**（外部実測で約 0.45 対 0.20）である。
-2. **`Smin` との組み合わせ（原稿の「uniformly for `S = S^T_min(n)`」）は書いていない。**
-   `RateTransfer.Smin_spec` と `gameT_eq_two_mul_halfCost` を繋げば区間内の全 `n` の
-   閉形式になるが、その系は置いていない。
-   ⚠ **食い違いの報告**: `RateTransfer.lean` の docstring は `Smin_eq_iff` / `Smin_interval`
-   という名前を挙げているが、**そのファイルに実在するのは `Smin`・`completeIn_Smin`・
-   `Smin_le`・`Smin_spec` の 4 本だけで、その 2 つの名前は存在しない**（`grep` で実測）。
-   黙って直さず報告する。既存ファイルなので触っていない。
+2. ~~`Smin` との組み合わせは書いていない~~ → **第 2 依頼で解消**（§9）。
+   `Smin_eq_iff` で区間性を証明し、`gameT_Smin` / `gameT_of_interval` を置いた。
+   ⚠ **食い違いの報告（未解消）**: `RateTransfer.lean` の docstring は `Smin_eq_iff` /
+   `Smin_interval` という名前を挙げているが、**そのファイルに実在するのは `Smin`・
+   `completeIn_Smin`・`Smin_le`・`Smin_spec` の 4 本だけで、その 2 つの名前は存在しない**
+   （`grep` で実測）。本ファイルの `HalfReachQuantile.Smin_eq_iff` は**同名だが別物**
+   （`RateTransfer` 側には無い）。既存ファイルは触らない指示なので docstring は直していない。
 3. **`halfCost` の計算量については何も主張していない。** カーネルの `decide` が通ったのは
    `S ≤ 7`（右端・左端・長さのアンカー）と、全値の列挙は `S ≤ 5` まで。`S = 8` の値
    （`2264` / `546`）は Lean の外（`#eval` と Python）でしか確認していない。

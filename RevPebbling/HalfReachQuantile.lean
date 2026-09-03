@@ -17,6 +17,13 @@ where `A_i(j) = F(j,i) − F(j−1,i)`.  This is the discrete-convex infimal
 convolution step of the manuscript, step (3) of `thm:complete`, and it is
 the one step of that proof that has no Lean counterpart.
 
+Two things follow at once.  The manuscript's threshold count (4),
+`D_S(x) = S + Σ_{i=2}^S C_i(⌊x/2⌋)`, becomes a statement about `H` rather
+than about a list (`countLe_halfMarginals_eq_dCount`).  And the closing
+sentence of `thm:complete` — "monotonicity sandwiches every
+`2^{S−1} ≤ n ≤ 2^S − 1`" — no longer needs the sandwich: `gameT_Smin`
+gives the exact value of `T(n, S^T_min(n))` at every `n`.
+
 ## Status (2026-09-03)
 
 **Unconditional: no `sorry`, and every theorem here depends on `propext`,
@@ -471,6 +478,10 @@ theorem gameT_eq_two_mul_halfCost (S n : Nat) (hn1 : 1 ≤ n) (hn : n ≤ 2 ^ S 
   rw [RevPebbling.HalfReach.gameT_eq_two_mul_gameH hcomp, ← gameH_bridge_eq hn1,
     gameH_eq_halfCost S n hn]
 
+-- ==================================================================
+-- 8.  The threshold count (4) of the manuscript
+-- ==================================================================
+
 /-- `HalfReachMerge.halfMarginals_countLe` counts the entries of the merged
 stream for an arbitrary list of rows; with `rowsDownFrom` in its place the
 count is about `H`. -/
@@ -516,7 +527,88 @@ example : (List.range' 1 10).map (dCount 5)
     = [5, 15, 15, 25, 25, 28, 28, 30, 30, 31] := by decide
 
 -- ==================================================================
--- 8.  Cross-checks against the routes that already existed
+-- 9.  The minimal-space interval: the manuscript's "uniformly"
+-- ==================================================================
+
+/-! The manuscript states `thm:complete` *uniformly for* `S = S^T_min(n)`.
+`RateTransfer.Smin` is that budget; what makes "uniformly" a statement
+about an interval is that `Smin` is constant on `2^{S−1} ≤ n ≤ 2^S − 1`.
+
+(`RateTransfer`'s module docstring advertises `Smin_eq_iff` and
+`Smin_interval`; neither name exists in that file — what is there is
+`Smin`, `completeIn_Smin`, `Smin_le` and `Smin_spec`.  The interval
+statement is proved here instead, from `Smin_spec`.) -/
+
+/-- **`Smin` IS THE INTERVAL INDEX.**  For a nonempty chain and a positive
+budget, `S^T_min(n) = S` exactly on the minimal-space interval
+`2^{S−1} ≤ n ≤ 2^S − 1`.  Both bounds are needed: the upper one says `S`
+suffices, the lower one says `S − 1` does not. -/
+theorem Smin_eq_iff {n S : Nat} (hn : 1 ≤ n) (hS : 1 ≤ S) :
+    Smin n = S ↔ 2 ^ (S - 1) ≤ n ∧ n ≤ 2 ^ S - 1 := by
+  obtain ⟨hup, hmin⟩ := Smin_spec hn
+  constructor
+  · rintro rfl
+    refine ⟨?_, hup⟩
+    rcases Nat.lt_or_ge n (2 ^ (Smin n - 1)) with hlt | hge
+    · -- one level down would already suffice, contradicting minimality
+      obtain ⟨j, hj⟩ : ∃ j, Smin n = j + 1 := ⟨Smin n - 1, by omega⟩
+      rcases Nat.eq_zero_or_pos j with rfl | hj1
+      · -- `Smin n = 1`: the lower bound is `2^0 = 1`, which is `hn`
+        have : (2 : Nat) ^ (Smin n - 1) = 1 := by rw [hj]; rfl
+        omega
+      · have hle : n ≤ 2 ^ j - 1 := by
+          have : Smin n - 1 = j := by omega
+          rw [this] at hlt
+          omega
+        have := hmin j hj1 hle
+        omega
+    · exact hge
+  · rintro ⟨hlo, hhi⟩
+    have hle : Smin n ≤ S := hmin S hS hhi
+    by_contra hne
+    -- `Smin n < S`, so `2^(Smin n) ≤ 2^(S-1)` and `n` cannot reach `2^(S-1)`
+    have hlt : Smin n ≤ S - 1 := by omega
+    have hpow : (2 : Nat) ^ Smin n ≤ 2 ^ (S - 1) :=
+      Nat.pow_le_pow_right (by omega) hlt
+    have hone : (1 : Nat) ≤ 2 ^ (S - 1) := Nat.one_le_two_pow
+    omega
+
+/-- **THE CLOSED FORM AT THE MINIMAL BUDGET, half-reach level.** -/
+theorem gameH_Smin (n : Nat) (hn : 1 ≤ n) :
+    gameH n (Smin n) = halfCost (Smin n) n :=
+  gameH_eq_halfCost (Smin n) n (Smin_spec hn).1
+
+/-- **THE CLOSED FORM AT THE MINIMAL BUDGET.**  `T(n, S^T_min(n))` is
+twice the sum of the `n` smallest entries of the merged marginal stream.
+This is `thm:complete`'s object: no sandwich, no endpoint — the exact
+value, at every `n`. -/
+theorem gameT_Smin (n : Nat) (hn : 1 ≤ n) :
+    gameT n (Smin n) = 2 * halfCost (Smin n) n :=
+  gameT_eq_two_mul_halfCost (Smin n) n hn (Smin_spec hn).1
+
+/-- **THE SAME, READ OFF AN INTERVAL.**  Given only that `n` lies in the
+minimal-space interval of `S`, both the budget and the cost are pinned. -/
+theorem gameT_of_interval {n S : Nat} (hn : 1 ≤ n) (hS : 1 ≤ S)
+    (hlo : 2 ^ (S - 1) ≤ n) (hhi : n ≤ 2 ^ S - 1) :
+    Smin n = S ∧ gameT n S = 2 * halfCost S n := by
+  have hEq : Smin n = S := (Smin_eq_iff hn hS).mpr ⟨hlo, hhi⟩
+  exact ⟨hEq, gameT_eq_two_mul_halfCost S n hn hhi⟩
+
+set_option maxRecDepth 8000 in
+unseal RevPebbling.DifferenceMergeProperty.smerge in
+/-- The three-pebble interval `4 ≤ n ≤ 7` in full: `H = 5, 7, 9, 13` and
+so `T = 10, 14, 18, 26`.  The right endpoint `13 = sumF 3` is
+`RateTransfer.gameH_full`; the other three are values no endpoint theorem
+reaches. -/
+example : (List.range' 4 4).map (halfCost 3) = [5, 7, 9, 13] := by decide
+
+/-- The interval statement instantiated: at `n = 5` the minimal budget is
+`3` and the complete computation costs `14` moves. -/
+example : Smin 5 = 3 ∧ gameT 5 3 = 2 * halfCost 3 5 :=
+  gameT_of_interval (n := 5) (S := 3) (by omega) (by omega) (by omega) (by omega)
+
+-- ==================================================================
+-- 10.  Cross-checks against the routes that already existed
 -- ==================================================================
 
 /-- **THE RIGHT ENDPOINT, RE-DERIVED.**  `RateTransfer.gameH_full` proves
@@ -546,7 +638,7 @@ example : gameT 4 3 = 10 := by
   decide
 
 -- ==================================================================
--- 9.  Axiom audit
+-- 11.  Axiom audit
 -- ==================================================================
 
 #print axioms gameF_eq_Fcost
@@ -557,6 +649,10 @@ example : gameT 4 3 = 10 := by
 #print axioms halfCost_le_of_halfReachIn
 #print axioms gameH_eq_halfCost
 #print axioms gameT_eq_two_mul_halfCost
+#print axioms Smin_eq_iff
+#print axioms gameH_Smin
+#print axioms gameT_Smin
+#print axioms gameT_of_interval
 #print axioms countLe_halfMarginals
 #print axioms countLe_halfMarginals_eq_dCount
 
