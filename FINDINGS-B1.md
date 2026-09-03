@@ -310,3 +310,130 @@ countLe_halfMarginals_eq_dCount : [propext, Classical.choice, Quot.sound]
 7. **`decide` アンカーの `unseal` は elaboration の可約性のみを変える**と `#print axioms` で
    確認したが、`unseal` 自体の健全性を独立に検証したわけではない（Lean の仕様に依存している）。
 8. push していない。外部（Notion / Slack / Drive）へは何も書いていない。
+
+---
+
+# 追記 2（第 3 依頼「3 → 1」）
+
+## #3 — `proof-manifest.json` の再生成（CI を緑に）
+
+**指示の上書きについて**: REQUEST.md と `lean-lowend` からの連絡はどちらも
+「manifest に触るな」だった。その根拠（「成果物が `sorry` を含むので生成器が
+proof holes で落ちる」）は成立しないので（`sorry` は 0 本）、**ユーザーの明示指示で上書きした。**
+生成器 `scripts/build_proof_manifest.py`・`README.md`・`registry/` には触っていない。
+
+**実測でわかったこと: manifest は本作業より前から古かった。** committed manifest の最後の
+再生成は `c677869` で、それ以降に入った**次の 11 ファイルが `source_sha256` に無かった**:
+
+```
+CapZone, HalfReachBridge, HalfReachMerge, HalfReachRecurrence, NearFull,
+RateTransfer, RateTransferLow, RetentionPremium, ShapeMonotone, TieBand, XLift
+```
+
+いずれも `18175bb` に実在する（`git ls-tree` で確認）。加えて 12 ファイルのハッシュが古かった。
+**つまりこのブランチの CI は、私が新ファイルを置く前から `git diff --exit-code` で落ちていた。**
+
+再生成の結果（`git show HEAD^:proof-manifest.json` との構造比較）:
+
+| | |
+|---|---|
+| 追加されたファイル | 12（上の 11 ＋ `HalfReachQuantile.lean`） |
+| **削除されたファイル** | **0** |
+| ハッシュが変わったファイル | 12 |
+| トップレベルのキー構成 | 不変 |
+| ステージ数 / 定理数 | **67 / 861 で不変** → README の数値は動かない |
+
+**CI をローカルで再現した実測**（3 段すべて）:
+
+```
+python3 scripts/build_proof_manifest.py      rc=0
+git diff --exit-code proof-manifest.json     rc=0   ← 2 回回して同一（決定的）
+python3 scripts/check_claims.py              claims OK (1 document(s) checked)
+```
+
+⚠ **残る穴**: `HalfReachQuantile` / `HalfReachDispersion` の定理は**どのステージにも
+載っていない**ので、manifest の公理監査（`#print axioms` を回す部分）の対象外である
+（ソースのハッシュには入っている）。ステージを足すとステージ数 67→68・定理数 861→+k が動き、
+**README の 3 箇所**（`861 theorems` ×2、`67 stages`）の更新を伴う。README は
+触るなという指示のままなので、そこは止めてある。各ファイル末尾の `#print axioms` は
+自前で常設してあり、実測結果は下に載せた。
+
+## #1 — 原稿 (4) の道で左端の下界（`RevPebbling/HalfReachDispersion.lean`、新規 252 行）
+
+**測る前に書いた「終わったら何が言えるか」**: (4) の道が Lean で閉じれば、
+`RateTransferLow` の容量ピジョンホールと**同じ量の下界**が 2 本並ぶので、
+同じ `S` で値を比べられる。**指数は変わらない**（両方とも同じ基底 `2·(2/λ)^{1/q}`）ので、
+出るのは定数の比だけである。比が 1 以下なら (4) の道に利点は無い、という片側の結論も
+ありうる。
+
+### 定理（すべて無条件・`sorry` なし）
+
+**§1 組合せの核（Nat 水準）**
+- `halfCost_ge_of_dCount (S n x) (1 ≤ x) (n ≤ 2^S − 1) : (n − dCount S x) * (x + 1) ≤ halfCost S n`
+- `gameH_ge_of_dCount` — 同じことを `gameH` について
+- `gameH_left_ge_of_dCount (S x) (1 ≤ x) (2 ≤ S) (dCount S x ≤ 2^(S−2)) : 2^(S−2) * (x+1) ≤ gameH (2^(S−1)) S`
+
+  ピジョンホールの道は同じ形で `2^(S−3)` になる（1 行を残して他を捨てるため）。
+  **この 2 のべきの差が 2 つの道の違いのすべてで、指数は同じ。**
+
+**§2 dispersion との接続（実数）**
+- `one_lt_lam` — `hstep` の左辺に `1/M > 0` があるので `1 < lam` が従う（幾何級数の可算性）
+- `dCount_le_geom : (dCount S x : ℝ) ≤ S + Phi M q (x/2) * Σ_{j<S} lam^j`
+  ← `DispersionReal.dispersion_real`（常設仮定を逐語で:
+  `(hM : 1 ≤ M) (hq : 0 ≤ q) (hlam : 1 ≤ lam) (hth0 : 0 ≤ th) (hth1 : th < 1)`
+  `(hstep : 1 / M + 1 + max (lam * th ^ q) ((1 - th) ^ q) ≤ lam)`、結論
+  `∀ s v, (countLe (rowIter s) v : ℝ) ≤ Phi M q v * lam ^ s`）を**水準ごとに**当てる
+- `geom_range_le : 1 < lam → Σ_{j<S} lam^j ≤ lam^S / (lam − 1)`
+- **`dCount_le_dispersion : (dCount S x : ℝ) ≤ S + M·(x/2)^q · lam^S/(lam − 1)`**
+  ＝ 原稿が `D_S(x_S) = o(2^S)` と言うときの不等式。`S` について幾何的。
+
+**§3 組み立て**
+- `gameH_left_ge_of_dispersion` — 解析側の小ささ条件
+  `S + Phi M q (x/2) · lam^S/(lam−1) ≤ 2^(S−2)` を、あらゆる水準を数えた組合せ下界に変える
+
+**§4 2 つの道を証人の上で並べる**
+- `dCount_five_one : dCount 5 1 = 5`（`decide`）
+- `gameH_sixteen_five_ge : 22 ≤ gameH (2^4) 5` — (4) の道
+- `pigeonhole_five : Fpre (rowIter 3) (2^2+1) = 9`（`decide`）— ピジョンホールの道
+- 真値は `halfCost 5 (2^4) = 29`（`decide`）
+
+### 定数の実測（前工程の「0.45 対 0.20」の検算）
+
+`S = 4…14` で、左端 `H(2^{S−1},S)` に対する各下界の比（Lean の `#eval` で算出）:
+
+| S | 真値 `H` | (4) の道 `(x+1)` | (4) の道 `·x`（原稿の形） | ピジョンホール |
+|---:|---:|---:|---:|---:|
+| 8 | 546 | 276 (0.505) | 184 (0.337) | 123 (0.225) |
+| 10 | 3678 | 2163 (0.588) | 1854 (0.504) | 813 (0.221) |
+| 12 | 25324 | 13980 (0.552) | 13048 (0.515) | 5665 (0.224) |
+| 14 | 176132 | 92085 (0.523) | 85946 (0.488) | 37665 (0.214) |
+
+**`S = 10…14` の平均: (4) の道 `(x+1)` = 0.554、`·x`（原稿の形）= 0.500、
+ピジョンホール = 0.216。**
+
+- 前工程の docstring が言う「約 0.45 対 0.20」は**再現した**（原稿の `·x` の形で 0.500、
+  ピジョンホールで 0.216）。0.45 はやや控えめな見積りだった。
+- Lean で証明した形は `·(x+1)` なので **0.554**。**改善は約 2.6 倍。**
+- **指数は変わらない**（`gameH_left_ge_of_dispersion` の基底は
+  `RateTransferLow.gameH_left_ge` と同じ）。出たのは定数だけ、という当初の予告どおり。
+
+### 実測（#1）
+
+- `lake build` **3489 jobs** 成功。olean: `.lake/build/lib/lean/RevPebbling/HalfReachDispersion.olean`
+  455088 B、ビルド開始 `2026-09-03T07:04:04Z` → `2026-09-03 16:04:11 JST` 生成（削除後の再生成）。
+- `#print axioms` 9 本すべて `[propext, Classical.choice, Quot.sound]`。`sorry`/`admit` は 0。
+- **変異注入 6/6 検出・誤検出 0**（対照つき、リポジトリ外のコピーのみ）:
+  N1 `(x+1)`→`(x+2)` の過大主張、N2 結論の `2^(S−2)`→`2^(S−1)`、N3 `dCount_le_geom` から
+  `S +` を落とす、N4 `one_lt_lam` を `2 < lam` に、N5 アンカー `dCount 5 1 = 6`、
+  N6 幾何級数の分母を `lam` に。
+
+### #1 でまだやっていないこと
+
+- **`x = x_S` を選ぶ最終の漸近段は書いていない。** `gameH_left_ge_of_dispersion` は
+  「解析側の小ささ条件 ⇒ 組合せ下界」までで、`x_S = ⌊2^{λS}⌋` を代入して
+  `2^{(1+λ)S+o(S)}` を出す rpow の計算（`RateTransferLow.gameH_left_ge` が
+  ピジョンホールの道でやっていること）は書いていない。
+  **指数は `RateTransferLow` が既に取っているので、これは定数のための作業である。**
+- したがって「(4) の道で `c` の下界が出る」とは**書いていない**。出しているのは
+  各 `S` での下界と、その定数の実測比だけである。
+- 定数比 0.554 / 0.216 は `S ≤ 14` の実測であり、`S → ∞` の主張ではない。

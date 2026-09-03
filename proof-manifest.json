@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "2d349a4860d29cc7fd93cbef6b7fcdc90f255104b47b1b95e152f225b4af5cfd",
+ "proof_bundle_sha256": "44525087f5ccb8fd6fabc2057b3f978429a4a9e81c2151882f370cc36184e59e",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -84,6 +84,7 @@
   "RevPebbling/GrowthRate.lean": "4e63c74cec74165853845a2afca25e6a076902aa79b1fcbf0c15f2337afd0988",
   "RevPebbling/HalfReach.lean": "f20f164dcd5be9b2df3b0c54169eb9e499394623b7c9207debbca7610a022f27",
   "RevPebbling/HalfReachBridge.lean": "a4a3bc665202eb45a461c567ae7cabf40e43f144c9e4f782747918caa539ac4c",
+  "RevPebbling/HalfReachDispersion.lean": "e99379e7633414184f5e88cdda6fbf4e535c73432a6096e39caaea64a99f51b8",
   "RevPebbling/HalfReachMerge.lean": "00156afaca2562c6be006582944bbac28737022dc5251fd201ad2f2b0e2a29a1",
   "RevPebbling/HalfReachQuantile.lean": "a3ae2b685a2b2dbca2cff5b0add101c9354d33f74842f4890aa84bcab42e8581",
   "RevPebbling/HalfReachRecurrence.lean": "e5358a919d740efd141ad2517c17e20161c96cd99a18d42c4478cd15addb5dd7",
@@ -139,7 +140,7 @@
   "RevPebbling/UpperPeak.lean": "37591d6656c8c53d6472f923e47a05d283b075e6f49790207714f1c42b57c760",
   "RevPebbling/UpperPersist.lean": "855b4864a05aecc37e945357e8418aab9fee6a31614725376212e7629d226a90",
   "RevPebbling/XLift.lean": "9a2a4c62855635292d2cf4f070063a45b0d28bf6c76f5684f7248f58a6051613",
-  "RevPebbling.lean": "5f96bf52108dd9768b4eb0686935c882437f48f9ba6804960c653125cd8d7421"
+  "RevPebbling.lean": "f9abe5aba1400994b4b48365d6320fe3b65fad47eb30d2ba7378eb9c60542136"
  },
  "hypotheses": {
   "GameAttain": {
