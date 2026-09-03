@@ -2894,6 +2894,127 @@ def main() -> int:
                     "RevPebbling.Shape.step_of_margin_lower",
                 ],
             },
+            "half_reach_optimum_and_recurrence": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work): the half-reach optimum H, "
+                          "the exact min-plus recurrence it satisfies, and "
+                          "the bridge to complete computations. HalfIn is "
+                          "ReachIn with the clean-up dropped - the far end is "
+                          "pebbled at some point and nothing is asked of the "
+                          "final board - and gameH is its optimum. "
+                          "gameT_eq_two_mul_gameH proves T(n,p) = 2 H(n,p) "
+                          "EXACTLY: gameT_le_two_mul_gameH appends the "
+                          "reverse of an optimal half-reach "
+                          "(completeInAt_of_halfIn, via halfIn_tight, which "
+                          "trims a half-reach so that it ENDS with the far "
+                          "end pebbled), and two_mul_gameH_le_gameT cuts an "
+                          "optimal complete computation at a time when the "
+                          "far end is pebbled and reads both pieces as "
+                          "half-reaches, the second played backwards. "
+                          "HalfReachRecurrence restates the predicate as "
+                          "HalfReachIn (with the boundary value H(0,S)=0) and "
+                          "proves BOTH directions of "
+                          "H(n,S) = min_m (F(m,S) + H(n-m,S-1)): "
+                          "halfReach_compose glues a clean checkpoint to a "
+                          "shifted smaller half-reach, halfReach_decompose "
+                          "cuts an arbitrary half-reach at the maximum, over "
+                          "its trace, of the leftmost pebbled cell (the lower "
+                          "prefix is a clean reach, the upper restriction a "
+                          "half-reach with one fewer pebble, and their move "
+                          "sets are disjoint), and halfReach_iff_decomposition "
+                          "packages the two. HalfReachBridge redoes the easy "
+                          "direction for HalfReachIn with no bounded search. "
+                          "gameF_succ_add_one_le_gameT records the direction "
+                          "the manuscript calls non-transferring: "
+                          "F(n,p+1) + 1 <= T(n,p). Every theorem here is in "
+                          "the import cone of "
+                          "RateTransferLow.tendsto_log_gameT_Smin, so the "
+                          "axiom verdict already reached them transitively; "
+                          "listing them makes that coverage visible by name. "
+                          "NOT done here: nothing in this stage identifies "
+                          "the marginal cost stream of H with the merged "
+                          "streams of the F(., i) - that is "
+                          "half_reach_marginal_merge, which is NOT used by "
+                          "any proof."),
+                "theorems": [
+                    "RevPebbling.HalfReach.gameH_le",
+                    "RevPebbling.HalfReach.halfIn_gameH",
+                    "RevPebbling.HalfReach.completeInAt_gameT",
+                    "RevPebbling.HalfReach.halfIn_tight",
+                    "RevPebbling.HalfReach.completeInAt_of_halfIn",
+                    "RevPebbling.HalfReach.two_mul_gameH_le_gameT",
+                    "RevPebbling.HalfReach.gameT_le_two_mul_gameH",
+                    "RevPebbling.HalfReach.gameT_eq_two_mul_gameH",
+                    "RevPebbling.HalfReach.nth_exec_of_not_mem",
+                    "RevPebbling.HalfReach.toggle_comm_ne",
+                    "RevPebbling.HalfReach.exec_toggle_add",
+                    "RevPebbling.HalfReach.legal_toggle_add",
+                    "RevPebbling.HalfReach.ones_toggle_le",
+                    "RevPebbling.HalfReach.maxOnes_toggle_add",
+                    "RevPebbling.HalfReach.split_first_occ",
+                    "RevPebbling.HalfReach.halfIn_split",
+                    "RevPebbling.HalfReach.reachIn_of_halfIn",
+                    "RevPebbling.HalfReach.gameF_succ_add_one_le_gameT",
+                    "RevPebbling.HalfReachRecurrence.HalfReachIn.zero",
+                    "RevPebbling.HalfReachRecurrence.HalfReachIn.mono",
+                    "RevPebbling.HalfReachRecurrence.halfReach_of_reach",
+                    "RevPebbling.HalfReachRecurrence.halfReach_mono_space",
+                    "RevPebbling.HalfReachRecurrence.halfReach_compose",
+                    "RevPebbling.HalfReachRecurrence.midX_attained_some",
+                    "RevPebbling.HalfReachRecurrence.halfReach_decompose",
+                    "RevPebbling.HalfReachRecurrence.halfReach_iff_decomposition",
+                    "RevPebbling.HalfReachBridge.gameH_le",
+                    "RevPebbling.HalfReachBridge.halfReachIn_gameH",
+                    "RevPebbling.HalfReachBridge.completeInAt_two_mul_of_halfReachIn",
+                    "RevPebbling.HalfReachBridge.gameT_le_two_mul_gameH",
+                ],
+            },
+            "half_reach_marginal_merge": {
+                "status": "proved_general_but_unused",
+                "scope": ("UNBOUNDED but DISCONNECTED (recorded 2026-09-03). "
+                          "This stage exists so that the manuscript's step "
+                          "(4) has an audited machine referent, and so that "
+                          "the limits of that referent are on the record. "
+                          "WHAT IS PROVED: two list-theoretic facts about a "
+                          "sorted multiset union. "
+                          "half_marginal_merge_is_min_convolution says the "
+                          "prefix sums of `smerge a b` realise the minimum "
+                          "over all splits (the marginal form of a min-plus "
+                          "convolution), and halfMarginals_countLe gives the "
+                          "exact threshold count "
+                          "countLe (halfMarginals rows) x = predictedCount rows x, "
+                          "i.e. D(x) = (number of rows) + sum over rows of "
+                          "count(. <= floor(x/2)). All four theorems rest on "
+                          "propext / Classical.choice / Quot.sound only. "
+                          "WHAT IS NOT PROVED, and this is the point: "
+                          "`rows` here is an ARBITRARY List (List Nat). "
+                          "Nothing connects halfMarginals to the actual row "
+                          "family CountRecursion.rowIter, and nothing "
+                          "connects predictedCount to the cost of a "
+                          "HalfReachIn play; the identification of the "
+                          "marginal stream of H with the merged marginal "
+                          "streams of the F(., i) - the discrete-convex "
+                          "infimal convolution step the manuscript's proof of "
+                          "thm:complete goes through - is NOT formalised. "
+                          "MEASURED, not asserted: HalfReachMerge is imported "
+                          "only by the root aggregator RevPebbling.lean, its "
+                          "three definitions (fullMarginals, halfMarginals, "
+                          "predictedCount) occur in no other source, and the "
+                          "module is NOT in the 99-module import cone of "
+                          "RateTransferLow.tendsto_log_gameT_Smin. So the "
+                          "transitive axiom verdict of the rate transfer does "
+                          "NOT reach these four theorems; this stage is the "
+                          "only thing that audits them. The rate transfer "
+                          "reaches the same exponent by a capacity "
+                          "pigeonhole that avoids the identification "
+                          "entirely (rate_transfer_left_endpoint)."),
+                "theorems": [
+                    "RevPebbling.HalfReachMerge.half_marginal_merge_is_min_convolution",
+                    "RevPebbling.HalfReachMerge.countLe_map_two_mul",
+                    "RevPebbling.HalfReachMerge.countLe_fullMarginals",
+                    "RevPebbling.HalfReachMerge.halfMarginals_countLe",
+                ],
+            },
             "rate_transfer_scaffold": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED (this work, 2026-09): the scaffold of the rate "
