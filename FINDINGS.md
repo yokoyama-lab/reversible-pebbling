@@ -230,8 +230,15 @@ theorem RevPebbling.RateTransferLow.tendsto_log_gameT_Smin :
 
 * **`main` の `proof-manifest.json` は壊れている。** `source_sha256` が **124 件**しかないのに
   ツリーには対象ファイルが **134** ある。つまり `build_proof_manifest.py` を回すと
-  `git diff --exit-code proof-manifest.json` が落ちる。**`main` の CI は現時点で赤。**
+  `git diff --exit-code proof-manifest.json` が落ちる。
   本ブランチ（`99a9706` で 135/135）はこれを直しており、merge はその修理も運ぶ。
+  ⚠ **訂正**: 私は最初これを「`main` の CI は赤」と書いたが、**過大だった**。
+  `gh run list --workflow build.yml` を見ると、**直近 14 回の `main` の run はすべて
+  `cancelled`**（2026-08-21 以降、push も schedule も）。**成功も失敗もしていない。**
+  原因の候補は 2 つ: `timeout-minutes: 90` に対して README が言う実測が約 2.25 時間、
+  および `concurrency.cancel-in-progress` が同じ `main` の run を互いに打ち切ること。
+  **つまり GitHub 側の CI はここしばらく何の信号も出していない**ので、
+  「manifest が古い」は**私が手元で回して確かめた事実**であり、CI が教えてくれたことではない。
 * **README の数値は `99a9706` の時点で既にずれていた**（`check_claims.py`:
   定理数 861 対 901、ステージ数 67 対 69）。merge 前に直した。
 
