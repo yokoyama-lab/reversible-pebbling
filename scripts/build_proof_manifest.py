@@ -2894,6 +2894,124 @@ def main() -> int:
                     "RevPebbling.Shape.step_of_margin_lower",
                 ],
             },
+            "rate_transfer_scaffold": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-09): the scaffold of the rate "
+                          "transfer for COMPLETE computations, and its right endpoint. "
+                          "gameT_mono_len: a complete computation restricts to any "
+                          "prefix of the chain at no extra cost "
+                          "(completeInAt_of_le_len), so T is nondecreasing in the chain "
+                          "length at a fixed budget and the two ends of a minimal-space "
+                          "interval sandwich every n inside it. Smin n = "
+                          "sInf {p | CompleteIn n p} is the minimal feasible budget and "
+                          "Smin_spec identifies it as the least S with n <= 2^S - 1, so "
+                          "Smin is constant on 2^{S-1} <= n <= 2^S - 1. THE HALF-REACH "
+                          "LIMIT: S pebbles half-reach at most 2^S - 1 cells "
+                          "(le_two_pow_sub_one_of_halfReachIn), one short of twice the "
+                          "clean limit 2^{S-1} - reading the clean limit into the "
+                          "half-reach case would be off by a factor of about two, which "
+                          "halfReachIn_three_two witnesses on the play [0,1,0,2]. THE "
+                          "RIGHT ENDPOINT: at n = 2^S - 1 the reach limits pin the split "
+                          "of the min-plus recurrence (H) to a single point, so both "
+                          "halves close (halfReachIn_full, sumF_le_of_halfReachIn) and "
+                          "H(2^S - 1, S) = sum_{i=1}^{S} f_i (gameH_full); time reversal "
+                          "then gives T(2^S - 1, S) = 2 sum_{i<=S} f_i (gameT_full). "
+                          "halfReachIn_iff_halfIn / gameH_bridge_eq identify the two "
+                          "half-reach predicates of the development (far end pebbled AT "
+                          "THE END versus AT SOME TIME) on nonempty chains. This stage "
+                          "does NOT prove the transfer: the growth at the LEFT endpoint "
+                          "n = 2^{S-1}, where the split is not pinned, is "
+                          "rate_transfer_left_endpoint."),
+                "theorems": [
+                    "RevPebbling.RateTransfer.emptyBoard_take",
+                    "RevPebbling.RateTransfer.completeInAt_of_le_len",
+                    "RevPebbling.RateTransfer.gameT_mono_len",
+                    "RevPebbling.RateTransfer.completeIn_Smin",
+                    "RevPebbling.RateTransfer.Smin_le",
+                    "RevPebbling.RateTransfer.Smin_spec",
+                    "RevPebbling.RateTransfer.eq_zero_of_halfReachIn_zero",
+                    "RevPebbling.RateTransfer.le_two_pow_sub_one_of_halfReachIn",
+                    "RevPebbling.RateTransfer.halfReachIn_three_two",
+                    "RevPebbling.RateTransfer.reachIn_fRow",
+                    "RevPebbling.RateTransfer.halfReachIn_full",
+                    "RevPebbling.RateTransfer.sumF_le_of_halfReachIn",
+                    "RevPebbling.RateTransfer.gameH_full",
+                    "RevPebbling.RateTransfer.halfReachIn_iff_halfIn",
+                    "RevPebbling.RateTransfer.gameH_bridge_eq",
+                    "RevPebbling.RateTransfer.gameT_full",
+                ],
+            },
+            "rate_transfer_left_endpoint": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-09-03): the transfer of the "
+                          "exponential rate to COMPLETE computations at the minimal "
+                          "budget, T(n, S_min(n)) = n^{log2 c + o(1)}, as a Tendsto "
+                          "statement about Real.log (gameT n (Smin n)) / Real.log n "
+                          "(tendsto_log_gameT_Smin). RateTransfer supplied the sandwich "
+                          "(gameT_mono_len) and the right endpoint "
+                          "(gameT_full: T(2^S - 1, S) = 2 sum_{i<=S} f_i); what was "
+                          "missing was the LOWER bound at the left endpoint "
+                          "n = 2^{S-1}, where the split of the min-plus recurrence (H) "
+                          "is not pinned to a single point. It is obtained by a CAPACITY "
+                          "PIGEONHOLE: unrolling (H) writes a half-reach as clean "
+                          "checkpoints m_S, ..., m_1 with m_i <= 2^{i-1}, so if every "
+                          "checkpoint were at most K the chain could only be "
+                          "cap S K = sum_i min(2^{i-1}, K) long; at K = 2^r, S = r+3, "
+                          "n = 2^{r+2} the capacity is 2^{r+2} - 1, exactly one short of "
+                          "the chain, so some checkpoint exceeds K and by itself costs "
+                          "F(K+1, .) (fpre_le_of_halfReachIn, fpre_le_gameH_left). Only "
+                          "the TOP row survives, and its prefix cost is bounded below by "
+                          "the threshold count (fpre_ge_of_countLe: "
+                          "F(k+1,S) >= 2 (k - C_S(v))(v+1)), so "
+                          "DispersionReal.dispersion_real applies unchanged and gives a "
+                          "geometric lower bound with the SAME base 2 (2/lam)^{1/q} that "
+                          "DispersionRealGrowth.c_ge_real gives to f_S itself "
+                          "(gameH_left_ge); the supremum of those bases is c by "
+                          "Final.c_eq_two_rpow_kappaStar (exists_admissible_gt). The "
+                          "upper half needs the right endpoint to collapse to f_S, which "
+                          "is sumF_le_two_mul (sum_{i<=S} f_i <= 2 f_S) from the fact "
+                          "that the row sum at least doubles at every level "
+                          "(rowIter_sum_double: 2 sum(row_s) + 1 <= sum(row_{s+1})). "
+                          "NOT done: the manuscript's own route through the marginal "
+                          "merge is NOT taken here - HalfReachMerge.halfMarginals is "
+                          "still not connected to the actual row family, i.e. the "
+                          "identification of the marginal stream of H with the sorted "
+                          "multiset union of the marginal streams of F(., i) (the "
+                          "discrete-convex infimal convolution) is not formalised. That "
+                          "route is sound and in fact gives a better constant (measured "
+                          "outside Lean: about 0.45 H(2^{S-1},S) against 0.20 here); the "
+                          "pigeonhole merely avoids having to formalise the "
+                          "identification. NOT done either: an effective version with an "
+                          "explicit error term - the o(1) is a Tendsto, and the passage "
+                          "to the supremum over the admissible parameters is "
+                          "non-constructive."),
+                "theorems": [
+                    "RevPebbling.RateTransferLow.cap_full",
+                    "RevPebbling.RateTransferLow.Fpre_antitone_chain",
+                    "RevPebbling.RateTransferLow.fpre_le_of_halfReachIn",
+                    "RevPebbling.RateTransferLow.fpre_le_gameH_left",
+                    "RevPebbling.RateTransferLow.sum_ge_of_countLe",
+                    "RevPebbling.RateTransferLow.sum_take_ge_of_countLe",
+                    "RevPebbling.RateTransferLow.fpre_ge_of_countLe",
+                    "RevPebbling.RateTransferLow.smerge_sum",
+                    "RevPebbling.RateTransferLow.rowIter_sum_double",
+                    "RevPebbling.RateTransferLow.fRow_double",
+                    "RevPebbling.RateTransferLow.sumF_le_two_mul",
+                    "RevPebbling.RateTransferLow.gameT_left_eq",
+                    "RevPebbling.RateTransferLow.gameH_left_ge",
+                    "RevPebbling.RateTransferLow.exists_admissible_gt",
+                    "RevPebbling.RateTransferLow.eventually_pow_le_gameT_left",
+                    "RevPebbling.RateTransferLow.one_le_Smin",
+                    "RevPebbling.RateTransferLow.two_pow_Smin_sub_one_le",
+                    "RevPebbling.RateTransferLow.tendsto_Smin",
+                    "RevPebbling.RateTransferLow.three_le_Smin",
+                    "RevPebbling.RateTransferLow.gameT_left_le",
+                    "RevPebbling.RateTransferLow.gameT_Smin_le",
+                    "RevPebbling.RateTransferLow.two_le_gameT_Smin",
+                    "RevPebbling.RateTransferLow.log_n_bounds",
+                    "RevPebbling.RateTransferLow.tendsto_log_gameT_Smin",
+                ],
+            },
     }
 
     # ---- axiom audit for every listed theorem -----------------------

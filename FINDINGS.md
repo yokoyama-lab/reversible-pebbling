@@ -118,9 +118,14 @@ theorem RevPebbling.RateTransferLow.tendsto_log_gameT_Smin :
 | `RateTransfer.Smin` / `Smin_spec` | 存在。`Smin : ℕ → ℕ`、`1 ≤ n → n ≤ 2^{Smin n} − 1 ∧ (∀ S, 1 ≤ S → n ≤ 2^S − 1 → Smin n ≤ S)` ✔ |
 | `RateTransfer.gameT_full` | 存在。`1 ≤ S → gameT (2^S − 1) S = 2 * sumF S` ✔ |
 
-食い違いは無かった。**ただし `git fetch origin` は SSH 認証に失敗した**（`fatal: Could not read
-from remote repository.`）ので、リモートの最新に対する照合はできていない。ローカルの
-`origin/main` は `e70737e`（= 本 worktree の分岐点）を指している。
+食い違いは無かった。
+
+⚠ **訂正（2026-09-03）**: 初版はここに「`git fetch origin` は SSH 認証に失敗するので
+リモートと照合できない」と書いたが、**「この環境では」は過大**だった。落ちるのは
+このセッションの窓だけ（ssh-agent が届いていない）で、他の窓からは `git fetch` も
+`git push --dry-run` も通る、と別セッションが実測して指摘した。私の窓からの push は
+`git -c credential.helper='!gh auth git-credential' push https://…` で通した。
+分岐時点の `origin/main` は `e70737e`。
 
 ---
 
@@ -188,5 +193,11 @@ from remote repository.`）ので、リモートの最新に対する照合は�
   の λ→ρ^q 極限が非構成的なので、ε(n) の明示形は別途の作業になる。
 * **`proof-manifest.json` / `README.md` は更新していない**（依頼の「既存ファイルは触らない」に従った。
   更新するのは manifest の担当セッション）。台帳（`registry/`）にも触れていない。層の昇格判断もしていない。
-* **push していない。** commit のみ（branch `rate-transfer-lowend`）。Notion 等の外部にも書いていない。
-* **リモートとの照合ができていない**（`git fetch` が SSH 認証で失敗）。
+* ~~push していない~~ → **2026-09-03 に著者の明示指示で push 済み**
+  （`gh repo view` で private を確認のうえ `rate-transfer-lowend` を push。リモートの
+  `18175bb` = ローカル HEAD を `gh api` で照合）。Notion 等の外部には書いていない。
+* **manifest 登録**は同日、著者の明示指示で実施（`scripts/build_proof_manifest.py` に
+  `rate_transfer_left_endpoint` ステージを追加して `proof-manifest.json` を再生成）。
+  ⚠ **`RevPebbling.RateTransfer`（右端 `gameT_full` 等）は依然として manifest に未登録**である。
+  本ファイルの定理が依存しているので `#print axioms` の推移閉包では射程に入るが、
+  名前としては載っていない。
