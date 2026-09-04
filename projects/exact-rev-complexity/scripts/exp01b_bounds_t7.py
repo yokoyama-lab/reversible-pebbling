@@ -42,6 +42,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import revpebble as rp  # noqa: E402
 from exp01b_engine import verify_schedule  # noqa: E402
+from exp01b_lb_refine import (  # noqa: E402
+    g_by_count,
+    old_bound_from,
+    refined_bound,
+)
 from treedp import (  # noqa: E402
     compose_asymmetric,
     first_root_pebbled_depth,
@@ -166,12 +171,61 @@ def main() -> None:
                 f"$M^* \\ge 2(g_5(10)+g_5(9))+1 = 2({g10}+{g9})+1 = {lb_phased}$。"
             )
             lb = max(lb, lb_phased)
+
+        # ---- 駒数の結合制約で締めた版（2026-09-04 追加）--------------------
+        print("下界の計算中（駒数の結合制約）…", flush=True)
+        t1 = time.time()
+        try:
+            lb_joint, info = refined_bound(7, P, cap=args.cap)
+        except RuntimeError as exc:
+            print(f"  打ち切り（{exc}）", flush=True)
+            lb_joint, info = None, None
+        if lb_joint is not None:
+            x, y = info["arg"]
+            gP, gQ = info["gP"], info["gQ"]
+            prev = old_bound_from(gP, gQ)
+            lines.append("")
+            lines.append(
+                "**駒数の結合制約（2026-09-04）**: 上の 2 つは部分木 $A$ と $B$ を"
+                "独立に扱い、どちらにも全体の予算を許している。"
+                "実際には根が最後に置かれた時刻 $t^*$ で "
+                "$x+y+1\\le P$（$x=A$ の駒数, $y=B$ の駒数, $x,y\\ge1$）が成り立つ。"
+                "$g_p(x)$ を「ピーク $\\le p$ で $\\varnothing$ から"
+                "『$a$ を含み駒数ちょうど $x$』へ」の最小手数とすると"
+            )
+            lines.append("")
+            lines.append("$$M^*(T_7,10)\\;\\ge\\;\\min_{x,y\\ge1,\\;x+y\\le 9}"
+                         "\\bigl[g_{10}(x)+g_9(x)+g_{10}(y)+g_9(y)\\bigr]+1"
+                         f"\\;=\\;{lb_joint}$$")
+            lines.append("")
+            lines.append(f"最小は $(x,y)=({x},{y})$ で達成される。実測値:")
+            lines.append("")
+            lines.append("| $x$ | " + " | ".join(str(k) for k in sorted(gP)) + " |")
+            lines.append("|---|" + "---|" * len(gP))
+            lines.append("| $g_{10}(x)$ | "
+                         + " | ".join(str(gP[k]) for k in sorted(gP)) + " |")
+            lines.append("| $g_9(x)$ | "
+                         + " | ".join(str(gQ.get(k, "—")) for k in sorted(gP)) + " |")
+            lines.append("")
+            lines.append(
+                f"⚠ 駒数を無視した版はこの min の下側なので**必ず従来以上**になる"
+                f"（従来 {prev} → {lb_joint}）。"
+                "健全性は既知の $M^*$（$T_4$〜$T_6$）で校正済み: "
+                "`python3 scripts/exp01b_lb_refine.py --calibrate`。"
+            )
+            lb = max(lb, lb_joint)
+            print(f"  結合制約版: {lb_joint}（従来 {prev}・{time.time()-t1:.1f}s）",
+                  flush=True)
+
         lines.append("")
         lines.append(
             f"## 結論\n\n$$ {lb} \\;\\le\\; M^*(T_7,10) \\;\\le\\; {ub} $$\n\n"
             f"幅は {ub-lb}（上界の {100*(ub-lb)/ub:.0f}%）。**厳密値は未確定。**\n\n"
-            f"下界がまだ緩い主因は、部分木に許すピークを全体の予算まで緩めていること"
-            f"（位相ごとの占有を完全には反映していない）。"
+            f"下界がまだ緩い主因は、$g_p(x)$ が「$a$ を含む**何らかの**配置」への"
+            f"到達距離であって clean を要求していないこと"
+            f"（$x=1$ のときだけ clean と一致し $g_{{10}}(1)=M^*(T_6,10)=295$ になる）。"
+            f"次の一手は、往路と復路が**同じ**配置 $C_A$ を通ることを使って"
+            f"$\\min_C [d(\\varnothing,C)+d(C,\\varnothing)]$ を配置ごとに取ること。"
         )
         print(f"下界: {lb}（上界 {ub}）", flush=True)
 
