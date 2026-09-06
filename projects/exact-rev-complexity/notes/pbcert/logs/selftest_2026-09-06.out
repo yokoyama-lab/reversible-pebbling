@@ -1,0 +1,25 @@
+==============================================================================
+VeriPB 3.0.2 自己試験（陽性・陰性の対）
+==============================================================================
+  [OK ] veripb/pol_pos          正しい pol 証明（実行不能な系 A）
+          期待=accept 実際=accept rc=0  << s VERIFIED UNSATISFIABLE
+  [OK ] veripb/pol_neg_arith    pol の足し算を 1 行壊した
+          期待=reject 実際=reject rc=1  <<     	There is no contradicting constraint in the database.
+  [OK ] veripb/rup_pos          基数伝播を使う u 証明（実行不能な系 B）
+          期待=accept 実際=accept rc=0  << s VERIFIED UNSATISFIABLE
+  [OK ] veripb/rup_neg_unimplied 充足可能な系 C で成り立たない rup を主張
+          期待=reject 実際=reject rc=1  <<     	The constraint is not implied by reverse unit propagation (RUP) from core and derived
+  [OK ] veripb/concl_neg        充足可能な系 C を矛盾なしに UNSAT と結論
+          期待=reject 実際=reject rc=1  <<     	There is no contradicting constraint in the database.
+
+==============================================================================
+dpr-trim 自己試験（陽性・陰性の対）
+==============================================================================
+  [OK ] dpr/drat_pos  PHP(4,3) の cadical DRAT（15 行） 期待=accept 実際=accept rc=0
+  [OK ] dpr/drat_neg  充足可能な PHP(4,4) を反駁したと主張     期待=reject 実際=reject rc=1
+  [OK ] dpr/dpr_pos   hole20 の PR 証明（2870 行）        期待=accept 実際=accept rc=0
+  [OK ] dpr/dpr_neg   同じ PR 証明の 1 行目を壊した           期待=reject 実際=reject rc=1
+  [OK ] dpr/drat_cannot drat-trim に同じ PR 証明を渡す          期待=reject 実際=reject rc=1
+
+自己試験 すべて OK（陽性は受理・陰性は拒否）
+runcap: 成功 / 経過 0h00m01s / 最大メモリ 71 MB（上限 8 GB）
