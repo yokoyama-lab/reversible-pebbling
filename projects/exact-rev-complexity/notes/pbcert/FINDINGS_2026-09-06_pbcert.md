@@ -19,18 +19,24 @@
 | dpr-trim | （同梱例つき） | `dpr-trim`（`<local>/opt/tools/dpr-trim` に例） |
 | drat-trim / cadical | — | `drat-trim` / `cadical` |
 | nauty (`dreadnaut`) | — | `/home/linuxbrew/.linuxbrew/bin/dreadnaut` |
-| **Exact** | **2.2.1** | ⚠ **前任の scratchpad の venv にしか無い** — 下記 |
+| **Exact** | **2.2.1** | ✅ `~/.venvs/pb/bin/python`（本セッションで恒久化。下記） |
 
-⚠ **Exact 2.2.1 の在処が揮発性である。** リポジトリにも `~/.venvs/*` にも入っておらず、
-実体は前任セッションの scratchpad の venv だけ:
+✅ **Exact 2.2.1 を恒久化した（このセッションの作業）。**
+前任のときは **前任セッションの scratchpad の venv にしか無く**、それが消えると
+PB 経路は再現できない状態だった。次で作り直せることを確認して固定した:
 
+```sh
+/usr/bin/python3.13 -m venv ~/.venvs/pb        # ⚠ python3.14 では入らない
+~/.venvs/pb/bin/pip install 'exact==2.2.1'     # PyPI の cp314 wheel は 1.2.1 止まり
 ```
-/work/tmp/claude-1000/-work-a-dev-github-com-tetsuo-jp-exact-rev-complexity-notes-pbcert/\
-2da29e28-dc48-4e24-ac19-c08f5929240e/scratchpad/pb313/bin/python   # Python 3.13.7 + Exact 2.2.1
-```
 
-（`pbvenv/` に Python 3.14 版もある。）**この scratchpad が消えると PB 経路は再現できない。**
-恒久化（`~/.venvs/pb` を作って `pip install exact`）は**未実施**。→「まだやっていないこと」
+* **`--exact-python ~/.venvs/pb/bin/python` で h=7・h=16 を回し、
+  scratchpad の venv と 1 バイト違わない結果**（19.59× / 40.76×）を確認済み。
+* 前任の venv（`.../2da29e28-.../scratchpad/pb313`）はまだ残っているが、**もう依存しない**。
+
+**成果物の保全**: `notes/pbcert/artifacts/` に、8 点ぶんの
+**VeriPB 証明（`.pbp`）と トリム後の DRAT 芯（`.drat_core.txt`）**を置いた（計 488 KB）。
+`.cnf` / `.opb` は `pbcert_pyr_opb.py` で再生成できるので置いていない。
 
 ## 1. 道具が効いていることの自己試験（陽性・陰性の対）— **10/10 OK**
 
@@ -263,4 +269,3 @@ h=16 B=43 で、`drat-trim` と `dpr-trim` の両方について:
   §4 の測定では PB レベルの鏡映は位数 2 しかないので、やっても高々 2 倍の見込み。
 * h=5 以外に UP だけで反駁できる h があるかは h=6,7,9,11,12,15,16 しか見ていない
   （h=13,14 は未確認）。
-* **Exact 2.2.1 の恒久化**（いまは前任 scratchpad の venv 依存＝いつ消えてもおかしくない）。
