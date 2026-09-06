@@ -1,0 +1,17 @@
+[1;37m/work/tmp/claude-1000/-work-a-dev-github-com-tetsuo-jp-exact-rev-complexity-notes-ic3/475e0dbf-41a6-49b8-baeb-071ae7ceb4c1/scratchpad/ic3/pyr_h14_p40:[0m i/o =  105/    1  lat =  111  and =   2940  lev = 44
+VarMax = 300. FrameMax = 10000. QueMax = 0. TimeMax = 21600. MonoCNF = no. SkipGen = no. SolveAll = no.
+Frame Clauses                                                     Max Queue Flops Cex      Time
+  1 : 0 1                                                                 1     1      0.03 sec
+  2 : 0 1 1                                                               1     2      0.04 sec
+  3 : 0 2 2 2                                                             3     8      0.04 sec
+  4 : 0 2 2 2 1                                                           1     8      0.04 sec
+  5 : 0 2 2 2 2 2                                                         2    10      0.05 sec
+  6 : 0 2 2 2 2 2 1                                                       1    10      0.06 sec
+  7 : 0 2 2 2 2 2 2 2                                                     2    13      0.06 sec
+  8 : 0 2 2 2 2 2 2 1 1                                                   0    13      0.07 sec
+  9 : 0 2 2 2 2 2 2 1 1 1                                                 1    13      0.07 sec
+ 10 : 0 2 2 2 2 2 2 1 1 1 2                                               2    19      0.08 sec
+ 11 : 0 2 2 2 2 2 2 1 1 1 2 1                                             1    19      0.08 sec
+ 12 : 0 2 2 2 2 2 2 1 2 6 13 8 2                                         15    34      0.14 sec
+ 13 : 0 2 2 2 2 2 2 1 1 1 1 4 4 2                                         2    35      0.16 sec
+ 14 : 0 2 2 2 2 2 2 1 1 1 1 4 4 2 1                                       1    35      0.16 sec
