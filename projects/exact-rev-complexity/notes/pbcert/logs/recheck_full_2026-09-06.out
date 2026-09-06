@@ -1,0 +1,89 @@
+
+=== h=7  B=15  (UNSAT 側; L(7)=16) ===
+  DRAT  : s UNSATISFIABLE    式   222,524 B /   6825 変数 | 証明    178,976 B /  12,558 行 | 解    0.01s 検    0.08s | s VERIFIED
+  VeriPB: UNSAT              式    99,715 B /    945 変数 | 証明      9,137 B /     546 行 | 解    0.04s 検    0.01s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 3389 本）
+          Exact 生証明 32,963 B / 3,932 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 19.59×（VeriPB が小さい）
+
+=== h=7  B=16  (SAT 側; L(7)=16) ===
+  DRAT  : s SATISFIABLE            式    234,276 B
+  VeriPB: SAT                      式     99,715 B
+
+=== h=8  B=19  (UNSAT 側; L(8)=20) ===
+  DRAT  : s UNSATISFIABLE    式   417,528 B /  12308 変数 | 証明    311,883 B /  20,939 行 | 解    0.02s 検    0.09s | s VERIFIED
+  VeriPB: UNSAT              式   163,457 B /   1364 変数 | 証明     16,360 B /     849 行 | 解    0.05s 検    0.02s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 5422 本）
+          Exact 生証明 55,583 B / 6,268 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 19.06×（VeriPB が小さい）
+
+=== h=8  B=20  (SAT 側; L(8)=20) ===
+  DRAT  : s SATISFIABLE            式    437,195 B
+  VeriPB: SAT                      式    163,457 B
+
+=== h=9  B=22  (UNSAT 側; L(9)=23) ===
+  DRAT  : s UNSATISFIABLE    式   703,090 B /  19710 変数 | 証明    489,284 B /  31,947 行 | 解    0.03s 検    0.11s | s VERIFIED
+  VeriPB: UNSAT              式   254,042 B /   1890 変数 | 証明     30,137 B /   1,188 行 | 解    0.08s 検    0.01s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 8232 本）
+          Exact 生証明 90,139 B / 9,417 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 16.24×（VeriPB が小さい）
+
+=== h=9  B=23  (SAT 側; L(9)=23) ===
+  DRAT  : s SATISFIABLE            式    730,842 B
+  VeriPB: SAT                      式    254,042 B
+
+=== h=10  B=25  (UNSAT 側; L(10)=26) ===
+  DRAT  : s UNSATISFIABLE    式 1,107,342 B /  30035 変数 | 証明    731,285 B /  46,641 行 | 解    0.03s 検    0.11s | s VERIFIED
+  VeriPB: UNSAT              式   374,948 B /   2535 変数 | 証明     33,842 B /   1,522 行 | 解    0.09s 検    0.03s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 11989 本）
+          Exact 生証明 122,060 B / 13,508 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 21.61×（VeriPB が小さい）
+
+=== h=10  B=26  (SAT 側; L(10)=26) ===
+  DRAT  : s SATISFIABLE            式  1,145,468 B
+  VeriPB: SAT                      式    374,948 B
+
+=== h=11  B=28  (UNSAT 側; L(11)=29) ===
+  DRAT  : s UNSATISFIABLE    式 1,658,708 B /  43967 変数 | 証明  1,050,209 B /  65,779 行 | 解    0.05s 検    0.16s | s VERIFIED
+  VeriPB: UNSAT              式   534,946 B /   3311 変数 | 証明     39,388 B /   1,961 行 | 解    0.13s 検    0.02s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 16879 本）
+          Exact 生証明 167,728 B / 18,837 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 26.66×（VeriPB が小さい）
+
+=== h=11  B=29  (SAT 側; L(11)=29) ===
+  DRAT  : s SATISFIABLE            式  1,709,430 B
+  VeriPB: SAT                      式    534,946 B
+
+=== h=12  B=31  (UNSAT 側; L(12)=32) ===
+  DRAT  : s UNSATISFIABLE    式 2,385,912 B /  62262 変数 | 証明  1,460,572 B /  90,122 行 | 解    0.07s 検    0.21s | s VERIFIED
+  VeriPB: UNSAT              式   740,306 B /   4230 変数 | 証明     47,530 B /   2,411 行 | 解    0.17s 検    0.02s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 23104 本）
+          Exact 生証明 226,918 B / 25,512 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 30.73×（VeriPB が小さい）
+
+=== h=12  B=32  (SAT 側; L(12)=32) ===
+  DRAT  : s SATISFIABLE            式  2,451,684 B
+  VeriPB: SAT                      式    740,306 B
+
+=== h=15  B=40  (UNSAT 側; L(15)=41) ===
+  DRAT  : s UNSATISFIABLE    式 6,175,528 B / 151965 変数 | 証明  3,484,260 B / 203,390 行 | 解    0.16s 検    0.42s | s VERIFIED
+  VeriPB: UNSAT              式 1,705,658 B /   7965 変数 | 証明     91,397 B /   4,456 行 | 解    0.34s 検    0.03s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 52049 本）
+          Exact 生証明 506,832 B / 56,502 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 38.12×（VeriPB が小さい）
+
+=== h=15  B=41  (SAT 側; L(15)=41) ===
+  DRAT  : s SATISFIABLE            式  6,317,568 B
+  VeriPB: SAT                      式  1,705,658 B
+
+=== h=16  B=43  (UNSAT 側; L(16)=44) ===
+  DRAT  : s UNSATISFIABLE    式 8,144,603 B / 196712 変数 | 証明  4,448,117 B / 257,805 行 | 解    0.22s 検    0.52s | s VERIFIED
+  VeriPB: UNSAT              式 2,171,913 B /   9576 変数 | 証明    109,137 B /   5,355 行 | 解    0.47s 検    0.08s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 65954 本）
+          Exact 生証明 638,007 B / 71,306 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 40.76×（VeriPB が小さい）
+
+=== h=16  B=44  (SAT 側; L(16)=44) ===
+  DRAT  : s SATISFIABLE            式  8,316,770 B
+  VeriPB: SAT                      式  2,171,913 B
+runcap: 成功 / 経過 0h00m13s / 最大メモリ 209 MB（上限 24 GB）
