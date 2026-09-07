@@ -256,9 +256,20 @@ def main():
         if a.only and not k.startswith(a.only):
             continue
         res[k] = run_one(k, c, tag, a.timeout, a.mem, not a.no_drat)
-    ok = all(v[0] == "s UNSATISFIABLE" for v in res.values())
-    print(("**3 本とも UNSAT**" if ok else "**UNSAT でない検査がある**")
-          + ("（変異注入なので落ちるのが正しい）" if a.mutate else ""))
+    # ⚠ 2026-09-06 修正: 以前はここで「**3 本とも UNSAT**」と固定文言を出していた。
+    # --only で 1 本しか走らせなくても同じ行が出るので、**総括行が合否の証拠にならなかった**。
+    # 実際に ren-fe が h=15 p=42 の検査でこれを根拠に「全部通った」と書きかけている。
+    # 走った本数と全体の本数を必ず併記し、一部しか走っていないなら明示する。
+    total = len(checks)
+    ran = len(res)
+    ok = bool(res) and all(v[0] == "s UNSATISFIABLE" for v in res.values())
+    if not res:
+        print("**検査が 1 本も走っていない**（--only が何にも一致していない可能性）")
+        return 1
+    head = f"**{ran}/{total} 本が UNSAT**" if ok else f"**UNSAT でない検査がある（走 {ran}/{total} 本）**"
+    if ran < total:
+        head += f" ⚠ --only で絞ったため {total - ran} 本は走っていない。合否は個別行で読むこと"
+    print(head + ("（変異注入なので落ちるのが正しい）" if a.mutate else ""))
     return 0
 
 
