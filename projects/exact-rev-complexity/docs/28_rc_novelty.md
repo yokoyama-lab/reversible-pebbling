@@ -44,8 +44,9 @@
 | 巻 | 論文 | 判定 |
 |---|---|---|
 | **RC 2023**（268 件） | **Quist & Laarman, "Optimizing Quantum Space Using Spooky Pebble Games"** (p.134)。spooky pebble game を一般回路に初適用し、**SAT ソルバで解く**。量子空間の上界を証明 | **別モデル**。spooky は**測定で再利用する「返す借金」**で、我々の消去は**返さない破壊**。`docs/24` §2 の判定を維持。**本文に消去予算に相当する語は 0 件** |
-| **RC 2017**（7 件） | 量子回路コンパイルの招待講演。Bennett の compute-copy-uncompute に対し**空間を 75% 削減**。キーワードに "Pebble games · Dirty ancillas" | **競合なし**。ペブルゲームは道具として言及されるだけ。**"dirty ancillas" は汚れた補助ビットの再利用**であって消去予算ではない |
-| RC 2015（59 件） | 未精査（**要確認**） | — |
+| **RC 2017**（7 件） | ⚠ **帰属を訂正**（2026-09-12）。実測は **#16 Roetteler–Svore, "Tools for Quantum and Reversible Circuit Compilation" が 5 件・#11 "REVS" が 2 件**で、7 件が 1 本に集中しているのではない。Bennett の compute-copy-uncompute に対し**空間を 75% 削減**。キーワードに "Pebble games · Dirty ancillas" | **競合なし**（実装ヒューリスティクスの実測で、下界も消去予算も無い）。⚠ **ただし「道具として言及されるだけ」は弱すぎた**——#16 §2 の逐語「a strategy that can be interpreted as a particular **pebble game** played on the nodes of the data flow graph, **constitute the main innovation of the present work**」。**"dirty ancillas" は汚れた補助ビットの再利用**であって消去予算ではない、は維持 |
+| **RC 2015（59 件）** | ⚠ **精査した**（2026-09-12。従来「未精査（要確認）」）。**59 件すべてが #16 Pesu & Phillips, "Real-Time Methods in Reversible Computation" に集中**（他 19 本は 0 件）。しかも**可逆ペブリングそのものを扱う論文**で、Bennett の線形時間アルゴリズムに対し新提案 **k-ratic** を与える。逐語「We offer an improvement on his linear-time algorithm, which we call the **k-ratic algorithm**. This operates at essentially the same rate as Bennett's algorithm, but **uses roughly half as much space**.」 | **競合なし**（消去予算も clean 到達も扱わない）。⚠ **ただし「無関係」ではない。厳密値の比較対象になりうる。** 到達 `A(n,k) = n^k/k! + O(n^(k−1))`（Prop 3.3）、空間比 `(k^k/k!)^(1/k) → e`（Prop 3.5）。**⚠ 本論文は最後の石を盤上に残す版**（脚注 1 が Li–Vitányi 版との違いを自ら明記）なので、**厳密値表と突き合わせる前に規約を揃えること** |
+| **RC 2017 #1**（`pebbl` 0 件） | ⚠ **語の照合が取り逃がしていたもの**（2026-09-12 追加）。Holzer–Kutrib, "Reversible Nondeterministic Finite Automata" は **「degree of irreversibility」＝非可逆状態の個数 k による厳密無限階層**を作る。逐語「**Theorem 10.** For all k ≥ 0, L(IREV_k-NFA) ⊂ L(IREV_{k+1}-NFA).」 | **競合ではない**（モデルが別物。オートマトンの状態数であってペブル数ではない）。**ただし「有界非可逆性の階層」の先行例として related work に引く価値がある。** `erasure budget` / `bounded irreversibility` / `limited erasure` のどの検索語にも当たらなかった |
 
 ## 3. 判定表
 
@@ -58,10 +59,15 @@
 
 ## 4. まだやっていないこと（正直に）
 
-- **RC 2015 の 59 件を精査していない。** 大口なのに未確認
-- **RC 2018 が抽出できていない**（命名が別形式）。**0 件ではなく未検査**
+- ~~**RC 2015 の 59 件を精査していない。**~~ → **2026-09-12 に精査した**（上の表。全件が #16 Pesu & Phillips）
+- ~~**RC 2018 が抽出できていない**（命名が別形式）。**0 件ではなく未検査**~~
+  → **2026-09-12 に解消**。`yokoyama-lab/rc-survey` が正本 PDF を
+  `K/Kari and Ulidowski 2018 - RC2018 - Reversible Computation.pdf`（18,195 行）として確定した。
+  **「0 件ではなく未検査」という当時の断り書きは正しかった。**
 - **語での照合なので、別の用語で同じことをしている論文は拾えない**
-  （我々の「消去予算」を全く違う言い方で呼ぶ論文があれば漏れる）
+  （我々の「消去予算」を全く違う言い方で呼ぶ論文があれば漏れる）。
+  ⚠ **これは実際に起きた**——RC 2017 #1 の「degree of irreversibility」による無限階層は
+  どの検索語にも当たらなかった（上の表の最終行）。**語の照合だけで「競合なし」を結論しない。**
 - MCU・証明複雑性側（**ペブリングはむしろこちらで盛ん**。Nordström 系）は**未照合**
 
 ## 5. 再現用
@@ -75,3 +81,33 @@ grep -niE "pebbl|erasure budget|garbage|DRAT" RC2023.txt
 
 抽出スクリプト: `scratchpad/rc/fetch.sh`（12 巻を 5 分で抽出）。
 ⚠ **`systemd --user` は brew の PATH を失う**ので `--setenv=PATH=` が要る。
+
+---
+
+## 訂正の記録（2026-09-12）
+
+`yokoyama-lab/rc-survey`（RC 会議録 2011–2026 の**全 278 論文**を原典で読み直した論文単位サーベイ）
+からの報告 3 件を、**一次情報で再確認したうえで**反映した。
+
+**本文書の結論「消去予算つき clean 到達に RC 12 巻で競合なし」は維持されている。** 変えたのは:
+
+1. **RC 2015 の 59 件の正体**（従来「未精査（要確認）」）→ 全件が #16 Pesu & Phillips。
+   **可逆ペブリングそのものの論文**で、k-ratic を提案。⚠ 規約（最後の石を残す版）が違う。
+2. **RC 2017 の 7 件の帰属**（従来 1 本に帰属）→ **#16 が 5 件・#11 が 2 件**。
+   かつ #16 では pebble game が "the main innovation" と自己申告されており、
+   「道具として言及されるだけ」は弱すぎた。**「競合なし」の判定自体は維持。**
+3. **語の照合の穴**（新規）→ RC 2017 #1 の「degree of irreversibility」の無限階層は
+   どの検索語にも当たらない。**related work に引く価値がある先行例。**
+
+検証方法（再現できる形で残す）:
+
+```sh
+# rc-survey が抽出した論文単位テキストに対して 1 本ずつ数える
+for f in <papers>/RC2015/*.txt; do n=$(grep -oic 'pebbl' "$f"); [ "$n" -gt 0 ] && echo "$n $(basename $f)"; done
+#   -> 59 RC2015-16-real-time-methods-in-reversible-computation.txt   （他 19 本は 0）
+for f in <papers>/RC2017/*.txt; do n=$(grep -oic 'pebbl' "$f"); [ "$n" -gt 0 ] && echo "$n $(basename $f)"; done
+#   -> 2 RC2017-11-revs-...  /  5 RC2017-16-tools-for-quantum-...
+```
+
+→ 報告元: `yokoyama-lab/rc-survey` の `docs/40_discrepancies.md` B 節。
+
