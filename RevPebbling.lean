@@ -131,3 +131,5 @@ import RevPebbling.ShapeMonotone
 import RevPebbling.CapZone
 import RevPebbling.RateTransfer
 import RevPebbling.RateTransferLow
+import RevPebbling.HalfReachQuantile
+import RevPebbling.HalfReachDispersion
