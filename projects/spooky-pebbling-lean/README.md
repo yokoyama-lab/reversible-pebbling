@@ -51,7 +51,8 @@
 | **定理D**: $T_{UG}(n,s)\ge 6n-s(s+3)$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope6.lean` |
 | **定理F**: $T_{UG}(n,s)=6n-s(s+3)$（$\theta(s)\le n\le B_4(s)-1$）と $B_4(s)=B_4(s-1)+\theta(s)-1$ | **1（Lean）** | `SpookyPebbling/Slope6Exact.lean` |
 | **定理E**: $T_{UG}(n,s)\ge 2mn-c_m(s)$（任意の傾き $2m$。定理A・定理D を含む） | **1（Lean）** | `SpookyPebbling/SlopeE.lean` |
-| **定理E'**: $T_{UP}(n,s)\ge 2mn-\beta_m(s)$ — **任意の傾きで緊密**（$m\ge4$ で定理E より真に強い） | **1（Lean）** | `SpookyPebbling/SlopeTight.lean` |
+| **定理E'**: $T_{UP}(n,s)\ge 2mn-\beta_m(s)$（$m\ge1$・$s\ge2$・$n\ge1$。**下界のみ**。緊密性は下の層2 の行） | **1（Lean）** | `SpookyPebbling/SlopeTight.lean` |
+| 定理E' が定理E より真に強い点: $(m,s)=(4,3)$ で $\beta_4(3)=34<c_4(3)=38$（**この 1 点だけ**。$\forall m\ge4$ の一般命題は Lean に無い） | **1（Lean）** | `SpookyPebbling/SlopeTight.lean` `slope8_strictly_better` |
 | **KSS Thm 4.11**: $T_P(n{+}1,s{+}1)=T_{UG}(n,s)+1$（**任意の $s$**） | **1（Lean）** | `Bridge.lean` / `Lemma48Gen.lean` |
 | **KSS Lemma 4.5**: 任意の目標配置を作る正準手順（$2M{+}2-|S|$ 手・$|S|{+}1$ ペブル。$S$ は $[0,M]$ 上の目標のペブル集合） | **1（Lean）** | `SpookyPebbling/PlaceI.lean` |
 | **KSS Lemma 4.10**: $T_{UG}\le T_{UP}+1$、**Lemma 4.9**: $T_{UP}\le T_{UG}+1$、ゆえに差はちょうど 1 | **1（Lean）** | `SpookyPebbling/UGvsUP.lean` |
