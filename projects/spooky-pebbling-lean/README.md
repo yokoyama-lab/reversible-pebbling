@@ -57,6 +57,7 @@
 | **KSS Lemma 4.5**: 任意の目標配置を作る正準手順（$2M{+}2-|S|$ 手・$|S|{+}1$ ペブル。$S$ は $[0,M]$ 上の目標のペブル集合） | **1（Lean）** | `SpookyPebbling/PlaceI.lean` |
 | **KSS Lemma 4.10**: $T_{UG}\le T_{UP}+1$、**Lemma 4.9**: $T_{UP}\le T_{UG}+1$、ゆえに差はちょうど 1 | **1（Lean）** | `SpookyPebbling/UGvsUP.lean` |
 | **KSS の意味論との同値性**（`legalK` は Def 2.6/2.7 の逐語。$T$ は一致する） | **1（Lean）** | `SpookyPebbling/KSSModel.lean` |
+| **KSS の緩和漸化式 (1) は厳密値の範囲で無損失**: `relaxed n s = T_UG(n,s)`（$s\ge2$・$n\ge1$・$n\le B_4(s)-1$）。`relaxed` は KSS §4 式 (1)（$T_{UP}(k,s)$ を $T_{UG}(k,s)-1$ に置き換えた緩和）を $\mathbb N_\infty$ 値の関数として定義したもの。`relaxed ≤ T_UG` と、`relaxed` の上の下界 $2n$・$4n-2s$・$6n-s(s+3)$ は無条件。$s=2$ では範囲を緩められない（`relaxed 4 2 = 14 < 16 = T_UG(4,2)`） | **1（Lean）** | `SpookyPebblingExtra/Relaxed.lean`（**本体ライブラリの外**。原稿が数える 33 モジュールには入れない。`lake build SpookyPebblingExtra`） |
 | **補題3**: $T_{UG}(n,s)=2n$（$n\le s$）、**補題4**: $T_{UP}(k,s)=2k-1$（$k\le s$） | **1（Lean）** | `SpookyPebbling/Closed.lean` |
 | **定理A**: $T_{UG}(n,s)\ge 4n-2s$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope4.lean` |
 | **KSS Cor 4.12**: $T_{UG}(n,s)=\min_k[2k-1+T_{UP}(k,s)+T_{UG}(n-k,s-1)]$ | **1（Lean）** | `SpookyPebbling/Unghost.lean` |
@@ -72,6 +73,7 @@
 | **到達可能性**: `s ≥ 2` ならどんな長さの鎖も片付く（`sInf ∅ = 0` を回避） | **1（Lean）** | `SpookyPebbling/Reach.lean` |
 | 意味論が `< n` の値にしか依存しない（射影の土台） | **1（Lean）** | `SpookyPebbling/Defs.lean` |
 | 定理E' の**緊密性**（$\max_n(2mn-T_{UP})=\beta_m(s)$。$m\le8,s\le7$ で全数照合済み） | 2（機械検査） | `notes/spooky-pebbling/theorem_slope_tight.py` |
+| 緩和漸化式 (1) が $B_4(s)$ **より先で必ず損をする**こと（$s\ge3$）。数値では $s=2..7$・$n\le140$ で一致域がちょうど $B_4(s)-1$ まで、また (1) の厳密解 $=\max_m(2mn-c_m(s))$ が 2,100 点で一致 | 3（有界の数値照合） | `notes/spooky-pebbling/kss_relaxed_check.py` |
 | 傾き 8 以降の**上界側**（構成）、鎖以外の一般 DAG | **3（未解決）** | — |
 
 **$T_{UG}\ne T_{UP}$ は KSS が持っていない。** KSS Thm 4.11 の $\pm1$ は Lemma 4.9/4.10 の

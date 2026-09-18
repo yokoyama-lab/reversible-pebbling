@@ -9,3 +9,6 @@ rev = "v4.31.0"
 
 [[lean_lib]]
 name = "SpookyPebbling"
+
+[[lean_lib]]
+name = "SpookyPebblingExtra"
