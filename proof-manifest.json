@@ -2,9 +2,9 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "da172d41df635af10b03e23eb86ecc2b4b355c361cd982435a5b5a7d99b3b91b",
+ "proof_bundle_sha256": "2c7954973246834300964f5b8a52d8d96b9113715a8e1e8c32b98005ab534b12",
  "source_sha256": {
-  "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
+  "lakefile.toml": "e6279687261ee91a8173f529f1bc1951ab9287b6da740add8cd2dd8a3e78c8b2",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
   "RevPebbling/AnchorCertify.lean": "40bf53b0795b8dd8cdb14f14d405542403788b67495a1b5fb3e0d79e6246656b",
   "RevPebbling/AnchorCertify4798.lean": "b770164d7376dc8f5a0d8beb5e300b07cb3125fbaca00ff82ee10d4c5fb719dc",
