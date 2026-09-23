@@ -115,6 +115,7 @@ def main() -> int:
         "carried_hypotheses", "proves_hypotheses", "hypotheses",
         "proof_bundle_sha256", "source_sha256",
         "proved_stages", "schema_version", "task_id",
+        "modules_without_stage", "UNLISTED_MODULES",
         "implemented_by", "lean_lib", "precompileModules",
     }
     known_names |= {p.name for p in ROOT.glob("data/*")}

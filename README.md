@@ -198,8 +198,8 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 965 theorems the
-manifest lists, **80 rest on a `native_decide` certificate and 17 need
+the rest are general (unbounded) proofs.  Of the 1164 theorems the
+manifest lists, **93 rest on a `native_decide` certificate and 33 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
@@ -210,10 +210,25 @@ The same file records, per stage, which theorems carry a hypothesis
 (`proves_hypotheses`), with the verdict per hypothesis in the top-level
 `hypotheses` field, **keyed by the argument**: `Submult fRow` and
 `Submult fRLE` are different assumptions and only the first is a
-theorem.  **Two remain unproved**: superadditivity of the count profile
-(`Superadd`, 3 theorems in the front-DP layer, which does not touch `c`)
-and `Submult fRLE`, since `fRLE = fRow` is certified only at the six
-points `S = 10, 20, …, 60`.  The four the growth rate used to rest on
+theorem.  Four keys are not proved, and the manifest distinguishes two
+kinds.  One is a genuine **carried** assumption: `Submult fRLE`, carried
+by the single theorem `GrowthBounds.growth_le_2_6106`, since
+`fRLE = fRow` is certified only at the six points `S = 10, 20, …, 60`.
+The bound it states holds for `c` with nothing carried
+(`BlockSim.c_le_2_6106` reads the same certificate through `fRow_60`);
+closing the key itself would need `fRLE S = fRow S` for every `S`, i.e.
+a verification of the run-length generator, which the artifact
+deliberately checks rather than verifies.  The other three are
+**schematic**: `Submult f` (7 theorems), `Superadd f` (3) and
+`KappaAttained κ` (1) are premises of general lemmas about an arbitrary
+`f` or `κ` — the Fekete machinery of `GrowthRate` and `GrowthLower`, the
+profile theorem of `Profile`, the lower end `Final.c_ge_of_rocq` — so
+there is nothing to discharge; the concrete instances have their own
+keys, and `Submult fRow`, `KappaAttained KLO` and `KappaAttained
+kappaStar` are theorems.  `Superadd` has no concrete instance in Lean:
+superadditivity of the count profile (supermultiplicativity of the
+counts up to a defect) is the open input of the front-DP layer, which
+does not touch `c`.  The four the growth rate used to rest on
 are now **theorems** — submultiplicativity of `fRow`
 (`BlockSim.submult_fRow`, the letter's Lemma 1) and the `≥` half of
 Knill's Theorem 2.1 (`RowExact.gameOptimal_holds`,
@@ -248,9 +263,23 @@ not run" cannot be read as "nothing was wrong".
 `scripts/test_check_axioms.py` is its self-test: eight cases, five of
 which it must reject (a `sorry`, a local axiom, a name that does not
 exist, `native_decide` under `--forbid-native`, an empty selection).
+Since 2026-09-23 the builder also refuses to run while a module has no
+theorem in any stage unless `UNLISTED_MODULES` names it with a reason,
+recorded in the manifest as `modules_without_stage`.  Twelve modules
+that had accumulated outside the audit — the BFS tables of
+`PebblingGame`, the parametric dispersion bound (`DispersionGeneral`,
+`DispersionBound5033`, `DispersionRecover`), the retention premium and
+the near-full family (`RetentionPremium`, `NearFull`), the integer lift
+(`XLift`), the tie-band machinery (`TieBand`, `ShapeMonotone`,
+`CapZone`) and the half-reach closed form with its dispersion route
+(`HalfReachQuantile`, `HalfReachDispersion`) — are stages now, each
+`scope` saying what is and is not proved.  `CutUpper` is the one module
+listed with a reason: its `gameF_le_upper` carries a domination
+hypothesis that `CutUpperFix.dom_impossible` shows unsatisfiable, so it
+is excluded on purpose (see the stage `link1_ge_three_terms`).
 
 A full build takes about two and a quarter hours
-(76 stages, 965 theorems), nearly all of it three checks: the composition anchor at
+(86 stages, 1164 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the
@@ -258,7 +287,13 @@ certification of row 60 (13.1 M runs, ~5.6 GB, 384 s), which carries the
 published bound `c ≤ 2.6106`; and the earlier anchor at `T₀ = 1200`
 (1.8 M cells, ~1.8 GB, 364 s), which carries `c ≤ 2.536842`.  `.github/workflows/build.yml` runs the
 same thing on a clean machine — build, re-audit, and check that the
-committed `proof-manifest.json` is reproduced byte for byte.
+committed `proof-manifest.json` is reproduced byte for byte.  The
+workflow keeps `.lake/build` in the Actions cache between runs (saved
+even when a run fails or times out), so a routine run rebuilds only
+what changed and finishes in minutes; a cold run needs the full time,
+which is why the job's limit is 340 minutes.  Between 2026-08-22 and
+2026-09-20 every run had been cancelled at the old 90-minute limit while
+still inside `lake build`.
 
 ## Contents
 
