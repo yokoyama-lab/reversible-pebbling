@@ -81,6 +81,8 @@ theorem Seg.peak_mono {n : Nat} {b b' : Board} {q q' k l : Nat} {t : List Nat}
 def blk (n s a t : Nat) : Board :=
   mk n (fun i => decide (s ≤ i ∧ i < s + a) || decide (i = t))
 
+@[simp] theorem length_blk (n s a t : Nat) : (blk n s a t).length = n := length_mk n _
+
 theorem nth_blk {n : Nat} (s a t : Nat) {i : Nat} (hi : i < n) :
     nth (blk n s a t) i = (decide (s ≤ i ∧ i < s + a) || decide (i = t)) :=
   nth_mk_of_lt hi
