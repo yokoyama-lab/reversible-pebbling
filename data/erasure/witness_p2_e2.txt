@@ -1,0 +1,13 @@
+# witness for reach(p=2,e=2) = 4: 7 moves, 2 erasures at nodes [2, 3]; optimal (BFS depth = M*(4,2,2) = 7); source reach_N9_p2_E6.txt
+# chain 0->1->...->4 (0 = free entrance), clean plan: empty -> {4}, peak <= 2
+# erasure positions (ascending): [2, 3]; differences from 2^(p-1): [0, 1]
+# tau-ascents (i in [2,n-1] with last removal of i after last removal of i-1): [2, 3]
+# columns: step | move | config after move | #pebbles | erasures used
+    1 | place 1     | {1} | 1 | 0
+    2 | place 2     | {1,2} | 2 | 0
+    3 | remove 1    | {2} | 1 | 0
+    4 | place 3     | {2,3} | 2 | 0
+    5 | ERASE 2     | {3} | 1 | 1
+    6 | place 4     | {3,4} | 2 | 1
+    7 | ERASE 3     | {4} | 1 | 2
+# peak = 2, final = {4}, erasures = 2

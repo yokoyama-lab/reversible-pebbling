@@ -1,0 +1,31 @@
+# witness for reach(p=4,e=0) = 8: 25 moves, 0 erasures at nodes []; optimal (BFS depth = M*(8,4,0) = 25); source reach_N33_p4_E6.txt
+# chain 0->1->...->8 (0 = free entrance), clean plan: empty -> {8}, peak <= 4
+# erasure positions (ascending): []; differences from 2^(p-1): []
+# tau-ascents (i in [2,n-1] with last removal of i after last removal of i-1): []
+# columns: step | move | config after move | #pebbles | erasures used
+    1 | place 1     | {1} | 1 | 0
+    2 | place 2     | {1,2} | 2 | 0
+    3 | place 3     | {1,2,3} | 3 | 0
+    4 | place 4     | {1,2,3,4} | 4 | 0
+    5 | remove 3    | {1,2,4} | 3 | 0
+    6 | place 5     | {1,2,4,5} | 4 | 0
+    7 | remove 2    | {1,4,5} | 3 | 0
+    8 | place 6     | {1,4,5,6} | 4 | 0
+    9 | remove 5    | {1,4,6} | 3 | 0
+   10 | place 7     | {1,4,6,7} | 4 | 0
+   11 | remove 1    | {4,6,7} | 3 | 0
+   12 | place 8     | {4,6,7,8} | 4 | 0
+   13 | remove 7    | {4,6,8} | 3 | 0
+   14 | place 5     | {4,5,6,8} | 4 | 0
+   15 | remove 6    | {4,5,8} | 3 | 0
+   16 | place 1     | {1,4,5,8} | 4 | 0
+   17 | remove 5    | {1,4,8} | 3 | 0
+   18 | place 2     | {1,2,4,8} | 4 | 0
+   19 | remove 1    | {2,4,8} | 3 | 0
+   20 | place 3     | {2,3,4,8} | 4 | 0
+   21 | remove 4    | {2,3,8} | 3 | 0
+   22 | place 1     | {1,2,3,8} | 4 | 0
+   23 | remove 3    | {1,2,8} | 3 | 0
+   24 | remove 2    | {1,8} | 2 | 0
+   25 | remove 1    | {8} | 1 | 0
+# peak = 4, final = {8}, erasures = 0

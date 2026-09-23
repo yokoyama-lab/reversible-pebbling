@@ -18,7 +18,8 @@ Checks, in order:
      carrying it (`Submult f` for an arbitrary `f`) is reported as
      `schematic`: it is not an assumption about the development but
      the premise of a general lemma, and cannot be "discharged";
-  3c. every module under RevPebbling/ either has a theorem in some stage
+  3c. every module under RevPebbling/ or ErasurePebbling/ either has a
+     theorem in some stage
      or is named in UNLISTED_MODULES with the reason -- a module nobody
      listed would otherwise be invisible to the audit (FINDINGS.md,
      2026-09-03: eleven such modules had accumulated);
@@ -61,6 +62,13 @@ UNLISTED_MODULES = {
                  "CutFull.gameF_le_upper_cutFull.  The module stays because "
                  "CutLower imports its board lemmas nth_doneBoard / "
                  "doneBoard_drop"),
+    "ErasurePebbling/Board": (
+        "infrastructure: boards given by a characteristic function "
+        "(mk n f) and the pointwise lemmas that read toggles, pebble "
+        "counts and availability off f, so that the case analyses of "
+        "Sweep / Potential / Saturation reduce to omega.  No statement of "
+        "its own is a result; every lemma is used by a listed theorem of "
+        "the erasure_pebbling_* stages"),
 }
 
 
@@ -143,7 +151,9 @@ def strip_lean_comments(text: str) -> str:
 
 def main() -> int:
     sources = sorted([ROOT / "RevPebbling.lean",
-                      *ROOT.glob("RevPebbling/**/*.lean")])
+                      *ROOT.glob("RevPebbling/**/*.lean"),
+                      ROOT / "ErasurePebbling.lean",
+                      *ROOT.glob("ErasurePebbling/**/*.lean")])
     config = [ROOT / "lakefile.toml", ROOT / "lean-toolchain"]
 
     holes = []
@@ -3674,11 +3684,124 @@ def main() -> int:
                     "RevPebbling.HalfReachDispersion.pigeonhole_five",
                 ],
             },
+            # ---- ErasurePebbling: erasure-budgeted clean pebbling (RC-02) ----
+            "erasure_pebbling_model": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED: the erasure game on top of "
+                          "PebblingFoundations (okE / isErase / legalE / "
+                          "erasures; IsPlay = clean plan with peak p and at "
+                          "most e irreversible removals; Reachable, ReachIs, "
+                          "MstarLe, MstarIs, estar). Segment laws for legalE "
+                          "and erasures, and the two bridges to the "
+                          "reversible game: a legalB play is a legalE play "
+                          "with zero erasures, and a legalE play with zero "
+                          "erasures is legalB."),
+                "theorems": [
+                    "ErasurePebbling.legalE_append",
+                    "ErasurePebbling.erasures_append",
+                    "ErasurePebbling.legalE_of_legalB",
+                    "ErasurePebbling.erasures_of_legalB",
+                    "ErasurePebbling.legalB_of_erasures_zero",
+                ],
+            },
+            "erasure_pebbling_saturation": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, RC-02 Theorem A (saturation) for p >= 2, "
+                          "n >= 1: M*(n,p,e) = 2n-1 iff e >= e*(n,p) = "
+                          "ceil((n-1)/(p-1)) - 1 (theoremA). Upper bound by the "
+                          "block-sweep construction (theoremA_upper: a clean "
+                          "plan with exactly 2n-1 moves and e*(n,p) erasures); "
+                          "floor 2n-1 for every clean plan (floor_length, Knill "
+                          "Obs. 2.2(i)); lower bound (theoremA_lower, "
+                          "estar_le_erasures) by a state potential pot = "
+                          "ceil((n-1-fb)/(p-1)) + dCount - 1 that is invariant "
+                          "under placements (pot_place) and drops by at most "
+                          "the erasure indicator under removals (pot_remove) "
+                          "along tight plays (tight_of_length: a 2n-1-move plan "
+                          "toggles every cell exactly the forced number of "
+                          "times), replacing the paper's ascent count of the "
+                          "removal permutation. Corollary floor_not_attained: "
+                          "e < e*(n,p) forces M* > 2n-1."),
+                "theorems": [
+                    "ErasurePebbling.theoremA",
+                    "ErasurePebbling.theoremA_upper",
+                    "ErasurePebbling.theoremA_lower",
+                    "ErasurePebbling.estar_le_erasures",
+                    "ErasurePebbling.floor_length",
+                    "ErasurePebbling.floor_not_attained",
+                    "ErasurePebbling.tight_of_length",
+                    "ErasurePebbling.pot_le_erasures",
+                    "ErasurePebbling.pot_place",
+                    "ErasurePebbling.pot_remove",
+                    "ErasurePebbling.pot_empty",
+                    "ErasurePebbling.pot_target",
+                ],
+            },
+            "erasure_pebbling_reach": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, RC-02 Theorem B1: reach(p,e) >= "
+                          "(e+2)*2^(p-2) for p >= 2 (theoremB1), by Bennett's "
+                          "schedule to 2^(p-1) (bennett_seg, via "
+                          "bennett_general) followed by e phases that climb "
+                          "2^(p-2) cells above a stone and erase the stone "
+                          "(phase_seg). Conjecture B2 at e = 0 in full "
+                          "generality, reach(p,0) = 2^(p-1) (reachIs_zero, via "
+                          "reach_impossible_general). The upper bound of B2 for "
+                          "e >= 1 is OPEN (see ErasurePebbling/NOTES.md)."),
+                "theorems": [
+                    "ErasurePebbling.theoremB1",
+                    "ErasurePebbling.bennett_seg",
+                    "ErasurePebbling.phase_seg",
+                    "ErasurePebbling.reachIs_zero",
+                ],
+            },
+            "erasure_pebbling_corollaries": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED corollary of Theorem A: the first chain "
+                          "length at which one more erasure lowers the optimal "
+                          "move count is n = (p-1)(e+1)+2 (drop_threshold; "
+                          "estar_threshold computes e* at (p-1)(e+1)+1 and "
+                          "(p-1)(e+1)+2), matching data/erasure/drops.md."),
+                "theorems": [
+                    "ErasurePebbling.drop_threshold",
+                    "ErasurePebbling.estar_threshold",
+                ],
+            },
+            "erasure_pebbling_bounded": {
+                "status": "proved_bounded",
+                "scope": ("BOUNDED, native_decide, ORACLE LEVEL: the bit-mask "
+                          "BFS oracle mstarE / reachableE of "
+                          "ErasurePebbling/Basic.lean (same rules as IsPlay, "
+                          "not linked to it by proof) reproduces the RC-02 "
+                          "anchors M*(4,3,.)=9,7,7,7; M*(6,4,.)=15,11,11,11; "
+                          "M*(16,5,.)=71,45,37,31; M*(16,6,0)=51; "
+                          "M*(16,7,0)=49; M*(16,6,1)=41; M*(17,6,0)=57 "
+                          "(anchors_table); Conjecture B2 reach(p,e) = "
+                          "(e+2)*2^(p-2) for p=3 (e<=6), p=4 (e<=4), p=5 "
+                          "(e<=2) (conjB2_p3/p4/p5); the inequality "
+                          "M*(n,p,e+1) <= M*(n,p+1,e) for n <= 2^(p-1), "
+                          "p<=4, e<=3 (ineq_small) and its counterexample "
+                          "M*(10,3,3)=21 > 19=M*(10,4,2) "
+                          "(ineq_counterexample); non-monotonicity "
+                          "M*(16,5,0)=71 > 57=M*(17,6,0) "
+                          "(non_monotone_16_17)."),
+                "theorems": [
+                    "ErasurePebbling.anchors_table",
+                    "ErasurePebbling.conjB2_p3",
+                    "ErasurePebbling.conjB2_p4",
+                    "ErasurePebbling.conjB2_p5",
+                    "ErasurePebbling.ineq_small",
+                    "ErasurePebbling.ineq_counterexample",
+                    "ErasurePebbling.non_monotone_16_17",
+                ],
+            },
     }
 
     # ---- every module is either listed or accounted for ---------------
     listed = {t for st in proved_stages.values() for t in st["theorems"]}
-    modules = sorted(p.stem for p in ROOT.glob("RevPebbling/**/*.lean"))
+    modules = sorted([*(p.stem for p in ROOT.glob("RevPebbling/**/*.lean")),
+                      *(f"ErasurePebbling/{p.stem}"
+                        for p in ROOT.glob("ErasurePebbling/**/*.lean"))])
     unlisted = [m for m in modules
                 if not any(n in listed for n in declarations(m))]
     stray = sorted(set(UNLISTED_MODULES) - set(unlisted))
@@ -3700,7 +3823,7 @@ def main() -> int:
     thms = [t for st in proved_stages.values() for t in st["theorems"]]
     with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT,
                                      delete=False) as fh:
-        fh.write("import RevPebbling\n")
+        fh.write("import RevPebbling\nimport ErasurePebbling\n")
         for t in thms:
             fh.write(f"#print axioms {t}\n")
         tmp = Path(fh.name)
@@ -3765,7 +3888,7 @@ def main() -> int:
     # cannot claim more (or less) than the statements do.
     with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT,
                                      delete=False) as fh:
-        fh.write("import RevPebbling\n")
+        fh.write("import RevPebbling\nimport ErasurePebbling\n")
         for t in thms:
             fh.write(f"#check @{t}\n")
         tmp = Path(fh.name)  # `#check` prints "Name : type", wrapped lines indented
