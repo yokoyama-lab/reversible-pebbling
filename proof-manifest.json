@@ -2,10 +2,19 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "2c7954973246834300964f5b8a52d8d96b9113715a8e1e8c32b98005ab534b12",
+ "proof_bundle_sha256": "b8a364b0ef4dccf6e5a195b780aa3cca970e65a9cd1bb0ac39602b4c5ceb6b6f",
  "source_sha256": {
   "lakefile.toml": "e6279687261ee91a8173f529f1bc1951ab9287b6da740add8cd2dd8a3e78c8b2",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+  "ErasurePebbling/Basic.lean": "87fc8d6bce31d443e867e089cbfb522b7a59f7b4d1e1bc25f5d1eb0bf3e879fe",
+  "ErasurePebbling/Board.lean": "c53a6be5aad23d2d6d74f84f0aee8645c5a8df86f0d0553028fe693a826c5227",
+  "ErasurePebbling/Bounded.lean": "7e0017f7a27c24e5c099250a3f39d04c9bb7fc0c25d8ee90e81bcc10a1ba4e1b",
+  "ErasurePebbling/Conjectures.lean": "7fac39391fb833adfa2ff794e108db04812c4002f7daf6cc66f686aad1ae0728",
+  "ErasurePebbling/Potential.lean": "fde9109d8acbfd6c1a1b533c47b91c6bd5dfc514ea0a7d46d26c1b128a305cfe",
+  "ErasurePebbling/Reach.lean": "e7de11d44e128da7c5db054168adf7cea7aa1d7ba7a50e0f2925a3dc68aad25a",
+  "ErasurePebbling/Saturation.lean": "3a428dfed35516326d5264ac4d17ebed866ffdb70fc886e1229d506a1e17a756",
+  "ErasurePebbling/Sweep.lean": "07f0fa019a73090d62c258f61d900fd7188a0083605c3845068cc227cfb5e0a6",
+  "ErasurePebbling.lean": "62023e0bde571883115d7e2e8ae681cff2d1a3da02a5b98633b4beb484b288cb",
   "RevPebbling/AnchorCertify.lean": "40bf53b0795b8dd8cdb14f14d405542403788b67495a1b5fb3e0d79e6246656b",
   "RevPebbling/AnchorCertify4798.lean": "b770164d7376dc8f5a0d8beb5e300b07cb3125fbaca00ff82ee10d4c5fb719dc",
   "RevPebbling/AnchorDP.lean": "782df7f9944c51738ae7d2f2a0e38d01a3ebf448a97bfd448c54e8b72440ab03",
@@ -2091,6 +2100,94 @@
     "RevPebbling.RateTransferLow.tendsto_log_gameT_Smin"
    ],
    "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_model": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED: the erasure game on top of PebblingFoundations (okE / isErase / legalE / erasures; IsPlay = clean plan with peak p and at most e irreversible removals; Reachable, ReachIs, MstarLe, MstarIs, estar). Segment laws for legalE and erasures, and the two bridges to the reversible game: a legalB play is a legalE play with zero erasures, and a legalE play with zero erasures is legalB.",
+   "theorems": [
+    "ErasurePebbling.legalE_append",
+    "ErasurePebbling.erasures_append",
+    "ErasurePebbling.legalE_of_legalB",
+    "ErasurePebbling.erasures_of_legalB",
+    "ErasurePebbling.legalB_of_erasures_zero"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_saturation": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, RC-02 Theorem A (saturation) for p >= 2, n >= 1: M*(n,p,e) = 2n-1 iff e >= e*(n,p) = ceil((n-1)/(p-1)) - 1 (theoremA). Upper bound by the block-sweep construction (theoremA_upper: a clean plan with exactly 2n-1 moves and e*(n,p) erasures); floor 2n-1 for every clean plan (floor_length, Knill Obs. 2.2(i)); lower bound (theoremA_lower, estar_le_erasures) by a state potential pot = ceil((n-1-fb)/(p-1)) + dCount - 1 that is invariant under placements (pot_place) and drops by at most the erasure indicator under removals (pot_remove) along tight plays (tight_of_length: a 2n-1-move plan toggles every cell exactly the forced number of times), replacing the paper's ascent count of the removal permutation. Corollary floor_not_attained: e < e*(n,p) forces M* > 2n-1.",
+   "theorems": [
+    "ErasurePebbling.theoremA",
+    "ErasurePebbling.theoremA_upper",
+    "ErasurePebbling.theoremA_lower",
+    "ErasurePebbling.estar_le_erasures",
+    "ErasurePebbling.floor_length",
+    "ErasurePebbling.floor_not_attained",
+    "ErasurePebbling.tight_of_length",
+    "ErasurePebbling.pot_le_erasures",
+    "ErasurePebbling.pot_place",
+    "ErasurePebbling.pot_remove",
+    "ErasurePebbling.pot_empty",
+    "ErasurePebbling.pot_target"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_reach": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED, RC-02 Theorem B1: reach(p,e) >= (e+2)*2^(p-2) for p >= 2 (theoremB1), by Bennett's schedule to 2^(p-1) (bennett_seg, via bennett_general) followed by e phases that climb 2^(p-2) cells above a stone and erase the stone (phase_seg). Conjecture B2 at e = 0 in full generality, reach(p,0) = 2^(p-1) (reachIs_zero, via reach_impossible_general). The upper bound of B2 for e >= 1 is OPEN (see ErasurePebbling/NOTES.md).",
+   "theorems": [
+    "ErasurePebbling.theoremB1",
+    "ErasurePebbling.bennett_seg",
+    "ErasurePebbling.phase_seg",
+    "ErasurePebbling.reachIs_zero"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_corollaries": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED corollary of Theorem A: the first chain length at which one more erasure lowers the optimal move count is n = (p-1)(e+1)+2 (drop_threshold; estar_threshold computes e* at (p-1)(e+1)+1 and (p-1)(e+1)+2), matching data/erasure/drops.md.",
+   "theorems": [
+    "ErasurePebbling.drop_threshold",
+    "ErasurePebbling.estar_threshold"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_bounded": {
+   "status": "proved_bounded",
+   "scope": "BOUNDED, native_decide, ORACLE LEVEL: the bit-mask BFS oracle mstarE / reachableE of ErasurePebbling/Basic.lean (same rules as IsPlay, not linked to it by proof) reproduces the RC-02 anchors M*(4,3,.)=9,7,7,7; M*(6,4,.)=15,11,11,11; M*(16,5,.)=71,45,37,31; M*(16,6,0)=51; M*(16,7,0)=49; M*(16,6,1)=41; M*(17,6,0)=57 (anchors_table); Conjecture B2 reach(p,e) = (e+2)*2^(p-2) for p=3 (e<=6), p=4 (e<=4), p=5 (e<=2) (conjB2_p3/p4/p5); the inequality M*(n,p,e+1) <= M*(n,p+1,e) for n <= 2^(p-1), p<=4, e<=3 (ineq_small) and its counterexample M*(10,3,3)=21 > 19=M*(10,4,2) (ineq_counterexample); non-monotonicity M*(16,5,0)=71 > 57=M*(17,6,0) (non_monotone_16_17).",
+   "theorems": [
+    "ErasurePebbling.anchors_table",
+    "ErasurePebbling.conjB2_p3",
+    "ErasurePebbling.conjB2_p4",
+    "ErasurePebbling.conjB2_p5",
+    "ErasurePebbling.ineq_small",
+    "ErasurePebbling.ineq_counterexample",
+    "ErasurePebbling.non_monotone_16_17"
+   ],
+   "native_decide_theorems": [
+    "ErasurePebbling.anchors_table",
+    "ErasurePebbling.conjB2_p3",
+    "ErasurePebbling.conjB2_p4",
+    "ErasurePebbling.conjB2_p5",
+    "ErasurePebbling.ineq_counterexample",
+    "ErasurePebbling.ineq_small",
+    "ErasurePebbling.non_monotone_16_17"
+   ],
    "axiom_free_theorems": [],
    "carried_hypotheses": {},
    "proves_hypotheses": {}
