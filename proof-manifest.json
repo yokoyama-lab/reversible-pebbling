@@ -2189,9 +2189,7 @@
     "RevPebbling.RetentionPremium.premium_8_4",
     "RevPebbling.RetentionPremium.retention_beats_erasure_8_4"
    ],
-   "axiom_free_theorems": [
-    "RevPebbling.RetentionPremium.reachSet_succ"
-   ],
+   "axiom_free_theorems": [],
    "carried_hypotheses": {},
    "proves_hypotheses": {}
   },
@@ -2230,10 +2228,7 @@
     "RevPebbling.NearFull.gameH_5_4_of_family"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": [
-    "RevPebbling.NearFull.nth_cons_succ",
-    "RevPebbling.NearFull.nth_cons_zero"
-   ],
+   "axiom_free_theorems": [],
    "carried_hypotheses": {},
    "proves_hypotheses": {}
   },
@@ -2257,10 +2252,7 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [
-    "RevPebbling.XLift.liftAux_succ",
-    "RevPebbling.XLift.liftAux_zero",
-    "RevPebbling.XLift.liftIter_succ",
-    "RevPebbling.XLift.liftIter_zero"
+    "RevPebbling.XLift.floorVal_le"
    ],
    "carried_hypotheses": {},
    "proves_hypotheses": {}
@@ -2415,13 +2407,7 @@
     "RevPebbling.HalfReachQuantile.gameT_of_interval"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": [
-    "RevPebbling.HalfReachQuantile.Fcost_zero",
-    "RevPebbling.HalfReachQuantile.dCount_one",
-    "RevPebbling.HalfReachQuantile.halfCost_succ",
-    "RevPebbling.HalfReachQuantile.halfCost_zero",
-    "RevPebbling.HalfReachQuantile.rowsDownFrom_succ"
-   ],
+   "axiom_free_theorems": [],
    "carried_hypotheses": {},
    "proves_hypotheses": {}
   },
@@ -2442,10 +2428,7 @@
     "RevPebbling.HalfReachDispersion.pigeonhole_five"
    ],
    "native_decide_theorems": [],
-   "axiom_free_theorems": [
-    "RevPebbling.HalfReachDispersion.dCount_five_one",
-    "RevPebbling.HalfReachDispersion.pigeonhole_five"
-   ],
+   "axiom_free_theorems": [],
    "carried_hypotheses": {},
    "proves_hypotheses": {}
   }

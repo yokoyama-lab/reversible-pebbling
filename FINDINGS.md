@@ -438,7 +438,9 @@ merged_prefix_is_min_split` として既にリポジトリにあった）。`30c
 * `proof-manifest.json` は生成器の Lean 非依存部分（ステージ辞書、定理名、ハッシュ、
   完全性検査、仮説の状態）を同じコードで再現して書いた。新ステージの
   `native_decide_theorems` / `axiom_free_theorems` だけは**証明スクリプトから読み取った予測**で、
-  PR の CI の byte 単位比較が訂正する（不一致なら diff が annotation と artifact に出る）。
+  PR の CI の byte 単位比較が訂正した（run 35897510082 の diff: native は予測どおり 0 件、
+  axiom-free は予測 14 本が外れ（`rfl` / `decide` の一行証明でも `propext` 等に依存していた）、
+  `XLift.floorVal_le` 1 本が加わった。46 → **33** 本。差分は annotation の diff をそのまま適用）。
 
 ## 1. CI — 14 回連続 `cancelled` の原因（`gh` で実測）
 
@@ -514,7 +516,7 @@ manifest を書かずに落ちる（余計な `UNLISTED_MODULES` 項目も落ち
 ## 4. やっていないこと
 
 * **ローカル `lake build` は未実行**（§0）。緑の根拠は PR の CI だけ。
-* 新ステージ 199 本の native / axiom-free の分類は**予測**（`rfl` / `decide` / `native_decide` の
-  一行証明から読んだ）。CI が差分を返したら manifest と README の数値を合わせる。
+* 新ステージ 199 本の native / axiom-free の分類は当初**予測**（`rfl` / `decide` / `native_decide` の
+  一行証明から読んだ）だったが、CI run 35897510082 が返した差分を適用済み（§0: axiom-free 46 → 33）。
 * `scripts/test_check_axioms.py` は CI に入れていない（FINDINGS §6 のまま。Lean が要る）。
 * `Superadd` の具体例、`fRLE = fRow` の一般証明、`gameF n (n-1) = 2n+1` は未着手（§2, §3 に要件のみ）。

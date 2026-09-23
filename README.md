@@ -199,7 +199,7 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
 the rest are general (unbounded) proofs.  Of the 1134 theorems the
-manifest lists, **86 rest on a `native_decide` certificate and 46 need
+manifest lists, **86 rest on a `native_decide` certificate and 33 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
 per stage in `proof-manifest.json` (`native_decide_theorems`,
