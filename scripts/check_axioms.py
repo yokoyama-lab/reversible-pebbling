@@ -45,8 +45,8 @@ ALLOWED_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
 NATIVE_OK = ("Lean.ofReduceBool", "Lean.trustCompiler")
 
 # `theorem foo ...` / `lemma foo ...`, possibly behind private/protected
-# and possibly `@[simp]`-annotated on an earlier line.
-DECL = re.compile(r"^(?:private\s+|protected\s+|nonrec\s+)*"
+# and possibly `@[simp]`-annotated, on the same line or an earlier one.
+DECL = re.compile(r"^(?:@\[[^\]]*\]\s*)?(?:private\s+|protected\s+|nonrec\s+)*"
                   r"(?:theorem|lemma)\s+([A-Za-z_][\w'.!?]*)")
 NS_OPEN = re.compile(r"^namespace\s+([A-Za-z_][\w'.]*)")
 NS_END = re.compile(r"^end\s+([A-Za-z_][\w'.]*)\s*$")

@@ -421,3 +421,100 @@ merged_prefix_is_min_split` として既にリポジトリにあった）。`30c
 | `63f9403` | `scripts/check_axioms.py` と `scripts/test_check_axioms.py`（テストファースト） |
 | `30c648d` | `RateTransfer` / `RateTransferLow` の docstring 3 点訂正（散文のみ） |
 | `c2f83a4` | `proved_stages` に 2 ステージ（34 定理）、`proof-manifest.json` 再生成、README の数値 |
+
+---
+
+# 衛生作業 — CI の打ち切り、manifest の空白モジュール、担いだ仮説の棚卸し
+
+*branch `claude/hygiene-ci-and-proof-status` / 2026-09-23*
+
+## 0. 環境の注記（先に正直に）
+
+* この作業環境には **Lean が無い**（`elan` / `lean` / `lake` 不在。release.lean-lang.org、
+  GitHub の release ダウンロード、lakecache.blob.core.windows.net への egress が遮断されていて
+  取得できない）。よって**ローカルの `lake build` は一度も走らせていない**。
+* **Lean ソースは 1 バイトも変えていない**（`source_sha256` 137 件と `proof_bundle_sha256` は
+  不変）。変えたのは workflow・`scripts/*.py`・`proof-manifest.json`・README・本ファイル。
+* `proof-manifest.json` は生成器の Lean 非依存部分（ステージ辞書、定理名、ハッシュ、
+  完全性検査、仮説の状態）を同じコードで再現して書いた。新ステージの
+  `native_decide_theorems` / `axiom_free_theorems` だけは**証明スクリプトから読み取った予測**で、
+  PR の CI の byte 単位比較が訂正する（不一致なら diff が annotation と artifact に出る）。
+
+## 1. CI — 14 回連続 `cancelled` の原因（`gh` で実測）
+
+| 見たもの | 実測 |
+|---|---|
+| `gh run list --limit 20` | 2026-08-21 以降の `main` の run は 20 件すべて `cancelled`（push も schedule も） |
+| 中断されなかった run の所要時間 | すべて **1h30m2x**（例: run 35527678026、schedule、18:00:55 → 19:31:18） |
+| その job の annotation | **"The job has exceeded the maximum execution time of 1h30m0s"** |
+| ステップの結論 | `Build all proofs` = `cancelled`（18:00:58 → 19:31:12）、manifest 以降の 3 ステップ = `skipped` |
+| 短い cancelled（4〜40 分） | 次の push による `concurrency.cancel-in-progress` |
+| 最後の緑 | 2026-08-06、**3.5 分**（`AnchorCertify4798` は 2026-08-07 に入った。単体 5510〜6084 s） |
+
+つまり原因は FINDINGS §1 の推測どおり **`timeout-minutes: 90` 対 約 2.25 時間のビルド**であり、
+push 直後の短い cancel は concurrency による二次的なもの。
+
+修正（`.github/workflows/build.yml`）:
+
+* **`.lake/build` を actions/cache で保存・復元**（鍵 = toolchain + lake-manifest + lakefile の
+  ハッシュ + commit、restore-keys で直近の cache に fallback）。Lake は内容ハッシュで再ビルド
+  判定をするので、変更の無いモジュールは no-op になり、通常の run は数分で終わる。
+* 保存は **`if: always()`** — 失敗や timeout で切れた run も出来上がったモジュールを次に渡す
+  ので、cold build が 1 回で収まらなくても次の run が続きを建てる。
+* `timeout-minutes: 340`（backstop。上限 360）。`main` では cancel-in-progress を切る。
+* manifest 不一致のとき **diff を annotation に**（最大 10 本 × 3500 字）、再生成した
+  `proof-manifest.json` を **artifact に**（`gh run view --log` が 403 になる環境でも読める）。
+* schedule を日・水の週 2 回に（cache は 7 日触られないと消える）。
+* mathlib の olean は従来どおり `lake exe cache get`（lean-action）。toolchain・mathlib の版は
+  動かしていない。CI 対象も弱めていない。
+
+## 2. `proved_stages` に 0 件のモジュール — 11 ではなく **13**
+
+FINDINGS §4 の 11 に加え、`half-reach-merge` の merge（`0d3feab`）で
+`HalfReachQuantile` / `HalfReachDispersion` が増えていた（FINDINGS-B1 の「残る穴」）。
+`scripts/check_axioms.py` の宣言列挙で全 134 モジュールを照合して確認した。
+
+| モジュール | 定理 | 処置 | ステージ鍵 |
+|---|---:|---|---|
+| `PebblingGame` | 2 | 登録（BOUNDED、`native_decide`。**`mstar` は `ReachIn`/`gameF` に接続されていない**独立モデルだと `scope` に明記） | `pebbling_game_bfs_tables` |
+| `DispersionGeneral` / `DispersionBound5033` / `DispersionRecover` | 7+8+1 | 登録（一般形＋ `q = 50/33` の適用＋ `47/31` の再導出） | `dispersion_general_parametric` |
+| `RetentionPremium` | 26 | 登録（検証済 BFS の健全性・完全性は一般、値は kernel `decide` 2 点＋ `native_decide` 3 点） | `retention_premium_verified_bfs` |
+| `NearFull` | 34 | 登録（`gameH n (n-1) = n+1`、`n ≥ 3` すべて。`gameF n (n-1) = 2n+1` は**仮説のまま**と明記） | `near_full_half_reach` |
+| `XLift` | 13 | 登録（整数リフトの健全性、`cand`/`cap` に無依存） | `xlift_integer_lift_soundness` |
+| `ShapeMonotone` | 27 | 登録（`ok` 検査器の健全性＋ 4 アンカー。private の `toy_at` は名前で参照できないため除外。「`Shape` が `ŷ` である」ことは Lean 外だと明記） | `shape_monotone_checker` |
+| `TieBand` | 13 | 登録（C-flat の会計。`hcapzone`/`hmono` 以外の enclosure は仮説のままと明記） | `tie_band_cflat` |
+| `CapZone` | 29 | 登録（cap zone の特性、`hcapzone` の解消） | `cap_zone_level_below` |
+| `HalfReachQuantile` | 33 | 登録（区間全体の閉形式 `gameH n S = halfCost S n`、`Smin_eq_iff`、`gameT_Smin`） | `half_reach_closed_form_interval` |
+| `HalfReachDispersion` | 11 | 登録（(4) の道の左端下界） | `half_reach_dispersion_route` |
+| `CutUpper` | 3 | **登録しない**。`gameF_le_upper` の `hdom` は `CutUpperFix.dom_impossible` で**充足不能**（ステージ `link1_ge_three_terms` の `scope` が「VACUOUS、意図的に除外」と記録済み）。理由を生成器の `UNLISTED_MODULES` と manifest の `modules_without_stage` に載せた | — |
+
+合計 **10 ステージ・204 定理**を追加: 71 → **81** 鍵、935 → **1139** 定理。README の 4 つの数値
+（定理数・ステージ数・native・axiom-free）を合わせ、`check_claims.py` は手元で `claims OK`。
+
+**再発防止**: 生成器に**モジュール完全性検査**を足した。`RevPebbling/**/*.lean` の各モジュールは
+「いずれかのステージに定理が載る」か「`UNLISTED_MODULES` に理由つきで載る」かのどちらかでなければ
+manifest を書かずに落ちる（余計な `UNLISTED_MODULES` 項目も落ちる）。結果は manifest の
+`modules_without_stage` に出る。`check_axioms.py` の宣言列挙は `@[csimp] theorem …` のように
+属性が同じ行にある定理を見落としていたので直した（`AnchorGrid`/`AnchorPacked`/`RLEFix` の
+`*_eq_fast`、`Seam.eps_two`、`Shape.Ihead_of_nonpos` が見えていなかった）。
+
+## 3. 担いだ仮説 4 鍵（manifest `hypotheses` の `proved` 以外）
+
+| 鍵 | 担う定理 | 判定 | 閉じるのに要るもの |
+|---|---|---|---|
+| `Submult RevPebbling.RLEPebble.fRLE` | `GrowthBounds.growth_le_2_6106`（1 本） | **carried（本物）**。ただし同じ証明書を `fRow_60` 経由で読む `BlockSim.c_le_2_6106 : c ≤ 2.6106` が既に無条件で manifest にあり、結果としての上界には仮説が残っていない | `∀ S, fRLE S = fRow S`、すなわち RLE 生成器 `rleRows` そのものの検証。`RLECertify` は「検証ではなく証明書の検査」で閉じる設計なので、これは設計方針の変更。値の一致は `S = 10, 20, …, 60` の 6 点のみ |
+| `Submult f` | `GrowthRate` 6 本 + `GrowthLower.growth_ge_of_geometric` | **schematic**: `f` は各定理の束縛変数（`{f : ℕ → ℕ}`）。任意の劣乗法的 `f` についての一般補題であり「解消」する対象ではない。具体例 `Submult fRow` は `BlockSim.submult_fRow` で証明済 | なし（鍵の性質） |
+| `Superadd f` | `Profile.subadditive_shifted` / `tendsto_profile` / `profile_concave_rat` | **schematic**（`{f : ℕ → ℝ → ℝ}`）。ただし**具体例が Lean に 1 つも無い** | 数え上げ側の超乗法性 `N_S(a) N_t(b) ≤ K · N_{S+t}(ab)` を対数形 `Superadd (fun S x => log N_S x) (log K)` に落とす定理。`SeamIdentity.supermult_closed` は `(1 − ε)` 因子つきの形で、`ε < 3/5` の定数を `c` に吸収すれば候補になるが、`Superadd` の量化 `∀ S t x y`（実数 `x y`）と `N` の整数格子の橋（floor/ceil の単調性）が別に要る。上界側の話で `c` には触れない |
+| `KappaAttained κ`（旧鍵 `KappaAttained`） | `Final.c_ge_of_rocq` | **schematic**（`{κ : ℝ}`）。旧鍵が裸だったのは生成器の正規表現が ASCII 識別子しか拾わず `κ` を落としていたため。具体例 `KappaAttained KLO`（`KappaEnclosure.kappaAttained_KLO`）と `KappaAttained kappaStar`（`KappaAttainment.kappaAttained_kappaStar`）は証明済 | なし（鍵の性質） |
+
+生成器側の変更: 引数の正規表現を Unicode 識別子対応にし、**担う定理すべてが引数を自ら束縛する鍵**を
+`status: "schematic"` と出すようにした（`proved` / `schematic` / `carried` の 3 値）。
+`check_claims.py` の「proved なのに未証明と書いてある」検査は `proved` にしか反応しないので影響無し。
+
+## 4. やっていないこと
+
+* **ローカル `lake build` は未実行**（§0）。緑の根拠は PR の CI だけ。
+* 新ステージ 204 本の native / axiom-free の分類は**予測**（`rfl` / `decide` / `native_decide` の
+  一行証明から読んだ）。CI が差分を返したら manifest と README の数値を合わせる。
+* `scripts/test_check_axioms.py` は CI に入れていない（FINDINGS §6 のまま。Lean が要る）。
+* `Superadd` の具体例、`fRLE = fRow` の一般証明、`gameF n (n-1) = 2n+1` は未着手（§2, §3 に要件のみ）。
