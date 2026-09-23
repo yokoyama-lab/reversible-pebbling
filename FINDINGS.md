@@ -479,7 +479,7 @@ FINDINGS §4 の 11 に加え、`half-reach-merge` の merge（`0d3feab`）で
 | `PebblingGame` | 2 | 登録（BOUNDED、`native_decide`。**`mstar` は `ReachIn`/`gameF` に接続されていない**独立モデルだと `scope` に明記） | `pebbling_game_bfs_tables` |
 | `DispersionGeneral` / `DispersionBound5033` / `DispersionRecover` | 7+8+1 | 登録（一般形＋ `q = 50/33` の適用＋ `47/31` の再導出） | `dispersion_general_parametric` |
 | `RetentionPremium` | 26 | 登録（検証済 BFS の健全性・完全性は一般、値は kernel `decide` 2 点＋ `native_decide` 3 点） | `retention_premium_verified_bfs` |
-| `NearFull` | 34 | 登録（`gameH n (n-1) = n+1`、`n ≥ 3` すべて。`gameF n (n-1) = 2n+1` は**仮説のまま**と明記） | `near_full_half_reach` |
+| `NearFull` | 29 | 登録（`gameH n (n-1) = n+1`、`n ≥ 3` すべて。`gameF n (n-1) = 2n+1` は**仮説のまま**と明記） | `near_full_half_reach` |
 | `XLift` | 13 | 登録（整数リフトの健全性、`cand`/`cap` に無依存） | `xlift_integer_lift_soundness` |
 | `ShapeMonotone` | 27 | 登録（`ok` 検査器の健全性＋ 4 アンカー。private の `toy_at` は名前で参照できないため除外。「`Shape` が `ŷ` である」ことは Lean 外だと明記） | `shape_monotone_checker` |
 | `TieBand` | 13 | 登録（C-flat の会計。`hcapzone`/`hmono` 以外の enclosure は仮説のままと明記） | `tie_band_cflat` |
@@ -488,7 +488,7 @@ FINDINGS §4 の 11 に加え、`half-reach-merge` の merge（`0d3feab`）で
 | `HalfReachDispersion` | 11 | 登録（(4) の道の左端下界） | `half_reach_dispersion_route` |
 | `CutUpper` | 3 | **登録しない**。`gameF_le_upper` の `hdom` は `CutUpperFix.dom_impossible` で**充足不能**（ステージ `link1_ge_three_terms` の `scope` が「VACUOUS、意図的に除外」と記録済み）。理由を生成器の `UNLISTED_MODULES` と manifest の `modules_without_stage` に載せた | — |
 
-合計 **10 ステージ・204 定理**を追加: 71 → **81** 鍵、935 → **1139** 定理。README の 4 つの数値
+合計 **10 ステージ・199 定理**を追加: 71 → **81** 鍵、935 → **1134** 定理（当初 204 本と書いたが、`NearFull` の `private theorem` 5 本は名前が mangle されて他ファイルから `#print axioms` できず、CI run 35875510165 の manifest 再生成が「unknown constant」で落ちた。5 本を一覧から外し、`check_axioms.declarations` も `private` を列挙しないようにした）。README の 4 つの数値
 （定理数・ステージ数・native・axiom-free）を合わせ、`check_claims.py` は手元で `claims OK`。
 
 **再発防止**: 生成器に**モジュール完全性検査**を足した。`RevPebbling/**/*.lean` の各モジュールは
@@ -514,7 +514,7 @@ manifest を書かずに落ちる（余計な `UNLISTED_MODULES` 項目も落ち
 ## 4. やっていないこと
 
 * **ローカル `lake build` は未実行**（§0）。緑の根拠は PR の CI だけ。
-* 新ステージ 204 本の native / axiom-free の分類は**予測**（`rfl` / `decide` / `native_decide` の
+* 新ステージ 199 本の native / axiom-free の分類は**予測**（`rfl` / `decide` / `native_decide` の
   一行証明から読んだ）。CI が差分を返したら manifest と README の数値を合わせる。
 * `scripts/test_check_axioms.py` は CI に入れていない（FINDINGS §6 のまま。Lean が要る）。
 * `Superadd` の具体例、`fRLE = fRow` の一般証明、`gameF n (n-1) = 2n+1` は未着手（§2, §3 に要件のみ）。

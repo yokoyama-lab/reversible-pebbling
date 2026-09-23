@@ -46,7 +46,7 @@ NATIVE_OK = ("Lean.ofReduceBool", "Lean.trustCompiler")
 
 # `theorem foo ...` / `lemma foo ...`, possibly behind private/protected
 # and possibly `@[simp]`-annotated, on the same line or an earlier one.
-DECL = re.compile(r"^(?:@\[[^\]]*\]\s*)?(?:private\s+|protected\s+|nonrec\s+)*"
+DECL = re.compile(r"^(?:@\[[^\]]*\]\s*)?(?:(private)\s+|protected\s+|nonrec\s+)*"
                   r"(?:theorem|lemma)\s+([A-Za-z_][\w'.!?]*)")
 NS_OPEN = re.compile(r"^namespace\s+([A-Za-z_][\w'.]*)")
 NS_END = re.compile(r"^end\s+([A-Za-z_][\w'.]*)\s*$")
@@ -96,9 +96,16 @@ def declarations(module: str) -> list[str]:
             stack.pop()
             continue
         md = DECL.match(line)
-        if md:
+        if md and not md.group(1):
+            # A `private` theorem is skipped: its real name is mangled
+            # (`_private.<module>.0.<name>`) and cannot be referred to from
+            # another file, so `#print axioms` on the visible name fails
+            # with "unknown constant" -- which is what broke CI run
+            # 35875510165 when five NearFull helpers were listed.  They are
+            # still audited indirectly through every public theorem that
+            # uses them.
             prefix = ".".join(stack)
-            names.append(f"{prefix}.{md.group(1)}" if prefix else md.group(1))
+            names.append(f"{prefix}.{md.group(2)}" if prefix else md.group(2))
     return names
 
 
