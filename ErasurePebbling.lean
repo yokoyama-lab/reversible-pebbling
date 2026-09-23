@@ -2,3 +2,4 @@ import ErasurePebbling.Basic
 import ErasurePebbling.Board
 import ErasurePebbling.Sweep
 import ErasurePebbling.Reach
+import ErasurePebbling.Potential
