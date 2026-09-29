@@ -12,3 +12,6 @@ name = "SpookyPebbling"
 
 [[lean_lib]]
 name = "SpookyPebblingExtra"
+
+[[lean_lib]]
+name = "SpookyTree"
