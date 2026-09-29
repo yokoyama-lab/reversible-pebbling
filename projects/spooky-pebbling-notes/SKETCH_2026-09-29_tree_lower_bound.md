@@ -263,3 +263,12 @@ lb/e1_random.py の無作為の合法な歩き 1640 本（h=3,4,5、上限 h+1..
 スクリプト: lb/critic4/（chain_dp.py 等）、lb/review_chain/（gdp.py, gdpf.py, sim.py, rbfs.c, rwalk.py, rgen.py, anal.py）
 
 **未了**: 定数を詰めた解析、Lean 化（層 1 には定理証明系が要る）、Ω(n log n) との log log n の差（交換論法が候補、SKETCH 第 5 回末尾）。
+
+## 第 7 回（2026-09-30）: 層 1 — Lean 4 で機械証明
+
+`github.com/yokoyama-lab/spooky-pebbling-lean` の `SpookyTree/`（commit a96d392、7 モジュール・約 930 行）。
+証明はエピソードを使わず「置く手」だけで数える形に組み直した（補題 R・補題 F・手数 = 2×置く手 − 1・切断の補題・算術）。
+- `time_lower_bound_log`: 上限 h+1 の正しい手順の手数 T は T + 1 ≥ 2(2^h−1) + (⌊(h−1)/(2⌊log₂h⌋+3)⌋ − 2)·2^h（= Ω(n log n / log log n)）
+- 検査: クリーンビルド緑、公理は標準 3 つ、sorry 等 0、変異注入（自分で 3 種、proof-gatekeeper が独立に 3 種）すべて検出、
+  `ex2_valid` で `Valid` が空虚でないことを確認。ghost 無条件の広いモデルなので下界は KSS の意味論に移る
+- 残り: Ω(n log n) との log log n の差、定数

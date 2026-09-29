@@ -58,6 +58,6 @@ p=9 の 105 手の証人で確定）。h=6 は未確定（`PREREG_2026-09-29_tre
 深さ d で区切った形の族の上界（p2_normal）: d=2 → 5,21,57,167,463、d=3 → 5,21,57,141,363（h=2..6）。
 深さ d の族は h≤d+2 で最小手数に一致し h=d+3 で外れる ⟹ 固定の少数の形の漸化式では閉じない（詳細は SKETCH 第 3 回）。
 
-## 超線形の下界（2026-09-30・層 2）
+## 超線形の下界（2026-09-30・**層 1**＝Lean: spooky-pebbling-lean SpookyTree/ の time_lower_bound_log、commit a96d392）
 
 **T(T_h, h+1) = Ω(n log n / log log n)**（KSS の O(n log n) と log log n の差）。証明と検査の経過は SKETCH 第 4〜6 回、台帳 R-Q35-02。
