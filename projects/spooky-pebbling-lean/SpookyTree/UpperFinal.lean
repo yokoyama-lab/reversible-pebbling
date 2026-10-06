@@ -14,9 +14,9 @@
   `⌊log₂ h⌋ · (T + 3) ≤ 2 (4h + ⌊log₂ h⌋) · 2^h`、すなわち `T = O(2^h · h / log h) = O(n log n / log log n)`。
 * `time_theta`: 既存の下界 `time_lower_bound_log` と並べた形。
 
-モデルは下界と同じ `Valid`（`ghost` が無条件の広いモデル）。この手順は `ghost` を子が揃っている頂点にも打つので、
-KSS の意味論（ゴーストは導出）での合法性は、この定理からは直接には出ない
-（KSS の意味論で合法な版は `notes/spooky-pebbling/tree-gap/blockgen.py` の手順で、再生で検査している）。
+モデルは下界と同じ `Valid`（`ghost` が無条件の広いモデル）。この手順は `ghost` を子が揃っている頂点（葉）にも打つので、
+KSS の意味論（ゴーストは導出）での合法性は、このファイルの定理からは直接には出ない。
+KSS の意味論への移行は `UpperKSS.lean`（`validK_of_valid`、`time_theta_kss`）で行う。
 -/
 import SpookyTree.UpperBlock
 import SpookyTree.Final
