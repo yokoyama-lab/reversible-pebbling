@@ -3,8 +3,9 @@
 > ✅ **2026-10-06 に証明済み（層1）。** `s ≥ 2`・`n ≥ θ(s)` で `T_UP = T_UG + 1`（n に上限なし）。
 > `spooky-pebbling-lean` の `SpookyPebblingExtra/Keystone.lean`（commit ce36c6e、`TUP_eq_TUG_add_one_of_theta_le`・
 > `keystone`・`delta_sign`）。経緯と検査は `keystone/RESULT.md`、台帳は R-Q7-13。
-> **決まったのは符号だけで、`n ≥ B_4(s)` の値は未証明。** 下の §1 の「表全体が層1 になる」は、
-> Cor 4.12 と δ から漸化式で定義した関数が `T_UG` に一致することを Lean で述べて初めて言える（未着手）。
+> 値も同日に閉じた: `SpookyPebblingExtra/Envelope.lean`（commit bb4a144）で **すべての `s ≥ 2`・`n ≥ 1` について
+> `T_UP(n,s) = max_m (2mn − β_m(s))`**（`TUP_upper_envelope`）。`T_UG` は δ の符号で `T_UP ± 1`。台帳 R-Q7-24。
+> 鎖の厳密値表は全域で層1 になった（§1 の漸化式の経路ではなく、上包絡を直接示した）。
 > なお本文の δ は `T_UP = T_UG + δ` の向き（原稿 P1・`Sign.lean` の `δ = T_UG − T_UP` とは符号が逆）。
 
 > **主張**: 鎖の厳密値表で残っている層3 の部分は、**次の 1 つの不等式**に帰着する。
