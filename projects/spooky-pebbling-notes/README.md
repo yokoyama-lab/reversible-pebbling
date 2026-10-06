@@ -5,6 +5,12 @@
 
 ## 現在の状態（handoff: 2026-08-13 夕）
 
+> **2026-10-07 追記: 鎖の残り (a) は Lean で閉じた。** δ の符号（`n` に上限なし）と上包絡
+> $T_{UP}(n,s)=\max_m(2mn-\beta_m(s))$（すべての $n\ge1$、$s\ge2$）が `spooky-pebbling-lean` の
+> `SpookyPebblingExtra/Keystone.lean`（`ce36c6e`）と `Envelope.lean`（`bb4a144`）で証明された。
+> **状態と検査は `keystone/STATUS.md`。** 下の本文は直していないので、「残るのは層3: (a) 傾き 8 以降の上界」と
+> 「δ の符号は $n\le B_4(s)-1$ まで」の記述は (a) と符号について古い。(b) 鎖以外の DAG は木の線（`TREE_STATUS.md`）を見よ。
+
 **実行中のジョブは無い**（`probe_delta`・systemd の `spooky-sat-s6`・`exchange.py` すべて完了）。
 2026-08-12 の現状節は本節に置き換えた（古い判定に誤りがあったため。下の「訂正」を見よ）。
 
