@@ -27,6 +27,33 @@ spooky pebble game（`ghost` 無条件の広いモデル。**下界は KSS Def 2
 `Valid.others` を潰す・`False` の混入）はすべてビルドを落とし、戻すと緑。紙の証明と経緯は
 `~/dev/notes/spooky-pebbling/SKETCH_2026-09-29_tree_lower_bound.md`。
 
+### 上界と増大度の決定（`SpookyTree/Upper*.lean`、2026-10-06）
+
+最小ペブル数 `h + 1` での最小手数は **`Θ(n log n / log log n)`** である。KSS Thm 5.5 の `O(n log n)` の構成は漸近最適でない
+（KSS §6 の「construct a more time-efficient algorithm for the binary tree or prove it is impossible」に前者で答える）。
+
+上界は**ブロック構成**による。深さ `d` のブロック根を処理する間、祖先の兄弟をすべてゴーストにしてあるので、
+部分木の外にあるペブルは根の 1 個だけで、余裕が `d` 個ある。その余裕で `L` 段下の前線 `2^L` 個を同時に保持すると、
+ブロックの内部 `L` 段は再計算なしで片づき、部分木の再計算は `L` 段に 1 回で済む（KSS は 1 段に 1 回）。
+Lean の手順 `strategy h Λ` は、深さ `2^Λ` 未満では幅 1、それ以降は幅 `Λ`、高さ `Λ + 1` 以下は最下段、という切りを使う。
+
+| 定理 | 内容 |
+|---|---|
+| `onFront_spec`・`placeInt_spec`・`removeInt_spec`・`compute_spec` | 部品の仕様（合法・部分木の中・ペブル数の上限・打った後の配置）。配置は「ブロック根から `i` 段下は全部同じ状態」の形 `Pat` で書く |
+| `block_spec` | 深さ 1 以上のブロック根 `y` の `T(y)`（全部ゴースト）を、`T(y)` 内のペブル `h` 個以下で全部空にする |
+| `valid_of_runs` | 手のリストについての仕様から `Valid` へ |
+| `time_upper_bound` | `1 ≤ Λ`、`2^(Λ+1) ≤ h + 1` なら、手数 `T` が `T + 3 ≤ 2(2^Λ + ⌊(h−1)/Λ⌋ + 1)·2^h` の妥当な手順がある |
+| `time_upper_bound_log` | `h ≥ 4` で `⌊log₂h⌋·(T + 3) ≤ 2(4h + ⌊log₂h⌋)·2^h` = **`T(T_h, h+1) = O(n log n / log log n)`** |
+| `time_theta` | 上の上界と `time_lower_bound_log` を並べた形 |
+| `validK_of_valid` | 妥当な手順は、手数もペブル数も変えずに KSS の意味論の手順（`ValidK`: `ghost` は子が揃っていないときだけ）に直せる（鎖の `KSSModel.lean` と同じ読み替え） |
+| `time_theta_kss` | `ValidK` についての上界と下界。**上界も下界も KSS の意味論の定理として読める** |
+
+検査（2026-10-06）: `lake build SpookyTree` 緑（独立の検査者がリポジトリの外でゼロからビルド）、上の定理の公理は標準 3 つのみ、
+`sorry`/`admit`/`axiom`/`native_decide` 0 件、新しい 5 ファイルの警告 0 件。変異注入は作成時の 10 種と独立の検査者の 16 種
+（ペブル数の上限を 1 下げる・仮定を緩める・ブロックの規則を 1 ずらす・`pc` が片方の子を数えない・`ValidK` の向きを逆にする 等）が
+すべてビルドを落とし、無変異の対照は通る。`strategy h Λ` と読み替え後の手順は `#eval` で書き出し、独立の再生器で小さい `h` を照合した。
+定数は詰まっていない（先頭の係数は下界 1/2、上界 8）。`ValidK` と KSS の集合列による定義の対応は、鎖と同じく符号化の読み替えによる。
+
 ## 定義の出典
 
 | もの | 出典 |
