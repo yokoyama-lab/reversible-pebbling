@@ -5,3 +5,7 @@ import SpookyTree.Cut
 import SpookyTree.Main
 import SpookyTree.Arith
 import SpookyTree.Final
+import SpookyTree.UpperCore
+import SpookyTree.UpperProg
+import SpookyTree.UpperBlock
+import SpookyTree.UpperFinal
