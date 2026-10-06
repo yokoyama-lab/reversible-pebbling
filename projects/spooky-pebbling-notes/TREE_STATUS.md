@@ -6,7 +6,7 @@
 > **Θ(n log n / log log n)**（上界をブロック構成で改良。KSS Thm 5.5 の O(n log n) は漸近最適でない）。
 > Lean: `spooky-pebbling-lean` の `SpookyTree/Upper*.lean`（commit 124dc44・14f9c87・4294897、`time_theta`・`time_theta_kss`）。
 > 経緯と検査は `tree-gap/RESULT.md`、台帳は R-Q35-03。**定数は詰まっていない**（下界 1/2・上界 8（Lean）/2（紙））。
-> **原稿 P2 は未更新**（「改良の余地は高々 log log n 因子」のまま）。P1 は穴 (b) で言及済み。
+> 原稿 P2 は 2026-10-06 に Θ の論文へ書き直した（Overleaf ad11795）。P1 は穴 (b) で言及（c904bfe）。
 
 ## 現在の状態（handoff: 2026-10-02）
 
