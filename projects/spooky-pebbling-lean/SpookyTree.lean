@@ -10,3 +10,6 @@ import SpookyTree.UpperProg
 import SpookyTree.UpperBlock
 import SpookyTree.UpperFinal
 import SpookyTree.UpperKSS
+import SpookyTree.SharpArith
+import SpookyTree.SharpCut
+import SpookyTree.SharpFinal
