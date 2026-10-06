@@ -2,6 +2,12 @@
 
 鎖（Q7）の状態は README.md の現状節。こちらは木（2026-09-29〜10-02 のセッション「P2」）だけを扱う。
 
+> ✅ **2026-10-06: 下の「次の作業候補 2」（log log n の差）は決着した。** 最小ペブル数 h+1 での時間は
+> **Θ(n log n / log log n)**（上界をブロック構成で改良。KSS Thm 5.5 の O(n log n) は漸近最適でない）。
+> Lean: `spooky-pebbling-lean` の `SpookyTree/Upper*.lean`（commit 124dc44・14f9c87・4294897、`time_theta`・`time_theta_kss`）。
+> 経緯と検査は `tree-gap/RESULT.md`、台帳は R-Q35-03。**定数は詰まっていない**（下界 1/2・上界 8（Lean）/2（紙））。
+> **原稿 P2 は未更新**（「改良の余地は高々 log log n 因子」のまま）。P1 は穴 (b) で言及済み。
+
 ## 現在の状態（handoff: 2026-10-02）
 
 ### 読む順
