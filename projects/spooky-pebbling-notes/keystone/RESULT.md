@@ -189,7 +189,7 @@ systemd-run --user --scope -p MemoryMax=24G -p MemorySwapMax=0 timeout 3600 lake
 ## 定理名と仮定
 
 ファイル: `spooky-pebbling-lean/SpookyPebblingExtra/Envelope.lean`（299 行、定義 1、定理 16、`example` 2）。
-コミット `bb4a144`（`main`。このセッションは push していない）。
+コミット `bb4a144`（`main`。このセッションは push していない。ただし `origin/main` は 19:04:12 に `bb4a144` へ進んでいる。reflog は `update by push` で、要石のときと同じく別セッションによるもの）。
 
 折れ目の定義 `brk`: `brk 0 s = 1`（傾き 2 の区間の左端を表す約束）、`brk 1 s = s`、`brk m 2 = m`（`m ≥ 2`）、
 `brk (m+1) (s+1) = brk m (s+1) + brk (m+1) s`（`s ≥ 2`）。`bb` は既存の `β`（`SlopeTight.lean`）。
