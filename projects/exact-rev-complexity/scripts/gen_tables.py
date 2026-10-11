@@ -3,7 +3,8 @@
 出力先は Overleaf 側のプロジェクト（`~/dev/overleaf/2026_erasure_pebbling/tables/`）。
 `main.tex` 側は tables/ 以下を input で取り込む。
 
-    python3 scripts/gen_tables.py
+    python3 scripts/gen_tables.py               # Overleaf へ
+    python3 scripts/gen_tables.py --out tables  # リポ内の tables/ へ
 """
 
 from __future__ import annotations
@@ -78,28 +79,62 @@ def esat() -> str:
     return "\n".join(lines) if seen else ""
 
 
-def reach() -> str:
-    """到達則: 実測 vs 我々の式 vs LTV Lemma 1。"""
+NA = "n/a"
+
+
+def ours_lb(p: int, e: int) -> int | None:
+    """定理 B1: reach(p,e) >= (e+2)2^{p-2}。主張は p >= 2 のみ。"""
+    return (e + 2) * 2 ** (p - 2) if p >= 2 else None
+
+
+def ltv_lb(p: int, e: int) -> int | None:
+    """LTV Lemma 1（本文 Prop. ltv）: reach(p,e) >= (e+1)2^{p-2}。主張は p >= 2 かつ e >= 1 のみ。
+
+    以前は data/exp03_reach.csv の ltv_lemma1_lb 列（2^{max(p-2,0)} で p=1 を丸めた値）を
+    そのまま印字し、p=1 で厳密値 1 を上回る偽の保証 2,3,4 を出していた（査読 09-18 必須 1・2）。
+    """
+    return (e + 1) * 2 ** (p - 2) if p >= 2 and e >= 1 else None
+
+
+def reach(data: list[dict] | None = None) -> str:
+    """到達則: 実測 vs 我々の式 vs LTV Lemma 1。適用範囲外のセルは n/a。
+
+    下界の列が厳密値を超えたら、あるいは CSV の formula 列が閉形式と食い違ったら止める。
+    """
+    if data is None:
+        data = rows("exp03_reach.csv")
     lines = [HEAD, r"\begin{tabular}{r r r r r}", r"\toprule"]
     lines.append(
         r"$p$ & $e$ & $\reach(p,e)$ & $(e+2)2^{p-2}$ & LTV $(e+1)2^{p-2}$ \\"
     )
     lines.append(r"\midrule")
-    for r in rows("exp03_reach.csv"):
+    for r in data:
         try:
             p, e = int(r["p"]), int(r["e"])
         except ValueError:
             continue
         if p > 6 or e > 3:
             continue
-        ltv = r.get("ltv_lemma1_lb") or (e + 1) * 2 ** (p - 2)
-        lines.append(f"{p} & {e} & {r['reach']} & {r['formula']} & {ltv}" + r" \\")
+        exact = int(r["reach"])
+        ours, ltv = ours_lb(p, e), ltv_lb(p, e)
+        if ours is not None and int(r["formula"]) != ours:
+            raise ValueError(f"CSV の formula 列が (e+2)2^(p-2) と食い違う: p={p} e={e} {r['formula']} != {ours}")
+        for name, lb in (("定理 B1", ours), ("LTV", ltv)):
+            if lb is not None and lb > exact:
+                raise AssertionError(f"{name} の下界 {lb} が厳密値 reach({p},{e})={exact} を超える")
+        cells = [str(exact)] + [NA if v is None else str(v) for v in (ours, ltv)]
+        lines.append(f"{p} & {e} & " + " & ".join(cells) + r" \\")
     lines += [r"\bottomrule", r"\end{tabular}", ""]
     return "\n".join(lines)
 
 
-def main() -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--out", type=Path, default=OUT, help=f"出力先（既定: {OUT}）")
+    out = ap.parse_args(argv).out
+    out.mkdir(parents=True, exist_ok=True)
     for name, text in [
         ("surface.tex", surface()),
         ("esat.tex", esat()),
@@ -108,8 +143,8 @@ def main() -> None:
         if not text:
             print(f"（{name} は生成できるデータが無い）")
             continue
-        (OUT / name).write_text(text)
-        print(f"生成: {OUT.relative_to(Path.home())}/{name}（{len(text.splitlines())} 行）")
+        (out / name).write_text(text)
+        print(f"生成: {out}/{name}（{len(text.splitlines())} 行）")
 
 
 if __name__ == "__main__":
