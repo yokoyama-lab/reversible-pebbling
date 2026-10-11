@@ -1,0 +1,49 @@
+{
+ "total": 78129765,
+ "quad": {
+  "g&sd": 12440,
+  "g&!sd": 0,
+  "!g&sd": 16972023,
+  "!g&!sd": 61145302
+ },
+ "sd_checked": 16984463,
+ "tpar_bad": 0,
+ "ns_bad": 0,
+ "peak_checked": 16984462,
+ "peak_bad": 0,
+ "alt_bad_graded": 0,
+ "alt_bad_nongraded": 16785494,
+ "alt_checked_nongraded": 16972023,
+ "ex_g_notsd": null,
+ "ex_ns_bad": null,
+ "ex_peak_bad": null,
+ "ex_alt_bad_nongraded": [
+  [],
+  [
+   0
+  ],
+  [
+   1
+  ],
+  [
+   2
+  ],
+  [
+   3
+  ],
+  [
+   4
+  ],
+  [
+   4,
+   5
+  ],
+  [
+   6
+  ]
+ ],
+ "ex_tpar_bad": null,
+ "n": 8,
+ "seconds": 2654.0,
+ "total_expected": 78129765
+}

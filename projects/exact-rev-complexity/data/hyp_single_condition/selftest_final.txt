@@ -1,0 +1,15 @@
+✔ 鎖 4: graded&sd・Tpar=7・no-slack・pmin=3  ({'graded': True, 'sd': True, 'D': 3, 'tpar_ok': True, 'ns_ok': True, 'alt_ok': True, 'lb01': 3, 'lbmax': 2, 'pmin': 3, 'peak_ok': True})
+✔ 二分木 D=2: pmin=7・alt 合法・no-slack  ({'graded': True, 'sd': True, 'D': 2, 'tpar_ok': True, 'ns_ok': True, 'alt_ok': True, 'lb01': 7, 'lbmax': 6, 'pmin': 7, 'peak_ok': True})
+✔ rem:hyp 反例 1 は graded でも sd でもない
+✔ rem:hyp 反例 1 で no-slack が破れる（時刻 1 に頂点 1 が無い配置がある）
+✔ rem:hyp 反例 2: Tpar=7・pmin=4
+✔ analyse が rem:hyp 反例 1 の no-slack 違反を検出  ([(1, 1), (1, 4)])
+✔ analyse（高速経路）が rem:hyp 反例 2 の peak 違反を検出  ({'graded': False, 'sd': False, 'D': 3, 'tpar_ok': True, 'ns_ok': False, 'ns_viol': [(0, 1), (0, 2), (0, 5), (0, 6)], 'alt_ok': False, 'lb01': 5, 'lbmax': 4, 'peak_ok': False})
+✔ analyse（pmin 経路）も同じく検出・pmin=4  ({'graded': False, 'sd': False, 'D': 3, 'tpar_ok': True, 'ns_ok': False, 'ns_viol': [(0, 1), (0, 2), (0, 5), (0, 6)], 'alt_ok': False, 'lb01': 5, 'lbmax': 4, 'pmin': 4, 'peak_ok': False})
+✔ W1（2 シンク）: graded・¬sd で no-slack も peak 下界も破れる（pmin=3 < n0+n1+1=5）  ({'graded': True, 'sd': False, 'D': 2, 'tpar_ok': True, 'ns_ok': False, 'ns_viol': [(1, 1), (1, 2), (1, 3), (1, 4)], 'alt_ok': True, 'lb01': 5, 'lbmax': 4, 'pmin': 3, 'peak_ok': False})
+✔ W2: sd・¬graded で no-slack・peak は成立し、交互スケジュールだけが非合法  ({'graded': False, 'sd': True, 'D': 3, 'tpar_ok': True, 'ns_ok': True, 'alt_ok': False, 'lb01': 3, 'lbmax': 2, 'pmin': 4, 'peak_ok': True})
+✔ 列挙数 n=3 = 3  (3)
+✔ 列挙数 n=4 = 21  (21)
+✔ 列挙数 n=5 = 315  (315)
+✔ 変異（取り除きに親を要求しない）で鎖 4 の pmin が 3 でなくなる  (1)
+自己検査: 全件合格

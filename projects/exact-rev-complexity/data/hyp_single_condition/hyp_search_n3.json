@@ -1,0 +1,25 @@
+{
+ "total": 3,
+ "quad": {
+  "g&sd": 2,
+  "g&!sd": 0,
+  "!g&sd": 1,
+  "!g&!sd": 0
+ },
+ "sd_checked": 3,
+ "tpar_bad": 0,
+ "ns_bad": 0,
+ "peak_checked": 2,
+ "peak_bad": 0,
+ "alt_bad_graded": 0,
+ "alt_bad_nongraded": 0,
+ "alt_checked_nongraded": 1,
+ "ex_g_notsd": null,
+ "ex_ns_bad": null,
+ "ex_peak_bad": null,
+ "ex_alt_bad_nongraded": null,
+ "ex_tpar_bad": null,
+ "n": 3,
+ "seconds": 0.1,
+ "total_expected": 3
+}

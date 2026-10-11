@@ -1,0 +1,37 @@
+{
+ "total": 21,
+ "quad": {
+  "g&sd": 4,
+  "g&!sd": 0,
+  "!g&sd": 11,
+  "!g&!sd": 6
+ },
+ "sd_checked": 15,
+ "tpar_bad": 0,
+ "ns_bad": 0,
+ "peak_checked": 14,
+ "peak_bad": 0,
+ "alt_bad_graded": 0,
+ "alt_bad_nongraded": 6,
+ "alt_checked_nongraded": 11,
+ "ex_g_notsd": null,
+ "ex_ns_bad": null,
+ "ex_peak_bad": null,
+ "ex_alt_bad_nongraded": [
+  [],
+  [
+   0
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   2
+  ]
+ ],
+ "ex_tpar_bad": null,
+ "n": 4,
+ "seconds": 0.1,
+ "total_expected": 21
+}
