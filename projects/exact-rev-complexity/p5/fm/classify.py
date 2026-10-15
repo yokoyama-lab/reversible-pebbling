@@ -13,7 +13,7 @@ def height(g):
 
 
 def is_caterpillar(g):
-    # 葉を取り除くと道（各頂点の非葉の子が高々 1 個）
+    # 根から下る 1 本の道に葉が付く木（各頂点の非葉の子が高々 1 個）．通常の「毛虫」（葉を除くと道）より狭い
     nonleaf = [c for c in KIDS[g] if KIDS[c]]
     return len(nonleaf) <= 1 and all(is_caterpillar(c) for c in nonleaf)
 

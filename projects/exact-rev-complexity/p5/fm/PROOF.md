@@ -88,27 +88,36 @@ F: 補題 1 で j ≤ S−1 かつ {u_1,…,u_j} ⊇ ch(r) なので j=S−1 で
 **系 6（F が正しくなる条件）.** 定理 5 の仮定の下で、根の子の部分木すべてで M=F が成り立つとする。
 f_c(s)=M(T_c,s) と書くと、F(T,S)=1+min_σ[A(σ)+B(σ)]、M(T,S)=1+min_σ A(σ)+min_τ B(τ)
 （A(σ)=Σ_i f_{σ(i)}(S−i+1)、B(τ)=Σ_i f_{τ(i)}(S−i)）なので、
-**M(T,S)=F(T,S) ⟺ A と B に共通の最小化順序がある。** とくに、子を全順序 ≺ で並べて
-c ≺ c' なら全ての s で f_c(s−1)−f_c(s) ≥ f_{c'}(s−1)−f_{c'}(s)（∞ を含めて）となるなら、≺ の順に大きい予算を割り当てる順序が
-A と B の両方で最小なので M=F。
+**M(T,S)=F(T,S) ⟺ A と B に共通の最小化順序がある。** とくに、子を全順序 ≺ で並べて、c ≺ c' なら
+s ≥ 2 で f_{c'}(s−1) < ∞ となるすべての s について f_c(s−1)−f_c(s) ≥ f_{c'}(s−1)−f_{c'}(s)（左辺が ∞ でもよい）、かつ
+f_{c'}(s−1) = ∞ なら f_c(s−1) = ∞ となるなら、≺ の順に大きい予算を割り当てる順序が A と B の両方で最小なので M=F。
 
 *証明.* 前半は式を並べただけ。後半は交換論法: c ≺ c' と予算 b > b' について
 f_c(b)+f_{c'}(b') ≤ f_c(b')+f_{c'}(b) は、両辺の差が Σ_{t=b'+1}^{b}[(f_c(t−1)−f_c(t)) − (f_{c'}(t−1)−f_{c'}(t))] ≥ 0 であることから従う
-（f_{c'}(b') = ∞ なら仮定より f_c(b') = ∞ で両辺 ∞）。順序を乱す対を入れ替えても A, B は増えないので、≺ の順が A, B の共通の最小。∎
+（f_{c'}(b') = ∞ なら仮定より f_c(b') = ∞ で両辺 ∞。使うのは t ≥ b'+1 ≥ 2 だけ）。順序を乱す対を入れ替えても A, B は増えないので、
+≺ の順が A, B の共通の最小。∎
 
-- 葉は予算 ≥ 1 なら 1 手で一定なので、葉以外の子が 1 個なら M=F（その子に最大の予算）。
-- 葉以外の子が 2 個 A, B なら、M<F ⟺ 2 つの割り当て問題の最適な順が食い違う。§4 の反例はこの最小の例。
+- （系 6 の仮定の下で）葉は予算 ≥ 1 なら 1 手で一定なので、葉以外の子が 1 個なら M=F（その子に最大の予算）。
+  仮定（子の部分木で M=F）は外せない: 根の子を §4 の反例 T15 と葉 5 枚にした木（n=21, S=7）では M=107 < F=109（critic の BFS と独立な F）。
+- （同じ仮定の下で）葉以外の子が 2 個 P, Q なら、M<F ⟺ 2 つの割り当て問題の最適な順が食い違う。§4 の反例はこの最小の例。
 - **系 6'（くも）. 根の子がちょうど S−1 個で、各子の部分木が鎖（脚）なら M(T,S)=F(T,S)。**
   *証明.* 鎖では M=F（Knill Thm 2.1）。≺ を脚の頂点数の降順にとる。脚の長さ l ≥ l' について
   f_l(s−1)−f_l(s) − (f_{l'}(s−1)−f_{l'}(s)) = Σ_{n=l'+1}^{l} 2[δ(n,s−1) − δ(n,s)] ≥ 0 を言えばよく
   （δ(n,s)=(F_c(n,s)−F_c(n−1,s))/2。f_l(s−1)=∞ なら左辺は ∞）、これは鎖の**点ごとの支配 δ(n,s) ≤ δ(n,s−1)** そのもの。
-  点ごとの支配は RevExact（arXiv:2609.15062）が Lean で示している: `RevPebbling/CountRecursion.lean` の
-  `gen_pointwise_dom`（行 `rowIter (s+1)` の各項 ≤ `rowIter s` の同じ項）と、`RowExact.lean` の
-  `gameF_eq_row`（鎖の最短手数 `gameF m (s+2)` = 行 `rowIter s` の先頭 m−1 項の和から作る `Fpre`）。
-  （所在: `~/dev/overleaf/2026_exact_reversible_pebbling/zenodo/dist/reversible-pebbling-exact-rate-1.0.0/`。
-  本作業ではこの 2 つの定理の主張を読み、両ファイルに `sorry` と `axiom` の行が無いことを grep で見ただけで、ビルドは確かめていない。）
-  RevExact の常設仮定（§Preliminaries の定義、逐語）: "Nodes 1..n form a chain; the source (node 0) is permanently available.
-  A move toggles a pebble on node i and is legal iff i = 1 or node i−1 carries a pebble."（我々の規則を道に制限したものと同じ。）∎
+  点ごとの支配は RevExact（arXiv:2609.15062）の Lean にある: `RevPebbling/CountRecursion.lean` の
+  `gen_pointwise_dom : ∀ s i (hi : i < (rowIter s).length), (rowIter (s+1))[i] ≤ (rowIter s)[i]` と、`RowExact.lean` の
+  `gameF_eq_row : ∀ s m, 1 ≤ m → m ≤ 2^(s+1) → gameF m (s+2) = Fpre (rowIter s) m`
+  （`Fpre l m = 1 + 2·(l の先頭 m−1 項の和)`、`rowIter_length : (rowIter s).length = 2^(s+1) − 1`、`gameF` は鎖のゲームの盤操作
+  `ReachIn` の最短手数）。よって δ(n,s+2) = (rowIter s)[n−2]（2 ≤ n ≤ 2^(s+1)）で、`gen_pointwise_dom` は
+  s ≥ 3、2 ≤ n ≤ 2^(s−2) の範囲で δ(n,s) ≤ δ(n,s−1) を与える。これは F_c(n,s−1) が有限な範囲とちょうど一致し、
+  範囲外（F_c(n,s−1)=∞）は上の ∞ の場合分けで扱える。
+  公理: 原本 `~/dev/github.com/yokoyama-lab/reversible-pebbling-lean`（commit 0d3feab。zenodo 配布物 PROVENANCE の source_commit と同じ）の
+  ビルド済み .olean を読み込んで `#print axioms` を実行し、両定理とも `[propext, Classical.choice, Quot.sound]` だけ
+  （critic が先に実行し、本作業でも再実行して同じ出力。このセッションで再ビルドはしていない）。
+  規則の常設仮定（RevExact の IEICE 原稿 `~/dev/overleaf/2026_exact_reversible_pebbling/ieice_paper.tex` 234 行、Preliminaries の定義、逐語）:
+  "Nodes 1..n form a chain; the source (node 0) is permanently available. A move toggles a pebble on node i and is legal iff
+  i = 1 or node i−1 carries a pebble."（arXiv 投稿版 §1 の文言は "A move toggles (places or removes) a pebble on node i and is legal
+  if i=1 or node i−1 carries a pebble"。どちらも我々の規則を道に制限したものと同じ。）∎
 
 ## 4. 反例（頂点数 15）
 
@@ -158,7 +167,8 @@ M 側（上界だけ使う）: 補題 3・4 の (≤) の構成で、置く順�
 
 検算（`family2.py`。F は `ftree.py`、M は定理 5 の式に部分木の値を入れたもの。部分木は 14 頂点以下で全数により M=F）:
 m=1, S=6, n=15: 差 2（§4 と同形）／m=1, S=8, n=21: 差 2／m=2, S=8, n=30: 差 4／m=2, S=9, n=35: 差 4／m=3, S=10, n=49: 差 6／m=4, S=12, n=72: 差 8。
-critic は m=2, n=30 で M=111 を自前の BFS でも確かめた。
+critic は m=2, n=30 で M=111 を自前の BFS でも確かめ、さらに (m,S)=(1,7),(1,9),(1,10),(1,12),(2,10),(2,11),(3,11) の 7 点でも差がちょうど 2m だった。
+（計算したのはこの 13 点。差が一般にちょうど 2m かは示していない。示したのは ≥ 2m。）
 
 **鎖を使う族（差が速く伸びる）.** k ≥ 3、S=k+3。根 r の子を、鎖 X_k（2^k 頂点、最小空間 k+1=S−2。Knill Thm 2.3）、星 Y_k（中心と S−2 枚の葉、最小空間 S−1）、
 葉 S−3 枚の計 S−1 個とする。定理 5 より（Y_k は予算 ≥ S−1 で 2(S−1)−1 手、鎖は M=F（Knill Thm 2.1））
@@ -183,7 +193,7 @@ critic は m=2, n=30 で M=111 を自前の BFS でも確かめた。
 | 8 | 275 | 11 | 6499 | 6017 | 482 |
 | 9 | 533 | 12 | 17013 | 15989 | 1024 |
 
-この族の差 F_c(2^k,k+2) − F_c(2^k,k+3) が k について増え続けることの一般の証明は書いていない（k ≤ 9 は計算）。
+この族の差 F_c(2^k,k+2) − F_c(2^k,k+3) は k=3, 4 でともに 2、k=4..9 では増加しているが、一般の k での単調性は示していない（k ≤ 9 は計算）。
 「いくらでも大きい」の根拠は命題 7 であり、こちらは伸び方の例。k=3, 4（n=17, 27）は critic の BFS でも M=69, 151。
 
 ## 6. 1 回の交差では足りない（n=23）

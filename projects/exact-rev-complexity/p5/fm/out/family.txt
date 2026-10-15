@@ -1,3 +1,6 @@
+k=3: n=17 S=6 F=71 F2=69 witness 69 moves, replay: ok: 69 moves, peak 6 pebbles, final {root}; F - witness = 2
+k=4: n=27 S=7 F=153 F2=151 witness 151 moves, replay: ok: 151 moves, peak 7 pebbles, final {root}; F - witness = 2
+k=5: n=45 S=8 F=375 F2=347 witness 347 moves, replay: ok: 347 moves, peak 8 pebbles, final {root}; F - witness = 28
 k=6: n=79 S=9 F=943 F2=907 witness 907 moves, replay: ok: 907 moves, peak 9 pebbles, final {root}; F - witness = 36
 k=7: n=145 S=10 F=2453 F2=2285 witness 2285 moves, replay: ok: 2285 moves, peak 10 pebbles, final {root}; F - witness = 168
 k=8: n=275 S=11 F=6499 F2=6017 witness 6017 moves, replay: ok: 6017 moves, peak 11 pebbles, final {root}; F - witness = 482

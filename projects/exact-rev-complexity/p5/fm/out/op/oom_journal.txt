@@ -1,0 +1,45 @@
+10月 15 22:58:07 op systemd[2489]: Started p5fm-cbt8.service - [systemd-run] /usr/bin/bash -c "python3 -c \"\nimport sys, time\nsys.setrecursionlimit(1000000)\nimport ftree as ft, cross_fast as cf\nfro
+10月 15 23:02:24 op systemd[2489]: p5fm-cbt8.service: Consumed 4min 16.505s CPU time over 4min 16.523s wall clock time, 13.2G memory peak.
+10月 15 23:17:51 op systemd[2489]: Started p5fm-cbt8.service - [systemd-run] /usr/bin/bash -c "python3 cbt_f2.py 8 2 > out/cbt8.txt 2>&1".
+10月 15 23:19:41 op systemd[2489]: Started p5fm-cbt10.service - [systemd-run] /usr/bin/bash -c "python3 cbt_f2.py 10 0 > out/cbt10.txt 2>&1".
+10月 15 23:27:21 op systemd[2489]: p5fm-cbt8.service: Failed with result 'oom-kill'.
+10月 15 23:27:21 op systemd[2489]: p5fm-cbt8.service: Consumed 8min 38.701s CPU time over 9min 29.866s wall clock time, 16G memory peak.
+10月 15 23:28:43 op systemd[2489]: Started p5fm-rand1.service - [systemd-run] /usr/bin/bash -c "python3 rand_bin.py 1 4000 20 40 > out/rand1.txt 2>&1".
+10月 15 23:28:43 op systemd[2489]: Started p5fm-rand2.service - [systemd-run] /usr/bin/bash -c "python3 rand_bin.py 2 4000 20 40 > out/rand2.txt 2>&1".
+10月 15 23:28:43 op systemd[2489]: Started p5fm-rand3.service - [systemd-run] /usr/bin/bash -c "python3 rand_bin.py 3 4000 20 40 > out/rand3.txt 2>&1".
+10月 15 23:28:43 op systemd[2489]: Started p5fm-rand4.service - [systemd-run] /usr/bin/bash -c "python3 rand_bin.py 4 4000 20 40 > out/rand4.txt 2>&1".
+10月 15 23:33:36 op systemd[2489]: p5fm-cbt10.service: Failed with result 'oom-kill'.
+10月 15 23:33:36 op systemd[2489]: p5fm-cbt10.service: Consumed 12min 20.691s CPU time over 13min 55.449s wall clock time, 20G memory peak.
+10月 15 23:33:52 op systemd[2489]: p5fm-rand1.service: Failed with result 'oom-kill'.
+10月 15 23:33:52 op systemd[2489]: p5fm-rand1.service: Consumed 3min 49.749s CPU time over 5min 9.226s wall clock time, 6G memory peak.
+10月 15 23:34:03 op systemd[2489]: p5fm-rand2.service: Consumed 3min 51.700s CPU time over 5min 19.766s wall clock time, 5.7G memory peak.
+10月 15 23:34:03 op systemd[2489]: p5fm-rand3.service: Consumed 3min 43.346s CPU time over 5min 19.751s wall clock time, 5.9G memory peak.
+10月 15 23:34:03 op systemd[2489]: p5fm-rand4.service: Consumed 3min 44.815s CPU time over 5min 20.063s wall clock time, 5.8G memory peak.
+10月 15 23:34:03 op systemd[2489]: Started p5fm-rand1.service - [systemd-run] /usr/bin/bash -c "python3 rand_bin.py 1 3000 20 28 > out/rand1.txt 2>&1".
+10月 15 23:34:03 op systemd[2489]: Started p5fm-rand2.service - [systemd-run] /usr/bin/bash -c "python3 rand_bin.py 2 3000 20 28 > out/rand2.txt 2>&1".
+10月 15 23:34:03 op systemd[2489]: Started p5fm-rand3.service - [systemd-run] /usr/bin/bash -c "python3 rand_bin.py 3 3000 20 28 > out/rand3.txt 2>&1".
+10月 15 23:34:03 op systemd[2489]: Started p5fm-rand4.service - [systemd-run] /usr/bin/bash -c "python3 rand_bin.py 4 3000 20 28 > out/rand4.txt 2>&1".
+10月 15 23:41:15 op systemd[2489]: p5fm-rand2.service: Failed with result 'oom-kill'.
+10月 15 23:41:15 op systemd[2489]: p5fm-rand2.service: Consumed 7min 126ms CPU time over 7min 11.714s wall clock time, 6G memory peak.
+10月 15 23:41:22 op systemd[2489]: p5fm-rand4.service: Failed with result 'oom-kill'.
+10月 15 23:41:22 op systemd[2489]: p5fm-rand4.service: Consumed 7min 6.267s CPU time over 7min 19.064s wall clock time, 6G memory peak.
+10月 15 23:41:33 op systemd[2489]: p5fm-rand3.service: Failed with result 'oom-kill'.
+10月 15 23:41:33 op systemd[2489]: p5fm-rand3.service: Consumed 7min 19.557s CPU time over 7min 29.519s wall clock time, 6G memory peak.
+10月 15 23:42:08 op systemd[2489]: p5fm-rand1.service: Failed with result 'oom-kill'.
+10月 15 23:42:08 op systemd[2489]: p5fm-rand1.service: Consumed 7min 55.489s CPU time over 8min 4.953s wall clock time, 6G memory peak.
+10月 16 00:02:29 op systemd[2489]: Started p5fm-rand1.service - [systemd-run] /usr/bin/bash -c "for b in \$(seq 0 9); do python3 rand_bin.py \$(( 100 + 1 * 1000 + b )) 100 20 28 | tail -n 1; done > out
+10月 16 00:02:29 op systemd[2489]: Started p5fm-rand2.service - [systemd-run] /usr/bin/bash -c "for b in \$(seq 0 9); do python3 rand_bin.py \$(( 100 + 2 * 1000 + b )) 100 20 28 | tail -n 1; done > out
+10月 16 00:02:29 op systemd[2489]: Started p5fm-rand3.service - [systemd-run] /usr/bin/bash -c "for b in \$(seq 0 9); do python3 rand_bin.py \$(( 100 + 3 * 1000 + b )) 100 20 28 | tail -n 1; done > out
+10月 16 00:02:29 op systemd[2489]: Started p5fm-rand4.service - [systemd-run] /usr/bin/bash -c "for b in \$(seq 0 9); do python3 rand_bin.py \$(( 100 + 4 * 1000 + b )) 100 20 28 | tail -n 1; done > out
+10月 16 00:02:35 op systemd[2489]: p5fm-rand4.service: Consumed 4.914s CPU time over 5.922s wall clock time, 152.5M memory peak.
+10月 16 00:02:35 op systemd[2489]: p5fm-rand2.service: Consumed 5.496s CPU time over 5.950s wall clock time, 152.4M memory peak.
+10月 16 00:02:35 op systemd[2489]: p5fm-rand1.service: Consumed 2.175s CPU time over 5.980s wall clock time, 76.1M memory peak.
+10月 16 00:02:35 op systemd[2489]: p5fm-rand3.service: Consumed 1.641s CPU time over 5.947s wall clock time, 69.6M memory peak.
+10月 16 00:02:35 op systemd[2489]: Started p5fm-rand1.service - [systemd-run] /usr/bin/bash -c "for b in \$(seq 0 9); do python3 rand_bin.py \$(( 100 + 1 * 1000 + b )) 100 20 28 | grep -E \"FOUND|DONE\
+10月 16 00:02:35 op systemd[2489]: Started p5fm-rand2.service - [systemd-run] /usr/bin/bash -c "for b in \$(seq 0 9); do python3 rand_bin.py \$(( 100 + 2 * 1000 + b )) 100 20 28 | grep -E \"FOUND|DONE\
+10月 16 00:02:35 op systemd[2489]: Started p5fm-rand3.service - [systemd-run] /usr/bin/bash -c "for b in \$(seq 0 9); do python3 rand_bin.py \$(( 100 + 3 * 1000 + b )) 100 20 28 | grep -E \"FOUND|DONE\
+10月 16 00:02:35 op systemd[2489]: Started p5fm-rand4.service - [systemd-run] /usr/bin/bash -c "for b in \$(seq 0 9); do python3 rand_bin.py \$(( 100 + 4 * 1000 + b )) 100 20 28 | grep -E \"FOUND|DONE\
+10月 16 01:06:23 op systemd[2489]: p5fm-rand2.service: Consumed 27min 23.392s CPU time over 1h 3min 48.505s wall clock time, 2.5G memory peak.
+10月 16 01:06:50 op systemd[2489]: p5fm-rand1.service: Consumed 28min 25.729s CPU time over 1h 4min 14.830s wall clock time, 2.7G memory peak.
+10月 16 01:06:57 op systemd[2489]: p5fm-rand4.service: Consumed 28min 2.113s CPU time over 1h 4min 21.931s wall clock time, 2.3G memory peak.
+10月 16 01:07:59 op systemd[2489]: p5fm-rand3.service: Consumed 28min 56.599s CPU time over 1h 5min 23.842s wall clock time, 2.5G memory peak.
