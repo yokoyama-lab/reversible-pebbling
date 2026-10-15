@@ -1,4 +1,4 @@
-# P5 定理 1 の Lean 4 形式化 — 結果（2026-10-15 23:40 更新。履歴は末尾）
+# P5 定理 1 の Lean 4 形式化 — 結果（最終版 2026-10-16 00:20。履歴は末尾）
 
 依頼: `p5/lean/REQUEST.md`。対象: 原稿 `2026-WiNF/P5-tree-exponent.tex` 定理 1
 「任意の根付き木 T で M(T, R•(T)) ≤ 3^{R•(T)−1}」。
@@ -275,7 +275,27 @@ M1・M4〜M10・M12・M13 は偽の主張（必ず落ちるべきもの）、M2�
   `P5TreeExists.lean`（追加で依頼中）と別セッションの `P5TreeCBT.lean`、F のビルド時間の差。
 - gatekeeper 自身の Notion 作業ログ追記は、依頼の「外部へ書き込まない」に従い未実施（依頼元が 1 日 1 行を書く）。
 
+追加報告（2026-10-16 00:16、`P5TreeExists.lean` を含む 5 ファイル。検査した版は HEAD `ff662fe` の 5 ファイルと sha256 一致）:
+**総合判定 緑（5 点ゲート通過）。**
+- ビルド: Exists は `runcap -m 8 -t 600` 下で rc=0・error 0・warning 0。olean を再生成し、私の olean と**バイト一致**。
+- 公理: 5 モジュール **337 定数**（Game 173・Strat 104・F 36・Exists 9・Tests 15）を `collectAxioms` で掃引、標準 3 公理のみ。
+  `exists_stratTree`・`exists_pebbling`・`Rbullet`・`M_Rbullet_le`・`theorem1_Rbullet`・`theorem1_F_Rbullet`・
+  `F_le_three_pow`・`pebbling_of_F`・`theorem1_F`・`M_le_F`・`theorem1`・`stratTree_iff_pebbling`・`exists_fast_pebbling`・`M_Rb_le`
+  はすべて `[propext, Classical.choice, Quot.sound]`。
+- 計数: コメント除去後の `sorry`/`admit`/`axiom`/`native_decide` は 0（`native_decide` はテストファイルのみ）。`noncomputable` は `Rbullet` の 1 つ。
+- 変異注入（Exists）: 意味のある変異 6/6 検出（深さ `W.card−1`、指数 `−2` ×2、strategy tree 深さ `Rbullet−1`、`k = 0` の偽主張、
+  `Rbullet := Nat.find + 1`）、中立変異 2 本は緑。**累計: 意味のある変異 33/33 検出、中立 7/7 緑（誤検出 0）。**
+- 追加確認: `T2.Rbullet = 3`・`star3.Rbullet = 4`・`chain4.Rbullet = 3` を `decide` だけで証明（標準 3 公理のみ。`Rbullet` は空虚でない）、
+  `T3.Rbullet = 5` は `native_decide`。Python の `bfs_M` から求めた最小 S と全件一致。
+- gatekeeper の層の判定: 上記 Exists の 6 本は「無条件・標準 3 公理のみ」で**層 1 に当たる**。`M_Rb_le` の「実行可能性の仮定つき」という
+  前回の指摘は `exists_pebbling` で Lean の中で解消。
+- 未検査（gatekeeper 申告）: (1) `lake build` 自体（`Revgarbage.lean` 未登録。台帳に層 1 の指し先として載せるなら登録が要る）、
+  (2) KSS Def. 9・Lemma 10 の原文 PDF との深さ規約の照合、(3) 別セッションの `P5TreeCBT.lean`。
+  → (2) は私が本文テキストで確認: KSS JCSS §2 "The height or depth of a tree is defined as the maximum number of nodes in any
+  root to leaf path"（`Komarath_JCSS2018.txt` 192 行）。`StratTree` は葉 = 深さ 1、分割 = 両側の最大 + 1 で、この規約と一致。
+
 ## 履歴
 - 2026-10-15 23:30 中間報告（構成・難しい向き・木の両向き・定理 1 まで緑）。
 - 2026-10-15 23:40 F（原稿の中間項）を追加。`theorem1_F` 緑。変異 11/11・対照 4/4。gatekeeper は実行中。
 - 2026-10-16 00:07 仮定なしの形（`P5TreeExists.lean`）を追加。変異 13/13・対照 5/5。
+- 2026-10-16 00:16 gatekeeper の最終報告（5 ファイル緑・337 定数・変異 33/33・中立 7/7）を §9 に反映。最終版。
