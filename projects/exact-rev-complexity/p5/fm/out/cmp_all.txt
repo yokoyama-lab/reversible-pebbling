@@ -1,0 +1,44 @@
+== 1_10
+trees in file 1205, compared 1205, missing 0, n in [1,10]
+(tree,S) points 11210, mismatches F!=M 0, of which M>F 0
+== 11_13
+trees in file 19094, compared 19094, missing 0, n in [11,13]
+(tree,S) points 239772, mismatches F!=M 0, of which M>F 0
+== 14
+trees in file 32973, compared 32973, missing 0, n in [14,14]
+(tree,S) points 461622, mismatches F!=M 0, of which M>F 0
+== 15
+trees in file 87811, compared 87811, missing 0, n in [15,15]
+(tree,S) points 1317165, mismatches F!=M 137, of which M>F 0
+  mismatch (id,n,shape,S,F,M): (2746, 15, '(...(....)(..(..)))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2747, 15, '(...(....)(..((.))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2748, 15, '(...(....)(.(.)(.)))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2750, 15, '(...(....)(.(.(.))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2751, 15, '(...(....)(.((..))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2752, 15, '(...(....)(.(((.)))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2753, 15, '(...(....)((..)(.)))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2754, 15, '(...(....)((.)((.))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2757, 15, '(...(....)((.(..))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2758, 15, '(...(....)((.((.)))))', 6, 53, 51)
+== 16
+trees in file 235381, compared 235381, missing 0, n in [16,16]
+(tree,S) points 3766096, mismatches F!=M 1121, of which M>F 0
+  mismatch (id,n,shape,S,F,M): (7084, 16, '(...(....)(..(.(.))))', 6, 63, 61)
+  mismatch (id,n,shape,S,F,M): (7086, 16, '(...(....)(..(((.)))))', 6, 63, 61)
+  mismatch (id,n,shape,S,F,M): (7087, 16, '(...(....)(.(..)(.)))', 6, 61, 59)
+  mismatch (id,n,shape,S,F,M): (7088, 16, '(...(....)(.(.)((.))))', 6, 61, 59)
+  mismatch (id,n,shape,S,F,M): (7091, 16, '(...(....)(.(.(..))))', 6, 61, 59)
+  mismatch (id,n,shape,S,F,M): (7092, 16, '(...(....)(.(.((.)))))', 6, 61, 59)
+  mismatch (id,n,shape,S,F,M): (7095, 16, '(...(....)(.((.(.)))))', 6, 63, 61)
+  mismatch (id,n,shape,S,F,M): (7096, 16, '(...(....)(.(((..)))))', 6, 61, 59)
+  mismatch (id,n,shape,S,F,M): (7097, 16, '(...(....)(.((((.))))))', 6, 61, 59)
+  mismatch (id,n,shape,S,F,M): (7100, 16, '(...(....)((.)(.(.))))', 6, 63, 61)
+== bin_11_16
+trees in file 43999, compared 43999, missing 0, n in [11,16]
+(tree,S) points 670655, mismatches F!=M 0, of which M>F 0
+== bin_17
+trees in file 56011, compared 56011, missing 0, n in [17,17]
+(tree,S) points 952187, mismatches F!=M 0, of which M>F 0
+== bin_18
+trees in file 127912, compared 127912, missing 0, n in [18,18]
+(tree,S) points 2302416, mismatches F!=M 0, of which M>F 0

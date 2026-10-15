@@ -1,0 +1,16 @@
+runcap: 成功 / 経過 0h02m04s / 最大メモリ 18 MB（上限 8 GB）
+trees in file 87811, compared 87811, missing 0, n in [15,15]
+(tree,S) points 1317165, mismatches F!=M 137, of which M>F 0
+  mismatch (id,n,shape,S,F,M): (2746, 15, '(...(....)(..(..)))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2747, 15, '(...(....)(..((.))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2748, 15, '(...(....)(.(.)(.)))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2750, 15, '(...(....)(.(.(.))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2751, 15, '(...(....)(.((..))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2752, 15, '(...(....)(.(((.)))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2753, 15, '(...(....)((..)(.)))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2754, 15, '(...(....)((.)((.))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2757, 15, '(...(....)((.(..))))', 6, 53, 51)
+  mismatch (id,n,shape,S,F,M): (2758, 15, '(...(....)((.((.)))))', 6, 53, 51)
+runcap: 成功 / 経過 0h02m13s / 最大メモリ 13 MB（上限 8 GB）
+trees in file 43999, compared 43999, missing 0, n in [11,16]
+(tree,S) points 670655, mismatches F!=M 0, of which M>F 0

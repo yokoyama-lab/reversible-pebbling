@@ -1,0 +1,17 @@
+# 25 trees, found 0, 31s
+# 50 trees, found 0, 58s
+# 75 trees, found 0, 94s
+# 100 trees, found 0, 130s
+# 125 trees, found 0, 168s
+# 150 trees, found 0, 195s
+# 175 trees, found 0, 229s
+# 200 trees, found 0, 250s
+# 225 trees, found 0, 263s
+# 250 trees, found 0, 280s
+# 275 trees, found 0, 301s
+# 300 trees, found 0, 324s
+# 325 trees, found 0, 349s
+# 350 trees, found 0, 368s
+# 375 trees, found 0, 383s
+# 400 trees, found 0, 398s
+# 425 trees, found 0, 429s
