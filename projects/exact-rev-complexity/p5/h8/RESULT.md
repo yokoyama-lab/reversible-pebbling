@@ -1,26 +1,27 @@
-# M*(8) の決定 — 結果（途中経過・2026-10-16 08:10 JST）
+# M*(8) の決定 — 結果（2026-10-16 11:30 JST）
 
 > 依頼: `REQUEST.md`（出口の穴 X-exact-rev-complexity-19）。
 > 原稿 `P5-tree-exponent.tex`・研究台帳・`exits.tsv` は編集していない。
 
 ## 結論
 
-**実装 A の全探索で M*(8) = 2789。独立の実装 B（op で走行中）の照合が済めば確定。**
+**M*(8) = 2789 が確定した**（11 個のペブルで 2788 手以下の合法な手順は存在せず、2789 手の手順がある）。
+根拠は、独立に書いた 2 つの実装による**全探索の完了**（待ち行列の枯渇）と、両者の**全 3177 層の状態数の完全一致**。
+**証明ログ（DRAT/LRAT 等）は無い**。h=7 の 1001 と同じ種類の根拠で、それに独立の 2 実装目が加わった形。
 
-- **下界（実装 A・<host>）**: Aut(T_8) の商の上のフロンティア BFS を**待ち行列の枯渇まで完走**。
+- **下界・実装 A**（`fbfs.c`、<host>・14 スレッド）: Aut(T_8) の商の上のフロンティア BFS を枯渇まで完走。
   深さ 0〜2788 の層（累計 43,252,755,287 状態）にゴール {根} は無く、深さ 2789 で初めて現れた。
-  到達可能な全状態 44,198,863,352（最後の層は深さ 3176）、8,473 秒、最大常駐 13,167MB（<host>・14 スレッド）。
-  よって 11 個のペブルで 2788 手以下の合法な手順は存在しない。**根拠は全探索の完了で、証明ログは無い**（h=7 と同じ層）。
+  到達可能な全状態 44,198,863,352（最後の層は深さ 3176）、8,473 秒、最大常駐 13,167MB。
+- **下界・実装 B**（`fbfs_b.c`、<host>・12 スレッド）: 同じく枯渇まで完走。ゴール深さ 2789、全状態 44,198,863,352、
+  11,819 秒、最大常駐 10,337MB。**層ファイルは A とバイト単位で同一**（`compare_layers.py`: IDENTICAL 3177 層。
+  sha256 はどちらも `b9bac7df9553b2611906fe44293099053a9d0e079e94764914d2fcfc0c2a879d`）。
+  （最初は op で走らせたが、op が 2026-10-16 04 時ごろ tailnet から落ち回収できなかったため、<host> でやり直した。
+  op の走行も落ちる前の深さ 238 までは全層が A と一致していた。）
 - **上界**: F の再帰の構成から組んだ 2789 手の手順を独立の検査器 `check_seq.py` が再生し、
-  合法・ペブル数の最大 11・終端は根のみ（`logs/witness_h8_p11.txt`）。
-- **実装 B**: op で 2026-10-15 23:21 に開始し、03:01 時点で深さ 238 まで全層が A と一致していたが、
-  **op が 04 時ごろ tailnet から落ち（08:05 時点で不通）、走行の生死が分からない**。
-  2026-10-16 08:07 に <host> で最初からやり直し中（ユニット `p5h8-fbfsB-h8p11`、12 スレッド、`logs/h8_p11_B.log`、
-  バイナリの sha256 は `logs/h8_p11_B_binary.sha256`）。
-  確定の条件: `python3 compare_layers.py logs/layers_h8_p11.txt logs/layers_h8_p11_B.txt --goal 2789` が IDENTICAL
-  （深さ 2789 でゴール、3177 層）。
-- 関連: p5/fm によれば一般の木では F≠M（15 頂点で M=51<F=53）、二分木は n≤18 で M=F。
-  本結果は二分木 T_8（n=255）・最小空間で M=F を示す（予想の証拠であって証明ではない）。
+  合法・ペブル数の最大 11・終端は根のみ（`logs/witness_h8_p11.txt`、sha256 `c3c6ba34…6603`）。
+- **原稿への含意**: 表の h=8 の 2789 は「予測」でなく全数探索の値になる（M*(8)=F*(8)）。
+  p5/fm によれば一般の木では F≠M（15 頂点で M=51<F=53）、二分木は n≤18 で M=F。
+  本結果は二分木 T_8（n=255）・最小空間で M=F を示す（予想の証拠であって証明ではない。h≥9 は未確認）。
 
 ## 方法: 自己同型の商の上のフロンティア BFS
 
@@ -73,9 +74,9 @@ p=12 は M=723 = F(T_7,12)（8,880,712,728 状態を枯渇、6,367 秒、最大�
 cd p5/h8
 gcc -O3 -march=native -fopenmp -o fbfs fbfs.c            # sha256(fbfs.c)=b3550e93…f00c9, fbfs=52f061a7…d284（<host>）
 systemd-run --user --scope -p MemoryMax=36G -p MemorySwapMax=0 ./fbfs 8 11 --threads 14 --stop-at-goal 0 --layers logs/layers_h8_p11.txt
-gcc -O3 -march=native -fopenmp -o fbfs_b fbfs_b.c        # sha256(fbfs_b.c)=35bdb56d…593c（op でも一致）
-./fbfs_b 8 11 --threads 10 --stop-at-goal 0 --layers layers_h8_p11_B.txt
-python3 compare_layers.py logs/layers_h8_p11.txt layers_h8_p11_B.txt --goal 2789
+gcc -O3 -march=native -fopenmp -o fbfs_b fbfs_b.c        # sha256(fbfs_b.c)=35bdb56d…593c, fbfs_b=0f0fe25c…cfe4（<host>）
+./fbfs_b 8 11 --threads 12 --stop-at-goal 0 --layers logs/layers_h8_p11_B.txt
+python3 compare_layers.py logs/layers_h8_p11.txt logs/layers_h8_p11_B.txt --goal 2789
 python3 witness.py 8 11 > w.txt && python3 check_seq.py 8 11 w.txt
 bash calibrate.sh 4; python3 mutate.py /tmp/somewhere-outside-repo
 ```
@@ -83,7 +84,8 @@ bash calibrate.sh 4; python3 mutate.py /tmp/somewhere-outside-repo
 s3 = Broadwell・gcc 13.3.0。Python 3.15.0。ソルバ・検査器（SAT/DRAT）は使っていない。
 
 ## まだやっていないこと
-- **B の h=8 完走と層ごとの照合**（<host> で再走行中。op の走行は不通で回収できていない）。これが済むまで「確定」と書かない。
+- op 上の B の走行（ユニット `p5h8-fbfsB-h8p11`、`~/p5h8/`）は不通のまま。op が戻ったらユニットが残っていないか確かめて止める（結果は不要）。
+- h≥9 は未着手（p_min(T_9)=12 で、12 個以下の軌道は 8,640,950,739,416（`orbcount.py`）。T_8 の約 165 倍で、同じ方式では現有の艦隊に載らない見込み）。
 - 証明ログ・検査可能な証明書は無い（層の集合そのものの照合ではなく、層ごとの状態数の一致で 2 実装を突き合わせた）。
   層ごとの集合のハッシュを両実装の共通の正準形で取る照合は未実装。
 - 原稿への反映（表の h=8 を「予測」→「全数」等）は依頼元が行う。
