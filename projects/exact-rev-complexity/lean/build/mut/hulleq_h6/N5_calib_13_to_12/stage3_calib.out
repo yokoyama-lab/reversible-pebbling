@@ -1,0 +1,8 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/hulleq_h6/N5_calib_13_to_12/HullEqWitnessH6Calib.lean:51:17: error: Tactic `decide` proved that the proposition
+  #(filter (OnceClass mvF 225 1) (cbtV 6)) = 12
+is false
+'HullEqWitnessH6Calib.target_h6_p13' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6Calib.h6_p13_structure_decide' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullEqWitnessH6Calib.h6_p13_once_set' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6Calib.h6_p13_four_concrete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6Calib.h6_p13_four_apply' depends on axioms: [propext, Classical.choice, Quot.sound]

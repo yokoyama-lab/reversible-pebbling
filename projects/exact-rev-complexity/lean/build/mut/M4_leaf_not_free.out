@@ -1,0 +1,14 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTMut_M4_leaf_not_free.lean:194:47: error: Tactic `decide` proved that the proposition
+  ∀ c ∈ cbtPred 2 (mv2 0), c ∈ C2 0 ∨ c ∈ cbtFree 2
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTMut_M4_leaf_not_free.lean:194:47: error: Tactic `decide` proved that the proposition
+  ∀ c ∈ cbtPred 2 (mv2 4), c ∈ C2 4 ∨ c ∈ cbtFree 2
+is false
+'HullLemmaCBTMut.cbt_reach' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h3_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h6_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h7_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h6_maxbudget' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_nonvacuous' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h2_tight' depends on axioms: [propext, Classical.choice, Quot.sound]

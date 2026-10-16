@@ -51,6 +51,7 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Image
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Data.Finset.Union
 
 namespace ParPebbleDAG
 
@@ -1765,7 +1766,10 @@ theorem tree_pmin_exact {V : Finset ℕ} {dep : ℕ → ℕ} {sink D : ℕ}
     ピラミッドでは `alt` が $h \le 8$ で最適（$h=9$ から劣る）。ここでは $h=6,7$ の
     上界（`alt` のピークが 13 / 16 以下）を機械証明する。
     下界は拡大性つき整数計画の DRAT 証明書（層2・`data/q2_pyr_lower_cert.csv`）で
-    同じ値が出ているので、**$h \le 8$ は上界が層1・下界が層2 で決着している**。 -/
+    同じ値が出ているので、**$h \le 8$ は上界が層1・下界が層2 で決着している**。
+    $h=6$ の下界 13 は `pyr6_peak_lower_13` で層1になった（2026-10-13）。
+    $h=7$ も同じ数え上げで下界 16 が出て、`alt` の上界と合わせて `pyr7_pmin_eq_16`
+    （2026-10-14）。$h=8$ ではこの数え上げは 19 しか出さない（DRAT の下界は 20）。 -/
 
 section Pyramid67
 
@@ -1792,7 +1796,1146 @@ theorem pyr6_alt_peak_13 :
   intro t ht
   interval_cases t <;> decide
 
+/-- **ピラミッド $h=6$ の下界: どの時間最適なペブリングも時刻 7 に 13 個以上を置く**
+    （2026-10-13・第83夜 周3。これで $h=6$ は下界も層1）。
+
+    数え上げ（`peak_lower_right`）が出すのは 12 で、それを 1 段ずらして足す:
+    時刻 7（$=2D-3$）には深さ 2・3 の 7 頂点と sink が居る（8 個）。
+    深さ 1 の頂点 $6+i$（$i<5$）は時刻 8 に必ず居るので、時刻 7 に居なければ 7→8 で
+    置かれ、そのとき親 $i$（深さ 0）が時刻 7 に居る。$\{i, 6+i\}$ の 5 対は互いに素なので
+    時刻 7 には深さ 0・1 の頂点が 5 個以上居る。計 13。 -/
+theorem pyr6_peak_lower_13 :
+    ∀ P : ℕ → Finset ℕ, Pebbling paPY6 P (2 * 5 + 1) → (20 : ℕ) ∈ P (2 * 5 + 1) →
+      (∀ v ∈ VPY6, v ≠ 20 → v ∉ P (2 * 5 + 1)) → 13 ≤ (P 7).card := by
+  intro P hp hsin hgone
+  have h7 := peak_lower_right (pa := paPY6) (V := VPY6) (dep := depPY6) (sink := 20) (D := 5)
+    hp (by decide) (by decide) (by decide) (by decide) hgone
+    (by decide) (by decide) (by decide) hsin (by decide) 2 (by omega)
+  have h8 := peak_lower_right (pa := paPY6) (V := VPY6) (dep := depPY6) (sink := 20) (D := 5)
+    hp (by decide) (by decide) (by decide) (by decide) hgone
+    (by decide) (by decide) (by decide) hsin (by decide) 1 (by omega)
+  have ht7 : 2 * 5 - 2 - 1 = 7 := by norm_num
+  have ht8 : 2 * 5 - 1 - 1 = 8 := by norm_num
+  rw [ht7] at h7
+  rw [ht8] at h8
+  -- 深さ 1 の頂点 6+i は、時刻 7 に居るか、さもなくば親 i が居る
+  have hpair : ∀ i, i < 5 → (6 + i) ∈ P 7 ∨ i ∈ P 7 := by
+    intro i hi
+    by_cases hv : (6 + i) ∈ P 7
+    · exact Or.inl hv
+    · right
+      have hmem : (6 + i) ∈ insert 20 (VPY6.filter
+          (fun v => (depPY6 v = 1 ∨ depPY6 v = 1 + 1) ∧ v ≠ 20)) := by
+        interval_cases i <;> decide
+      have hv8 : (6 + i) ∈ P (7 + 1) := h8 hmem
+      have hch : Changed (P 7) (P (7 + 1)) (6 + i) := Or.inr ⟨hv, hv8⟩
+      have hpa : i ∈ paPY6 (6 + i) := by interval_cases i <;> decide
+      exact (hp.legal 7 (by norm_num) (6 + i) hch i hpa).1
+  -- 各対から 1 つを選ぶ写像は単射で、値は 10 以下
+  classical
+  let f : ℕ → ℕ := fun i => if (6 + i) ∈ P 7 then 6 + i else i
+  have hfP : ∀ i ∈ Finset.range 5, f i ∈ P 7 := by
+    intro i hi
+    have hi' : i < 5 := Finset.mem_range.mp hi
+    show (if (6 + i) ∈ P 7 then 6 + i else i) ∈ P 7
+    split_ifs with h
+    · exact h
+    · exact (hpair i hi').resolve_left h
+  have hfle : ∀ i ∈ Finset.range 5, f i ≤ 10 := by
+    intro i hi
+    have hi' : i < 5 := Finset.mem_range.mp hi
+    show (if (6 + i) ∈ P 7 then 6 + i else i) ≤ 10
+    split_ifs <;> omega
+  have hinj : Set.InjOn f (Finset.range 5 : Set ℕ) := by
+    intro i hi j hj hij
+    have hi' : i < 5 := Finset.mem_range.mp hi
+    have hj' : j < 5 := Finset.mem_range.mp hj
+    simp only [f] at hij
+    split_ifs at hij <;> omega
+  set U := (Finset.range 5).image f with hU
+  set S := insert 20 (VPY6.filter
+      (fun v => (depPY6 v = 2 ∨ depPY6 v = 2 + 1) ∧ v ≠ 20)) with hS
+  have hUcard : U.card = 5 := by
+    rw [hU, Finset.card_image_of_injOn hinj]; simp
+  have hScard : S.card = 8 := by rw [hS]; decide
+  have hSge : ∀ x ∈ S, 11 ≤ x := by rw [hS]; decide
+  have hdisj : Disjoint U S := by
+    rw [Finset.disjoint_left]
+    intro x hxU hxS
+    obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hxU
+    have := hfle i hi
+    have := hSge _ hxS
+    omega
+  have hsub : U ∪ S ⊆ P 7 := by
+    intro x hx
+    rcases Finset.mem_union.mp hx with hx | hx
+    · obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+      exact hfP i hi
+    · exact h7 hx
+  have hcard := Finset.card_le_card hsub
+  rw [Finset.card_union_of_disjoint hdisj, hUcard, hScard] at hcard
+  omega
+
+/-- **$p_{\min}(\mathrm{pyr}\,6) = 13$**（両側とも機械証明）。上界は `pyr6_alt_peak_13`、
+    下界は `pyr6_peak_lower_13`。 -/
+theorem pyr6_pmin_eq_13 :
+    (Pebbling paPY6 (alt VPY6 depPY6 20 5) (2 * 5 + 1) ∧
+      alt VPY6 depPY6 20 5 (2 * 5 + 1) = {20} ∧
+      ∀ t, t ≤ 2 * 5 + 1 → (alt VPY6 depPY6 20 5 t).card ≤ 13) ∧
+    (∀ P : ℕ → Finset ℕ, Pebbling paPY6 P (2 * 5 + 1) → (20 : ℕ) ∈ P (2 * 5 + 1) →
+      (∀ v ∈ VPY6, v ≠ 20 → v ∉ P (2 * 5 + 1)) → 13 ≤ (P 7).card) :=
+  ⟨pyr6_alt_peak_13, pyr6_peak_lower_13⟩
+
+def paPY7 : ℕ → Finset ℕ := fun v => if v = 7 then {0, 1} else if v = 8 then {1, 2} else if v = 9 then {2, 3} else if v = 10 then {3, 4} else if v = 11 then {4, 5} else if v = 12 then {5, 6} else if v = 13 then {7, 8} else if v = 14 then {8, 9} else if v = 15 then {9, 10} else if v = 16 then {10, 11} else if v = 17 then {11, 12} else if v = 18 then {13, 14} else if v = 19 then {14, 15} else if v = 20 then {15, 16} else if v = 21 then {16, 17} else if v = 22 then {18, 19} else if v = 23 then {19, 20} else if v = 24 then {20, 21} else if v = 25 then {22, 23} else if v = 26 then {23, 24} else if v = 27 then {25, 26} else ∅
+def depPY7 : ℕ → ℕ := fun v => if v ≤ 6 then 0 else if v ≤ 12 then 1 else if v ≤ 17 then 2 else if v ≤ 21 then 3 else if v ≤ 24 then 4 else if v ≤ 26 then 5 else 6
+def VPY7 : Finset ℕ := {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27}
+
+theorem paPY7_is_pyramid :
+    (∀ v ∈ VPY7, depPY7 v = 0 ↔ paPY7 v = ∅) ∧
+    (∀ v ∈ VPY7, depPY7 v ≠ 0 → (paPY7 v).card = 2) ∧
+    (VPY7.filter (fun v => depPY7 v = 0)).card = 7 ∧
+    (VPY7.filter (fun v => depPY7 v = 1)).card = 6 := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **ピラミッド $h=7$: `alt` はピーク 16 で時間最適を達成する**。 -/
+theorem pyr7_alt_peak_16 :
+    Pebbling paPY7 (alt VPY7 depPY7 27 6) (2 * 6 + 1) ∧
+    alt VPY7 depPY7 27 6 (2 * 6 + 1) = {27} ∧
+    ∀ t, t ≤ 2 * 6 + 1 → (alt VPY7 depPY7 27 6 t).card ≤ 16 := by
+  refine ⟨(alt_par_time_exact (pa := paPY7) (V := VPY7) (dep := depPY7) (sink := 27) (d := 6)
+      (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).1,
+    (alt_par_time_exact (pa := paPY7) (V := VPY7) (dep := depPY7) (sink := 27) (d := 6)
+      (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).2, ?_⟩
+  intro t ht
+  interval_cases t <;> decide
+
+/-- **ピラミッド $h=7$ の下界: どの時間最適なペブリングも時刻 9 に 16 個以上を置く**
+    （2026-10-14・第84夜 周2。`pyr6_peak_lower_13` と同じ数え上げ）。
+    時刻 9（$=2D-3$）には深さ 2・3 の 9 頂点と sink が居る（10 個）。
+    深さ 1 の頂点 $7+i$（$i<6$）は時刻 10 に必ず居るので、時刻 9 に居なければ 9→10 で
+    置かれ、そのとき親 $i$（深さ 0）が時刻 9 に居る。6 対は互いに素なので計 16。 -/
+theorem pyr7_peak_lower_16 :
+    ∀ P : ℕ → Finset ℕ, Pebbling paPY7 P (2 * 6 + 1) → (27 : ℕ) ∈ P (2 * 6 + 1) →
+      (∀ v ∈ VPY7, v ≠ 27 → v ∉ P (2 * 6 + 1)) → 16 ≤ (P 9).card := by
+  intro P hp hsin hgone
+  have h9 := peak_lower_right (pa := paPY7) (V := VPY7) (dep := depPY7) (sink := 27) (D := 6)
+    hp (by decide) (by decide) (by decide) (by decide) hgone
+    (by decide) (by decide) (by decide) hsin (by decide) 2 (by omega)
+  have h10 := peak_lower_right (pa := paPY7) (V := VPY7) (dep := depPY7) (sink := 27) (D := 6)
+    hp (by decide) (by decide) (by decide) (by decide) hgone
+    (by decide) (by decide) (by decide) hsin (by decide) 1 (by omega)
+  have ht9 : 2 * 6 - 2 - 1 = 9 := by norm_num
+  have ht10 : 2 * 6 - 1 - 1 = 10 := by norm_num
+  rw [ht9] at h9
+  rw [ht10] at h10
+  -- 深さ 1 の頂点 7+i は、時刻 9 に居るか、さもなくば親 i が居る
+  have hpair : ∀ i, i < 6 → (7 + i) ∈ P 9 ∨ i ∈ P 9 := by
+    intro i hi
+    by_cases hv : (7 + i) ∈ P 9
+    · exact Or.inl hv
+    · right
+      have hmem : (7 + i) ∈ insert 27 (VPY7.filter
+          (fun v => (depPY7 v = 1 ∨ depPY7 v = 1 + 1) ∧ v ≠ 27)) := by
+        interval_cases i <;> decide
+      have hv10 : (7 + i) ∈ P (9 + 1) := h10 hmem
+      have hch : Changed (P 9) (P (9 + 1)) (7 + i) := Or.inr ⟨hv, hv10⟩
+      have hpa : i ∈ paPY7 (7 + i) := by interval_cases i <;> decide
+      exact (hp.legal 9 (by norm_num) (7 + i) hch i hpa).1
+  -- 各対から 1 つを選ぶ写像は単射で、値は 12 以下
+  classical
+  let f : ℕ → ℕ := fun i => if (7 + i) ∈ P 9 then 7 + i else i
+  have hfP : ∀ i ∈ Finset.range 6, f i ∈ P 9 := by
+    intro i hi
+    have hi' : i < 6 := Finset.mem_range.mp hi
+    show (if (7 + i) ∈ P 9 then 7 + i else i) ∈ P 9
+    split_ifs with h
+    · exact h
+    · exact (hpair i hi').resolve_left h
+  have hfle : ∀ i ∈ Finset.range 6, f i ≤ 12 := by
+    intro i hi
+    have hi' : i < 6 := Finset.mem_range.mp hi
+    show (if (7 + i) ∈ P 9 then 7 + i else i) ≤ 12
+    split_ifs <;> omega
+  have hinj : Set.InjOn f (Finset.range 6 : Set ℕ) := by
+    intro i hi j hj hij
+    have hi' : i < 6 := Finset.mem_range.mp hi
+    have hj' : j < 6 := Finset.mem_range.mp hj
+    simp only [f] at hij
+    split_ifs at hij <;> omega
+  set U := (Finset.range 6).image f with hU
+  set S := insert 27 (VPY7.filter
+      (fun v => (depPY7 v = 2 ∨ depPY7 v = 2 + 1) ∧ v ≠ 27)) with hS
+  have hUcard : U.card = 6 := by
+    rw [hU, Finset.card_image_of_injOn hinj]; simp
+  have hScard : S.card = 10 := by rw [hS]; decide
+  have hSge : ∀ x ∈ S, 13 ≤ x := by rw [hS]; decide
+  have hdisj : Disjoint U S := by
+    rw [Finset.disjoint_left]
+    intro x hxU hxS
+    obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hxU
+    have := hfle i hi
+    have := hSge _ hxS
+    omega
+  have hsub : U ∪ S ⊆ P 9 := by
+    intro x hx
+    rcases Finset.mem_union.mp hx with hx | hx
+    · obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+      exact hfP i hi
+    · exact h9 hx
+  have hcard := Finset.card_le_card hsub
+  rw [Finset.card_union_of_disjoint hdisj, hUcard, hScard] at hcard
+  omega
+
+/-- **$p_{\min}(\mathrm{pyr}\,7) = 16$**（両側とも機械証明）。上界は `pyr7_alt_peak_16`、
+    下界は `pyr7_peak_lower_16`。 -/
+theorem pyr7_pmin_eq_16 :
+    (Pebbling paPY7 (alt VPY7 depPY7 27 6) (2 * 6 + 1) ∧
+      alt VPY7 depPY7 27 6 (2 * 6 + 1) = {27} ∧
+      ∀ t, t ≤ 2 * 6 + 1 → (alt VPY7 depPY7 27 6 t).card ≤ 16) ∧
+    (∀ P : ℕ → Finset ℕ, Pebbling paPY7 P (2 * 6 + 1) → (27 : ℕ) ∈ P (2 * 6 + 1) →
+      (∀ v ∈ VPY7, v ≠ 27 → v ∉ P (2 * 6 + 1)) → 16 ≤ (P 9).card) :=
+  ⟨pyr7_alt_peak_16, pyr7_peak_lower_16⟩
+
 end Pyramid67
+
+/-! ## 3.9991 ⭐ 一般の高さのピラミッド: 時間最適ならピークは `3h - 5` 以上（2026-10-14・第84夜 周4）
+
+    `pyr6_peak_lower_13` / `pyr7_peak_lower_16` の数え上げを、`PyramidGeneric` の符号化
+    （`pyrPa`・`pyrLevel`）の上で一般の `h ≥ 5` について行う。`peak_lower_right` の側条件は
+    `decide` ではなく一般の補題（`pyr_closed` ほか）で与える。`h = 5, 6, 7` では交互構成が
+    ちょうど `3h - 5` を取る（`pyr_alt_peak_3h5_567`）のでタイト。`h = 8` では実測（DRAT）の 20 に届かない（19）。 -/
+
+section PyramidPeakGeneric
+
+
+/-- ピラミッドの頂点全体（層 `0 .. h-1`）。 -/
+def pyrV (h : ℕ) : Finset ℕ := (Finset.range h).biUnion (pyrLevel h)
+
+/-- 深さ = 層番号 = `v / h`。 -/
+def pyrDep (h : ℕ) : ℕ → ℕ := fun v => v / h
+
+/-- `h * k + i`（`i < h`）の商と余り。 -/
+theorem pyr_divmod {h k i : ℕ} (hi : i < h) :
+    (h * k + i) / h = k ∧ (h * k + i) % h = i := by
+  have hpos : 0 < h := by omega
+  refine ⟨?_, ?_⟩
+  · rw [Nat.mul_add_div hpos, Nat.div_eq_of_lt hi]; omega
+  · rw [Nat.mul_add_mod, Nat.mod_eq_of_lt hi]
+
+theorem mem_pyrV {h v : ℕ} (hpos : 0 < h) :
+    v ∈ pyrV h ↔ v / h < h ∧ v % h + v / h < h := by
+  unfold pyrV
+  rw [Finset.mem_biUnion]
+  constructor
+  · rintro ⟨k, hk, hv⟩
+    have hk' := Finset.mem_range.mp hk
+    have := pyrLevel_spec hk' hv
+    omega
+  · rintro ⟨h1, h2⟩
+    refine ⟨v / h, Finset.mem_range.mpr h1, ?_⟩
+    rw [mem_pyrLevel]
+    refine ⟨v % h, by omega, ?_⟩
+    exact (Nat.div_add_mod v h).symm
+
+theorem pyrPa_pos {h v : ℕ} (hk : v / h ≠ 0) :
+    pyrPa h v = {h * (v / h - 1) + v % h, h * (v / h - 1) + v % h + 1} := by
+  unfold pyrPa
+  rw [if_neg hk]
+
+theorem pyr_closed {h : ℕ} (hpos : 0 < h) :
+    ∀ v ∈ pyrV h, ∀ u ∈ pyrPa h v, u ∈ pyrV h := by
+  intro v hv u hu
+  rw [mem_pyrV hpos] at hv ⊢
+  obtain ⟨h1, h2⟩ := hv
+  have h0 := Nat.zero_le (v / h)
+  by_cases hk : v / h = 0
+  · simp [pyrPa, hk] at hu
+  · rw [pyrPa_pos hk] at hu
+    have hm := Nat.mod_lt v hpos
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hu
+    rcases hu with rfl | rfl
+    · obtain ⟨a, b⟩ := pyr_divmod (k := v / h - 1) hm
+      rw [a, b]
+      omega
+    · have hm' : v % h + 1 < h := by omega
+      have e : h * (v / h - 1) + v % h + 1 = h * (v / h - 1) + (v % h + 1) := by
+        rw [Nat.add_assoc]
+      obtain ⟨a, b⟩ := pyr_divmod (k := v / h - 1) hm'
+      rw [e, a, b]
+      omega
+
+theorem pyr_down {h : ℕ} (hpos : 0 < h) :
+    ∀ v ∈ pyrV h, pyrDep h v ≠ 0 → ∃ u ∈ pyrPa h v, pyrDep h u + 1 = pyrDep h v := by
+  intro v hv hd
+  simp only [pyrDep] at hd ⊢
+  rw [mem_pyrV hpos] at hv
+  have hm := Nat.mod_lt v hpos
+  have h0 := Nat.zero_le (v / h)
+  refine ⟨h * (v / h - 1) + v % h, ?_, ?_⟩
+  · rw [pyrPa_pos hd]
+    simp
+  · obtain ⟨a, _⟩ := pyr_divmod (k := v / h - 1) hm
+    rw [a]
+    omega
+
+theorem pyr_max {h : ℕ} (hpos : 0 < h) :
+    ∀ v ∈ pyrV h, pyrDep h v ≤ pyrDep h (h * (h - 1)) := by
+  intro v hv
+  rw [mem_pyrV hpos] at hv
+  simp only [pyrDep]
+  rw [Nat.mul_div_cancel_left _ hpos]
+  omega
+
+theorem pyr_uniq {h : ℕ} (hpos : 0 < h) :
+    ∀ v ∈ pyrV h, pyrDep h v = h - 1 → v = h * (h - 1) := by
+  intro v hv hd
+  simp only [pyrDep] at hd
+  rw [mem_pyrV hpos] at hv
+  have h0 : v % h = 0 := by omega
+  have := Nat.div_add_mod v h
+  rw [hd, h0] at this
+  omega
+
+theorem pyr_sink_mem {h : ℕ} (hpos : 0 < h) : h * (h - 1) ∈ pyrV h := by
+  rw [mem_pyrV hpos]
+  have h1 : h * (h - 1) / h = h - 1 := Nat.mul_div_cancel_left _ hpos
+  have h2 : h * (h - 1) % h = 0 := Nat.mul_mod_right _ _
+  rw [h1, h2]
+  omega
+
+theorem pyr_sink_dep {h : ℕ} (hpos : 0 < h) : pyrDep h (h * (h - 1)) = h - 1 := by
+  simp only [pyrDep]
+  exact Nat.mul_div_cancel_left _ hpos
+
+theorem pyr_up {h : ℕ} (hpos : 0 < h) :
+    ∀ v ∈ pyrV h, v ≠ h * (h - 1) →
+      ∃ c ∈ pyrV h, v ∈ pyrPa h c ∧ pyrDep h c = pyrDep h v + 1 := by
+  intro v hv hne
+  rw [mem_pyrV hpos] at hv
+  obtain ⟨h1, h2⟩ := hv
+  have hm := Nat.mod_lt v hpos
+  have hdm := Nat.div_add_mod v h
+  have h0 := Nat.zero_le (v / h)
+  have hklt : v / h < h - 1 := by
+    by_contra hcon
+    apply hne
+    have hk : v / h = h - 1 := by omega
+    have h0 : v % h = 0 := by omega
+    rw [hk, h0] at hdm
+    omega
+  simp only [pyrDep]
+  by_cases hi : v % h + 1 + v / h < h
+  · -- c = (k+1, i)
+    have hm' : v % h < h := hm
+    obtain ⟨a, b⟩ := pyr_divmod (k := v / h + 1) hm'
+    refine ⟨h * (v / h + 1) + v % h, ?_, ?_, ?_⟩
+    · rw [mem_pyrV hpos, a, b]
+      omega
+    · have hk : (h * (v / h + 1) + v % h) / h ≠ 0 := by rw [a]; omega
+      rw [pyrPa_pos hk, a, b]
+      simp only [Nat.add_sub_cancel, Finset.mem_insert, Finset.mem_singleton]
+      left
+      omega
+    · rw [a]
+  · -- c = (k+1, i-1)，i = h - k - 1 ≥ 1
+    have hipos : 1 ≤ v % h := by omega
+    have hm' : v % h - 1 < h := by omega
+    obtain ⟨a, b⟩ := pyr_divmod (k := v / h + 1) hm'
+    refine ⟨h * (v / h + 1) + (v % h - 1), ?_, ?_, ?_⟩
+    · rw [mem_pyrV hpos, a, b]
+      omega
+    · have hk : (h * (v / h + 1) + (v % h - 1)) / h ≠ 0 := by rw [a]; omega
+      rw [pyrPa_pos hk, a, b]
+      simp only [Nat.add_sub_cancel, Finset.mem_insert, Finset.mem_singleton]
+      right
+      omega
+    · rw [a]
+
+theorem card_pyrLevel (h k : ℕ) : (pyrLevel h k).card = h - k := by
+  unfold pyrLevel
+  rw [Finset.card_image_of_injective, Finset.card_range]
+  intro a b hab
+  simp only at hab
+  omega
+
+/-- **一般の高さ `h ≥ 5` のピラミッドの下界**: どの時間最適なペブリングも
+    時刻 `2D - 3`（`D = h - 1`）に `3h - 5` 個以上を置く。 -/
+theorem pyr_peak_lower_3h5 (h : ℕ) (hh : 5 ≤ h) :
+    ∀ P : ℕ → Finset ℕ, Pebbling (pyrPa h) P (2 * (h - 1) + 1) →
+      h * (h - 1) ∈ P (2 * (h - 1) + 1) →
+      (∀ v ∈ pyrV h, v ≠ h * (h - 1) → v ∉ P (2 * (h - 1) + 1)) →
+      3 * h - 5 ≤ (P (2 * (h - 1) - 3)).card := by
+  intro P hp hsin hgone
+  have hpos : 0 < h := by omega
+  have hsd : (h * (h - 1)) / h = h - 1 := Nat.mul_div_cancel_left _ hpos
+  have h2 := peak_lower_right (pa := pyrPa h) (V := pyrV h) (dep := pyrDep h)
+    (sink := h * (h - 1)) (D := h - 1)
+    hp (pyr_closed hpos) (pyr_down hpos) (pyr_max hpos) (by
+      intro v hv hd
+      exact pyr_uniq hpos v hv hd)
+    hgone (pyr_sink_mem hpos) (pyr_sink_dep hpos) (by omega) hsin (pyr_up hpos) 2 (by omega)
+  have h1 := peak_lower_right (pa := pyrPa h) (V := pyrV h) (dep := pyrDep h)
+    (sink := h * (h - 1)) (D := h - 1)
+    hp (pyr_closed hpos) (pyr_down hpos) (pyr_max hpos) (by
+      intro v hv hd
+      exact pyr_uniq hpos v hv hd)
+    hgone (pyr_sink_mem hpos) (pyr_sink_dep hpos) (by omega) hsin (pyr_up hpos) 1 (by omega)
+  have e2 : 2 * (h - 1) - 2 - 1 = 2 * (h - 1) - 3 := by omega
+  have e1 : 2 * (h - 1) - 1 - 1 = (2 * (h - 1) - 3) + 1 := by omega
+  rw [e2] at h2
+  rw [e1] at h1
+  -- 深さ 1 の頂点 h+i は、時刻 t に居るか、さもなくば親 i が居る
+  have hpair : ∀ i, i < h - 1 → (h + i) ∈ P (2 * (h - 1) - 3) ∨ i ∈ P (2 * (h - 1) - 3) := by
+    intro i hi
+    by_cases hv : (h + i) ∈ P (2 * (h - 1) - 3)
+    · exact Or.inl hv
+    · right
+      obtain ⟨a, b⟩ := pyr_divmod (h := h) (k := 1) (i := i) (by omega)
+      rw [Nat.mul_one] at a b
+      have hmem : (h + i) ∈ insert (h * (h - 1)) ((pyrV h).filter
+          (fun v => (pyrDep h v = 1 ∨ pyrDep h v = 1 + 1) ∧ v ≠ h * (h - 1))) := by
+        apply Finset.mem_insert_of_mem
+        rw [Finset.mem_filter, mem_pyrV hpos]
+        simp only [pyrDep]
+        refine ⟨⟨?_, ?_⟩, Or.inl ?_, ?_⟩
+        · rw [a]; omega
+        · rw [a, b]; omega
+        · exact a
+        · intro heq
+          rw [heq, hsd] at a
+          omega
+      have hv10 : (h + i) ∈ P ((2 * (h - 1) - 3) + 1) := h1 hmem
+      have hch : Changed (P (2 * (h - 1) - 3)) (P ((2 * (h - 1) - 3) + 1)) (h + i) :=
+        Or.inr ⟨hv, hv10⟩
+      have hpa : i ∈ pyrPa h (h + i) := by
+        have hk : (h + i) / h ≠ 0 := by rw [a]; omega
+        rw [pyrPa_pos hk, a, b]
+        simp
+      exact (hp.legal (2 * (h - 1) - 3) (by omega) (h + i) hch i hpa).1
+  classical
+  let f : ℕ → ℕ := fun i => if (h + i) ∈ P (2 * (h - 1) - 3) then h + i else i
+  have hfP : ∀ i ∈ Finset.range (h - 1), f i ∈ P (2 * (h - 1) - 3) := by
+    intro i hi
+    have hi' : i < h - 1 := Finset.mem_range.mp hi
+    show (if (h + i) ∈ P (2 * (h - 1) - 3) then h + i else i) ∈ P (2 * (h - 1) - 3)
+    split_ifs with hc
+    · exact hc
+    · exact (hpair i hi').resolve_left hc
+  have hflt : ∀ i ∈ Finset.range (h - 1), f i < 2 * h := by
+    intro i hi
+    have hi' : i < h - 1 := Finset.mem_range.mp hi
+    show (if (h + i) ∈ P (2 * (h - 1) - 3) then h + i else i) < 2 * h
+    split_ifs <;> omega
+  have hinj : Set.InjOn f (Finset.range (h - 1) : Set ℕ) := by
+    intro i hi j hj hij
+    have hi' : i < h - 1 := Finset.mem_range.mp hi
+    have hj' : j < h - 1 := Finset.mem_range.mp hj
+    simp only [f] at hij
+    split_ifs at hij <;> omega
+  set U := (Finset.range (h - 1)).image f with hU
+  set S := insert (h * (h - 1)) (pyrLevel h 2 ∪ pyrLevel h 3) with hS
+  have hUcard : U.card = h - 1 := by
+    rw [hU, Finset.card_image_of_injOn hinj]; simp
+  -- 層 2, 3 の頂点の商
+  have hdiv2 : ∀ x ∈ pyrLevel h 2, x / h = 2 := fun x hx => (pyrLevel_spec (by omega) hx).1
+  have hdiv3 : ∀ x ∈ pyrLevel h 3, x / h = 3 := fun x hx => (pyrLevel_spec (by omega) hx).1
+  have hdisjL : Disjoint (pyrLevel h 2) (pyrLevel h 3) := by
+    rw [Finset.disjoint_left]
+    intro x hx2 hx3
+    have := hdiv2 x hx2
+    have := hdiv3 x hx3
+    omega
+  have hsnot : h * (h - 1) ∉ pyrLevel h 2 ∪ pyrLevel h 3 := by
+    intro hx
+    rcases Finset.mem_union.mp hx with hx | hx
+    · have := hdiv2 _ hx
+      omega
+    · have := hdiv3 _ hx
+      omega
+  have hScard : S.card = 1 + (h - 2) + (h - 3) := by
+    rw [hS, Finset.card_insert_of_notMem hsnot, Finset.card_union_of_disjoint hdisjL,
+      card_pyrLevel, card_pyrLevel]
+    omega
+  have hSge : ∀ x ∈ S, 2 * h ≤ x := by
+    intro x hx
+    rw [hS] at hx
+    have key : 2 ≤ x / h := by
+      rcases Finset.mem_insert.mp hx with rfl | hx
+      · rw [hsd]; omega
+      · rcases Finset.mem_union.mp hx with hx | hx
+        · rw [hdiv2 x hx]
+        · rw [hdiv3 x hx]; omega
+    have := (Nat.le_div_iff_mul_le hpos).mp key
+    omega
+  have hdisj : Disjoint U S := by
+    rw [Finset.disjoint_left]
+    intro x hxU hxS
+    obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hxU
+    have := hflt i hi
+    have := hSge _ hxS
+    omega
+  have hSsub : S ⊆ P (2 * (h - 1) - 3) := by
+    intro x hx
+    rw [hS] at hx
+    apply h2
+    rcases Finset.mem_insert.mp hx with rfl | hx
+    · exact Finset.mem_insert_self _ _
+    · apply Finset.mem_insert_of_mem
+      rw [Finset.mem_filter, mem_pyrV hpos]
+      simp only [pyrDep]
+      rcases Finset.mem_union.mp hx with hx | hx
+      · have hs := pyrLevel_spec (by omega : 2 < h) hx
+        have := hdiv2 x hx
+        refine ⟨⟨by omega, by omega⟩, Or.inl this, ?_⟩
+        intro heq
+        rw [heq, hsd] at this
+        omega
+      · have hs := pyrLevel_spec (by omega : 3 < h) hx
+        have := hdiv3 x hx
+        refine ⟨⟨by omega, by omega⟩, Or.inr (by omega), ?_⟩
+        intro heq
+        rw [heq, hsd] at this
+        omega
+  have hsub : U ∪ S ⊆ P (2 * (h - 1) - 3) := by
+    intro x hx
+    rcases Finset.mem_union.mp hx with hx | hx
+    · obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+      exact hfP i hi
+    · exact hSsub hx
+  have hcard := Finset.card_le_card hsub
+  rw [Finset.card_union_of_disjoint hdisj, hUcard, hScard] at hcard
+  omega
+
+theorem pyr_pa1 {h : ℕ} (hpos : 0 < h) :
+    ∀ v ∈ pyrV h, ∀ u ∈ pyrPa h v, pyrDep h u + 1 = pyrDep h v := by
+  intro v hv u hu
+  rw [mem_pyrV hpos] at hv
+  simp only [pyrDep]
+  have h0 := Nat.zero_le (v / h)
+  by_cases hk : v / h = 0
+  · simp [pyrPa, hk] at hu
+  · rw [pyrPa_pos hk] at hu
+    have hm := Nat.mod_lt v hpos
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hu
+    rcases hu with rfl | rfl
+    · obtain ⟨a, _⟩ := pyr_divmod (k := v / h - 1) hm
+      rw [a]; omega
+    · have hm' : v % h + 1 < h := by omega
+      have e : h * (v / h - 1) + v % h + 1 = h * (v / h - 1) + (v % h + 1) := by
+        rw [Nat.add_assoc]
+      obtain ⟨a, _⟩ := pyr_divmod (k := v / h - 1) hm'
+      rw [e, a]; omega
+
+/-- 仮定が空虚でないこと: 一般の `h ≥ 2` で交互構成は時間最適なペブリングで、終状態は sink だけ。 -/
+theorem pyr_alt_pebbling (h : ℕ) (hh : 2 ≤ h) :
+    Pebbling (pyrPa h) (alt (pyrV h) (pyrDep h) (h * (h - 1)) (h - 1)) (2 * (h - 1) + 1) ∧
+    alt (pyrV h) (pyrDep h) (h * (h - 1)) (h - 1) (2 * (h - 1) + 1) = {h * (h - 1)} := by
+  have hpos : 0 < h := by omega
+  exact alt_par_time_exact (pyr_sink_mem hpos) (pyr_sink_dep hpos) (by omega)
+    (fun v hv => (pyr_sink_dep hpos) ▸ pyr_max hpos v hv) (pyr_uniq hpos) (pyr_closed hpos)
+    (pyr_pa1 hpos)
+
+/-- **`3h - 5` は h = 5, 6, 7 でタイト**（一般の符号化の上で）: 交互構成のピークはちょうど `3h - 5`。 -/
+theorem pyr_alt_peak_3h5_567 :
+    (∀ t, t ≤ 2 * 4 + 1 → (alt (pyrV 5) (pyrDep 5) 20 4 t).card ≤ 10) ∧
+    (∀ t, t ≤ 2 * 5 + 1 → (alt (pyrV 6) (pyrDep 6) 30 5 t).card ≤ 13) ∧
+    (∀ t, t ≤ 2 * 6 + 1 → (alt (pyrV 7) (pyrDep 7) 42 6 t).card ≤ 16) := by
+  refine ⟨?_, ?_, ?_⟩ <;> intro t ht <;> interval_cases t <;> decide
+
+
+/-! ### `3h - 4`（`h ≥ 8`）: 時刻 `2D-3` が締まるなら時刻 `2D-5` が溢れる（2026-10-15・第85夜 周1）
+
+    時刻 `2D-3` の数え上げ（`pyr_peak_lower_3h5`）が `3h-5` で締まるのは、深さ 1 が全部居て深さ 0 が
+    1 つも居ないときに限る（`pyr_pair_count_strict`）。すると深さ 1 は時刻 `2D-4` にも居るので、
+    時刻 `2D-5` で深さ 0/1 の対 `h-1`・深さ 2/3 の対 `h-3`・sink と深さ 4, 5 の `2h-8` が数えられ、
+    計 `4h-12 ≥ 3h-4`（`h ≥ 8`）。SAT（`autoresearch/jobs/night85r1_pyr8_explore.py`）では
+    `h = 8, 9, 10` の厳密値が 20, 23, 26 で、どの単独の時刻も 20 を強制せず、対 `{2D-5, 2D-3}` だけが強制する。
+    交互構成は `h = 8` で 20（タイト）、`h = 9, 10` では 24, 29 で、こちらは一致しない。 -/
+
+/-- 層 `k ≥ 1` の頂点 `h*k+i` の 2 つの親（層 `k-1` の位置 `i` と `i+1`）。 -/
+theorem pyr3h4_parents {h k i : ℕ} (hk1 : 1 ≤ k) (hkh : k < h) (hi : i < h - k) :
+    h * (k - 1) + i ∈ pyrPa h (h * k + i) ∧ h * (k - 1) + i + 1 ∈ pyrPa h (h * k + i) := by
+  obtain ⟨a, b⟩ := pyr_divmod (h := h) (k := k) (i := i) (by omega)
+  have hk0 : (h * k + i) / h ≠ 0 := by rw [a]; omega
+  have hpa := pyrPa_pos hk0
+  rw [a, b] at hpa
+  rw [hpa]
+  simp
+
+/-- `h * k = h * (k-1) + h`（`k ≥ 1`）。 -/
+theorem pyr3h4_mul {h k : ℕ} (hk1 : 1 ≤ k) : h * k = h * (k - 1) + h := by
+  obtain ⟨k', rfl⟩ : ∃ k', k = k' + 1 := ⟨k - 1, by omega⟩
+  simp [Nat.mul_succ]
+
+/-- 層 `k` に属すれば商は `k`。 -/
+theorem pyr3h4_div {h k x : ℕ} (hk : k < h) (hx : x ∈ pyrLevel h k) : x / h = k :=
+  (pyrLevel_spec hk hx).1
+
+/-- 対数え補題の強い版: 層 `k` の欠けた頂点があれば、層 `k-1`・`k` に `h-k+1` 個以上。 -/
+theorem pyr_pair_count_strict {h k t T : ℕ} {P : ℕ → Finset ℕ} (hk1 : 1 ≤ k) (hkh : k < h)
+    (hp : Pebbling (pyrPa h) P T) (ht : t < T)
+    (hall : ∀ i, i < h - k → h * k + i ∈ P (t + 1))
+    (j : ℕ) (hj : j < h - k) (hjn : h * k + j ∉ P t) :
+    h - k + 1 ≤ (P t ∩ (pyrLevel h (k - 1) ∪ pyrLevel h k)).card := by
+  classical
+  have hmul := pyr3h4_mul (h := h) hk1
+  -- 欠けた頂点は両方の親が居る
+  have hpar : ∀ i, i < h - k → h * k + i ∉ P t →
+      h * (k - 1) + i ∈ P t ∧ h * (k - 1) + i + 1 ∈ P t := by
+    intro i hi hn
+    have hch : Changed (P t) (P (t + 1)) (h * k + i) := Or.inr ⟨hn, hall i hi⟩
+    have hl := hp.legal t ht (h * k + i) hch
+    have hq := pyr3h4_parents hk1 hkh hi
+    exact ⟨(hl _ hq.1).1, (hl _ hq.2).1⟩
+  let f : ℕ → ℕ := fun i =>
+    if h * k + i ∈ P t then h * k + i
+    else if i < j then h * (k - 1) + i else h * (k - 1) + (i + 1)
+  have hj' := hpar j hj hjn
+  have hfP : ∀ i ∈ Finset.range (h - k), f i ∈ P t := by
+    intro i hi
+    have hi' : i < h - k := Finset.mem_range.mp hi
+    show (if h * k + i ∈ P t then h * k + i
+      else if i < j then h * (k - 1) + i else h * (k - 1) + (i + 1)) ∈ P t
+    split_ifs with hc hij
+    · exact hc
+    · exact (hpar i hi' hc).1
+    · exact (hpar i hi' hc).2
+  have hfL : ∀ i ∈ Finset.range (h - k), f i ∈ pyrLevel h (k - 1) ∪ pyrLevel h k := by
+    intro i hi
+    have hi' : i < h - k := Finset.mem_range.mp hi
+    show (if h * k + i ∈ P t then h * k + i
+      else if i < j then h * (k - 1) + i else h * (k - 1) + (i + 1)) ∈ _
+    rw [Finset.mem_union]
+    split_ifs with hc hij
+    · exact Or.inr (mem_pyrLevel.mpr ⟨i, hi', rfl⟩)
+    · exact Or.inl (mem_pyrLevel.mpr ⟨i, by omega, rfl⟩)
+    · exact Or.inl (mem_pyrLevel.mpr ⟨i + 1, by omega, rfl⟩)
+  have hinj : Set.InjOn f (Finset.range (h - k) : Set ℕ) := by
+    intro i hi i' hi2 hii
+    have hi' : i < h - k := Finset.mem_range.mp hi
+    have hi2' : i' < h - k := Finset.mem_range.mp hi2
+    simp only [f] at hii
+    split_ifs at hii <;> omega
+  set U := (Finset.range (h - k)).image f with hU
+  have hUcard : U.card = h - k := by
+    rw [hU, Finset.card_image_of_injOn hinj]; simp
+  have hnot : h * (k - 1) + j ∉ U := by
+    intro hx
+    obtain ⟨i, hi, hfi⟩ := Finset.mem_image.mp hx
+    have hi' : i < h - k := Finset.mem_range.mp hi
+    simp only [f] at hfi
+    split_ifs at hfi <;> omega
+  have hsub : insert (h * (k - 1) + j) U ⊆ P t ∩ (pyrLevel h (k - 1) ∪ pyrLevel h k) := by
+    intro x hx
+    rcases Finset.mem_insert.mp hx with rfl | hx
+    · refine Finset.mem_inter.mpr ⟨hj'.1, Finset.mem_union.mpr (Or.inl ?_)⟩
+      exact mem_pyrLevel.mpr ⟨j, by omega, rfl⟩
+    · obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+      exact Finset.mem_inter.mpr ⟨hfP i hi, hfL i hi⟩
+  have hcard := Finset.card_le_card hsub
+  rw [Finset.card_insert_of_notMem hnot, hUcard] at hcard
+  exact hcard
+
+/-- 対数え補題: 時刻 `t+1` に層 `k` が全部居れば、時刻 `t` の層 `k-1`・`k` に `h-k` 個以上。 -/
+theorem pyr_pair_count {h k t T : ℕ} {P : ℕ → Finset ℕ} (hk1 : 1 ≤ k) (hkh : k < h)
+    (hp : Pebbling (pyrPa h) P T) (ht : t < T)
+    (hall : ∀ i, i < h - k → h * k + i ∈ P (t + 1)) :
+    h - k ≤ (P t ∩ (pyrLevel h (k - 1) ∪ pyrLevel h k)).card := by
+  classical
+  by_cases hmiss : ∃ j, j < h - k ∧ h * k + j ∉ P t
+  · obtain ⟨j, hj, hjn⟩ := hmiss
+    have := pyr_pair_count_strict hk1 hkh hp ht hall j hj hjn
+    omega
+  · push Not at hmiss
+    have hsub : pyrLevel h k ⊆ P t ∩ (pyrLevel h (k - 1) ∪ pyrLevel h k) := by
+      intro x hx
+      refine Finset.mem_inter.mpr ⟨?_, Finset.mem_union.mpr (Or.inr hx)⟩
+      obtain ⟨i, hi, rfl⟩ := mem_pyrLevel.mp hx
+      exact hmiss i hi
+    have := Finset.card_le_card hsub
+    rw [card_pyrLevel] at this
+    exact this
+
+/-! ### 層の補助 -/
+
+/-- `L_a ∪ L_{a+1}` の頂点の商は `a` か `a+1`。 -/
+theorem pyr3h4_W_div {h a x : ℕ} (ha : a + 1 < h)
+    (hx : x ∈ pyrLevel h a ∪ pyrLevel h (a + 1)) : a ≤ x / h ∧ x / h ≤ a + 1 := by
+  rcases Finset.mem_union.mp hx with hx | hx
+  · have := pyr3h4_div (by omega) hx
+    omega
+  · have := pyr3h4_div ha hx
+    omega
+
+/-- `{sink} ∪ L_b ∪ L_{b+1}` の頂点の商は `b` 以上。 -/
+theorem pyr3h4_Ws_div {h b x : ℕ} (hpos : 0 < h) (hb : b + 1 < h - 1)
+    (hx : x ∈ insert (h * (h - 1)) (pyrLevel h b ∪ pyrLevel h (b + 1))) : b ≤ x / h := by
+  rcases Finset.mem_insert.mp hx with rfl | hx
+  · rw [Nat.mul_div_cancel_left _ hpos]; omega
+  · have := pyr3h4_W_div (by omega) hx
+    omega
+
+theorem pyr3h4_disj_W_W {h a b : ℕ} (hb : b + 1 < h) (hab : a + 2 ≤ b)
+    {X Y : Finset ℕ} (hX : X ⊆ pyrLevel h a ∪ pyrLevel h (a + 1))
+    (hY : Y ⊆ pyrLevel h b ∪ pyrLevel h (b + 1)) : Disjoint X Y := by
+  rw [Finset.disjoint_left]
+  intro x hxX hxY
+  have h1 := pyr3h4_W_div (by omega) (hX hxX)
+  have h2 := pyr3h4_W_div hb (hY hxY)
+  omega
+
+theorem pyr3h4_disj_W_Ws {h a b : ℕ} (hpos : 0 < h) (hb : b + 1 < h - 1) (hab : a + 2 ≤ b)
+    {X Y : Finset ℕ} (hX : X ⊆ pyrLevel h a ∪ pyrLevel h (a + 1))
+    (hY : Y ⊆ insert (h * (h - 1)) (pyrLevel h b ∪ pyrLevel h (b + 1))) : Disjoint X Y := by
+  rw [Finset.disjoint_left]
+  intro x hxX hxY
+  have h1 := pyr3h4_W_div (by omega) (hX hxX)
+  have h2 := pyr3h4_Ws_div hpos hb (hY hxY)
+  omega
+
+theorem pyr3h4_card_W {h a : ℕ} (ha : a + 1 < h) :
+    (pyrLevel h a ∪ pyrLevel h (a + 1)).card = (h - a) + (h - (a + 1)) := by
+  rw [Finset.card_union_of_disjoint, card_pyrLevel, card_pyrLevel]
+  rw [Finset.disjoint_left]
+  intro x hx1 hx2
+  have := pyr3h4_div (by omega) hx1
+  have := pyr3h4_div ha hx2
+  omega
+
+theorem pyr3h4_card_Ws {h b : ℕ} (hpos : 0 < h) (hb : b + 1 < h - 1) :
+    (insert (h * (h - 1)) (pyrLevel h b ∪ pyrLevel h (b + 1))).card
+      = 1 + (h - b) + (h - (b + 1)) := by
+  have hn : h * (h - 1) ∉ pyrLevel h b ∪ pyrLevel h (b + 1) := by
+    intro hx
+    have := pyr3h4_W_div (by omega) hx
+    rw [Nat.mul_div_cancel_left _ hpos] at this
+    omega
+  rw [Finset.card_insert_of_notMem hn, pyr3h4_card_W (by omega)]
+  omega
+
+/-- `peak_lower_right` の出力から `{sink} ∪ L_k ∪ L_{k+1} ⊆ S` を取り出す。 -/
+theorem pyr3h4_Ws_sub {h k : ℕ} (hpos : 0 < h) (hk : k + 2 ≤ h - 1) {S : Finset ℕ}
+    (hS : insert (h * (h - 1)) ((pyrV h).filter
+        (fun v => (pyrDep h v = k ∨ pyrDep h v = k + 1) ∧ v ≠ h * (h - 1))) ⊆ S) :
+    insert (h * (h - 1)) (pyrLevel h k ∪ pyrLevel h (k + 1)) ⊆ S := by
+  intro x hx
+  apply hS
+  rcases Finset.mem_insert.mp hx with rfl | hx
+  · exact Finset.mem_insert_self _ _
+  · apply Finset.mem_insert_of_mem
+    rw [Finset.mem_filter, mem_pyrV hpos]
+    simp only [pyrDep]
+    have hw := pyr3h4_W_div (by omega) hx
+    have hlt : x / h ≤ k + 1 := hw.2
+    have hge : k ≤ x / h := hw.1
+    have hsp : x % h < h - (x / h) := by
+      rcases Finset.mem_union.mp hx with hx | hx
+      · have := pyrLevel_spec (by omega : k < h) hx
+        rw [this.1] at *
+        omega
+      · have := pyrLevel_spec (by omega : k + 1 < h) hx
+        rw [this.1] at *
+        omega
+    refine ⟨⟨by omega, by omega⟩, by omega, ?_⟩
+    intro heq
+    rw [heq, Nat.mul_div_cancel_left _ hpos] at hlt
+    omega
+
+/-- **一般の高さ `h ≥ 8` のピラミッド**: 時間最適なペブリングは時刻 `2D-5` か `2D-3` に
+    `3h-4` 個以上を置く。 -/
+theorem pyr_peak_lower_3h4 (h : ℕ) (hh : 8 ≤ h) :
+    ∀ P : ℕ → Finset ℕ, Pebbling (pyrPa h) P (2 * (h - 1) + 1) →
+      h * (h - 1) ∈ P (2 * (h - 1) + 1) →
+      (∀ v ∈ pyrV h, v ≠ h * (h - 1) → v ∉ P (2 * (h - 1) + 1)) →
+      3 * h - 4 ≤ (P (2 * (h - 1) - 5)).card ∨ 3 * h - 4 ≤ (P (2 * (h - 1) - 3)).card := by
+  intro P hp hsin hgone
+  classical
+  have hpos : 0 < h := by omega
+  have key : ∀ k, k + 2 ≤ h - 1 → ∀ S : Finset ℕ,
+      S = P (2 * (h - 1) - k - 1) →
+      insert (h * (h - 1)) (pyrLevel h k ∪ pyrLevel h (k + 1)) ⊆ S := by
+    intro k hk S hS
+    have h2 := peak_lower_right (pa := pyrPa h) (V := pyrV h) (dep := pyrDep h)
+      (sink := h * (h - 1)) (D := h - 1)
+      hp (pyr_closed hpos) (pyr_down hpos) (pyr_max hpos) (by
+        intro v hv hd
+        exact pyr_uniq hpos v hv hd)
+      hgone (pyr_sink_mem hpos) (pyr_sink_dep hpos) (by omega) hsin (pyr_up hpos) k hk
+    rw [hS]
+    exact pyr3h4_Ws_sub hpos hk h2
+  obtain ⟨t0, ht0⟩ : ∃ t0, t0 = 2 * (h - 1) - 5 := ⟨_, rfl⟩
+  have eA : 2 * (h - 1) - 5 = t0 := ht0.symm
+  have eB : 2 * (h - 1) - 3 = t0 + 1 + 1 := by omega
+  have hT : t0 + 1 + 1 + 1 < 2 * (h - 1) + 1 := by omega
+  rw [eA, eB]
+  have k2 := key 2 (by omega) (P (t0 + 1 + 1)) (by congr 1; omega)
+  have k1 := key 1 (by omega) (P (t0 + 1 + 1 + 1)) (by congr 1; omega)
+  have k3 := key 3 (by omega) (P (t0 + 1)) (by congr 1; omega)
+  have k4 := key 4 (by omega) (P t0) (by congr 1)
+  by_cases hc : 3 * h - 4 ≤ (P (t0 + 1 + 1)).card
+  · exact Or.inr hc
+  · left
+    push Not at hc
+    have hWs2card := pyr3h4_card_Ws (h := h) (b := 2) hpos (by omega)
+    -- (a) L1 ⊆ P t1
+    have hA : ∀ i, i < h - 1 → h * 1 + i ∈ P (t0 + 1 + 1) := by
+      intro i hi
+      by_contra hn
+      have hall : ∀ i, i < h - 1 → h * 1 + i ∈ P (t0 + 1 + 1 + 1) := by
+        intro i hi
+        apply k1
+        apply Finset.mem_insert_of_mem
+        apply Finset.mem_union_left
+        exact mem_pyrLevel.mpr ⟨i, hi, rfl⟩
+      have hst := pyr_pair_count_strict (h := h) (k := 1) (t := t0 + 1 + 1) (T := 2 * (h - 1) + 1)
+        (P := P) (by omega) (by omega) hp (by omega) hall i hi hn
+      have hdisj : Disjoint (P (t0 + 1 + 1) ∩ (pyrLevel h (1 - 1) ∪ pyrLevel h 1))
+          (insert (h * (h - 1)) (pyrLevel h 2 ∪ pyrLevel h (2 + 1))) :=
+        pyr3h4_disj_W_Ws (a := 0) (b := 2) hpos (by omega) (by omega)
+          (Finset.inter_subset_right) (Finset.Subset.refl _)
+      have hsub : (P (t0 + 1 + 1) ∩ (pyrLevel h (1 - 1) ∪ pyrLevel h 1)) ∪
+          insert (h * (h - 1)) (pyrLevel h 2 ∪ pyrLevel h (2 + 1)) ⊆ P (t0 + 1 + 1) :=
+        Finset.union_subset Finset.inter_subset_left k2
+      have hcard := Finset.card_le_card hsub
+      rw [Finset.card_union_of_disjoint hdisj, hWs2card] at hcard
+      omega
+    -- (b) L0 ∩ P t1 = ∅
+    have hB : ∀ i, i < h → i ∉ P (t0 + 1 + 1) := by
+      intro i hi hmem
+      have hn : i ∉ pyrLevel h 1 := by
+        intro hx
+        obtain ⟨j, hj, hij⟩ := mem_pyrLevel.mp hx
+        omega
+      have hXsub : insert i (pyrLevel h 1) ⊆ pyrLevel h 0 ∪ pyrLevel h (0 + 1) := by
+        intro x hx
+        rcases Finset.mem_insert.mp hx with rfl | hx
+        · exact Finset.mem_union_left _ (mem_pyrLevel.mpr ⟨x, by omega, by simp⟩)
+        · exact Finset.mem_union_right _ hx
+      have hdisj : Disjoint (insert i (pyrLevel h 1))
+          (insert (h * (h - 1)) (pyrLevel h 2 ∪ pyrLevel h (2 + 1))) :=
+        pyr3h4_disj_W_Ws (a := 0) (b := 2) hpos (by omega) (by omega) hXsub (Finset.Subset.refl _)
+      have hsub : insert i (pyrLevel h 1) ∪
+          insert (h * (h - 1)) (pyrLevel h 2 ∪ pyrLevel h (2 + 1)) ⊆ P (t0 + 1 + 1) := by
+        apply Finset.union_subset _ k2
+        intro x hx
+        rcases Finset.mem_insert.mp hx with rfl | hx
+        · exact hmem
+        · obtain ⟨j, hj, rfl⟩ := mem_pyrLevel.mp hx
+          exact hA j (by omega)
+      have hcard := Finset.card_le_card hsub
+      rw [Finset.card_union_of_disjoint hdisj, hWs2card, Finset.card_insert_of_notMem hn,
+        card_pyrLevel] at hcard
+      omega
+    -- (c) L1 ⊆ P (t0+1)
+    have hC : ∀ i, i < h - 1 → h * 1 + i ∈ P (t0 + 1) := by
+      intro i hi
+      by_contra hn
+      have hch : Changed (P (t0 + 1)) (P (t0 + 1 + 1)) (h * 1 + i) := Or.inr ⟨hn, hA i hi⟩
+      have hl := hp.legal (t0 + 1) (by omega) (h * 1 + i) hch
+      have hq := pyr3h4_parents (h := h) (k := 1) (i := i) (by omega) (by omega) hi
+      have := (hl _ hq.1).2
+      exact hB (h * (1 - 1) + i) (by simp; omega) this
+    -- (d) t0 での数え上げ
+    have hall3 : ∀ i, i < h - 3 → h * 3 + i ∈ P (t0 + 1) := by
+      intro i hi
+      apply k3
+      apply Finset.mem_insert_of_mem
+      apply Finset.mem_union_left
+      exact mem_pyrLevel.mpr ⟨i, hi, rfl⟩
+    have c1 := pyr_pair_count (h := h) (k := 1) (t := t0) (T := 2 * (h - 1) + 1) (P := P)
+      (by omega) (by omega) hp (by omega) hC
+    have c3 := pyr_pair_count (h := h) (k := 3) (t := t0) (T := 2 * (h - 1) + 1) (P := P)
+      (by omega) (by omega) hp (by omega) hall3
+    have hd12 : Disjoint (P t0 ∩ (pyrLevel h (1 - 1) ∪ pyrLevel h 1))
+        (P t0 ∩ (pyrLevel h (3 - 1) ∪ pyrLevel h 3)) :=
+      pyr3h4_disj_W_W (a := 0) (b := 2) (by omega) (by omega)
+        (Finset.inter_subset_right) (Finset.inter_subset_right)
+    have hd3 : Disjoint ((P t0 ∩ (pyrLevel h (1 - 1) ∪ pyrLevel h 1)) ∪
+          (P t0 ∩ (pyrLevel h (3 - 1) ∪ pyrLevel h 3)))
+        (insert (h * (h - 1)) (pyrLevel h 4 ∪ pyrLevel h (4 + 1))) := by
+      rw [Finset.disjoint_union_left]
+      exact ⟨pyr3h4_disj_W_Ws (a := 0) (b := 4) hpos (by omega) (by omega)
+          (Finset.inter_subset_right) (Finset.Subset.refl _),
+        pyr3h4_disj_W_Ws (a := 2) (b := 4) hpos (by omega) (by omega)
+          (Finset.inter_subset_right) (Finset.Subset.refl _)⟩
+    have hsub : ((P t0 ∩ (pyrLevel h (1 - 1) ∪ pyrLevel h 1)) ∪
+          (P t0 ∩ (pyrLevel h (3 - 1) ∪ pyrLevel h 3))) ∪
+        insert (h * (h - 1)) (pyrLevel h 4 ∪ pyrLevel h (4 + 1)) ⊆ P t0 :=
+      Finset.union_subset (Finset.union_subset Finset.inter_subset_left
+        Finset.inter_subset_left) k4
+    have hcard := Finset.card_le_card hsub
+    rw [Finset.card_union_of_disjoint hd3, Finset.card_union_of_disjoint hd12,
+      pyr3h4_card_Ws (h := h) (b := 4) hpos (by omega)] at hcard
+    omega
+
+/-- `h = 8` の交互構成のピークは `20`（`3h - 4` と一致）。 -/
+theorem pyr_alt_peak_20 :
+    ∀ t, t ≤ 2 * 7 + 1 → (alt (pyrV 8) (pyrDep 8) 56 7 t).card ≤ 20 := by
+  intro t ht; interval_cases t <;> decide
+
+/-- 高さ 8 のピラミッドの最小ピークは **ちょうど 20**: 交互構成が時間最適で 20 以下、
+    どの時間最適ペブリングも時刻 `2D-5` か `2D-3` に 20 個以上を置く。 -/
+theorem pyr8_pmin_eq_20 :
+    (Pebbling (pyrPa 8) (alt (pyrV 8) (pyrDep 8) 56 7) (2 * 7 + 1) ∧
+      alt (pyrV 8) (pyrDep 8) 56 7 (2 * 7 + 1) = {56}) ∧
+    (∀ t, t ≤ 2 * 7 + 1 → (alt (pyrV 8) (pyrDep 8) 56 7 t).card ≤ 20) ∧
+    (∀ P : ℕ → Finset ℕ, Pebbling (pyrPa 8) P (2 * 7 + 1) →
+      56 ∈ P (2 * 7 + 1) →
+      (∀ v ∈ pyrV 8, v ≠ 56 → v ∉ P (2 * 7 + 1)) →
+      20 ≤ (P (2 * 7 - 5)).card ∨ 20 ≤ (P (2 * 7 - 3)).card) :=
+  ⟨pyr_alt_pebbling 8 (by norm_num), pyr_alt_peak_20, pyr_peak_lower_3h4 8 (by norm_num)⟩
+
+
+/-! ### `h = 9, 10` のタイト性: SAT の証人を `decide` で確かめる（2026-10-15・第85夜 周2）
+
+    交互構成は `h = 9, 10` でピーク 24, 29 なので `3h-4` に届かない。証人は cadical の解
+    （`autoresearch/jobs/night85r2_pyr_witness.py` が独立の再生器で確かめてから書き出した表）。
+    上界側（存在）なので道具の成熟度は問わない: 合法性・終状態・頂点集合・ピークはここで `decide` が確かめる。 -/
+
+/-- `LegalStep` は `∀ v : ℕ` を走るが、変化した頂点は `P ∪ Q` に居るのでそこへ制限してよい
+    （`ParPebbleExtremal.legalStep_iff_legalOn` と同じ議論。あちらはこのファイルを import する側なので写す）。 -/
+theorem pyr_legalStep_of_union {pa : ℕ → Finset ℕ} {P Q : Finset ℕ}
+    (h : ∀ v ∈ P ∪ Q, (v ∈ P ∧ v ∉ Q ∨ v ∉ P ∧ v ∈ Q) → ∀ u ∈ pa v, u ∈ P ∧ u ∈ Q) :
+    LegalStep pa P Q := by
+  intro v hch u hu
+  refine h v ?_ hch u hu
+  rcases hch with ⟨h1, _⟩ | ⟨_, h2⟩
+  · exact Finset.mem_union_left _ h1
+  · exact Finset.mem_union_right _ h2
+
+/-- 高さ 9 の証人（SAT の解。`autoresearch/jobs/night85r2_pyr_witness.py` が再生して書き出した）。 -/
+def pyr9W : ℕ → Finset ℕ := fun t =>
+  (([
+    [],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    [0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24],
+    [0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 18, 19, 20, 21, 22, 23, 24, 27, 28, 29, 30, 31, 32],
+    [0, 1, 9, 10, 11, 12, 21, 22, 23, 24, 27, 28, 29, 30, 31, 32, 36, 37, 38, 39, 40],
+    [0, 1, 10, 11, 12, 21, 22, 23, 24, 27, 28, 29, 36, 37, 38, 39, 40, 45, 46, 47, 48],
+    [0, 1, 10, 11, 12, 21, 22, 23, 24, 27, 28, 29, 37, 38, 39, 40, 45, 46, 47, 48, 54, 55, 56],
+    [0, 1, 9, 10, 11, 12, 21, 22, 23, 24, 27, 28, 29, 37, 38, 39, 40, 45, 54, 55, 56, 63, 64],
+    [0, 9, 10, 11, 12, 21, 22, 23, 24, 27, 28, 29, 37, 38, 39, 40, 45, 54, 55, 56, 63, 64, 72],
+    [9, 10, 11, 12, 21, 22, 23, 24, 27, 28, 29, 37, 38, 39, 40, 45, 46, 47, 48, 54, 55, 56, 72],
+    [9, 10, 11, 12, 20, 21, 22, 23, 24, 27, 28, 29, 31, 36, 37, 38, 39, 40, 45, 46, 47, 48, 72],
+    [9, 10, 11, 12, 21, 22, 23, 24, 27, 28, 29, 30, 31, 32, 36, 37, 38, 39, 40, 72],
+    [4, 5, 6, 7, 8, 9, 10, 11, 12, 18, 19, 20, 21, 22, 23, 24, 27, 28, 29, 30, 31, 32, 72],
+    [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 72],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 72],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 72],
+    [72]] : List (List ℕ)).getD t []).toFinset
+
+/-- 高さ 10 の証人（SAT の解。`autoresearch/jobs/night85r2_pyr_witness.py` が再生して書き出した）。 -/
+def pyr10W : ℕ → Finset ℕ := fun t =>
+  (([
+    [],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22, 23, 24, 25, 26, 27, 30, 31, 32, 33, 34, 35, 36],
+    [0, 1, 2, 11, 20, 21, 22, 23, 24, 25, 26, 27, 30, 31, 32, 33, 34, 35, 36, 40, 41, 42, 43, 44, 45],
+    [0, 1, 10, 11, 20, 21, 22, 23, 24, 25, 26, 27, 40, 41, 42, 43, 44, 45, 50, 51, 52, 53, 54],
+    [0, 1, 10, 11, 21, 22, 23, 24, 25, 26, 27, 40, 41, 42, 43, 44, 45, 50, 51, 52, 53, 54, 60, 61, 62, 63],
+    [0, 10, 11, 21, 22, 23, 24, 25, 26, 27, 40, 41, 42, 43, 44, 45, 50, 51, 52, 60, 61, 62, 63, 70, 71, 72],
+    [0, 10, 11, 21, 22, 23, 24, 25, 26, 27, 40, 41, 42, 43, 44, 45, 50, 51, 52, 62, 63, 70, 71, 72, 80, 81],
+    [10, 11, 21, 22, 23, 24, 25, 26, 27, 40, 41, 42, 43, 44, 45, 50, 51, 52, 62, 63, 70, 71, 72, 80, 81, 90],
+    [10, 11, 21, 22, 23, 24, 25, 26, 27, 40, 41, 42, 43, 44, 45, 50, 51, 52, 60, 61, 62, 63, 70, 71, 72, 90],
+    [10, 11, 20, 21, 22, 23, 24, 25, 26, 27, 40, 41, 42, 43, 44, 45, 50, 51, 52, 53, 54, 60, 61, 62, 63, 90],
+    [7, 8, 10, 11, 20, 21, 22, 23, 24, 25, 26, 27, 30, 40, 41, 42, 43, 44, 45, 50, 51, 52, 53, 54, 90],
+    [7, 8, 10, 11, 20, 21, 22, 23, 24, 25, 26, 27, 30, 31, 32, 33, 34, 35, 36, 40, 41, 42, 43, 44, 45, 90],
+    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 20, 21, 22, 23, 24, 25, 26, 27, 30, 31, 32, 33, 34, 35, 36, 90],
+    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 90],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 90],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 90],
+    [90]] : List (List ℕ)).getD t []).toFinset
+
+theorem pyr9W_legal : ∀ t < 2 * 8 + 1, ∀ v ∈ pyr9W t ∪ pyr9W (t + 1),
+    (v ∈ pyr9W t ∧ v ∉ pyr9W (t + 1) ∨ v ∉ pyr9W t ∧ v ∈ pyr9W (t + 1)) →
+    ∀ u ∈ pyrPa 9 v, u ∈ pyr9W t ∧ u ∈ pyr9W (t + 1) := by
+  intro t ht; interval_cases t <;> decide
+
+theorem pyr10W_legal : ∀ t < 2 * 9 + 1, ∀ v ∈ pyr10W t ∪ pyr10W (t + 1),
+    (v ∈ pyr10W t ∧ v ∉ pyr10W (t + 1) ∨ v ∉ pyr10W t ∧ v ∈ pyr10W (t + 1)) →
+    ∀ u ∈ pyrPa 10 v, u ∈ pyr10W t ∧ u ∈ pyr10W (t + 1) := by
+  intro t ht; interval_cases t <;> decide
+
+/-- 高さ 9 のピラミッドの最小ピークは **ちょうど 23**（`3h - 4`）: 証人 `pyr9W` は時間最適な clean
+    ペブリングで頂点だけを使いピーク 23、どの時間最適ペブリングも時刻 `2D-5` か `2D-3` に 23 個以上。 -/
+theorem pyr9_pmin_eq_23 :
+    (Pebbling (pyrPa 9) pyr9W (2 * 8 + 1) ∧ pyr9W (2 * 8 + 1) = {72} ∧
+      (∀ t, t ≤ 2 * 8 + 1 → pyr9W t ⊆ pyrV 9) ∧
+      ∀ t, t ≤ 2 * 8 + 1 → (pyr9W t).card ≤ 23) ∧
+    (∀ P : ℕ → Finset ℕ, Pebbling (pyrPa 9) P (2 * 8 + 1) →
+      72 ∈ P (2 * 8 + 1) →
+      (∀ v ∈ pyrV 9, v ≠ 72 → v ∉ P (2 * 8 + 1)) →
+      23 ≤ (P (2 * 8 - 5)).card ∨ 23 ≤ (P (2 * 8 - 3)).card) :=
+  ⟨⟨⟨by decide, fun t ht => pyr_legalStep_of_union (pyr9W_legal t ht)⟩, by decide,
+    by intro t ht; interval_cases t <;> decide,
+    by intro t ht; interval_cases t <;> decide⟩,
+   pyr_peak_lower_3h4 9 (by norm_num)⟩
+
+/-- 高さ 10 のピラミッドの最小ピークは **ちょうど 26**（`3h - 4`）。 -/
+theorem pyr10_pmin_eq_26 :
+    (Pebbling (pyrPa 10) pyr10W (2 * 9 + 1) ∧ pyr10W (2 * 9 + 1) = {90} ∧
+      (∀ t, t ≤ 2 * 9 + 1 → pyr10W t ⊆ pyrV 10) ∧
+      ∀ t, t ≤ 2 * 9 + 1 → (pyr10W t).card ≤ 26) ∧
+    (∀ P : ℕ → Finset ℕ, Pebbling (pyrPa 10) P (2 * 9 + 1) →
+      90 ∈ P (2 * 9 + 1) →
+      (∀ v ∈ pyrV 10, v ≠ 90 → v ∉ P (2 * 9 + 1)) →
+      26 ≤ (P (2 * 9 - 5)).card ∨ 26 ≤ (P (2 * 9 - 3)).card) :=
+  ⟨⟨⟨by decide, fun t ht => pyr_legalStep_of_union (pyr10W_legal t ht)⟩, by decide,
+    by intro t ht; interval_cases t <;> decide,
+    by intro t ht; interval_cases t <;> decide⟩,
+   pyr_peak_lower_3h4 10 (by norm_num)⟩
+
+/-! ### `h = 11, 12` のタイト性と `h = 13` の上界（2026-10-16・第85夜 周4）
+
+    周 2 と同じ形: 証人は cadical の解（`autoresearch/jobs/night85r4_pyr_witness.py` が独立の再生器で確かめてから
+    書き出した表）、合法性・終状態・頂点集合・ピークは `decide`。`h = 11, 12` は下界 `pyr_peak_lower_3h4` と対で
+    ちょうど `3h - 4`。`h = 13` は上界 37 (`= 3h - 2`) だけを置く: 一般の下界は 35 しか出さず、
+    ピーク 36 の時間最適ペブリングが無いことは Lean ではなく DRAT 証明書（`autoresearch/jobs/night85r4_pyr13_drat.py`、
+    drat-trim が VERIFIED）による。したがって `3h - 4` の等号は `h = 13` で破れる（層 2）。 -/
+
+/-- 高さ 11 の証人（SAT の解。`autoresearch/jobs/night85r4_pyr_witness.py` が再生して書き出した）。 -/
+def pyr11W : ℕ → Finset ℕ := fun t =>
+  (([
+    [],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    [0, 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+    [0, 1, 2, 3, 4, 5, 6, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 33, 34, 35, 36, 37, 38, 39, 40],
+    [0, 6, 7, 8, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 33, 34, 35, 36, 37, 38, 39, 40, 44, 45, 46, 47, 48, 49, 50],
+    [0, 6, 7, 8, 19, 20, 22, 23, 24, 25, 26, 27, 37, 38, 39, 40, 44, 45, 46, 47, 48, 49, 50, 55, 56, 57, 58, 59, 60],
+    [0, 1, 19, 20, 22, 23, 24, 25, 26, 27, 37, 38, 39, 40, 44, 45, 46, 47, 55, 56, 57, 58, 59, 60, 66, 67, 68, 69, 70],
+    [0, 1, 19, 20, 22, 23, 24, 25, 26, 27, 38, 39, 40, 44, 45, 46, 47, 58, 59, 60, 66, 67, 68, 69, 70, 77, 78, 79, 80],
+    [0, 19, 20, 22, 23, 24, 25, 26, 27, 38, 39, 40, 44, 45, 46, 47, 58, 59, 60, 66, 67, 68, 77, 78, 79, 80, 88, 89, 90],
+    [0, 19, 20, 22, 23, 24, 25, 26, 27, 38, 39, 40, 44, 45, 46, 47, 58, 59, 60, 66, 67, 68, 79, 80, 88, 89, 90, 99, 100],
+    [19, 20, 22, 23, 24, 25, 26, 27, 38, 39, 40, 44, 45, 46, 47, 58, 59, 60, 66, 67, 68, 79, 80, 88, 89, 90, 99, 100, 110],
+    [19, 20, 22, 23, 24, 25, 26, 27, 38, 39, 40, 44, 45, 46, 47, 58, 59, 60, 66, 67, 68, 77, 78, 79, 80, 88, 89, 90, 110],
+    [19, 20, 22, 23, 24, 25, 26, 27, 37, 38, 39, 40, 44, 45, 46, 47, 58, 59, 60, 66, 67, 68, 69, 70, 77, 78, 79, 80, 110],
+    [19, 20, 22, 23, 24, 25, 26, 27, 37, 38, 39, 40, 44, 45, 46, 47, 48, 55, 56, 57, 58, 59, 60, 66, 67, 68, 69, 70, 110],
+    [6, 7, 8, 19, 20, 22, 23, 24, 25, 26, 27, 38, 39, 40, 44, 45, 46, 47, 48, 49, 50, 55, 56, 57, 58, 59, 60, 110],
+    [6, 7, 8, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 33, 34, 35, 36, 37, 38, 39, 40, 44, 45, 46, 47, 48, 49, 50, 110],
+    [0, 1, 2, 3, 4, 5, 6, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 33, 34, 35, 36, 37, 38, 39, 40, 110],
+    [0, 1, 2, 3, 4, 5, 6, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 110],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 110],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 110],
+    [110]] : List (List ℕ)).getD t []).toFinset
+
+/-- 高さ 12 の証人（SAT の解。`autoresearch/jobs/night85r4_pyr_witness.py` が再生して書き出した）。 -/
+def pyr12W : ℕ → Finset ℕ := fun t =>
+  (([
+    [],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33],
+    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40, 41, 42, 43, 44],
+    [0, 1, 2, 12, 13, 25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40, 41, 42, 43, 44, 48, 49, 50, 51, 52, 53, 54, 55],
+    [0, 1, 2, 25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39, 43, 48, 49, 50, 51, 52, 53, 54, 55, 60, 61, 62, 63, 64, 65, 66],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39, 51, 52, 53, 54, 55, 60, 61, 62, 63, 64, 65, 66, 72, 73, 74, 75, 76, 77],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 51, 52, 53, 54, 55, 60, 61, 62, 63, 64, 72, 73, 74, 75, 76, 77, 84, 85, 86, 87, 88],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 51, 52, 53, 54, 55, 60, 61, 62, 63, 66, 75, 76, 77, 84, 85, 86, 87, 88, 96, 97, 98, 99],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 51, 52, 53, 54, 55, 60, 61, 62, 73, 75, 76, 77, 84, 85, 86, 96, 97, 98, 99, 108, 109, 110],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 51, 52, 53, 54, 55, 60, 61, 62, 75, 76, 77, 84, 85, 86, 96, 98, 99, 108, 109, 110, 120, 121],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 51, 52, 53, 54, 55, 60, 61, 62, 75, 76, 77, 84, 85, 86, 98, 99, 108, 109, 110, 120, 121, 132],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 51, 52, 53, 54, 55, 60, 61, 62, 75, 76, 77, 84, 85, 86, 96, 97, 98, 99, 108, 109, 110, 132],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 51, 52, 53, 54, 55, 60, 61, 62, 63, 75, 76, 77, 84, 85, 86, 87, 88, 96, 97, 98, 99, 132],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 39, 51, 52, 53, 54, 55, 60, 61, 62, 63, 72, 73, 74, 75, 76, 77, 84, 85, 86, 87, 88, 132],
+    [25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39, 51, 52, 53, 54, 55, 60, 61, 62, 63, 64, 65, 66, 72, 73, 74, 75, 76, 77, 132],
+    [0, 1, 2, 25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39, 48, 49, 50, 51, 52, 53, 54, 55, 60, 61, 62, 63, 64, 65, 66, 132],
+    [0, 1, 2, 12, 13, 25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40, 41, 42, 43, 44, 48, 49, 50, 51, 52, 53, 54, 55, 132],
+    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 36, 37, 38, 39, 40, 41, 42, 43, 44, 132],
+    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 132],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 132],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 132],
+    [132]] : List (List ℕ)).getD t []).toFinset
+
+/-- 高さ 13 の証人（SAT の解。`autoresearch/jobs/night85r4_pyr_witness.py` が再生して書き出した）。 -/
+def pyr13W : ℕ → Finset ℕ := fun t =>
+  (([
+    [],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
+    [9, 10, 11, 12, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 34, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 52, 53, 54, 55, 56, 57, 58, 59, 60],
+    [9, 10, 11, 12, 26, 27, 28, 29, 30, 31, 32, 33, 34, 42, 43, 44, 45, 46, 47, 48, 52, 53, 54, 55, 56, 57, 58, 59, 60, 65, 66, 67, 68, 69, 70, 71, 72],
+    [1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 42, 43, 44, 45, 46, 47, 48, 52, 53, 54, 56, 60, 65, 66, 67, 68, 69, 70, 71, 72, 78, 79, 80, 81, 82, 83, 84],
+    [26, 27, 28, 29, 30, 31, 32, 33, 34, 43, 44, 47, 48, 52, 53, 54, 67, 68, 69, 70, 71, 72, 78, 79, 80, 81, 82, 83, 84, 91, 92, 93, 94, 95, 96],
+    [26, 27, 28, 29, 30, 31, 32, 33, 34, 46, 47, 48, 52, 53, 54, 67, 68, 69, 70, 71, 72, 78, 79, 80, 81, 91, 92, 93, 94, 95, 96, 104, 105, 106, 107, 108],
+    [26, 27, 28, 29, 30, 31, 32, 33, 34, 47, 48, 52, 53, 54, 67, 68, 69, 70, 71, 72, 78, 79, 80, 81, 94, 95, 96, 104, 105, 106, 107, 108, 117, 118, 119, 120],
+    [26, 27, 28, 29, 30, 31, 32, 33, 34, 47, 48, 52, 53, 54, 66, 67, 68, 69, 70, 71, 72, 78, 79, 94, 95, 96, 104, 105, 106, 117, 118, 119, 120, 130, 131, 132],
+    [26, 27, 28, 29, 30, 31, 32, 33, 34, 47, 48, 52, 53, 54, 66, 67, 68, 69, 70, 71, 72, 78, 80, 94, 95, 96, 104, 105, 106, 119, 120, 130, 131, 132, 143, 144],
+    [1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 47, 48, 52, 53, 54, 66, 67, 68, 69, 70, 71, 72, 78, 94, 95, 96, 104, 105, 106, 119, 120, 130, 131, 132, 143, 144, 156],
+    [26, 27, 28, 29, 30, 31, 32, 33, 34, 47, 48, 52, 53, 54, 66, 67, 68, 69, 70, 71, 72, 78, 79, 94, 95, 96, 104, 105, 106, 117, 118, 119, 120, 130, 131, 132, 156],
+    [26, 27, 28, 29, 30, 31, 32, 33, 34, 47, 48, 52, 53, 54, 67, 68, 69, 70, 71, 72, 78, 79, 80, 81, 94, 95, 96, 104, 105, 106, 107, 108, 117, 118, 119, 120, 156],
+    [26, 27, 28, 29, 30, 31, 32, 33, 34, 42, 47, 48, 52, 53, 54, 67, 68, 69, 70, 71, 72, 78, 79, 80, 81, 91, 92, 93, 94, 95, 96, 104, 105, 106, 107, 108, 156],
+    [26, 27, 28, 29, 30, 31, 32, 33, 34, 39, 42, 43, 47, 48, 52, 53, 54, 67, 68, 69, 70, 71, 72, 78, 79, 80, 81, 82, 83, 84, 91, 92, 93, 94, 95, 96, 156],
+    [11, 26, 27, 28, 29, 30, 31, 32, 33, 34, 42, 43, 44, 45, 46, 47, 48, 52, 53, 54, 55, 65, 66, 67, 68, 69, 70, 71, 72, 78, 79, 80, 81, 82, 83, 84, 156],
+    [9, 10, 11, 12, 26, 27, 28, 29, 30, 31, 32, 33, 34, 43, 44, 45, 46, 47, 48, 52, 53, 54, 55, 56, 57, 58, 59, 60, 65, 66, 67, 68, 69, 70, 71, 72, 156],
+    [9, 10, 11, 12, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 34, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 52, 53, 54, 55, 56, 57, 58, 59, 60, 156],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 156],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 156],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 156],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 156],
+    [156]] : List (List ℕ)).getD t []).toFinset
+
+theorem pyr11W_legal : ∀ t < 2 * 10 + 1, ∀ v ∈ pyr11W t ∪ pyr11W (t + 1),
+    (v ∈ pyr11W t ∧ v ∉ pyr11W (t + 1) ∨ v ∉ pyr11W t ∧ v ∈ pyr11W (t + 1)) →
+    ∀ u ∈ pyrPa 11 v, u ∈ pyr11W t ∧ u ∈ pyr11W (t + 1) := by
+  intro t ht; interval_cases t <;> decide
+
+set_option maxRecDepth 8000 in
+theorem pyr12W_legal : ∀ t < 2 * 11 + 1, ∀ v ∈ pyr12W t ∪ pyr12W (t + 1),
+    (v ∈ pyr12W t ∧ v ∉ pyr12W (t + 1) ∨ v ∉ pyr12W t ∧ v ∈ pyr12W (t + 1)) →
+    ∀ u ∈ pyrPa 12 v, u ∈ pyr12W t ∧ u ∈ pyr12W (t + 1) := by
+  intro t ht; interval_cases t <;> decide
+
+set_option maxRecDepth 8000 in
+theorem pyr13W_legal : ∀ t < 2 * 12 + 1, ∀ v ∈ pyr13W t ∪ pyr13W (t + 1),
+    (v ∈ pyr13W t ∧ v ∉ pyr13W (t + 1) ∨ v ∉ pyr13W t ∧ v ∈ pyr13W (t + 1)) →
+    ∀ u ∈ pyrPa 13 v, u ∈ pyr13W t ∧ u ∈ pyr13W (t + 1) := by
+  intro t ht; interval_cases t <;> decide
+
+/-- 高さ 11 のピラミッドの最小ピークは **ちょうど 29**（`3h - 4`）。 -/
+theorem pyr11_pmin_eq_29 :
+    (Pebbling (pyrPa 11) pyr11W (2 * 10 + 1) ∧ pyr11W (2 * 10 + 1) = {110} ∧
+      (∀ t, t ≤ 2 * 10 + 1 → pyr11W t ⊆ pyrV 11) ∧
+      ∀ t, t ≤ 2 * 10 + 1 → (pyr11W t).card ≤ 29) ∧
+    (∀ P : ℕ → Finset ℕ, Pebbling (pyrPa 11) P (2 * 10 + 1) →
+      110 ∈ P (2 * 10 + 1) →
+      (∀ v ∈ pyrV 11, v ≠ 110 → v ∉ P (2 * 10 + 1)) →
+      29 ≤ (P (2 * 10 - 5)).card ∨ 29 ≤ (P (2 * 10 - 3)).card) :=
+  ⟨⟨⟨by decide, fun t ht => pyr_legalStep_of_union (pyr11W_legal t ht)⟩, by decide,
+    by intro t ht; interval_cases t <;> decide,
+    by intro t ht; interval_cases t <;> decide⟩,
+   pyr_peak_lower_3h4 11 (by norm_num)⟩
+
+/-- 高さ 12 のピラミッドの最小ピークは **ちょうど 32**（`3h - 4`）。 -/
+theorem pyr12_pmin_eq_32 :
+    (Pebbling (pyrPa 12) pyr12W (2 * 11 + 1) ∧ pyr12W (2 * 11 + 1) = {132} ∧
+      (∀ t, t ≤ 2 * 11 + 1 → pyr12W t ⊆ pyrV 12) ∧
+      ∀ t, t ≤ 2 * 11 + 1 → (pyr12W t).card ≤ 32) ∧
+    (∀ P : ℕ → Finset ℕ, Pebbling (pyrPa 12) P (2 * 11 + 1) →
+      132 ∈ P (2 * 11 + 1) →
+      (∀ v ∈ pyrV 12, v ≠ 132 → v ∉ P (2 * 11 + 1)) →
+      32 ≤ (P (2 * 11 - 5)).card ∨ 32 ≤ (P (2 * 11 - 3)).card) :=
+  ⟨⟨⟨by decide, fun t ht => pyr_legalStep_of_union (pyr12W_legal t ht)⟩, by decide,
+    by intro t ht; interval_cases t <;> decide,
+    by intro t ht; interval_cases t <;> decide⟩,
+   pyr_peak_lower_3h4 12 (by norm_num)⟩
+
+set_option maxRecDepth 8000 in
+/-- 高さ 13 のピラミッドにはピーク 37 の時間最適 clean ペブリングがある（上界のみ。下界 37 は DRAT）。 -/
+theorem pyr13_peak_le_37 :
+    (Pebbling (pyrPa 13) pyr13W (2 * 12 + 1) ∧ pyr13W (2 * 12 + 1) = {156} ∧
+      (∀ t, t ≤ 2 * 12 + 1 → pyr13W t ⊆ pyrV 13) ∧
+      ∀ t, t ≤ 2 * 12 + 1 → (pyr13W t).card ≤ 37) :=
+  ⟨⟨by decide, fun t ht => pyr_legalStep_of_union (pyr13W_legal t ht)⟩, by decide,
+    by intro t ht; interval_cases t <;> decide,
+    by intro t ht; interval_cases t <;> decide⟩
+
+end PyramidPeakGeneric
 
 /-! ## 4. 有限 DAG での両側（`paD`: `0 → 2 ← 1`）
 
@@ -2145,4 +3288,120 @@ theorem paP5_is_pyramid :
     (VP5.filter (fun v => depP5 v = 4)).card = 1 := by decide
 
 end Pyramids
+
+/-! ## 3.99995 一般の高さのピラミッドの符号化の固定（2026-10-16・第86夜 周3）
+
+    `pyr_peak_lower_3h4`・`pyr8_pmin_eq_20` 〜 `pyr12_pmin_eq_32` は一般の符号化
+    `pyrPa`・`pyrV`・`pyrDep` の上で述べている。`paP5_is_pyramid` ほか（`h ≤ 7` の具体の符号化）
+    と同じ固定を、ここで**一般の `h`** について与える: 親を持たないのはちょうど深さ 0、
+    それ以外は親がちょうど 2 つで、どちらも頂点集合に入り深さが 1 つ浅い。層 `k` の大きさは `h - k`。
+    ⚠ これが無いと、`pyrPa` を打ち間違えても上の定理は**別の DAG について**真のままになる。 -/
+section PyramidGenericShape
+
+/-- 深さ `k` の頂点はちょうど層 `k`。 -/
+theorem pyr_level_filter {h k : ℕ} (hk : k < h) :
+    (pyrV h).filter (fun v => pyrDep h v = k) = pyrLevel h k := by
+  have hpos : 0 < h := by omega
+  ext v
+  rw [Finset.mem_filter, mem_pyrV hpos, mem_pyrLevel]
+  simp only [pyrDep]
+  constructor
+  · rintro ⟨⟨_, h2⟩, rfl⟩
+    exact ⟨v % h, by omega, (Nat.div_add_mod v h).symm⟩
+  · rintro ⟨i, hi, rfl⟩
+    obtain ⟨a, b⟩ := pyr_divmod (k := k) (show i < h by omega)
+    rw [a, b]
+    omega
+
+/-- 層 `k` の大きさは `h - k`。 -/
+theorem pyrLevel_card (h k : ℕ) : (pyrLevel h k).card = h - k := by
+  unfold pyrLevel
+  rw [Finset.card_image_of_injective _ (add_right_injective (h * k)), Finset.card_range]
+
+/-- **一般の符号化はピラミッドである**（`h ≥ 1`）。 -/
+theorem pyr_is_pyramid (h : ℕ) (hpos : 0 < h) :
+    (∀ v ∈ pyrV h, pyrDep h v = 0 ↔ pyrPa h v = ∅) ∧
+    (∀ v ∈ pyrV h, pyrDep h v ≠ 0 → (pyrPa h v).card = 2) ∧
+    (∀ v ∈ pyrV h, ∀ u ∈ pyrPa h v, u ∈ pyrV h ∧ pyrDep h u + 1 = pyrDep h v) ∧
+    (∀ k < h, ((pyrV h).filter (fun v => pyrDep h v = k)).card = h - k) := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro v _
+    simp only [pyrDep]
+    constructor
+    · intro hk
+      simp [pyrPa, hk]
+    · intro he
+      by_contra hk
+      rw [pyrPa_pos hk] at he
+      simp at he
+  · intro v _ hd
+    simp only [pyrDep] at hd
+    rw [pyrPa_pos hd]
+    exact Finset.card_pair (by omega)
+  · intro v hv u hu
+    refine ⟨pyr_closed hpos v hv u hu, ?_⟩
+    rw [mem_pyrV hpos] at hv
+    obtain ⟨h1, h2⟩ := hv
+    simp only [pyrDep]
+    by_cases hk : v / h = 0
+    · simp [pyrPa, hk] at hu
+    · rw [pyrPa_pos hk] at hu
+      have hm := Nat.mod_lt v hpos
+      have hk1 : 1 ≤ v / h := Nat.one_le_iff_ne_zero.mpr hk
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hu
+      rcases hu with rfl | rfl
+      · obtain ⟨a, _⟩ := pyr_divmod (k := v / h - 1) hm
+        rw [a]
+        exact Nat.sub_add_cancel hk1
+      · have hm' : v % h + 1 < h := by omega
+        have e : h * (v / h - 1) + v % h + 1 = h * (v / h - 1) + (v % h + 1) := by
+          rw [Nat.add_assoc]
+        obtain ⟨a, _⟩ := pyr_divmod (k := v / h - 1) hm'
+        rw [e, a]
+        exact Nat.sub_add_cancel hk1
+  · intro k hk
+    rw [pyr_level_filter hk, pyrLevel_card]
+
+end PyramidGenericShape
+
 end ParPebbleDAG
+
+/-! ## 原稿 `paper-ieice-q2/q2paper.tex` §5 の有界事例（`decide` による全数検査）
+
+    第 84 夜 周 3 に `paper-ieice-q2/lean/Q2Audit.lean` から**文言を変えずに**移した。
+    監査ファイルにあると、ライブラリのルート `Revgarbage.lean` から届かない
+    （査読 S4 (a)・出口 X-exact-rev-complexity-04）。名前空間 `Q2Paper` はそのままなので
+    監査の出力は変わらない。
+
+    Thm 6 の疎条件 `|V| <= 2n0+n1+1` が**上界側で外せない**ことを示す証人。
+    ピラミッド `h = 6`（深さ `D = 5`）は疎条件を満たさず（`21 > 18`）、
+    実際 `alt` のピークは `n0+n1+1 = 12` ではなく **13** である。 -/
+namespace Q2Paper
+open ParPebbleDAG
+
+/-- ピラミッド `h=6` の層の大きさ: `n0 = 6`, `n1 = 5`, `|V| = 21`。
+    疎条件 `|V| <= 2*n0 + n1 + 1` は `21 <= 18` となり**成り立たない**。 -/
+theorem pyr6_not_sparse :
+    (VPY6.filter (fun v => depPY6 v = 0)).card = 6 ∧
+    (VPY6.filter (fun v => depPY6 v = 1)).card = 5 ∧
+    VPY6.card = 21 ∧
+    ¬ (VPY6.card ≤ 2 * 6 + 5 + 1) := by
+  refine ⟨by decide, by decide, by decide, by decide⟩
+
+/-- `alt` のピークはピラミッド `h=6` でちょうど 13（時刻 7 で達成）。
+    `n0 + n1 + 1 = 12` を**超える**ので、Thm 6 の上界は疎条件なしには成り立たない。 -/
+theorem pyr6_alt_peak_exceeds :
+    (alt VPY6 depPY6 20 5 7).card = 13 ∧ ¬ ((alt VPY6 depPY6 20 5 7).card ≤ 6 + 5 + 1) := by
+  refine ⟨by decide, by decide⟩
+
+/-- 完全二分木 `D=3` の層の大きさは疎条件を満たす（`15 <= 21`）。 -/
+theorem tree4_sparse :
+    VT4.card = 15 ∧ (VT4.card ≤ 2 * 8 + 4 + 1) := by
+  refine ⟨by decide, by decide⟩
+
+/-- ピラミッド `h=5`（`D=4`）は疎条件を**等号で**満たす（`15 <= 15`）。境界の実例。 -/
+theorem pyr5_sparse_tight :
+    VP5.card = 15 ∧ (VP5.card ≤ 2 * 5 + 4 + 1) ∧ ¬ (VP5.card ≤ 2 * 5 + 4) := by
+  refine ⟨by decide, by decide, by decide⟩
+
+end Q2Paper

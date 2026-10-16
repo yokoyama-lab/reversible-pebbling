@@ -1,0 +1,14 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4_M4_closure_slack.lean:141:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvA_12,
+    ∀ m ∈ SA,
+      m ∉ F → (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) → toggleAt C m ∈ LvlA 11 ∨ toggleAt C m ∈ LvlA 12 ∨ toggleAt C m ∈ LvlA 13
+is false
+'SplitLemma.H4.pred_irrefl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvA_closed' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvA_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.hDmA' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvB_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvB_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.hDmB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.hpair' depends on axioms: [propext, Quot.sound]
+'SplitLemma.H4.split_num_cert' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

@@ -1,0 +1,12 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTWitMut_W3_not_clean.lean:64:46: error: Tactic `decide` proved that the proposition
+  Ch3 (16 + 1) = toggleAt (Ch3 16) (mvh3 16)
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTWitMut_W3_not_clean.lean:62:12: error: Type mismatch
+  rfl
+has type
+  ?m.21 = ?m.21
+but is expected to have type
+  Ch3 17 = {1}
+'HullLemmaCBTWitMut.cbt_sched_h3' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTWitMut.cbt_sched_h4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTWitMut.cbt_h3_exact' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

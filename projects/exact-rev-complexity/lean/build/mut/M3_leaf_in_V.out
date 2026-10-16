@@ -1,0 +1,16 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTMut_M3_leaf_in_V.lean:58:2: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  a ≥ 1
+where
+ a := ↑2 ^ h
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTMut_M3_leaf_in_V.lean:60:67: error: unsolved goals
+h w : ℕ
+⊢ 1 ≤ w ∧ w ≤ 2 ^ h ↔ 1 ≤ w ∧ w ≤ 2 ^ h - 1
+'HullLemmaCBTMut.cbt_reach' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_bound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h3_bound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h6_bound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h7_bound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h6_maxbudget' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_nonvacuous' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h2_tight' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

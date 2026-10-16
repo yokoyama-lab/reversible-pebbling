@@ -1,0 +1,35 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/LevelCertDmMut_M4_closure_slack.lean:197:35: error: Tactic `decide` proved that the proposition
+  5 ∈ predT3 4
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/LevelCertDmMut_M4_closure_slack.lean:197:35: error: Tactic `decide` proved that the proposition
+  5 ∈ predT3 5
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/LevelCertDmMut_M4_closure_slack.lean:197:48: error: Tactic `decide` proved that the proposition
+  ¬(5 ∈ {2, 5} ∨ 5 ∈ FT3)
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/LevelCertDmMut_M4_closure_slack.lean:217:14: error: Application type mismatch: The argument
+  LvA3_closed
+has type
+  ∀ i < 5,
+    ∀ (C : Finset ℕ),
+      LvA3 i C → ∀ m ∈ {2, 4, 5}, m ∉ FT3 → (∀ c ∈ predT3 m, c ∈ C ∨ c ∈ FT3) → ∃ j ≤ i + 1, LvA3 j (toggleAt C m)
+but is expected to have type
+  ∀ i < 4,
+    ∀ (C : Finset ℕ),
+      LvA3 i C → ∀ m ∈ {2, 4, 5}, m ∉ FT3 → (∀ c ∈ predT3 m, c ∈ C ∨ c ∈ FT3) → ∃ j ≤ i + 1, LvA3 j (toggleAt C m)
+in the application
+  Dm_le_Dcert_of_levels LvA3_zero LvA3_closed
+'SplitLemma.Dm_le_Dcert_of_levels' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.predT3_irrefl' depends on axioms: [propext, Quot.sound]
+'SplitLemma.schedT3_legal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.schedT3_peak' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.schedT3_clean' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.LvA3_closed' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.LvA3_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.hDmA3' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.LvB3_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.LvB3_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.hDmB3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.hpairT3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.split_h3_num_cert' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.split_h3_num_cert_tight' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

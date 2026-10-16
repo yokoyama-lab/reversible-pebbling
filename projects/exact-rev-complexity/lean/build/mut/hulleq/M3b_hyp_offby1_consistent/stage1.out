@@ -1,0 +1,8 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/hulleq/M3b_hyp_offby1_consistent/HullEq.lean:221:17: warning: `Finset.filter_card_add_filter_neg_card_eq_card` has been deprecated: Use `Finset.card_filter_add_card_filter_not` instead
+'HullLemma.Sched.root_at_target' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemma.Sched.once_card_lt_peak' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemma.Sched.card_le_of_root_not_once' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemma.Sched.eq_structure' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEq.cbt_eq_structure' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEq.cbt_h6_p13_structure' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEq.cbt_h6_p11_root_not_once' depends on axioms: [propext, Classical.choice, Quot.sound]

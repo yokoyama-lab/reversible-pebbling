@@ -1,0 +1,13 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/hulleq_h6/N4_shift_to_p12_M227/HullEqWitnessH6.lean:71:30: error: Application type mismatch: The argument
+  cbt_sched
+has type
+  Sched (cbtPred 6) (cbtFree 6) 1 13 225 CF mvF
+but is expected to have type
+  Sched (cbtPred 6) (cbtFree 6) 1 12 227 ?m.34 ?m.35
+in the application
+  HullEq.cbt_h6_p13_structure cbt_sched
+'HullEqWitnessH6.eq_hyps_satisfiable_h6_p13' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6.h6_p13_full' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6.h6_p13_structure' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullEqWitnessH6.h6_p13_four_times' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6.h6_p13_once_eq_config' depends on axioms: [propext, Classical.choice, Quot.sound]
