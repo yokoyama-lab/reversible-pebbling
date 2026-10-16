@@ -22,7 +22,18 @@
  * build: gcc -O3 -march=native -fopenmp -o fbfs fbfs.c
  * usage: ./fbfs <H> <P> [--threads N] [--stop-at-goal 0|1] [--maxdepth D] [--layers FILE]
  *   出力: 各層の状態数、ゴール到達の深さ（無ければ "unreachable"）、全状態数、時間、最大常駐。
- *   変異注入はこのファイルのリポジトリ外のコピーに対して行う（mutate.sh）。
+ *   変異注入はこのファイルのリポジトリ外のコピーに対して行う（mutate.py）。
+ *   --digest FILE: 層ごとの集合のハッシュ（下の「層の要約」）を FILE に書く（H<=8）。
+ *
+ * ## 層の要約（実装 B と突き合わせるための、表現に依らない集合のハッシュ）
+ * 各状態を B の正準形（再帰配置 [根][左 block][右 block] のビット列で、各節点で 左 <= 右 を辞書式で
+ * 満たすもの）に直し、ペブルの立つ位置（0..2^H-2）の昇順列を 16 バイト（余りは 0xFF）に詰める。
+ * そのバイト列 k から w0 = k[0..7]、w1 = k[8..15]（リトルエンディアン）を作り
+ *     H1 = mix(w0 ^ mix(w1 ^ 0x9e3779b97f4a7c15))
+ *     H2 = mix(w1 ^ mix(w0 ^ 0xd1b54a32d192ed03) ^ 0x8cb92ba72f3d8dd7)
+ * （mix は splitmix64 の仕上げ）を計算し、層ごとに 状態数・ΣH1・ΣH2（mod 2^64）を出す。
+ * A は軌道 id から各部分木の block（根を最上位とする整数。大小 = 辞書式）を下から作り、
+ * 子を block の大小で並べ直して B の正準形を得る。
  */
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -118,6 +129,22 @@ static uint32_t node(int j, int b, uint32_t L, uint32_t R) {
     v->L[id] = L; v->R[id] = R; v->b[id] = (uint8_t)b; v->cnt[id] = (uint8_t)c;
     v->tab[h] = id + 1;
     return id;
+}
+
+/* 層の要約用: 高さ j の id の block（2^j-1 ビット、根が最上位）。j<=6 なら 63 ビットに収まる。 */
+static uint64_t *BLK[MAXK + 1];
+static void build_blocks(void) {
+    BLK[0] = xcalloc(1, 8);
+    for (int j = 1; j <= K; j++) {
+        Lev *v = &LV[j];
+        int m = (1 << (j - 1)) - 1;
+        BLK[j] = xmalloc(v->n * 8);
+        for (uint64_t i = 0; i < v->n; i++) {
+            uint64_t a = BLK[j - 1][v->L[i]], c = BLK[j - 1][v->R[i]];
+            if (a > c) { uint64_t t = a; a = c; c = t; }
+            BLK[j][i] = ((uint64_t)v->b[i] << (2 * m)) | (a << m) | c;
+        }
+    }
 }
 
 /* 高さ j の id が「根がペブル済み」とみなせるか（高さ 0 は空の木 = 入力として常に可）。 */
@@ -325,17 +352,53 @@ static int max_half_succ(void) {
     return 2 * (int)m + 2;
 }
 
+/* ---- 層の要約 ---- */
+typedef unsigned __int128 u128;
+static inline u128 half_block(uint64_t h) {
+    int mK = (1 << K) - 1;
+    uint64_t a = BLK[K][half_A(h)], c = BLK[K][half_B(h)];
+    if (a > c) { uint64_t t = a; a = c; c = t; }
+    return ((u128)half_b(h) << (2 * mK)) | ((u128)a << mK) | (u128)c;
+}
+/* 状態 x の B 正準形でのペブル位置の昇順列（16 バイト、余りは 0xFF） */
+static void key_poslist(Key x, uint8_t *out) {
+    memset(out, 0xFF, 16);
+    int n = 0, m = (1 << (H - 1)) - 1;
+    u128 p = half_block(key_h1(x)), q = half_block(key_h2(x));
+    if (p > q) { u128 t = p; p = q; q = t; }
+    if (key_b0(x)) out[n++] = 0;
+    u128 hv[2] = { p, q };
+    for (int t = 0; t < 2; t++) {
+        int base = 1 + t * m;
+        for (int i = m - 1; i >= 0; i--)
+            if ((hv[t] >> i) & 1) { if (n == 16) die("too many pebbles for poslist"); out[n++] = (uint8_t)(base + (m - 1 - i)); }
+    }
+}
+static inline uint64_t dmix(uint64_t x) {
+    x ^= x >> 30; x *= 0xbf58476d1ce4e5b9ULL;
+    x ^= x >> 27; x *= 0x94d049bb133111ebULL;
+    x ^= x >> 31;
+    return x;
+}
+static inline void digest_key(const uint8_t *k, uint64_t *h1, uint64_t *h2) {
+    uint64_t w0 = 0, w1 = 0;
+    for (int i = 7; i >= 0; i--) { w0 = (w0 << 8) | k[i]; w1 = (w1 << 8) | k[8 + i]; }
+    *h1 = dmix(w0 ^ dmix(w1 ^ 0x9e3779b97f4a7c15ULL));
+    *h2 = dmix(w1 ^ dmix(w0 ^ 0xd1b54a32d192ed03ULL) ^ 0x8cb92ba72f3d8dd7ULL);
+}
+
 /* ------------------------------------------------------------------------- */
 
 int main(int argc, char **argv) {
     if (argc < 3) { fprintf(stderr, "usage: %s H P [--threads N] [--stop-at-goal 0|1] [--maxdepth D] [--layers FILE]\n", argv[0]); return 2; }
     H = atoi(argv[1]); P = atoi(argv[2]);
-    int threads = 0, stop_at_goal = 1; long maxdepth = -1; const char *layers_path = NULL;
+    int threads = 0, stop_at_goal = 1; long maxdepth = -1; const char *layers_path = NULL, *digest_path = NULL;
     for (int i = 3; i < argc; i++) {
         if (!strcmp(argv[i], "--threads") && i + 1 < argc) threads = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--stop-at-goal") && i + 1 < argc) stop_at_goal = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--maxdepth") && i + 1 < argc) maxdepth = atol(argv[++i]);
         else if (!strcmp(argv[i], "--layers") && i + 1 < argc) layers_path = argv[++i];
+        else if (!strcmp(argv[i], "--digest") && i + 1 < argc) digest_path = argv[++i];
         else { fprintf(stderr, "unknown arg %s\n", argv[i]); return 2; }
     }
     if (H < 2 || H - 2 > MAXK) die("H must be in [2, MAXK+2]");
@@ -357,6 +420,9 @@ int main(int argc, char **argv) {
     Key goal = mkkey(1, half_pack(0, e, e), half_pack(0, e, e));
     FILE *lf = layers_path ? fopen(layers_path, "w") : NULL;
     if (layers_path && !lf) die("cannot open layers file");
+    FILE *df = digest_path ? fopen(digest_path, "w") : NULL;
+    if (digest_path && !df) die("cannot open digest file");
+    if (df) { if (K > 6) die("--digest needs H <= 8"); build_blocks(); }
 
     Set *prev = set_new(), *cur = set_new();
     set_insert(cur, start, key_hash(start));
@@ -371,7 +437,8 @@ int main(int argc, char **argv) {
         if (maxdepth >= 0 && depth >= maxdepth) break;
         Set *next = set_new();
         int bad_parity = 0, found = 0;
-        #pragma omp parallel reduction(|:bad_parity, found)
+        uint64_t ds1 = 0, ds2 = 0, dcnt = 0;
+        #pragma omp parallel reduction(|:bad_parity, found) reduction(+:ds1, ds2, dcnt)
         {
             HS *s1 = xmalloc(sizeof(HS) * (mhs + 2));
             HS *s2 = xmalloc(sizeof(HS) * (mhs + 2));
@@ -386,6 +453,11 @@ int main(int argc, char **argv) {
                     uint64_t h1 = key_h1(x), h2 = key_h2(x);
                     int c = b0 + half_cnt(h1) + half_cnt(h2);
                     if ((c & 1) != (depth & 1)) bad_parity = 1;
+                    if (df) {
+                        uint8_t pl[16]; uint64_t a1, a2;
+                        key_poslist(x, pl); digest_key(pl, &a1, &a2);
+                        ds1 += a1; ds2 += a2; dcnt++;
+                    }
                     /* 半分 1 の手 */
                     int n1 = half_succ(h1, s1);
                     for (int k = 0; k < n1; k++) {
@@ -420,6 +492,7 @@ int main(int argc, char **argv) {
             free(s1); free(s2);
         }
         if (bad_parity) die("parity violated: graph is not bipartite as assumed");
+        if (df) { fprintf(df, "%ld %lu %016lx %016lx\n", depth, (unsigned long)dcnt, (unsigned long)ds1, (unsigned long)ds2); fflush(df); }
         depth++;
         uint64_t ns = set_size(next);
         total += ns;
@@ -439,5 +512,6 @@ int main(int argc, char **argv) {
     if (goal_depth < 0) printf("VERDICT unreachable%s\n", exhausted ? " (queue exhausted)" : " (NOT exhausted: truncated)");
     else printf("VERDICT M=%ld\n", goal_depth);
     if (lf) fclose(lf);
+    if (df) fclose(df);
     return 0;
 }

@@ -34,7 +34,14 @@
  * 層ごとの一致で実測でも確かめる。
  *
  * build: gcc -O3 -march=native -fopenmp -o fbfs_b fbfs_b.c
- * usage: ./fbfs_b <H> <P> [--threads N] [--stop-at-goal 0|1] [--maxdepth D] [--layers FILE] [--noprune]
+ * usage: ./fbfs_b <H> <P> [--threads N] [--stop-at-goal 0|1] [--maxdepth D] [--layers FILE] [--noprune] [--digest FILE]
+ *
+ * ## 層の要約（--digest。実装 A と突き合わせるための集合のハッシュ）
+ * 鍵（正準形のペブル位置の昇順列 16 バイト）k から w0 = k[0..7]、w1 = k[8..15]（リトルエンディアン）を作り
+ *     H1 = mix(w0 ^ mix(w1 ^ 0x9e3779b97f4a7c15))
+ *     H2 = mix(w1 ^ mix(w0 ^ 0xd1b54a32d192ed03) ^ 0x8cb92ba72f3d8dd7)
+ * （mix は splitmix64 の仕上げ）を計算し、層ごとに 状態数・ΣH1・ΣH2（mod 2^64）を出す。
+ * 仕様は A（fbfs.c）と共通。A は自分の表現から同じ正準形の位置列を作ってから同じ式を当てる。
  */
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -128,6 +135,18 @@ static inline uint64_t hst(const St *s) {
     h ^= h >> 31; h *= 0xff51afd7ed558ccdULL; h ^= h >> 33; h *= 0xc4ceb9fe1a85ec53ULL; h ^= h >> 29;
     return h;
 }
+static inline uint64_t dmix(uint64_t x) {
+    x ^= x >> 30; x *= 0xbf58476d1ce4e5b9ULL;
+    x ^= x >> 27; x *= 0x94d049bb133111ebULL;
+    x ^= x >> 31;
+    return x;
+}
+static inline void digest_key(const uint8_t *k, uint64_t *h1, uint64_t *h2) {
+    uint64_t w0 = 0, w1 = 0;
+    for (int i = 7; i >= 0; i--) { w0 = (w0 << 8) | k[i]; w1 = (w1 << 8) | k[8 + i]; }
+    *h1 = dmix(w0 ^ dmix(w1 ^ 0x9e3779b97f4a7c15ULL));
+    *h2 = dmix(w1 ^ dmix(w0 ^ 0xd1b54a32d192ed03ULL) ^ 0x8cb92ba72f3d8dd7ULL);
+}
 static inline int steq(const St *a, const St *b) { return memcmp(a, b, sizeof *a) == 0; }
 static int stcmp(const void *x, const void *y) { return memcmp(x, y, sizeof(St)); }
 
@@ -196,13 +215,14 @@ static int hs_add(HSet *s, const St *x, uint64_t h) {
 int main(int argc, char **argv) {
     if (argc < 3) { fprintf(stderr, "usage: %s H P [--threads N] [--stop-at-goal 0|1] [--maxdepth D] [--layers FILE] [--noprune]\n", argv[0]); return 2; }
     H = atoi(argv[1]); P = atoi(argv[2]);
-    int nth = 0, stop = 1; long maxd = -1; const char *lp = NULL;
+    int nth = 0, stop = 1; long maxd = -1; const char *lp = NULL, *dp = NULL;
     for (int i = 3; i < argc; i++) {
         if (!strcmp(argv[i], "--threads") && i + 1 < argc) nth = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--stop-at-goal") && i + 1 < argc) stop = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--maxdepth") && i + 1 < argc) maxd = atol(argv[++i]);
         else if (!strcmp(argv[i], "--layers") && i + 1 < argc) lp = argv[++i];
         else if (!strcmp(argv[i], "--noprune")) PRUNE = 0;
+        else if (!strcmp(argv[i], "--digest") && i + 1 < argc) dp = argv[++i];
         else { fprintf(stderr, "unknown arg %s\n", argv[i]); return 2; }
     }
     if (H < 1 || H > 8) fail("H must be 1..8");
@@ -215,6 +235,8 @@ int main(int argc, char **argv) {
     uint64_t canon_mask = H <= 6 ? 0 : 15;
     FILE *lf = lp ? fopen(lp, "w") : NULL;
     if (lp && !lf) fail("cannot open layers file");
+    FILE *df = dp ? fopen(dp, "w") : NULL;
+    if (dp && !df) fail("cannot open digest file");
     printf("# fbfs_b H=%d P=%d N=%d prune=%d threads=%d\n", H, P, N, PRUNE, omp_get_max_threads());
     fflush(stdout);
 
@@ -232,7 +254,8 @@ int main(int argc, char **argv) {
         if (maxd >= 0 && d >= maxd) break;
         HSet *next = hs_new();
         int err = 0, hit = 0;
-        #pragma omp parallel reduction(|:err, hit)
+        uint64_t ds1 = 0, ds2 = 0, dcnt = 0;
+        #pragma omp parallel reduction(|:err, hit) reduction(+:ds1, ds2, dcnt)
         {
             St *nb = malloc(sizeof(St) * (MAXN + 1));
             uint8_t b[MAXN + 1] = {0}, c[MAXN + 1] = {0}, sc[MAXN]; /* N 以降は 0 のまま（pack が 8 バイト単位で読む） */
@@ -245,6 +268,7 @@ int main(int argc, char **argv) {
                     unpack(&pt->k[i], b, &pc);
                     if ((pc & 1) != (int)(d & 1)) err |= 1;      /* 二部性の検査 */
                     if (pc > P) err |= 2;
+                    if (df) { uint64_t a1, a2; digest_key(pt->k[i].p, &a1, &a2); ds1 += a1; ds2 += a2; dcnt++; }
                     if ((hst(&pt->k[i]) & canon_mask) == 0 && !is_canon(b)) err |= 4;
                     int cv[MAXN], ncv = 0;
                     if (PRUNE) {
@@ -286,6 +310,7 @@ int main(int argc, char **argv) {
             free(nb);
         }
         if (err) { fprintf(stderr, "fatal: invariant violated (code %d) at depth %ld\n", err, d); return 3; }
+        if (df) { fprintf(df, "%ld %lu %016lx %016lx\n", d, (unsigned long)dcnt, (unsigned long)ds1, (unsigned long)ds2); fflush(df); }
         d++;
         uint64_t ns = hs_count(next);
         total += ns;
@@ -305,5 +330,6 @@ int main(int argc, char **argv) {
     if (gd < 0) printf("VERDICT_B unreachable%s\n", ex ? " (queue exhausted)" : " (NOT exhausted: truncated)");
     else printf("VERDICT_B M=%ld\n", gd);
     if (lf) fclose(lf);
+    if (df) fclose(df);
     return 0;
 }

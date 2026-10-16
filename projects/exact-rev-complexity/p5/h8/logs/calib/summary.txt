@@ -1,17 +1,17 @@
-OK h=2 p=3 既知=5 A=5 B=5 枯渇=1 総状態数=6 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=3 p=4 既知=-1 A=-1 B=-1 枯渇=1 総状態数=20 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=3 p=5 既知=17 A=17 B=17 枯渇=1 総状態数=38 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=4 p=5 既知=-1 A=-1 B=-1 枯渇=1 総状態数=197 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=4 p=6 既知=53 A=53 B=53 枯渇=1 総状態数=592 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=5 p=6 既知=-1 A=-1 B=-1 枯渇=1 総状態数=4185 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=5 p=7 既知=155 A=155 B=155 枯渇=1 総状態数=17582 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=6 p=7 既知=-1 A=-1 B=-1 枯渇=1 総状態数=147804 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=6 p=8 既知=429 A=429 B=429 枯渇=1 総状態数=849167 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=6 p=9 既知=339 A=339 B=339 枯渇=1 総状態数=3407029 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=6 p=10 既知=295 A=295 B=295 枯渇=1 総状態数=12042584 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=6 p=11 既知=261 A=261 B=261 枯渇=1 総状態数=38766110 層: B=IDENTICAL B(noprune)=IDENTICAL B(naive)=IDENTICAL
-OK h=7 p=9 既知=-1 A=-1 B=-1 枯渇=1 総状態数=51366736 層: B=IDENTICAL
-OK h=7 p=10 既知=1001 A=1001 B=1001 枯渇=1 総状態数=344226392 層: B=IDENTICAL
+OK h=2 p=3 既知=5 A=5 B=5 枯渇=1 総状態数=6 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=3 p=4 既知=-1 A=-1 B=-1 枯渇=1 総状態数=20 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=3 p=5 既知=17 A=17 B=17 枯渇=1 総状態数=38 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=4 p=5 既知=-1 A=-1 B=-1 枯渇=1 総状態数=197 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=4 p=6 既知=53 A=53 B=53 枯渇=1 総状態数=592 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=5 p=6 既知=-1 A=-1 B=-1 枯渇=1 総状態数=4185 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=5 p=7 既知=155 A=155 B=155 枯渇=1 総状態数=17582 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=6 p=7 既知=-1 A=-1 B=-1 枯渇=1 総状態数=147804 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=6 p=8 既知=429 A=429 B=429 枯渇=1 総状態数=849167 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=6 p=9 既知=339 A=339 B=339 枯渇=1 総状態数=3407029 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=6 p=10 既知=295 A=295 B=295 枯渇=1 総状態数=12042584 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=6 p=11 既知=261 A=261 B=261 枯渇=1 総状態数=38766110 層: B=IDENTICAL 集合ハッシュ: A/B=SAME B(noprune)=IDENTICAL B(naive)=IDENTICAL
+OK h=7 p=9 既知=-1 A=-1 B=-1 枯渇=1 総状態数=51366736 層: B=IDENTICAL 集合ハッシュ: A/B=SAME
+OK h=7 p=10 既知=1001 A=1001 B=1001 枯渇=1 総状態数=344226392 層: B=IDENTICAL 集合ハッシュ: A/B=SAME
 OK: h=2 S=3 手数=5 ペブル数の最大=3 終端=根のみ
 OK: h=3 S=5 手数=17 ペブル数の最大=5 終端=根のみ
 OK: h=4 S=6 手数=53 ペブル数の最大=6 終端=根のみ

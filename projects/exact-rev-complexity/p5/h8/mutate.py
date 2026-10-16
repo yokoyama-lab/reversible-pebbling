@@ -23,8 +23,9 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-CASES = [(3, 5), (3, 4), (4, 6), (4, 5), (5, 7), (5, 6), (6, 8), (6, 7), (6, 9)]
-KNOWN = {(3, 5): 17, (3, 4): -1, (4, 6): 53, (4, 5): -1, (5, 7): 155, (5, 6): -1,
+# (5, 9) は 9 個以上のペブルが乗る状態を含む小さい組（鍵の後半バイトに効く変異を速く判定するため。F(T_5,9)=105）
+CASES = [(3, 5), (3, 4), (4, 6), (4, 5), (5, 7), (5, 6), (5, 9), (6, 8), (6, 7), (6, 9)]
+KNOWN = {(3, 5): 17, (3, 4): -1, (4, 6): 53, (4, 5): -1, (5, 7): 155, (5, 6): -1, (5, 9): 105,
          (6, 8): 429, (6, 7): -1, (6, 9): 339}
 MAXDEPTH = 1500
 TIMEOUT = 120
@@ -100,33 +101,54 @@ def build(c_path: Path, exe: Path) -> bool:
     return r.returncode == 0
 
 
-def run_cases(exe: Path, outdir: Path) -> tuple[str, dict]:
-    """全 CASES を走らせ、層ファイルを outdir に置く。(異常の理由 or "", {case: goal_depth})"""
+def run_one(exe: Path, h: int, p: int, lf: Path) -> tuple[str, int | None]:
+    """1 組を走らせる。(異常の種類 "" / "timeout" / "rc=..", goal_depth)"""
+    try:
+        r = subprocess.run([str(exe), str(h), str(p), "--threads", "2", "--stop-at-goal", "0",
+                            "--maxdepth", str(MAXDEPTH), "--layers", str(lf)],
+                           capture_output=True, text=True, timeout=TIMEOUT)
+    except subprocess.TimeoutExpired:
+        return "timeout", None
+    if r.returncode != 0:
+        msg = (r.stderr.strip().splitlines() or ["(stderr 無し)"])[-1]
+        return f"rc={r.returncode}: {msg}", None
+    line = [x for x in r.stdout.splitlines() if x.startswith("RESULT")]
+    if not line:
+        return "RESULT 行が無い", None
+    return "", int(line[0].split("goal_depth=")[1].split()[0])
+
+
+def run_cases(exe: Path, outdir: Path, ctrl: Path | None = None) -> tuple[str, str]:
+    """全 CASES を走らせる。対照 ctrl があれば各組の層ファイルをその場で比べる。
+    戻り値 (判定, 詳細)。判定は "ok"（対照と全組一致）/ "M" / "layers" / "abort" / "timeout_only"。
+    時間切れの組は飛ばして次の組へ進み、他の組で差が出なければ "timeout_only"（未判定）とする。"""
     outdir.mkdir(parents=True, exist_ok=True)
-    got = {}
+    timeouts = []
     for h, p in CASES:
         lf = outdir / f"h{h}_p{p}.txt"
-        try:
-            r = subprocess.run([str(exe), str(h), str(p), "--threads", "2", "--stop-at-goal", "0",
-                                "--maxdepth", str(MAXDEPTH), "--layers", str(lf)],
-                               capture_output=True, text=True, timeout=TIMEOUT)
-        except subprocess.TimeoutExpired:
-            return f"時間切れ {TIMEOUT}s（h={h} p={p}）", got
-        if r.returncode != 0:
-            msg = (r.stderr.strip().splitlines() or ["(stderr 無し)"])[-1]
-            return f"rc={r.returncode}（h={h} p={p}: {msg}）", got
-        line = [x for x in r.stdout.splitlines() if x.startswith("RESULT")]
-        if not line:
-            return f"RESULT 行が無い（h={h} p={p}）", got
-        gd = int(line[0].split("goal_depth=")[1].split()[0])
-        got[(h, p)] = gd
-        if gd != KNOWN[(h, p)]:  # 既知と違えば以降の組は走らせない（時間の節約）
-            return "", got
-    return "", got
-
-
-def same_layers(a: Path, b: Path) -> bool:
-    return all(filecmp.cmp(a / f"h{h}_p{p}.txt", b / f"h{h}_p{p}.txt", shallow=False) for h, p in CASES)
+        err, gd = run_one(exe, h, p, lf)
+        if err == "timeout":
+            # 打ち切った時点までに書かれた層が、対照の同じ深さの層とすでに食い違っていれば検出とする
+            if ctrl is not None and lf.exists():
+                part = lf.read_text().splitlines()
+                ref = (ctrl / f"h{h}_p{p}.txt").read_text().splitlines()
+                diff = [i for i in range(min(len(part), len(ref))) if part[i] != ref[i]]
+                if diff:
+                    return "layers", (f"h={h} p={p}: 時間切れ {TIMEOUT}s までに書かれた層の深さ {diff[0]} で対照と不一致"
+                                      f"（{ref[diff[0]].split()[1]} 対 {part[diff[0]].split()[1]}）")
+                if len(part) > len(ref):
+                    return "layers", f"h={h} p={p}: 対照は {len(ref)} 行で終わるが、時間切れまでに {len(part)} 行を書いた"
+            timeouts.append((h, p))
+            continue
+        if err:
+            return "abort", f"h={h} p={p}: {err}"
+        if gd != KNOWN[(h, p)]:
+            return "M", f"h={h} p={p}: 既知 {KNOWN[(h, p)]} に対し {gd}"
+        if ctrl is not None and not filecmp.cmp(lf, ctrl / f"h{h}_p{p}.txt", shallow=False):
+            return "layers", f"h={h} p={p}: M は既知と同じ、層ごとの状態数が対照と不一致"
+    if timeouts:
+        return "timeout_only", f"時間切れ {TIMEOUT}s の組 {timeouts}（他の組は対照と一致）"
+    return "ok", "対照と完全一致"
 
 
 def c_family(name: str, fname: str, muts: dict, work: Path) -> list[str]:
@@ -139,30 +161,24 @@ def c_family(name: str, fname: str, muts: dict, work: Path) -> list[str]:
     # 対照
     (fam / "control.c").write_text(src)
     assert build(fam / "control.c", fam / "control"), "対照がコンパイルできない"
-    why0, got = run_cases(fam / "control", fam / "control_out")
-    assert not why0, f"対照が異常終了: {why0}"
-    assert got == KNOWN, f"対照が既知の値を再現しない: {got}"
+    v0, why0 = run_cases(fam / "control", fam / "control_out")
+    assert v0 == "ok", f"対照が既知の値を再現しない: {why0}"
     lines.append(f"{name} 対照（無変異）: 既知の値 {len(KNOWN)} 点を再現 ○")
-    det = 0
+    det = undecided = 0
+    label = {"M": "検出（M が既知と不一致）", "layers": "検出（層ごとの状態数が対照と不一致）",
+             "abort": "検出（異常終了。不変条件の検査で停止を含む）", "timeout_only": "**未判定**（時間切れのみ）",
+             "ok": "**未検出**"}
     for mname, (old, new) in muts.items():
         m = apply(src, old, new)
         (fam / f"{mname}.c").write_text(m)
         if not build(fam / f"{mname}.c", fam / mname):
-            verdict, why = True, "コンパイル失敗"
+            v, why = "abort", "コンパイル失敗"
         else:
-            whym, gotm = run_cases(fam / mname, fam / f"{mname}_out")
-            if whym:
-                verdict, why = True, f"異常終了: {whym}"
-            elif gotm != KNOWN:
-                diff = {k: (KNOWN[k], gotm[k]) for k in KNOWN if k in gotm and gotm[k] != KNOWN[k]}
-                verdict, why = True, f"M が既知と不一致 {diff}"
-            elif not same_layers(fam / "control_out", fam / f"{mname}_out"):
-                verdict, why = True, "M は一致、層ごとの状態数が対照と不一致"
-            else:
-                verdict, why = False, "対照と完全一致"
-        det += verdict
-        lines.append(f"  {mname}: {'検出' if verdict else '**未検出**'}（{why}）")
-    lines.append(f"  {name}: {det}/{len(muts)} 検出")
+            v, why = run_cases(fam / mname, fam / f"{mname}_out", fam / "control_out")
+        det += v in ("M", "layers", "abort")
+        undecided += v == "timeout_only"
+        lines.append(f"  {mname}: {label[v]}（{why}）")
+    lines.append(f"  {name}: {det}/{len(muts)} 検出" + (f"、未判定 {undecided}" if undecided else ""))
     return lines
 
 
