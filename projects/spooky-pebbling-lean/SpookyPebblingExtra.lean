@@ -2,3 +2,4 @@ import SpookyPebblingExtra.Relaxed
 import SpookyPebblingExtra.Breakpoints
 import SpookyPebblingExtra.Keystone
 import SpookyPebblingExtra.Envelope
+import SpookyPebblingExtra.EnvelopeBinom
