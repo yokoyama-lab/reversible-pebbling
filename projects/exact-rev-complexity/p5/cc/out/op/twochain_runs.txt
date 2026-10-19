@@ -1,0 +1,23 @@
+tc/exh_6_6.txt: finite=5036589 viol(A over B)=0 viol(B over A)=0 mutant_detected=5036589
+tc/exh_7_5.txt: finite=1361050 viol(A over B)=0 viol(B over A)=0 mutant_detected=1361050
+tc/exh_8_4.txt: finite=204890 viol(A over B)=0 viol(B over A)=0 mutant_detected=204890
+tc/exh_9_3.txt: finite=21011 viol(A over B)=0 viol(B over A)=0 mutant_detected=21011
+tc/progress.txt: done 2026年 10月 20日 火曜日 00:12:26 JST
+tc/rand10_1.txt: finite=62886 viol(A over B)=0 viol(B over A)=0 mutant_detected=62886
+tc/rand10_2.txt: finite=63115 viol(A over B)=0 viol(B over A)=0 mutant_detected=63115
+tc/rand10_3.txt: finite=63640 viol(A over B)=0 viol(B over A)=0 mutant_detected=63640
+tc/rand10_4.txt: finite=63365 viol(A over B)=0 viol(B over A)=0 mutant_detected=63365
+tc/rand10_5.txt: finite=63146 viol(A over B)=0 viol(B over A)=0 mutant_detected=63146
+tc/rand10_6.txt: finite=63218 viol(A over B)=0 viol(B over A)=0 mutant_detected=63218
+tc/rand10_7.txt: finite=63141 viol(A over B)=0 viol(B over A)=0 mutant_detected=63141
+tc/rand10_8.txt: finite=62809 viol(A over B)=0 viol(B over A)=0 mutant_detected=62809
+tc/rand12_11.txt: finite=5844 viol(A over B)=0 viol(B over A)=0 mutant_detected=5844
+tc/rand12_12.txt: finite=5750 viol(A over B)=0 viol(B over A)=0 mutant_detected=5750
+tc/rand12_13.txt: finite=5769 viol(A over B)=0 viol(B over A)=0 mutant_detected=5769
+tc/rand12_14.txt: finite=5786 viol(A over B)=0 viol(B over A)=0 mutant_detected=5786
+tc/walk10_21.txt: finite=200000 viol(A over B)=0 viol(B over A)=0 mutant_detected=200000
+tc/walk10_22.txt: finite=200000 viol(A over B)=0 viol(B over A)=0 mutant_detected=200000
+tc/walk10_23.txt: finite=200000 viol(A over B)=0 viol(B over A)=0 mutant_detected=200000
+tc/walk10_24.txt: finite=200000 viol(A over B)=0 viol(B over A)=0 mutant_detected=200000
+tc/walk12_31.txt: finite=20000 viol(A over B)=0 viol(B over A)=0 mutant_detected=20000
+tc/walk12_32.txt: finite=20000 viol(A over B)=0 viol(B over A)=0 mutant_detected=20000
