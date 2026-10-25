@@ -2,7 +2,7 @@
 
 Lean 4 / Mathlib proofs for the paper
 
-> 完全二分木の可逆ペブリングの指数を挟む（鎖の Knill 再帰を木へ移して分かったこと）, WiNF 2026.
+> 完全二分木の空間最適な可逆ペブリングの手数（多項式上界の Lean 4 による証明と高さ 8 までの厳密値）, WiNF 2026.
 
 Komarath, Sarma and Sawlani (JCSS 2018, arXiv:1604.05510) asked whether complete binary trees can be
 reversibly pebbled with the minimum number of pebbles in a polynomial number of steps.
