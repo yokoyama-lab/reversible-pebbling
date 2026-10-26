@@ -15,4 +15,5 @@ import Revgarbage.P5TreeExists
 import Revgarbage.P5TreeCBT
 import Revgarbage.P5TreeChain
 import Revgarbage.P5TreeLower
+import Revgarbage.P5TreeLeaf
 import Revgarbage.P5TreeTests
