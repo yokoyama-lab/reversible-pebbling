@@ -4,4 +4,5 @@ import TreePebbling.F
 import TreePebbling.Exists
 import TreePebbling.CBT
 import TreePebbling.Chain
+import TreePebbling.Lower
 import TreePebbling.Tests

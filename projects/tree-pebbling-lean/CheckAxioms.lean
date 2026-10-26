@@ -20,3 +20,6 @@ import TreePebbling
 #print axioms P5Tree.RootedTree.F_ge_Fc
 #print axioms P5Tree.RootedTree.F_univ_ge_Fc
 #print axioms P5Tree.cbt_F_ge_Fc
+#print axioms P5Tree.Fc_lower
+#print axioms P5Tree.cbt_F_exponent
+#print axioms P5Tree.cbt_F_Rbullet_two_sided

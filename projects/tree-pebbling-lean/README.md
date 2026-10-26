@@ -17,8 +17,10 @@ This repository proves, with no assumptions beyond the standard axioms, that the
   `R•(T_h) ≤ h + ⌈log₂ h⌉`, `M(T_h, R•(T_h)) ≤ 3^(h + ⌈log₂ h⌉ - 1) ≤ (n + 1)^4`, and
   for every `ε > 0`, `M(T_h, R•(T_h)) ≤ (n + 1)^(log₂ 3 + ε)` for all large `h`.
 * **Comparison with the chain.** For every rooted tree `G` and every `S`, `F(G, S) ≥ Fc(|G|, S)`, where `Fc` is Knill's recursion for the chain
-  (`F_ge_Fc`). Combined with the analysis of the chain recursion (paper, not formalized here) this gives the exponent bound 1.33 for `F` stated in the paper.
-  It is a lower bound on the recursion `F`, not on `M`.
+  (`F_ge_Fc`).
+* **Exponent 1.33 for `F`.** `Fc(n, S) ≥ n^(5/3) · μ^(-S)` with `μ = 631/500` (`Fc_lower`; one induction step is a two-point Jensen inequality).
+  Hence, for `h > 2^14`, `F(T_h, R•(T_h))` is finite and `(2^h - 1)^1.33 ≤ F(T_h, R•(T_h)) ≤ 3^(R•(T_h) - 1)` (`cbt_F_Rbullet_two_sided`).
+  This is a lower bound on the recursion `F`, not on `M`.
 
 ## Rules of the game
 
@@ -37,6 +39,7 @@ configuration to the configuration `{root}`. Pebbles = maximum size of a configu
 | `TreePebbling/Exists.lean` | Removes the hypothesis "the tree can be pebbled at all": `exists_pebbling`, `M_Rbullet_le`, `theorem1_Rbullet`, `theorem1_F_Rbullet` |
 | `TreePebbling/CBT.lean` | The corollary for complete binary trees (heap numbering): `cbt_Rb_le`, `cbt_M_le`, `cbt_M_le_card_pow`, `cbt_M_le_rpow` |
 | `TreePebbling/Chain.lean` | Knill's chain recursion `Fc` and `F_ge_Fc`: the tree recursion is at least the chain recursion with the same number of vertices, `Fc W.card S ≤ F W x S` (any rooted tree); `cbt_F_ge_Fc` for `T_h` |
+| `TreePebbling/Lower.lean` | `jensen_split`, `Fc_lower`, `cbt_F_lower`, `cbt_F_exponent` (`(2^h - 1)^1.33 ≤ F(T_h, S)` for `h > 2^14`, `S ≤ h + ⌈log₂ h⌉`), `cbt_F_Rbullet_two_sided` |
 | `TreePebbling/Tests.lean` | Bounded sanity checks against the paper's Python implementation (uses `native_decide`; not used by the theorems) |
 | `CheckAxioms.lean` | `#print axioms` for the main statements |
 
@@ -56,7 +59,7 @@ There is no `sorry` and no `axiom`. `native_decide` appears only in `Tests.lean`
 * The exact values of `M` in the paper (exhaustive searches up to height 8) and of `F` (up to height 12).
 * `R•(T_h) = h + Θ(log* h)` (Královič 2004) and the exact value of Chan, Lauria, Nordström and Vinyals.
   The corollary uses only the weaker bound `R•(T_h) ≤ h + ⌈log₂ h⌉` proved here.
-* The analysis of the chain recursion `Fc` that turns `F_ge_Fc` into the exponent bound `F(T_h, p_min) ≥ n^(1.3317 - o(1))`.
+* The sharper exponent `1 + κ* = 1.3317…` for `F` (the same argument with `μ ↓ ρ_c(q)` and the optimal `q`); only the exponent 1.33 is formalized.
 * Whether `F = M` on binary trees (it is false on general rooted trees; see the paper).
 
 Comments in the source are in Japanese.
