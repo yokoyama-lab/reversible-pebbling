@@ -33,3 +33,11 @@
 - [—] 3. 道 = 鎖（Knill）: **Lean ではつながない**．`reversible-pebbling-lean` は PRIVATE で，ゲームの表し方（Bool の盤と legalB/execB，番号のずれ s+3）が違い，
   公開予定の tree-pebbling-lean が非公開リポに依存することになるため．紙の証明も Knill の定理を引用しているので，紙だった部分（LI と道への帰着）はすべて Lean になった．
 - 原稿: Overleaf fdfb4dc（6 節 (3) を「帰着は層: 紙の証明，後者は層: 定理証明系」に．4 頁に収めるため Lee らの証明確認の注と「ほとんどの点が等号」を削った）．ポスターは［紙］→［Lean］（道の値は Knill の定理）．
+- 公開用 tree-pebbling-lean: Leaf.lean・Caterpillar.lean（c4ca3a6，26a577a）．全モジュールを素の状態から型検査，CheckAxioms 25 文が標準 3 公理のみ．
+- 台帳: R-Q14-03（層 1．topic-mining ba101c9，未 push）．
+- 未 push: exact-rev-complexity の f2eccc8，f2b5bf4，dc4f2a3 と本記録のコミット，topic-mining ba101c9（push は確認待ち）．
+
+## 残り（締切後の候補）
+- 3. Knill の定理を P5 の定義につなぐ（鎖のリポの公開か，P5 側で M(P_n,S) ≥ F_c(n,S) を直接示す）．
+- 4（予想 CC の 2 本の鎖への帰着．PROOF.md §3 の補題 L と定理 R）の Lean 化．
+
