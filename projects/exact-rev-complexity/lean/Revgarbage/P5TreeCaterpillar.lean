@@ -205,6 +205,119 @@ theorem caterpillar_path : ∀ (m : ℕ) (pred : V → Finset V) (r : V), excess
     obtain ⟨pred', h1, h2, h3⟩ := ih (excess P) (hm ▸ hlt) P r rfl HP
     exact ⟨pred', h1, h2, fun k n h => h3 k n (htr k n h)⟩
 
+/-! ### 子が高々 1 個で `CatInv` を満たす子の関数は、根から全頂点を 1 回ずつ通る道 -/
+
+section PathList
+
+variable (pred : V → Finset V) (r : V)
+
+/-- 根から子を辿る列（子が無くなったらそこに留まる）。 -/
+noncomputable def walk : ℕ → V
+  | 0 => r
+  | k + 1 => if h : (pred (walk k)).Nonempty then h.choose else walk k
+
+variable {pred r}
+
+lemma walk_succ_of_nonempty (h1 : ∀ v, (pred v).card ≤ 1) {k : ℕ}
+    (h : (pred (walk pred r k)).Nonempty) : pred (walk pred r k) = {walk pred r (k + 1)} := by
+  have hm : walk pred r (k + 1) ∈ pred (walk pred r k) := by
+    simp only [walk, dif_pos h]; exact h.choose_spec
+  exact eq_singleton_iff_unique_mem.2 ⟨hm, fun x hx => card_le_one.1 (h1 _) x hx _ hm⟩
+
+/-- 進み続ける区間では列は重ならない。 -/
+lemma walk_inj (H : CatInv pred r) (h1 : ∀ v, (pred v).card ≤ 1) :
+    ∀ i j, i < j → (∀ l < j, (pred (walk pred r l)).Nonempty) → walk pred r i ≠ walk pred r j := by
+  intro i
+  induction i with
+  | zero =>
+    intro j hj hne heq
+    obtain ⟨j', rfl⟩ : ∃ j', j = j' + 1 := ⟨j - 1, by omega⟩
+    have hs := walk_succ_of_nonempty h1 (hne j' (by omega))
+    have : walk pred r (j' + 1) ∈ pred (walk pred r j') := by rw [hs]; exact mem_singleton_self _
+    rw [← heq] at this
+    exact H.root _ this
+  | succ i ih =>
+    intro j hj hne heq
+    obtain ⟨j', rfl⟩ : ∃ j', j = j' + 1 := ⟨j - 1, by omega⟩
+    have hsi := walk_succ_of_nonempty h1 (hne i (by omega))
+    have hsj := walk_succ_of_nonempty h1 (hne j' (by omega))
+    have mi : walk pred r (i + 1) ∈ pred (walk pred r i) := by rw [hsi]; exact mem_singleton_self _
+    have mj : walk pred r (j' + 1) ∈ pred (walk pred r j') := by rw [hsj]; exact mem_singleton_self _
+    rw [heq] at mi
+    exact ih j' (by omega) (fun l hl => hne l (by omega)) (H.uniq _ _ _ mi mj)
+
+/-- 列はいつか止まる（頂点は有限）。 -/
+lemma walk_stops (H : CatInv pred r) (h1 : ∀ v, (pred v).card ≤ 1) :
+    ∃ m, pred (walk pred r m) = ∅ := by
+  by_contra hcon
+  push_neg at hcon
+  have hne : ∀ l, (pred (walk pred r l)).Nonempty := hcon
+  have hinj : Function.Injective (fun i : Fin (Fintype.card V + 1) => walk pred r i.1) := by
+    intro a b hab
+    by_contra hab'
+    rcases lt_or_gt_of_ne (Fin.val_ne_of_ne hab') with h | h
+    · exact walk_inj H h1 a.1 b.1 h (fun l _ => hne l) hab
+    · exact walk_inj H h1 b.1 a.1 h (fun l _ => hne l) hab.symm
+  have := Fintype.card_le_of_injective _ hinj
+  simp at this
+  omega
+
+/-- 根から届く頂点はどれも、止まる前の列に現れる。 -/
+lemma walk_covers (h1 : ∀ v, (pred v).card ≤ 1) (v : V)
+    (hv : Relation.ReflTransGen (fun a b => b ∈ pred a) r v) :
+    ∃ k, walk pred r k = v ∧ ∀ l < k, (pred (walk pred r l)).Nonempty := by
+  induction hv with
+  | refl => exact ⟨0, rfl, fun l hl => absurd hl (Nat.not_lt_zero l)⟩
+  | tail _ hab ih =>
+    obtain ⟨k, rfl, hk⟩ := ih
+    have hne : (pred (walk pred r k)).Nonempty := ⟨_, hab⟩
+    have hs := walk_succ_of_nonempty h1 hne
+    rw [hs, mem_singleton] at hab
+    refine ⟨k + 1, hab.symm, fun l hl => ?_⟩
+    rcases Nat.lt_succ_iff_lt_or_eq.1 hl with h | rfl
+    · exact hk l h
+    · exact hne
+
+/-- **道であること**: 子が高々 1 個で `CatInv` を満たすなら、根から始まり全頂点を 1 回ずつ通り、
+隣り合う頂点が「前の頂点の子はちょうど次の頂点」で結ばれ、最後の頂点に子が無い列がある。 -/
+theorem path_list (H : CatInv pred r) (h1 : ∀ v, (pred v).card ≤ 1) :
+    ∃ L : List V, L.head? = some r ∧ L.Nodup ∧ (∀ v, v ∈ L) ∧
+      L.IsChain (fun a b => pred a = {b}) ∧ (∀ z, L.getLast? = some z → pred z = ∅) := by
+  classical
+  have hex := walk_stops H h1
+  let m := Nat.find hex
+  have hm : pred (walk pred r m) = ∅ := Nat.find_spec hex
+  have hbefore : ∀ l < m, (pred (walk pred r l)).Nonempty := fun l hl =>
+    nonempty_iff_ne_empty.2 (Nat.find_min hex hl)
+  refine ⟨(List.range (m + 1)).map (walk pred r), ?_, ?_, ?_, ?_, ?_⟩
+  · simp [List.range_succ_eq_map, walk]
+  · rw [List.nodup_map_iff_inj_on (List.nodup_range)]
+    intro a ha b hb hab
+    rw [List.mem_range] at ha hb
+    by_contra hne
+    rcases lt_or_gt_of_ne hne with h | h
+    · exact walk_inj H h1 a b h (fun l hl => hbefore l (by omega)) hab
+    · exact walk_inj H h1 b a h (fun l hl => hbefore l (by omega)) hab.symm
+  · intro v
+    obtain ⟨k, rfl, hk⟩ := walk_covers h1 v (H.reach v)
+    have hkm : k ≤ m := by
+      by_contra hlt
+      have := hk m (by omega)
+      rw [hm] at this
+      exact absurd this (not_nonempty_empty)
+    exact List.mem_map.2 ⟨k, List.mem_range.2 (by omega), rfl⟩
+  · rw [List.isChain_map, List.isChain_iff_getElem]
+    intro i hi
+    simp only [List.getElem_range]
+    simp only [List.length_range] at hi
+    exact walk_succ_of_nonempty h1 (hbefore i (by omega))
+  · intro z hz
+    rw [List.getLast?_map, List.getLast?_range] at hz
+    simp at hz
+    rw [← hz]; exact hm
+
+end PathList
+
 namespace RootedTree
 
 variable (T : RootedTree V)
@@ -234,6 +347,18 @@ theorem caterpillar_path (hcat : ∀ u x y, x ∈ T.children u → y ∈ T.child
     ∃ pred' : V → Finset V, (∀ v, (pred' v).card ≤ 1) ∧ CatInv pred' T.root ∧
       ∀ k n, Pebbling T.children ∅ ∅ {T.root} k n → Pebbling pred' ∅ ∅ {T.root} k n :=
   P5Tree.caterpillar_path _ T.children T.root rfl (T.catInv hcat)
+
+/-- **系 LI（道を明示した形）**: 毛虫型の根付き木 `T` について、根から始まり全頂点を 1 回ずつ通る列 `L` と、
+その列に沿った道 `pred'`（前の頂点の子はちょうど次の頂点、最後の頂点に子は無い）があって、
+`T` の手順はどれも同じペブル数・同じ手数以下で `pred'` の手順に直せる。すなわち M(T, S) ≥ M(P_{|T|}, S)。 -/
+theorem caterpillar_path_list (hcat : ∀ u x y, x ∈ T.children u → y ∈ T.children u →
+    T.children x ≠ ∅ → T.children y ≠ ∅ → x = y) :
+    ∃ (pred' : V → Finset V) (L : List V), L.head? = some T.root ∧ L.Nodup ∧ (∀ v, v ∈ L) ∧
+      L.IsChain (fun a b => pred' a = {b}) ∧ (∀ z, L.getLast? = some z → pred' z = ∅) ∧
+      ∀ k n, Pebbling T.children ∅ ∅ {T.root} k n → Pebbling pred' ∅ ∅ {T.root} k n := by
+  obtain ⟨pred', h1, H, htr⟩ := T.caterpillar_path hcat
+  obtain ⟨L, hh, hnd, hall, hc, hl⟩ := path_list H h1
+  exact ⟨pred', L, hh, hnd, hall, hc, hl, htr⟩
 
 end RootedTree
 

@@ -27,4 +27,9 @@
   余分な子の数 `excess` の強い帰納法で保つ．各段の c は「葉でない子があればそれ」を選ぶ（任意の子だと毛虫型が崩れる）．
   結論: 子が高々 1 個で `CatInv` を満たす pred'（根から全頂点を通る道）があり，`Pebbling T.children ∅ ∅ {r} k n → Pebbling pred' ∅ ∅ {r} k n`．
   公理は標準 3 つのみ．変異 3 種（cat を外す，子の数 ≤ 0，手数 n−1）は赤．
-- [ ] 3. 道 = 鎖（Knill）
+- [x] 2'. 道であること（2026-10-27．独立ゲート〔/work/tmp/claude-1000/p5gate3/GATE_REPORT.md，5 点緑，追加変異 10 種，BFS で LI 23813 組・毛虫型 16475 組に違反 0〕の
+  指摘「pred' が道であることは Lean に無い」を受けて追加）: `path_list`（根から始まり全頂点を 1 回ずつ通り，前の頂点の子はちょうど次の頂点，
+  最後の頂点に子なし）と，これを含めた `RootedTree.caterpillar_path_list`．公理は標準 3 つ．変異 3 種（長さ card+1，root を外す，最後に子あり）は赤．
+- [—] 3. 道 = 鎖（Knill）: **Lean ではつながない**．`reversible-pebbling-lean` は PRIVATE で，ゲームの表し方（Bool の盤と legalB/execB，番号のずれ s+3）が違い，
+  公開予定の tree-pebbling-lean が非公開リポに依存することになるため．紙の証明も Knill の定理を引用しているので，紙だった部分（LI と道への帰着）はすべて Lean になった．
+- 原稿: Overleaf fdfb4dc（6 節 (3) を「帰着は層: 紙の証明，後者は層: 定理証明系」に．4 頁に収めるため Lee らの証明確認の注と「ほとんどの点が等号」を削った）．ポスターは［紙］→［Lean］（道の値は Knill の定理）．
