@@ -244,6 +244,91 @@ theorem ub64_sound (bs : List Bool) (hl : bs.length = 30) :
   rw [roots64_len] at h
   exact h
 
+/-! ## 有理指数への持ち上げ（設計書 §24）
+
+E = p/q（cfg 節点の補間で出る有理数）を `T = ⌈p·2^m/q⌉` で n + j/2^m（T = n·2^m + j）へ切り上げ、
+2^{j/2^m} の上界 A/2^k に 2^n を掛けて 2^{p/q} の上界を得る。 -/
+
+/-- ⌈p·2^m / q⌉。 -/
+def ceilDy (m p q : Nat) : Nat := (p * 2 ^ m + (q - 1)) / q
+
+theorem ceilDy_spec (m p q : Nat) (hq : 0 < q) : p * 2 ^ m ≤ ceilDy m p q * q := by
+  unfold ceilDy
+  have h1 := Nat.div_add_mod (p * 2 ^ m + (q - 1)) q
+  have h2 := Nat.mod_lt (p * 2 ^ m + (q - 1)) hq
+  rw [Nat.mul_comm ((p * 2 ^ m + (q - 1)) / q)]
+  generalize q * ((p * 2 ^ m + (q - 1)) / q) = t at *
+  generalize (p * 2 ^ m + (q - 1)) % q = s at *
+  generalize p * 2 ^ m = x at *
+  omega
+
+/-- 結合: p/q ≤ (n·2^m + j)/2^m と 2^{j/2^m} ≤ A/2^k から 2^{p/q} ≤ 2^n·A/2^k。 -/
+theorem ratLift (k m p q n j A : Nat)
+    (hT : p * 2 ^ m ≤ (n * 2 ^ m + j) * q)
+    (hA : 2 ^ (j + k * 2 ^ m) ≤ A ^ 2 ^ m) :
+    2 ^ (p + k * q) ≤ (2 ^ n * A) ^ q := by
+  have hM : 0 < 2 ^ m := Nat.two_pow_pos m
+  -- 両辺の 2^m 乗で比べる
+  have key : (2 ^ (p + k * q)) ^ 2 ^ m ≤ ((2 ^ n * A) ^ q) ^ 2 ^ m := by
+    have e1 : (2 ^ (p + k * q)) ^ 2 ^ m = 2 ^ (p * 2 ^ m + k * q * 2 ^ m) := by
+      rw [← Nat.pow_mul, Nat.add_mul]
+    have e2 : ((2 ^ n * A) ^ q) ^ 2 ^ m = 2 ^ (n * 2 ^ m * q) * (A ^ 2 ^ m) ^ q := by
+      rw [← Nat.pow_mul, Nat.mul_pow, ← Nat.pow_mul, ← Nat.pow_mul]
+      rw [Nat.mul_comm q (2 ^ m), ← Nat.mul_assoc]
+    rw [e1, e2]
+    have s1 : 2 ^ (p * 2 ^ m + k * q * 2 ^ m) ≤ 2 ^ (n * 2 ^ m * q + (j + k * 2 ^ m) * q) := by
+      apply Nat.pow_le_pow_right (by decide)
+      have h0 : (n * 2 ^ m + j) * q = n * 2 ^ m * q + j * q := Nat.add_mul _ _ _
+      have h1 : k * q * 2 ^ m = k * 2 ^ m * q := by
+        rw [Nat.mul_assoc, Nat.mul_comm q, ← Nat.mul_assoc]
+      rw [Nat.add_mul j (k * 2 ^ m) q, h1]
+      rw [h0] at hT
+      generalize p * 2 ^ m = a at *
+      generalize n * 2 ^ m * q = b at *
+      generalize j * q = c at *
+      generalize k * 2 ^ m * q = d at *
+      omega
+    have s2 : 2 ^ (n * 2 ^ m * q + (j + k * 2 ^ m) * q) ≤ 2 ^ (n * 2 ^ m * q) * (A ^ 2 ^ m) ^ q := by
+      rw [Nat.pow_add, Nat.pow_mul _ (j + k * 2 ^ m) q]
+      exact Nat.mul_le_mul_left _ (Nat.pow_le_pow_left hA q)
+    exact Nat.le_trans s1 s2
+  -- x^M ≤ y^M（M > 0）なら x ≤ y
+  apply Classical.byContradiction
+  intro hlt
+  have hlt' : ((2 ^ n * A) ^ q) < 2 ^ (p + k * q) := Nat.lt_of_not_le hlt
+  have := Nat.pow_lt_pow_left hlt' (Nat.pos_iff_ne_zero.mp hM)
+  exact absurd key (Nat.not_le_of_lt this)
+
+theorem bitsMSB_length : ∀ m j, (bitsMSB m j).length = m
+  | 0, _ => rfl
+  | m + 1, j => by simp only [bitsMSB, List.length_cons, bitsMSB_length m j]
+
+theorem expBits_bitsMSB : ∀ m j, expBits (bitsMSB m j) = j % 2 ^ m
+  | 0, j => by simp [bitsMSB, expBits, Nat.mod_one]
+  | m + 1, j => by
+    simp only [bitsMSB, expBits, bitsMSB_length, expBits_bitsMSB m j]
+    rw [Nat.mod_pow_succ]
+    have h := Nat.mod_lt (j / 2 ^ m) (show 0 < 2 by decide)
+    generalize j / 2 ^ m % 2 = b at *
+    have : b = 0 ∨ b = 1 := by omega
+    rcases this with rfl | rfl <;> simp [Nat.add_comm]
+
+/-- 本番規模（k = 64・m = 30）: 任意の有理 p/q（q > 0）について、T = ⌈p·2^30/q⌉ を
+n = T / 2^30・j = T % 2^30 に分けると 2^{p/q} ≤ 2^n · ubBits(j) / 2^64。 -/
+theorem ub64_rat (p q : Nat) (hq : 0 < q) :
+    2 ^ (p + 64 * q) ≤
+      (2 ^ (ceilDy 30 p q / 2 ^ 30) *
+        ubBits 64 (2 ^ 64) roots64 (bitsMSB 30 (ceilDy 30 p q % 2 ^ 30))) ^ q := by
+  have hT := ceilDy_spec 30 p q hq
+  rw [← Nat.div_add_mod (ceilDy 30 p q) (2 ^ 30), Nat.mul_comm (2 ^ 30)] at hT
+  have hA := ub64_sound (bitsMSB 30 (ceilDy 30 p q % 2 ^ 30)) (bitsMSB_length _ _)
+  rw [expBits_bitsMSB, Nat.mod_mod] at hA
+  exact ratLift 64 30 p q _ _ _ hT hA
+
+/-- 小さい例（k = 8・m = 3）: 2^{7/4} ≤ 2^1 · 433 / 2^8（T = ⌈7·8/4⌉ = 14 = 1·8 + 6）。 -/
+example : ceilDy 3 7 4 = 14 := by decide
+example : 2 ^ (7 + 8 * 4) ≤ (2 ^ 1 * ubBits 8 (2 ^ 8) [363, 305, 280] (bitsMSB 3 6)) ^ 4 := by decide
+
 end RevPebbling.Exp2Dyadic
 
 #print axioms RevPebbling.Exp2Dyadic.chkRoots_sound
@@ -251,3 +336,6 @@ end RevPebbling.Exp2Dyadic
 #print axioms RevPebbling.Exp2Dyadic.mulStep
 #print axioms RevPebbling.Exp2Dyadic.ubBits_sound
 #print axioms RevPebbling.Exp2Dyadic.ub64_sound
+#print axioms RevPebbling.Exp2Dyadic.ceilDy_spec
+#print axioms RevPebbling.Exp2Dyadic.ratLift
+#print axioms RevPebbling.Exp2Dyadic.ub64_rat
