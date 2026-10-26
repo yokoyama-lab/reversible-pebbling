@@ -17,3 +17,6 @@ import TreePebbling
 #print axioms P5Tree.cbt_M_le
 #print axioms P5Tree.cbt_M_le_card_pow
 #print axioms P5Tree.cbt_M_le_rpow
+#print axioms P5Tree.RootedTree.F_ge_Fc
+#print axioms P5Tree.RootedTree.F_univ_ge_Fc
+#print axioms P5Tree.cbt_F_ge_Fc

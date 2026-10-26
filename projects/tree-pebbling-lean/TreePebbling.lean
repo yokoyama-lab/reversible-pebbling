@@ -3,4 +3,5 @@ import TreePebbling.Strat
 import TreePebbling.F
 import TreePebbling.Exists
 import TreePebbling.CBT
+import TreePebbling.Chain
 import TreePebbling.Tests
