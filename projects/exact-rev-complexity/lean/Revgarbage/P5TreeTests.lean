@@ -9,6 +9,7 @@
 **ここは有界事例の検査であり、層 1 の根拠にはしない**（`native_decide` を使う）。
 -/
 import Revgarbage.P5TreeF
+import Revgarbage.P5TreeChain
 import Mathlib.Data.Fin.VecNotation
 
 namespace P5Tree.Tests
@@ -120,5 +121,21 @@ example : T3.F univ 0 4 = ⊤ := by native_decide
 example : Pebbling T2.children ∅ ∅ {0} 3 (3 ^ (3 - 1)) :=
   RootedTree.theorem1_pebbling T2 ⟨5, ⟨[∅, {1}, {1, 2}, {0, 1, 2}, {0, 2}, {0}],
     by decide, by decide, by decide, by decide, by decide⟩⟩
+
+/-! ### 7. 鎖の Knill 再帰 `Fc`（`P5TreeChain.lean`）: `p5/lb/chain.py` の `Fc_dp` と一致し、補題 A の等号の例 -/
+
+example : Fc 3 3 = 5 := by native_decide
+example : Fc 4 3 = 9 := by native_decide
+example : Fc 4 2 = ⊤ := by native_decide
+example : Fc 5 4 = 11 := by native_decide
+example : Fc 6 4 = 15 := by native_decide
+example : Fc 7 4 = 19 := by native_decide
+example : Fc 7 5 = 17 := by native_decide
+example : Fc 8 4 = 25 := by native_decide
+example : Fc 8 5 = 21 := by native_decide
+-- 補題 A は T_2（5 = 5）、T_3（17 = 17）、鎖 4 頂点（9 = 9）で等号（上の §6 の値）。
+example : Fc 3 3 = T2.F univ 0 3 := by native_decide
+example : Fc 7 5 = T3.F univ 0 5 := by native_decide
+example : Fc 4 3 = chain4.F univ 0 3 := by native_decide
 
 end P5Tree.Tests
