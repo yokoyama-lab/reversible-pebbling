@@ -114,8 +114,140 @@ example : 2 ^ (3 + 8 * 4) ≤ 433 ^ 4 := by
   have h1' := powLift 8 2 2 1 363 h1
   exact mulStep 8 4 2 1 363 305 433 h1' h2 (by decide)
 
+/-! ## ビット積の畳み込み（2^{j/2^m} の上界、設計書 §23）
+
+根の鎖 `rs`（長さ m）とビット列 `bs`（同じ長さ、先頭が重み 2^{-1}）から、立っているビットの根を
+切り上げの積 `mulUp` で掛けていく。指数は `expBits bs`（`bs` を上位ビットから読んだ 2 進数）で、
+健全性は `ubBits_sound`: 結果を 2^k で割った値は 2^{expBits bs / 2^m} 以上。 -/
+
+/-- 切り上げの積 ⌈A·B / 2^k⌉。 -/
+def mulUp (k A B : Nat) : Nat := (A * B + (2 ^ k - 1)) / 2 ^ k
+
+theorem mulUp_spec (k A B : Nat) : A * B ≤ mulUp k A B * 2 ^ k := by
+  unfold mulUp
+  have hpos := Nat.two_pow_pos k
+  have h1 := Nat.div_add_mod (A * B + (2 ^ k - 1)) (2 ^ k)
+  have h2 := Nat.mod_lt (A * B + (2 ^ k - 1)) hpos
+  rw [Nat.mul_comm ((A * B + (2 ^ k - 1)) / 2 ^ k)]
+  generalize 2 ^ k * ((A * B + (2 ^ k - 1)) / 2 ^ k) = t at *
+  generalize (A * B + (2 ^ k - 1)) % 2 ^ k = s at *
+  generalize A * B = x at *
+  generalize 2 ^ k = d at *
+  omega
+
+/-- `acc` から出発し、`b = true` の位置の根だけを切り上げで掛ける。 -/
+def ubBits (k : Nat) : Nat → List Nat → List Bool → Nat
+  | acc, r :: rs, b :: bs => ubBits k (if b then mulUp k acc r else acc) rs bs
+  | acc, _, _ => acc
+
+/-- ビット列を上位ビットから読んだ 2 進数。 -/
+def expBits : List Bool → Nat
+  | [] => 0
+  | b :: bs => (if b then 2 ^ bs.length else 0) + expBits bs
+
+/-- 一般形: 出発点 `p` が 2^{1/N} の上界で、`acc` が 2^{e/(N·2^L)} の上界なら、
+畳み込みの結果は 2^{(e + expBits bs)/(N·2^L)} の上界（L = rs.length）。 -/
+theorem ubBits_sound_gen (k : Nat) : ∀ (rs : List Nat) (bs : List Bool) (N p acc e : Nat),
+    bs.length = rs.length →
+    2 ^ (1 + k * N) ≤ p ^ N → chkRoots k p rs = true →
+    2 ^ (e + k * (N * 2 ^ rs.length)) ≤ acc ^ (N * 2 ^ rs.length) →
+    2 ^ (e + expBits bs + k * (N * 2 ^ rs.length)) ≤ (ubBits k acc rs bs) ^ (N * 2 ^ rs.length)
+  | [], bs, _, _, acc, e, hl, _, _, ha => by
+    have hb : bs = [] := List.eq_nil_of_length_eq_zero hl
+    subst hb
+    simp only [expBits, ubBits, Nat.add_zero]
+    exact ha
+  | _ :: _, [], _, _, _, _, hl, _, _, _ => by simp at hl
+  | r :: rs, b :: bs, N, p, acc, e, hl, hp, hc, ha => by
+    simp only [chkRoots, Bool.and_eq_true, decide_eq_true_eq] at hc
+    have hl' : bs.length = rs.length := by simpa using hl
+    have hr : 2 ^ (1 + k * (2 * N)) ≤ r ^ (2 * N) := sqrtStep k N 1 p r hp hc.1
+    have hD : N * 2 ^ (r :: rs).length = 2 * N * 2 ^ rs.length := by
+      rw [List.length_cons, Nat.pow_succ, Nat.mul_comm (2 ^ rs.length) 2, ← Nat.mul_assoc,
+        Nat.mul_comm N 2]
+    rw [hD] at ha ⊢
+    have hrL := powLift k (2 * N) (2 ^ rs.length) 1 r hr
+    rw [Nat.one_mul] at hrL
+    have hstep : 2 ^ ((e + (if b then 2 ^ rs.length else 0)) + k * (2 * N * 2 ^ rs.length)) ≤
+        (if b then mulUp k acc r else acc) ^ (2 * N * 2 ^ rs.length) := by
+      cases b with
+      | true =>
+        simp only [if_true]
+        exact mulStep k _ e (2 ^ rs.length) acc r (mulUp k acc r) ha hrL (mulUp_spec k acc r)
+      | false =>
+        simp only [Bool.false_eq_true, if_false, Nat.add_zero]
+        exact ha
+    have ih := ubBits_sound_gen k rs bs (2 * N) r _ _ hl' hr hc.2 hstep
+    simp only [ubBits, expBits]
+    rw [← Nat.add_assoc, hl']
+    exact ih
+
+/-- 出発点 `2^(k+1)`（値 2）の鎖と、出発値 `2^k`（値 1 = 2^0）から:
+`ubBits k (2^k) rs bs / 2^k ≥ 2^{expBits bs / 2^m}`（m = rs.length）。 -/
+theorem ubBits_sound (k : Nat) (rs : List Nat) (bs : List Bool) (hl : bs.length = rs.length)
+    (hc : chkRoots k (2 ^ (k + 1)) rs = true) :
+    2 ^ (expBits bs + k * 2 ^ rs.length) ≤ (ubBits k (2 ^ k) rs bs) ^ (2 ^ rs.length) := by
+  have h0 : 2 ^ (1 + k * 1) ≤ (2 ^ (k + 1)) ^ 1 := by
+    rw [Nat.pow_one, Nat.mul_one, Nat.add_comm]
+    exact Nat.le_refl _
+  have ha : 2 ^ (0 + k * (1 * 2 ^ rs.length)) ≤ (2 ^ k) ^ (1 * 2 ^ rs.length) := by
+    rw [Nat.zero_add, Nat.one_mul, ← Nat.pow_mul]
+    exact Nat.le_refl _
+  have h := ubBits_sound_gen k rs bs 1 (2 ^ (k + 1)) (2 ^ k) 0 hl h0 hc ha
+  rw [Nat.one_mul, Nat.zero_add] at h
+  exact h
+
+/-- `j` の下位 `m` ビットを上位から並べたもの（生成器。健全性には使わない）。 -/
+def bitsMSB : Nat → Nat → List Bool
+  | 0, _ => []
+  | m + 1, j => (j / 2 ^ m % 2 == 1) :: bitsMSB m j
+
+/-! ## 例（k = 8 は kernel の decide、k = 64・m = 30 は本番の精度） -/
+
+/-- 2^{6/8} = 2^{3/4}: 363·305 を切り上げて 433（上の `mulStep` の例と同じ値）。 -/
+example : ubBits 8 (2 ^ 8) [363, 305, 280] [true, true, false] = 433 := by decide
+
+example : 2 ^ (expBits [true, true, false] + 8 * 2 ^ 3) ≤
+    (ubBits 8 (2 ^ 8) [363, 305, 280] [true, true, false]) ^ (2 ^ 3) :=
+  ubBits_sound 8 [363, 305, 280] [true, true, false] rfl (by decide)
+
+/-- k = 64・m = 30 の根の鎖（m89 の `gen_roots` の出力。ここでは信頼せず `chkRoots` で受理を確かめる）。 -/
+def roots64 : List Nat :=
+  -- GENERATED roots64 BEGIN
+  [26087635650665564425, 21936999301089678047, 20116317054877281743, 19263451207323153963,
+   18850675170876015536, 18647615946650685160, 18546908069882975961, 18496758270674070882,
+   18471734244850835107, 18459234930309000273, 18452988445124272034, 18449865995240371899,
+   18448304968436414830, 18447524504564044947, 18447134285009651016, 18446939178327825413,
+   18446841625760745903, 18446792849670663278, 18446768461673986098, 18446756267687738523,
+   18446750170697637487, 18446747122203342656, 18446745597956384163, 18446744835832952147,
+   18446744454771247946, 18446744264240398798, 18446744168974974962, 18446744121342263228,
+   18446744097525907407, 18446744085617729508]
+  -- GENERATED roots64 END
+
+theorem roots64_ok : chkRoots 64 (2 ^ 65) roots64 = true := by decide
+
+theorem roots64_len : roots64.length = 30 := by decide
+
+/-- 本番の精度での上界の例: 2^{j/2^30} ≤ P/2^64（P は Python の `ub_dyadic` と一致すること）。 -/
+-- GENERATED ub64 BEGIN
+example : ubBits 64 (2 ^ 64) roots64 (bitsMSB 30 1073741823) = 36893488123602747546 := by decide
+example : ubBits 64 (2 ^ 64) roots64 (bitsMSB 30 715827882) = 29282380935392655592 := by decide
+example : ubBits 64 (2 ^ 64) roots64 (bitsMSB 30 123456789) = 19977060175509150989 := by decide
+-- GENERATED ub64 END
+
+example : expBits (bitsMSB 30 123456789) = 123456789 := by decide
+
+/-- 一般の j に対する本番規模の健全性（`roots64_ok` を差し込むだけ）。 -/
+theorem ub64_sound (bs : List Bool) (hl : bs.length = 30) :
+    2 ^ (expBits bs + 64 * 2 ^ 30) ≤ (ubBits 64 (2 ^ 64) roots64 bs) ^ (2 ^ 30) := by
+  have h := ubBits_sound 64 roots64 bs (by rw [hl, roots64_len]) roots64_ok
+  rw [roots64_len] at h
+  exact h
+
 end RevPebbling.Exp2Dyadic
 
 #print axioms RevPebbling.Exp2Dyadic.chkRoots_sound
 #print axioms RevPebbling.Exp2Dyadic.roots_sound
 #print axioms RevPebbling.Exp2Dyadic.mulStep
+#print axioms RevPebbling.Exp2Dyadic.ubBits_sound
+#print axioms RevPebbling.Exp2Dyadic.ub64_sound
