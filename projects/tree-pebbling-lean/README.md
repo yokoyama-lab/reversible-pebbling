@@ -45,7 +45,7 @@ configuration to the configuration `{root}`. Pebbles = maximum size of a configu
 | `TreePebbling/Chain.lean` | Knill's chain recursion `Fc` and `F_ge_Fc`: the tree recursion is at least the chain recursion with the same number of vertices, `Fc W.card S ≤ F W x S` (any rooted tree); `cbt_F_ge_Fc` for `T_h` |
 | `TreePebbling/Lower.lean` | `jensen_split`, `Fc_lower`, `cbt_F_lower`, `cbt_F_exponent` (`(2^h - 1)^1.33 ≤ F(T_h, S)` for `h > 2^14`, `S ≤ h + ⌈log₂ h⌉`), `cbt_F_Rbullet_two_sided` |
 | `TreePebbling/Leaf.lean` | `pebbling_leafIns` (inserting a leaf between `u` and its child `c` does not increase the number of moves) |
-| `TreePebbling/Caterpillar.lean` | `caterpillar_path`, `RootedTree.caterpillar_path` (every vertex has at most one non-leaf child ⇒ a path on the same vertices is at least as fast) |
+| `TreePebbling/Caterpillar.lean` | `caterpillar_path`, `RootedTree.caterpillar_path`, `RootedTree.caterpillar_path_list` (every vertex has at most one non-leaf child ⇒ a path through all vertices from the root is at least as fast); `path_list` |
 | `TreePebbling/Tests.lean` | Bounded sanity checks against the paper's Python implementation (uses `native_decide`; not used by the theorems) |
 | `CheckAxioms.lean` | `#print axioms` for the main statements |
 

@@ -26,3 +26,5 @@ import TreePebbling
 #print axioms P5Tree.pebbling_leafIns
 #print axioms P5Tree.caterpillar_path
 #print axioms P5Tree.RootedTree.caterpillar_path
+#print axioms P5Tree.path_list
+#print axioms P5Tree.RootedTree.caterpillar_path_list
