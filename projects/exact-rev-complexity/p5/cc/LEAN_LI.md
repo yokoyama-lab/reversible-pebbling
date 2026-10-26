@@ -22,5 +22,9 @@
   仮定は構造体 `LeafIns`（t ≠ c，t ∉ B，pred t = ∅，t の親は u だけ，c ∈ pred u，pred' の 3 式）．t ∈ pred u は使わない．
   `lazyPass` は `induction L generalizing` で書いた（パターン照合の再帰は `lazy` の名前が解決されず通らなかった）．
   公理は標準 3 つのみ．変異 4 種（t_par を外す，c_mem を外す，手数を n−1 にする，t ∉ a を外す）は赤．
-- [ ] 2. 毛虫型 → 道
+- [x] 2. 毛虫型 → 道（2026-10-27）: `lean/Revgarbage/P5TreeCaterpillar.lean` の `caterpillar_path`（抽象形）と
+  `RootedTree.caterpillar_path`．不変条件 `CatInv`（親は 1 つ，根に親なし，自己ループなし，根から全頂点に届く，葉でない子は高々 1 個）を
+  余分な子の数 `excess` の強い帰納法で保つ．各段の c は「葉でない子があればそれ」を選ぶ（任意の子だと毛虫型が崩れる）．
+  結論: 子が高々 1 個で `CatInv` を満たす pred'（根から全頂点を通る道）があり，`Pebbling T.children ∅ ∅ {r} k n → Pebbling pred' ∅ ∅ {r} k n`．
+  公理は標準 3 つのみ．変異 3 種（cat を外す，子の数 ≤ 0，手数 n−1）は赤．
 - [ ] 3. 道 = 鎖（Knill）
