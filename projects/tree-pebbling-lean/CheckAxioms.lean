@@ -23,6 +23,9 @@ import TreePebbling
 #print axioms P5Tree.Fc_lower
 #print axioms P5Tree.cbt_F_exponent
 #print axioms P5Tree.cbt_F_Rbullet_two_sided
+#print axioms P5Tree.Fc_lower_of
+#print axioms P5Tree.cbt_F_exponent_sharp
+#print axioms P5Tree.cbt_F_Rbullet_two_sided_sharp
 #print axioms P5Tree.pebbling_leafIns
 #print axioms P5Tree.caterpillar_path
 #print axioms P5Tree.RootedTree.caterpillar_path

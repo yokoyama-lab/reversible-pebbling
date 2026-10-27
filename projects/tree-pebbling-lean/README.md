@@ -44,6 +44,7 @@ configuration to the configuration `{root}`. Pebbles = maximum size of a configu
 | `TreePebbling/CBT.lean` | The corollary for complete binary trees (heap numbering): `cbt_Rb_le`, `cbt_M_le`, `cbt_M_le_card_pow`, `cbt_M_le_rpow` |
 | `TreePebbling/Chain.lean` | Knill's chain recursion `Fc` and `F_ge_Fc`: the tree recursion is at least the chain recursion with the same number of vertices, `Fc W.card S ≤ F W x S` (any rooted tree); `cbt_F_ge_Fc` for `T_h` |
 | `TreePebbling/Lower.lean` | `jensen_split`, `Fc_lower`, `cbt_F_lower`, `cbt_F_exponent` (`(2^h - 1)^1.33 ≤ F(T_h, S)` for `h > 2^14`, `S ≤ h + ⌈log₂ h⌉`), `cbt_F_Rbullet_two_sided` |
+| `TreePebbling/LowerSharp.lean` | `jensen_split_of`, `Fc_lower_of` (the lower solution for any base μ satisfying the two-point Jensen inequality), `cbt_F_exponent_sharp` (`(2^h - 1)^1.3317 ≤ F(T_h, S)` for `h > 2^19`, `S ≤ h + ⌈log₂ h⌉`, base μ = 126133/100000), `cbt_F_Rbullet_two_sided_sharp`; the constant `μ^60000 ≤ 2^20097` is checked by `decide +kernel` (no extra axioms) |
 | `TreePebbling/Leaf.lean` | `pebbling_leafIns` (inserting a leaf between `u` and its child `c` does not increase the number of moves) |
 | `TreePebbling/Caterpillar.lean` | `caterpillar_path`, `RootedTree.caterpillar_path`, `RootedTree.caterpillar_path_list` (every vertex has at most one non-leaf child ⇒ a path through all vertices from the root is at least as fast); `path_list` |
 | `TreePebbling/Tests.lean` | Bounded sanity checks against the paper's Python implementation (uses `native_decide`; not used by the theorems) |

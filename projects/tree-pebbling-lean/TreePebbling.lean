@@ -5,6 +5,7 @@ import TreePebbling.Exists
 import TreePebbling.CBT
 import TreePebbling.Chain
 import TreePebbling.Lower
+import TreePebbling.LowerSharp
 import TreePebbling.Leaf
 import TreePebbling.Caterpillar
 import TreePebbling.Tests
