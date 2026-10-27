@@ -44,7 +44,12 @@
   - 検査: `revgarbage` の lakefile は RevPebbling に依存しないので `Revgarbage.lean` には登録していない（`lake build` はこのファイルに触れない）．
     両リポを `git archive`（exact-rev-complexity 4ab7976，reversible-pebbling-lean 0d3feab）で scratch に出し，Mathlib（両リポ fabf563a7c95）の
     olean と同じ `LEAN_PATH` に並べて `lean --root=. -o` を依存の順に走らせた（RevPebbling は RowExact の閉包 36 モジュール）．
-  - 独立ゲート: `/work/tmp/claude-1000/p5gate4/GATE_REPORT.md`（結果は下に追記）．
+  - 独立ゲート（`/work/tmp/claude-1000/p5gate4/GATE_REPORT.md`，2026-10-28）: **緑（限定なし）**．空の olean から 45 モジュールを新規に生成，
+    公理は標準 3 つ（step_to_chain，chain_moves も），追加の変異 18 種（主 14，Tests 3，Chain の定義 1）がすべて赤
+    （ただし Fc_succ_le の向き反転と `<` 化の 2 種は型クラスの記述エラーで赤になっており，意味の反証力には数えない），
+    独立の Python BFS で道 n≤9・k≤5 の 75 組が Fc と一致，毛虫 5 種 × k≤6 で BFS ≥ Fc の違反 0，
+    Lean で道 4 頂点・毛虫 5 頂点の具体例を作り，BFS の手順（9 手・k=3，11 手・k=4）と定理の下界が一致．
+    範囲外: P5TreeCaterpillar・P5TreeChain・RevPebbling の数学的な再検討（コンパイルと公理のみ）．
   - **公開の制約**: 公開用 tree-pebbling-lean にこのファイルを入れるには RevPebbling の RowExact の閉包（36 モジュール）も要る．
     鎖のリポを公開するか，閉包を写すかは未決（ユーザー判断）．
 - 原稿: Overleaf fdfb4dc（6 節 (3) を「帰着は層: 紙の証明，後者は層: 定理証明系」に．4 頁に収めるため Lee らの証明確認の注と「ほとんどの点が等号」を削った）．ポスターは［紙］→［Lean］（道の値は Knill の定理）．
