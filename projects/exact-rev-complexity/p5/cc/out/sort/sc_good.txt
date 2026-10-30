@@ -1,0 +1,1 @@
+stack noctx good Lmax 12 runs 66 total viol 0

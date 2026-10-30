@@ -1,0 +1,1 @@
+stack' any Lmax 12 runs 36 total viol 0
