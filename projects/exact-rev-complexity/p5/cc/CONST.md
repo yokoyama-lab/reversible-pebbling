@@ -1,7 +1,8 @@
 # 予算一定の SORT と蜘蛛型の木の予想 CC（2026-10-31）
 
 `SORT.md` §4 の「GRAFT の等式を予算一定の場合に Knill の再帰から示せるかを先に見る」の記録．ユーザーの選択「お勧めで」（紙の帰着の検算 → GRAFT の最小の場合）による．
-層: §1 の補題 M（と凸性）は **Lean で証明**（`lean/Revgarbage/P5TreeFcConvex.lean`．下の §1 末尾）．§2〜§4 は紙の証明（層 2．critic の敵対レビューで致命的な穴なし，saikensha の検算は未）．使う Lean の定理は Knill の向き M(P_n,S) ≥ F_c(n,S)（`P5TreeKnill.lean` の `path_Fc_le`）だけ．
+層: §1 の補題 M（と凸性）は **Lean で証明**（`lean/Revgarbage/P5TreeFcConvex.lean`．下の §1 末尾）．§2〜§4 は紙の証明（層 2．critic の敵対レビューで致命的な穴なし．saikensha の独立検算〔2026-10-31，`/work/tmp/claude-1000/recheck-paper/REPORT.md`〕で補題 E，定理 SORT_const，系 S1' とも確認）．
+使う外部の結果は 2 つ: Knill の下界の向き M(P_n,S) ≥ F_c(n,S)（Lean，`P5TreeKnill.lean` の `path_Fc_le`）と，Knill の構成の向き M(P_n,S) ≤ F_c(n,S)（再帰どおりに下の m 個 → 上の n−m 個 → 下を逆に消す．古典的な紙の構成．非公開の鎖のリポの `Unconditional.gameF_eq_Fpre_uncond` は等号版）．構成の向きは補題 E の (≤) と定理 SORT_const の 1 本の側で使う．
 §5 の数値は計算機援用の有界検査（`const/`）．
 
 記号: F(n,S) は Knill の再帰（`P5TreeChain.lean` の `Fc`．F(n,0)=∞，F(1,S)=1，n ≥ 2 で F(n,S) = min_{1≤m<n} F(m,S)+F(m,S−1)+F(n−m,S−1)）．
