@@ -33,7 +33,10 @@ F(·,S−1) の域 2^{S−2} を超える n では I_{S−1}(n) = ∞ とみな�
 - `Fc_diff_local`: F(n+1,S+1) + F(n,S) ≤ F(n,S+1) + F(n+1,S)．F(n,S+1) の最適な分割 (a,b) で F(n+1,S+1) ≤ G(a) + F(b+1,S) とし，F(·,S) の凸性（弦の不等式）で増分を b から n へ押し上げる．
 - `Fc_diff_mono`，`lemmaM`: 局所版を y から x まで足す（補題 M そのもの）．
 - 検査: 本チェックアウトの `.lake` を使わず，scratch の olean（P5TreeChain は HEAD と同じ版）と Mathlib を `LEAN_PATH` に並べて `lean -o` で olean を生成（rc=0，警告 0）．
-  公理は標準 3 つ（propext，Classical.choice，Quot.sound）．sorry・native_decide なし．変異 5 種（補題 M の向き，局所版の向き，凸性の向き，F(2,S+2)=4，弦の添字のずれ）はすべて赤（6 種目の「S ≥ 1 を外す」は S = 0 でも主張が真なので数えない）．独立ゲートは未．
+  公理は標準 3 つ（propext，Classical.choice，Quot.sound）．sorry・native_decide なし．変異 5 種（補題 M の向き，局所版の向き，凸性の向き，F(2,S+2)=4，弦の添字のずれ）はすべて赤（6 種目の「S ≥ 1 を外す」は S = 0 でも主張が真なので数えない）．
+  独立ゲート（proof-gatekeeper，2026-10-31，`/work/tmp/claude-1000/p5gate6/GATE_REPORT.md`）: **緑**．空の出力先から依存 6 本を新規生成，公理は標準 3 つ，主張が偽になる変異 11 本（定義側 1 本を含む）と内部の算術の変異 4 本がすべて赤，中立 3 本は緑．
+  独立の Python で n ≤ 302，S ≤ 13 の補題 M 549,036 組に破れ 0（4 項とも有限の組が 181,205 個あり，主張は ⊤ どうしだけの空の主張ではない）．
+  限定: `lake build`（`Revgarbage.lean` の既定ターゲット全体）は走らせていない．Lean の中で Fc の値を計算しての照合はしていない（整礎再帰で簡約されない）．
 
 ## 2. 補題 E（頂上だけに石がある鎖の森の厳密な手数）
 
