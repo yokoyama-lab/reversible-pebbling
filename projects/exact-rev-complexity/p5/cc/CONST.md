@@ -1,7 +1,7 @@
 # 予算一定の SORT と蜘蛛型の木の予想 CC（2026-10-31）
 
 `SORT.md` §4 の「GRAFT の等式を予算一定の場合に Knill の再帰から示せるかを先に見る」の記録．ユーザーの選択「お勧めで」（紙の帰着の検算 → GRAFT の最小の場合）による．
-層: §1〜§4 は紙の証明（層 2．critic の敵対レビューで致命的な穴なし，saikensha の検算は未）．使う Lean の定理は Knill の向き M(P_n,S) ≥ F_c(n,S)（`P5TreeKnill.lean` の `path_Fc_le`）だけ．
+層: §1 の補題 M（と凸性）は **Lean で証明**（`lean/Revgarbage/P5TreeFcConvex.lean`．下の §1 末尾）．§2〜§4 は紙の証明（層 2．critic の敵対レビューで致命的な穴なし，saikensha の検算は未）．使う Lean の定理は Knill の向き M(P_n,S) ≥ F_c(n,S)（`P5TreeKnill.lean` の `path_Fc_le`）だけ．
 §5 の数値は計算機援用の有界検査（`const/`）．
 
 記号: F(n,S) は Knill の再帰（`P5TreeChain.lean` の `Fc`．F(n,0)=∞，F(1,S)=1，n ≥ 2 で F(n,S) = min_{1≤m<n} F(m,S)+F(m,S−1)+F(n−m,S−1)）．
@@ -27,6 +27,13 @@ F(1,S) = 1，F(2,S) = 3（S ≥ 2）で最初の増分は 2．以後の増分は
 *補題 M の証明.* しきい値 k ごとに c_S(k) = #{n : I_S(n) ≤ k} とおく．補題 M0 より，k ≥ 2 で c_S(k) = 1 + c_{S−1}(k) + #{m : J_S(m) ≤ k} ≥ c_{S−1}(k)．
 列はどちらも非減少なので，I_{S−1}(n) = k なら c_{S−1}(k) ≥ n，よって c_S(k) ≥ n，すなわち I_S(n) ≤ k = I_{S−1}(n)．
 F(·,S−1) の域 2^{S−2} を超える n では I_{S−1}(n) = ∞ とみなせば同じ．差分の形へは y から x まで和を取る（F(x,S−1) = ∞ なら左辺が ∞ で自明）． ∎
+
+**Lean（2026-10-31）.** `lean/Revgarbage/P5TreeFcConvex.lean`．紙の補題 M0 の「増分の併合」は使わず，もっと短い道で示した:
+- `Fc_mono_conv`: S ≥ 1 で n ↦ F(n,S) は n ≥ 1 で単調かつ凸（ℕ∞ で）．下限たたみ込みの交換（n と n+2 の最適な分割 (a,b)，(c,d) を，c ≥ a+2，c = a+1，c = a，c < a の 4 つの場合で n+1 の分割 2 つに寄せる）．G_S の自己参照は n の帰納法．
+- `Fc_diff_local`: F(n+1,S+1) + F(n,S) ≤ F(n,S+1) + F(n+1,S)．F(n,S+1) の最適な分割 (a,b) で F(n+1,S+1) ≤ G(a) + F(b+1,S) とし，F(·,S) の凸性（弦の不等式）で増分を b から n へ押し上げる．
+- `Fc_diff_mono`，`lemmaM`: 局所版を y から x まで足す（補題 M そのもの）．
+- 検査: 本チェックアウトの `.lake` を使わず，scratch の olean（P5TreeChain は HEAD と同じ版）と Mathlib を `LEAN_PATH` に並べて `lean -o` で olean を生成（rc=0，警告 0）．
+  公理は標準 3 つ（propext，Classical.choice，Quot.sound）．sorry・native_decide なし．変異 5 種（補題 M の向き，局所版の向き，凸性の向き，F(2,S+2)=4，弦の添字のずれ）はすべて赤（6 種目の「S ≥ 1 を外す」は S = 0 でも主張が真なので数えない）．独立ゲートは未．
 
 ## 2. 補題 E（頂上だけに石がある鎖の森の厳密な手数）
 
