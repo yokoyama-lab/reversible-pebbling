@@ -1,3 +1,5 @@
+# 森と 1 本の 2CM_2 の最短を 1 つの列で比べる．hold.py の前半（need_of，run，INF）を exec で読むので ck/ で実行する．
+# 例: python3 hold_merged.py 4,4 4,3,2,3,4,3 1 4
 import sys
 src=open('hold.py').read()
 exec(src[:src.index('lens=[int(x)')])
