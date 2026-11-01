@@ -128,10 +128,14 @@ theorem psi329_count (i : Nat) (hi : i + 1 < PsiCheckProd.gP.size) :
     -- `gl` を等式で開いてから当てる（照合で格子を評価させない）
     unfold PsiCheckProd.gl at hi1 ⊢
     exact LvdSound.prod_ell_cert (i + 1) hi1
-  · -- (2) psi329_le（m93）と x60_le（m87）の結合。場合分けは一般の `combine` に任せる
-    exact combine PsiCheckProd.shape329 PsiCheckProd.ells
-      (fun i => countLe (rowIter (58 + 269)) (PsiCheckProd.gP.getD i 0)) _ 229375
-      PsiCheckProd.psi329_le x60_le' i hli hN
+  · -- (2) psi329_le（m93）と x60_le（m87）の結合。場合分けは一般の `combine` に任せる。
+    -- 期待型なしで全引数を明示して作る（`exact combine …` は期待型から先に単一化し、
+    -- `?c ?i` を一階で解いて格子 `gP.getD i 0` の評価に入り、再帰の上限に当たった）
+    have h := combine PsiCheckProd.shape329 PsiCheckProd.ells
+      (fun j => countLe (rowIter (58 + 269)) (PsiCheckProd.gP.getD j 0))
+      (liftChain PsiCheckProd.gP (genTwoPtr PsiCheckProd.gP (capFrom 60)) PsiCheckProd.X60P 269)
+      229375 PsiCheckProd.psi329_le x60_le' i hli hN
+    exact h
 
 end RevPebbling.PsiCountProd
 
