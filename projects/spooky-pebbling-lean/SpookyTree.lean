@@ -23,3 +23,7 @@ import SpookyTree.Work
 import SpookyTree.WindowLower
 import SpookyTree.WindowLowerLimit
 import SpookyTree.StepLimit
+import SpookyTree.WindowUpperSP
+import SpookyTree.WindowUpperInt
+import SpookyTree.WindowUpper
+import SpookyTree.WindowUpperLimit
