@@ -27,3 +27,6 @@ import SpookyTree.WindowUpperSP
 import SpookyTree.WindowUpperInt
 import SpookyTree.WindowUpper
 import SpookyTree.WindowUpperLimit
+import SpookyTree.WindowOddLowerCount
+import SpookyTree.WindowOddLower
+import SpookyTree.WindowOddLowerLimit
