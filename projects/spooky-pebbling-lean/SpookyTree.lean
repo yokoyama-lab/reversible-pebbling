@@ -20,3 +20,6 @@ import SpookyTree.TradeoffTheta
 import SpookyTree.StepLower
 import SpookyTree.StepUpper
 import SpookyTree.Work
+import SpookyTree.WindowLower
+import SpookyTree.WindowLowerLimit
+import SpookyTree.StepLimit

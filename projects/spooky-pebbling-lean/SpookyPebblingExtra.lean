@@ -5,3 +5,5 @@ import SpookyPebblingExtra.Envelope
 import SpookyPebblingExtra.EnvelopeBinom
 import SpookyPebblingExtra.ChainStep
 import SpookyPebblingExtra.ChainStepLimit
+import SpookyPebblingExtra.RootedWindowLower
+import SpookyPebblingExtra.RootedWindowLowerCBT
