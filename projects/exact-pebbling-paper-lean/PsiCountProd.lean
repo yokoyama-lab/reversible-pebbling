@@ -75,13 +75,16 @@ theorem ells_getD (i : Nat) (hi : i + 1 < PsiCheckProd.gl.1.size) :
   getD_map_range (fun i => PsiCheckProd.ellOf (PsiCheckProd.gl.1.getD (i + 1) 0)
     (PsiCheckProd.gl.2.getD (i + 1) none)) (PsiCheckProd.gl.1.size - 1) i (by omega)
 
-/-- 一般の結合（形・指数列・上界の列・比較先を変数にしたもの）。同じ連鎖の出力 Y について
-Ψ ≤ Y（`chkAll_sound` の形）と Y ≤ c（`genTwoPtr_chain_le_count` の形）が成り立てば、
-範囲内の各 i で Ψ(ℓ_i) ≤ c i。本番の大きな定数を含まないので、ここで場合分けを済ませる。 -/
-theorem combine (sh : Shape) (ls : List Nat) (c : Nat → Nat) (L : Option (Array Nat)) (N : Nat)
+/-- 一般の結合（形・指数列・比較の関数・格子・連鎖の出力を変数にしたもの）。同じ連鎖の出力 Y について
+Ψ ≤ Y（`chkAll_sound` の形）と Y ≤ f(G[i])（`genTwoPtr_chain_le_count` の形）が成り立てば、
+範囲内の各 i で Ψ(ℓ_i) ≤ f(G[i])。本番の大きな定数を含まないので、ここで場合分けを済ませる。
+比較先は `f (G.getD i 0)` の形のまま持つ（`c i` の形にすると、本番の `c` を照合するときに
+`?c ?i` の一階近似が格子の評価に入る）。 -/
+theorem combine (sh : Shape) (ls : List Nat) (f : Nat → Nat) (G : Array Nat)
+    (L : Option (Array Nat)) (N : Nat)
     (hpsi : ∃ Y, L = some Y ∧ ∀ lx ∈ ls.zip Y.toList, PsiLe sh lx.1 lx.2)
-    (hx : ∃ Y, L = some Y ∧ Y.size = N ∧ ∀ i, Y.getD i 0 ≤ c i)
-    (i : Nat) (hi : i < ls.length) (hN : i < N) : PsiLe sh (ls.getD i 0) (c i) := by
+    (hx : ∃ Y, L = some Y ∧ Y.size = N ∧ ∀ i, Y.getD i 0 ≤ f (G.getD i 0))
+    (i : Nat) (hi : i < ls.length) (hN : i < N) : PsiLe sh (ls.getD i 0) (f (G.getD i 0)) := by
   obtain ⟨Y, hY, hp⟩ := hpsi
   obtain ⟨Y', hY', hs, hle⟩ := hx
   rw [hY] at hY'
@@ -92,13 +95,24 @@ theorem combine (sh : Shape) (ls : List Nat) (c : Nat → Nat) (L : Option (Arra
   have hm := List.getElem_mem hlt
   rw [List.getElem_zip] at hm
   have h1 := hp _ hm
-  have hc : Y.toList[i] ≤ c i := by
+  have hc : Y.toList[i] ≤ f (G.getD i 0) := by
     have := hle i
     simpa [Array.getD, hYs] using this
   have hl : ls.getD i 0 = ls[i] := by
     simp [List.getD_eq_getElem?_getD, hi]
   rw [hl]
   exact psiLe_mono _ _ hc h1
+
+/-- (1) の一般の受け渡し（格子・証明書・指数列を変数にしたもの）。A = G、ls[i] = ellOf A[i+1] B[i+1]、
+全点で A[j]^2048 ≤ 2^{ellOf A[j] B[j]} なら、G[i+1]^2048 ≤ 2^{ls[i]}。 -/
+theorem ell_transport (A G : Array Nat) (B : Array (Option Nat)) (ls : List Nat) (hG : A = G)
+    (hls : ∀ i, i + 1 < A.size →
+      ls.getD i 0 = LvdSound.ellOf (A.getD (i + 1) 0) (B.getD (i + 1) none))
+    (hc : ∀ j, j < A.size → A.getD j 0 ^ 2048 ≤ 2 ^ LvdSound.ellOf (A.getD j 0) (B.getD j none))
+    (i : Nat) (hi : i + 1 < G.size) : G.getD (i + 1) 0 ^ 2048 ≤ 2 ^ ls.getD i 0 := by
+  subst hG
+  rw [hls i hi]
+  exact hc _ hi
 
 /-- m87 の `x60_le` を m93 の名前で読み直したもの（格子と基底行は `gP_eq`・`X60P_eq`）。 -/
 theorem x60_le' : ∃ Y, liftChain PsiCheckProd.gP (genTwoPtr PsiCheckProd.gP (capFrom 60))
@@ -110,11 +124,15 @@ theorem x60_le' : ∃ Y, liftChain PsiCheckProd.gP (genTwoPtr PsiCheckProd.gP (c
   simp only [digest, Prod.mk.injEq] at hdig
   exact ⟨Y, hY, hdig.1, hle⟩
 
--- 形リテラル（775 節点）の入れ子が深い（m93 の psi329_le と同じ理由）
-set_option maxRecDepth 100000 in
 /-- 本番格子の各点 i（i + 1 < 点数）で
 (1) gv[i+1]^2048 ≤ 2^{ℓ_i}、(2) Ψ_{329}(2^{ℓ_i/R}) ≤ countLe(行 S = 329)(gv[i])。
-ℓ_i = `ells[i]` = ellOf gv[i+1] lv[i+1]、`rowIter 327` は行 S = 329。 -/
+ℓ_i = `ells[i]` = ellOf gv[i+1] lv[i+1]、`rowIter 327` は行 S = 329。
+
+照合の規則（m95 の切り分け、設計書 §28）: 本番の定数（形・格子・連鎖・行）を含む型どうしを
+一般の補題に当てると、`maxRecDepth 100000` でも再帰の上限に当たる（2026-11-02 に、両方の
+前提を仮定に置いた版でも落ちることを確かめた。import した定理のせいではない）。
+そこで (2) は本番の定数をすべて `generalize` で変数にしてから 1 回だけ当てる。
+こうすると照合は変数どうしになり、既定の再帰深さで通る。 -/
 theorem psi329_count (i : Nat) (hi : i + 1 < PsiCheckProd.gP.size) :
     PsiCheckProd.gP.getD (i + 1) 0 ^ 2048 ≤ 2 ^ PsiCheckProd.ells.getD i 0 ∧
     PsiLe PsiCheckProd.shape329 (PsiCheckProd.ells.getD i 0)
@@ -122,20 +140,21 @@ theorem psi329_count (i : Nat) (hi : i + 1 < PsiCheckProd.gP.size) :
   have hli : i < PsiCheckProd.ells.length := by rw [ells_length]; omega
   have hN : i < 229375 := by rw [← gP_size]; omega
   refine ⟨?_, ?_⟩
-  · -- (1) m94 の prod_ell_cert
-    have hi1 : i + 1 < PsiCheckProd.gl.1.size := by rw [gl_fst]; exact hi
-    rw [ells_getD i hi1, ← ellOf_eq, ← gl_fst]
-    -- `gl` を等式で開いてから当てる（照合で格子を評価させない）
-    unfold PsiCheckProd.gl at hi1 ⊢
-    exact LvdSound.prod_ell_cert (i + 1) hi1
-  · -- (2) psi329_le（m93）と x60_le（m87）の結合。場合分けは一般の `combine` に任せる。
-    -- 期待型なしで全引数を明示して作る（`exact combine …` は期待型から先に単一化し、
-    -- `?c ?i` を一階で解いて格子 `gP.getD i 0` の評価に入り、再帰の上限に当たった）
-    have h := combine PsiCheckProd.shape329 PsiCheckProd.ells
-      (fun j => countLe (rowIter (58 + 269)) (PsiCheckProd.gP.getD j 0))
-      (liftChain PsiCheckProd.gP (genTwoPtr PsiCheckProd.gP (capFrom 60)) PsiCheckProd.X60P 269)
-      229375 PsiCheckProd.psi329_le x60_le' i hli hN
-    exact h
+  · -- (1) m94 の prod_ell_cert を一般の `ell_transport` 経由で当てる
+    exact ell_transport (buildGridLvd 4096 128 11 122).1 PsiCheckProd.gP
+      (buildGridLvd 4096 128 11 122).2 PsiCheckProd.ells gl_fst
+      (fun j h => (ells_getD j h).trans (ellOf_eq _ _).symm)
+      (fun j h => LvdSound.prod_ell_cert j h) i hi
+  · -- (2) psi329_le（m93）と x60_le（m87）の結合。本番の定数を変数にしてから一般の `combine` を当てる
+    have hp := PsiCheckProd.psi329_le
+    have hq := x60_le'
+    generalize liftChain PsiCheckProd.gP (genTwoPtr PsiCheckProd.gP (capFrom 60))
+      PsiCheckProd.X60P 269 = L at hp hq
+    generalize PsiCheckProd.shape329 = S at hp ⊢
+    generalize countLe (rowIter (58 + 269)) = F at hq ⊢
+    generalize PsiCheckProd.gP = G at hq ⊢
+    generalize PsiCheckProd.ells = ls at hp hli ⊢
+    exact combine S ls F G L 229375 hp hq i hli hN
 
 end RevPebbling.PsiCountProd
 
@@ -144,5 +163,6 @@ end RevPebbling.PsiCountProd
 #print axioms RevPebbling.PsiCountProd.getD_map_range
 #print axioms RevPebbling.PsiCountProd.ells_getD
 #print axioms RevPebbling.PsiCountProd.combine
+#print axioms RevPebbling.PsiCountProd.ell_transport
 #print axioms RevPebbling.PsiCountProd.x60_le'
 #print axioms RevPebbling.PsiCountProd.psi329_count
