@@ -35,3 +35,4 @@ import SpookyTree.WindowUpperOddBound
 import SpookyTree.WindowUpperOddLimit
 import SpookyTree.WindowNonConv
 import SpookyTree.WindowOddOutside
+import SpookyTree.WindowSqrtNonConv
