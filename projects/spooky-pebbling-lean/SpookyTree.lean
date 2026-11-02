@@ -36,3 +36,4 @@ import SpookyTree.WindowUpperOddLimit
 import SpookyTree.WindowNonConv
 import SpookyTree.WindowOddOutside
 import SpookyTree.WindowSqrtNonConv
+import SpookyTree.TtreeMinRange
