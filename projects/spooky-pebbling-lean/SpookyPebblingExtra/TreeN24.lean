@@ -27,7 +27,7 @@
 
 ## 手順の出典
 
-83 手は `~/dev/notes/spooky-pebbling/pilot-s7/out/verify_1-17-6.json` の `moves` を機械で転記した。
+83 手は 著者の探索の出力 `verify_1-17-6.json`（非公開） の `moves` を機械で転記した。
 親の配列は同じ JSON の `tree` から前順（根 0、子は書かれた順）で作った。JSON の値は信用せず、ここでの検査が判定である。
 
 ## 示していないこと

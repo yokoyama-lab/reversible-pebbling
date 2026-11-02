@@ -18,7 +18,7 @@
 
 ## 手順の出典
 
-親の配列と 61 手は `~/dev/notes/spooky-pebbling/pilot-n18/out/fleet/verify_1291836.json`
+親の配列と 61 手は 著者の探索の出力 `verify_1291836.json`（非公開）
 （`par_preorder`・`moves`）を機械で転記した。もう 1 本の証人 1603216
 （`verify_1603216.json`）も同じ形で検査する。JSON の値は信用せず、ここでの検査が判定である。
 

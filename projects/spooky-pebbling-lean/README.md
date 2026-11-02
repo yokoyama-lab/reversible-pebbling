@@ -24,8 +24,7 @@ spooky pebble game（`ghost` 無条件の広いモデル。**下界は KSS Def 2
 
 検査（2026-09-30）: `lake build SpookyTree` 緑（クリーンビルド、最大 1.1GB）、上の定理の公理は標準 3 つのみ、
 `sorry`/`admit`/`axiom`/`native_decide` 0 件、変異注入 6 種（unghost の前提を外す・上限を緩める・`Ready` を `∨` に・
-`Valid.others` を潰す・`False` の混入）はすべてビルドを落とし、戻すと緑。紙の証明と経緯は
-`~/dev/notes/spooky-pebbling/SKETCH_2026-09-29_tree_lower_bound.md`。
+`Valid.others` を潰す・`False` の混入）はすべてビルドを落とし、戻すと緑。紙の証明と経緯は著者の研究ノート（非公開）にある。
 
 ### 上界と増大度の決定（`SpookyTree/Upper*.lean`、2026-10-06）
 
