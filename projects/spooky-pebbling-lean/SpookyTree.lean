@@ -45,3 +45,8 @@ import SpookyTree.WindowM3LowerLimit
 import SpookyTree.WindowM3Upper
 import SpookyTree.WindowM3UpperBound
 import SpookyTree.WindowM3UpperLimit
+import SpookyTree.WindowM3R2Count
+import SpookyTree.WindowM3R2Lower
+import SpookyTree.WindowM3R2LowerLimit
+import SpookyTree.WindowM3R2Upper
+import SpookyTree.WindowM3R2UpperLimit
