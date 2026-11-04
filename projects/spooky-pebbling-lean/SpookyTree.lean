@@ -57,3 +57,10 @@ import SpookyTree.WindowM4LowerLimit
 import SpookyTree.WindowM4Upper
 import SpookyTree.WindowM4UpperBound
 import SpookyTree.WindowM4UpperLimit
+import SpookyTree.WindowGenM1LowerCount
+import SpookyTree.WindowGenM1LowerZone
+import SpookyTree.WindowGenM1Lower
+import SpookyTree.WindowGenM1LowerLimit
+import SpookyTree.WindowGenM1Upper
+import SpookyTree.WindowGenM1UpperBound
+import SpookyTree.WindowGenM1UpperLimit
