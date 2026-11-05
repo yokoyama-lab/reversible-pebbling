@@ -143,6 +143,73 @@ close every case except the one where the optimal order first removes a long
 descending chain of predecessors of `x`; see the report
 `/work/tmp/work-runs/G-erasure-b2/t1/REPORT.md` of that session.
 
+**Second attempt (2026-11-06, `RemovalCases.lean`, report
+`/work/tmp/work-runs/G-erasure-b2/t2/REPORT.md`).**  Still open; what changed:
+
+*Gap-merge form.*  Write a board as its gap sequence `B_1, …, B_m` (gap =
+distance to the previous pebbled node).  Removing the pebble of `B_i` at
+count `m` pays `max(0, B_i − T_m)` and merges `B_i` into `B_{i+1}` (deletes it
+if `i = m`).  `phi` is the least total payment to empty the sequence.  A
+removal order is a forest (parent = nearest earlier-inserted pebble below);
+each pebble pays `max(0, (its gap to its parent) − T_level)`.
+
+*Reversible components = reduced boards.*  A pebble with gap ≤ `T_m` is
+*free*: its removal is reversible (reach the predecessor with the `p − m`
+free pebbles, remove, undo; peak stays ≤ p).  Every reversible move is a free
+removal or its inverse, and free removals are confluent (after removing a
+free `z`, a free `x` keeps gap ≤ `2·T_m = T_{m−1}`).  So each reversible
+component has a unique reduced board, and `RemovalLemma` is equivalent to
+(R′) `phi(b − x) ≤ phi(b)` for every free `x`, i.e. “`phi` is constant on
+components”.  (The easy direction `phi(b) ≤ phi(b − x)` is `x` last.)
+
+*Stronger forms, all verified by computer and all still open* (`FreeRemoval`,
+`SlackRemoval` in `RemovalCases.lean`; `data/erasure/rcheck.c`,
+`data/erasure/potential_structure.py`):
+(S) removing *any* pebble raises `phi` by at most its excess
+`max(0, gap − T_m)`; together with the proved `2^(p−2)` bound this gives
+`min(excess, 2^(p−2))`, which is exactly the measured maximum.
+(DEL) for *every* optimal removal order `O` and every free `x`, deleting
+`x`'s step from `O` gives an order of `b − x` of cost ≤ `phi(b)` — so “`x`
+first” is always optimal; the surgery is canonical, only its cost bound is
+missing.  Checked: p ≤ 5, gaps ≤ 14.  (R′) and (S): p ≤ 6, gaps ≤ 14/22.
+
+*Where the recursion closes and where not.*  Let `z` be the pebble an optimal
+order removes first.  If `z = x`, or `z` is not adjacent to `x`, or `z` is
+the pebble just *above* `x`, or `z` is the predecessor of `x` with
+`gap z ≤ T_m`: the induction closes (the doubled threshold absorbs the merged
+gap ≤ `T_m`).  Proved in Lean as the two cases where no other case can
+occur: the highest pebble (`phi_toggle_le_of_top`, any gap) and the lowest
+pebble when free (`phi_toggle_le_of_lowest_free`).  The open case: `z` is
+the predecessor of `x` and `gap z + gap x > 2·T_m`.  Then `x` has gap
+`> T_{m−1}` after `z` is gone and the hypothesis is lost.  Recursing further,
+the optimal order removes a descending chain `w_1 > w_2 > …` of predecessors
+of `x`, each paying `e_i = gap w_i − 2^{i−1}T_m > 0`; the naive accounting
+closes iff every `e_i ≤ 2^{i−1}T_m` (every chain element doubly excessive is
+the problem).
+
+*The e = 0 case of (R′) is proved on paper* (zero-cost orders): delete `x`
+from a zero-cost insertion order; a child `u` of `x` whose new parent is
+lower gets gap ≤ `(u − x) + T_m + (gap of the predecessor chain of `x`
+inserted after `x`)` ≤ `T_u + T_u` = its doubled threshold, because the
+chain's thresholds are distinct powers of two below `T_u`.  With positive
+excess on that chain the same bound gives “new excess ≤ old excess + chain
+excess”, and the chain's own saving from the doubled threshold is only
+`min(excess, T)` per element — the gap in the argument is exactly the doubly
+excessive chain elements again.
+
+*Surgeries that do and do not work* (numerically, on optimal orders).  For
+free `x`: deleting `x` always works ((DEL) above).  For (S) with `x` not
+free, deletion fails (e.g. gaps `(6,1,3)`, p = 4, remove the lowest: the
+optimal order of the result turns the *star* of `x`'s children into a
+*chain*, lowest child first), and “replace `x` by its predecessor” fails
+when `x` has ≥ 2 children; so a proof of (S) needs the star-to-chain
+rewrite, while (R′)/(DEL) needs only deletion plus an optimality argument.
+Optimality of `O` only yields *lower* bounds on alternative orders, so the
+missing step is an upper bound on the extra cost of the c-steps (removals of
+the block just above `x` before `x` is removed): each such step costs at most
+`max(0, X_s − T_s)` extra, `X_s` = content of `x`'s block at that time; the
+savings are the doubled thresholds of the other steps and `x`'s own payment.
+
 ## 4. The inequality `M*(n,p,e+1) ≤ M*(n,p+1,e)`
 
 False in general: `M*(10,3,3) = 21 > 19 = M*(10,4,2)` (`ineq_counterexample`;
@@ -180,11 +247,16 @@ with standard axioms.  Bounded: B2 for p ≤ 5 (Lean oracle), p ≤ 6 and p = 7,
 e ≤ 4 (C search in `data/erasure/`).
 
 Open:
-1. Conjecture B2 upper bound `reach(p,e) ≤ (e+2)·2^(p−2)`.  Next step: prove the
-   *generalised Knill bound* (reversible play from a board inside [1, L] with
-   peak q stays below L + 2^(q−1)) with the `shiftAbove`/`complete_bound`
-   machinery of `PebblingFoundations`, then the e = 1 case exactly as in §3;
-   then look for the potential over the stack of frozen stones for e ≥ 2.
+1. Conjecture B2 upper bound `reach(p,e) ≤ (e+2)·2^(p−2)`.  Reduced to
+   `RemovalLemma p` (§3, `UpperBound.lean`); the strongest clean form is (DEL)
+   in `RemovalCases.lean`/§3: deleting a free pebble from *any* optimal
+   removal order keeps the cost.  Next step: bound the extra cost of the
+   c-steps (see §3, second attempt) using the optimality of the order
+   against orders that move the c-step or the flow steps, not only orders
+   that move `x`.  Two special cases are proved (`phi_toggle_le_of_top`,
+   `phi_toggle_le_of_lowest_free`).  The Knill-style route (generalised
+   complete-computation bound) breaks because the reversed suffix of a play
+   with erasures has free placements and no longer covers the chain.
 2. Link the oracle to `IsPlay` (soundness/completeness of `mstarE`), so the
    bounded certificates become statements about `MstarIs`/`ReachIs`.
 3. `IneqM_conj` (inequality for n ≤ 2^(p−1)).
