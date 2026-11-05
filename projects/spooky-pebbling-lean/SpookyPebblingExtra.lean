@@ -11,3 +11,4 @@ import SpookyPebblingExtra.RootedUniversalUpper
 import SpookyPebblingExtra.RootedTreeKSS
 import SpookyPebblingExtra.RootedLowerLog
 import SpookyPebblingExtra.RootedCBTEq
+import SpookyPebblingExtra.RootedCBTEqRoot
