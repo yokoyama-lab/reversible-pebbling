@@ -70,3 +70,4 @@ import SpookyTree.WindowM4RLower
 import SpookyTree.WindowM4RUpperBound
 import SpookyTree.WindowM4RLimit
 import SpookyTree.WindowM34Outside
+import SpookyTree.WindowM4Gap
