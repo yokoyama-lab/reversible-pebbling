@@ -116,6 +116,33 @@ p and e erasures reaches at most L + (e + c(B))·2^(p−2)".  We did not find th
 right correction term c(B) in this session; `reachIs_zero` is the e = 0 case
 (c(∅) = 2 with L = 0).
 
+**Reduction to one lemma (2026-11-06, `UpperBound.lean`).**  Define on a board
+`b` with `k = ones b` pebbles the threshold `T_k = 2^(p−k)`, the gap of a
+pebble as its distance to the previous pebbled node (or the entrance), and
+the potential `phi p b = min over pebbled z of (max(0, gap z − T_k) +
+phi p (toggle b z))`, `phi ∅ = 0` (least total excess over all removal
+orders; equivalently the least total excess over all insertion orders, each
+insertion measured against the threshold at the count it creates).  Proved
+in Lean (sorry 0, standard axioms): a legal placement never increases
+`phi`; removing *any* pebble raises `phi` by at most `2^(p−2)`
+(two-level induction through the recursion; the only delicate case is the
+removal of the predecessor of the pebble an optimal order removes first);
+`phi ∅ = 0` and `phi {n} ≥ n − 2^(p−1)`.  Hence `n ≤ (e+2)·2^(p−2)` follows
+(`reach_le_of_removalLemma`, `conjB2_of_removalLemma`) **from the single
+open lemma `RemovalLemma p`: a reversible removal (predecessor pebbled)
+never increases `phi`.**  That lemma was checked exhaustively on all boards
+for `(p, n) = (2, 8), (3, 9), (4, 10)` (`#guard`s in the file) and, for all
+cheap removals (gap ≤ `T_k`, more than the game needs) on all configurations
+with ≤ p pebbles among 16/24/22 nodes for p = 3/4/5
+(`data/erasure/potential_check.py`).  The potential equals the exact charged
+value `max_e (reach_e(b) − e·2^(p−2))` on every configuration for p ≤ 4
+(verified against the BFS tables).  Attempted proofs of the lemma (exchange
+arguments on insertion orders; induction through the recursion with a
+“shift-down” lemma `phi((Y − x) ∪ v) ≤ phi(Y) + max(0, (v − u) − T)`) all
+close every case except the one where the optimal order first removes a long
+descending chain of predecessors of `x`; see the report
+`/work/tmp/work-runs/G-erasure-b2/t1/REPORT.md` of that session.
+
 ## 4. The inequality `M*(n,p,e+1) ≤ M*(n,p+1,e)`
 
 False in general: `M*(10,3,3) = 21 > 19 = M*(10,4,2)` (`ineq_counterexample`;
