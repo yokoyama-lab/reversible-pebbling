@@ -9,13 +9,14 @@
 * 場合 (β) `p = 2X`（`m3r2_beta_valid`）: `e = H`，高さ `H`（F），`H + 1`（F），`H + 2`（M）。
 * 場合 (γ) `X + 1 ≤ p ≤ X + δ − 1`（`m3r2_gamma_valid`）: `e = H − 1`，高さ `H + 2`，`H + 3`，`H + 4` ですべて M。
 * **定理 B3（r = 2）**（`window_m3r2_upper_bound`，`Ttree_window_m3r2_upper`）: `H ≥ 6`，`X + 1 ≤ p ≤ 2X` なら
-  `T(T_h, p) ≤ main_2(h,p) + 12hX²`。
+  `T(T_h, p) ≤ main_2(h,p) + 8hX²`（紙と同じ）。
 
-**紙との違い.** 紙の統一上界は `main_2 + 8hX²`。Lean の手数の上界は段の内部を `2f(e+1)` で粗く抑えている（r = 1 と同じ）ので，
-`(T − main_2)/(hX²)` は (α) の `H = 6` で 7.61 になり，8 の余りが小さい。多項式の不等式を実数の範囲
-（`H ≥ 6`，`X ≥ 8H + 16`，`p` の範囲）で，3 次までの非負の積の和（LP で係数を探した Handelman 型の分解）に分けて
-`linarith` で閉じるため，係数を 12 にした（8〜11 では 3 次の分解が見つからない．(α) の 2 次の部分が `(v, w)` の
-不定でない 2 次形式になり，非負の積だけでは表せない）。主項は紙と同じ `main_2`。
+**紙との対応.** 紙の統一上界 `main_2 + 8hX²` と同じ係数．Lean の手数の上界は段の内部を `2f(e+1)` で粗く抑えている（r = 1 と同じ）ので，
+`(T − main_2)/(hX²)` は (α) の `H = 6` で 7.61 になり，8 の余りが小さい．多項式の不等式を実数の範囲
+（`H ≥ 6`，`X ≥ 8H + 16`，`p` の範囲）で，`ε = 0, 1` に分けたうえで，3 次までの非負の積（Handelman 型）と
+平方の項（`L²`，`u·L²`，`w·L²`，`z·L²`．`L` は整数係数の 1 次式）の非負結合に分けて `linarith` で閉じる
+（平方の候補は SDP〔Putinar 型の分解〕の Gram 行列の固有ベクトルを有理数に丸めたもの．結合の係数は `linarith` が探す）．
+2026-11-04 版は平方の項なしの分解しか探さず係数 12 だった（(α) の `(v, w)` の 2 次形式が正定値だが係数が非負でないため）．
 M の部分木の高さの上限は 5（r = 1 は 4．(γ) の最終段が `H + 4` まであるため）。
 -/
 import SpookyTree.WindowM3UpperBound
@@ -35,15 +36,15 @@ theorem m3r2_pows (H : ℕ) :
 
 左辺は `m3_assemble` の上界に各場合の最終段の手数（F: `2·2^t − 2`，M: `4·2^t − 4g − 2`，`4g = 2(p − ε)`）を入れて展開したもの。 -/
 
-/-- 場合 (α) の多項式の不等式（係数は LP で探した Handelman 型の分解．`u = H − 6`，`v = X − 8H − 16`，
-`w = p − X − 3H − 7`，`z = 2X − 1 − p` の 3 次までの積と `ε`，`1 − ε`）。 -/
+/-- 場合 (α) の多項式の不等式（`u = H − 6`，`v = X − 8H − 16`，`w = p − X − 3H − 7`，`z = 2X − 1 − p`．
+`ε = 0, 1` に分け，`u, v, w, z` の 3 次までの積と平方の項の非負結合で閉じる．平方の候補は SDP で探した）。 -/
 theorem m3r2_poly_alpha {H X p ε : ℤ} (hH : 6 ≤ H) (hX : 8 * H + 16 ≤ X)
     (hp1 : X + 3 * H + 7 ≤ p) (hp2 : p ≤ 2 * X - 1) (hε0 : 0 ≤ ε) (hε1 : ε ≤ 1) :
     18*H^3 - 72*H^2*X - 54*H^2*ε + 42*H^2*p + 78*H^2 - 48*H*X^2 - 48*H*X*ε + 96*H*X*p
       - 336*H*X + 36*H*ε*p - 252*H*ε - 34*H*p^2 + 226*H*p + 84*H + 24*X^3 - 8*X^2*ε + 24*X^2*p
       - 112*X^2 + 16*X*ε*p - 112*X*ε - 24*X*p^2 + 224*X*p - 392*X - 6*ε*p^2 + 84*ε*p - 294*ε
       + 6*p^3 - 84*p^2 + 294*p ≤
-      6 * (4 * X ^ 3) + 6 * p * (2 * X - p) ^ 2 + 12 * (3 * H + 2) * X ^ 2 := by
+      6 * (4 * X ^ 3) + 6 * p * (2 * X - p) ^ 2 + 8 * (3 * H + 2) * X ^ 2 := by
   obtain ⟨u, rfl⟩ : ∃ u, H = u + 6 := ⟨H - 6, by ring⟩
   obtain ⟨v, rfl⟩ : ∃ v, X = v + 8 * u + 64 := ⟨X - 8 * u - 64, by ring⟩
   obtain ⟨w, rfl⟩ : ∃ w, p = v + 8 * u + 64 + 3 * u + 25 + w :=
@@ -52,43 +53,44 @@ theorem m3r2_poly_alpha {H X p ε : ℤ} (hH : 6 ≤ H) (hX : 8 * H + 16 ≤ X)
   have hv : 0 ≤ v := by linarith
   have hw : 0 ≤ w := by linarith
   have hz : 0 ≤ 38 + 5 * u + v - w := by linarith
-  have hε1' : 0 ≤ 1 - ε := by linarith
-  linarith [hu,
-    mul_nonneg hu hε0,
-    hw,
-    mul_nonneg hw hε1',
-    hz,
-    mul_nonneg hz hε1',
-    mul_nonneg hu hu,
-    mul_nonneg hu hw,
-    mul_nonneg (mul_nonneg hu hw) hε1',
-    mul_nonneg hu hz,
-    mul_nonneg (mul_nonneg hu hz) hε1',
-    mul_nonneg hv hv,
-    mul_nonneg (mul_nonneg hv hv) hε1',
-    mul_nonneg hw hw,
-    mul_nonneg (mul_nonneg hw hw) hε0,
-    mul_nonneg (mul_nonneg hw hz) hε1',
-    mul_nonneg hz hz,
-    mul_nonneg (mul_nonneg hz hz) hε1',
-    mul_nonneg (mul_nonneg hu hu) hv,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hu) hv) hε0,
-    mul_nonneg (mul_nonneg hu hu) hw,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hu) hw) hε0,
-    mul_nonneg (mul_nonneg hu hu) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hu) hz) hε0,
-    mul_nonneg (mul_nonneg hu hv) hv,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hv) hv) hε0,
-    mul_nonneg (mul_nonneg hu hw) hw,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hw) hw) hε1',
-    mul_nonneg (mul_nonneg (mul_nonneg hu hw) hz) hε1',
-    mul_nonneg (mul_nonneg hu hz) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hz) hz) hε1']
+  obtain rfl | rfl : ε = 0 ∨ ε = 1 := by omega
+  · linarith [hv,
+      mul_nonneg hu hv,
+      mul_nonneg hu hz,
+      mul_nonneg hw hw,
+      mul_nonneg hz hz,
+      mul_nonneg (mul_nonneg hu hu) hv,
+      mul_nonneg (mul_nonneg hu hw) hw,
+      mul_nonneg (mul_nonneg hu hw) hz,
+      mul_nonneg (mul_nonneg hu hz) hz,
+      sq_nonneg (15*u - 2),
+      sq_nonneg (-228*u - 180*v + 475*w - 1710),
+      mul_nonneg hu (sq_nonneg (7*u - 8*v + 16*w)),
+      mul_nonneg hu (sq_nonneg (855*u + 114*v - 315*w - 190)),
+      mul_nonneg hw (sq_nonneg (u - 16)),
+      mul_nonneg hz (sq_nonneg (1 - 10*u)),
+      mul_nonneg hz (sq_nonneg (-u - 10))]
+  · linarith [hv,
+      mul_nonneg hu hv,
+      mul_nonneg hu hz,
+      mul_nonneg hz hz,
+      mul_nonneg (mul_nonneg hu hu) hv,
+      mul_nonneg (mul_nonneg hu hw) hw,
+      mul_nonneg (mul_nonneg hu hw) hz,
+      mul_nonneg (mul_nonneg hu hz) hz,
+      sq_nonneg (u - 8*v + 20*w + 5),
+      sq_nonneg (8*u - 1),
+      sq_nonneg (-9*u - 6*v + 16*w - 72),
+      mul_nonneg hu (sq_nonneg (10*u - 13*v + 26*w)),
+      mul_nonneg hu (sq_nonneg (1615*u + 190*v - 510*w - 323)),
+      mul_nonneg hw (sq_nonneg (u - 8)),
+      mul_nonneg hz (sq_nonneg (1 - 15*u)),
+      mul_nonneg hz (sq_nonneg (-u - 15))]
 
 /-- 場合 (β) の多項式の不等式（`p = 2X`，`ε = 0`）。 -/
 theorem m3r2_poly_beta {H X : ℤ} (hH : 6 ≤ H) (hX : 8 * H + 16 ≤ X) :
     18*H^3 + 12*H^2*X + 78*H^2 + 8*H*X^2 + 116*H*X + 84*H + 24*X^3 + 196*X ≤
-      6 * (4 * X ^ 3) + 6 * (2 * X) * (2 * X - 2 * X) ^ 2 + 12 * (3 * H + 2) * X ^ 2 := by
+      6 * (4 * X ^ 3) + 6 * (2 * X) * (2 * X - 2 * X) ^ 2 + 8 * (3 * H + 2) * X ^ 2 := by
   obtain ⟨u, rfl⟩ : ∃ u, H = u + 6 := ⟨H - 6, by ring⟩
   obtain ⟨v, rfl⟩ : ∃ v, X = v + 8 * u + 64 := ⟨X - 8 * u - 64, by ring⟩
   have hu : 0 ≤ u := by linarith
@@ -102,12 +104,12 @@ theorem m3r2_poly_beta {H X : ℤ} (hH : 6 ≤ H) (hX : 8 * H + 16 ≤ X) :
     mul_nonneg (mul_nonneg hu hu) hv,
     mul_nonneg (mul_nonneg hu hv) hv]
 
-/-- 場合 (γ) の多項式の不等式（`w = p − X − 1`，`z = 3H + 5 − w`）。 -/
+/-- 場合 (γ) の多項式の不等式（`w = p − X − 1`，`z = 3H + 5 − w`．(α) と同じ形の分解）。 -/
 theorem m3r2_poly_gamma {H X p ε : ℤ} (hH : 6 ≤ H) (hX : 8 * H + 16 ≤ X)
     (hp1 : X + 1 ≤ p) (hp2 : p ≤ X + 3 * H + 6) (hε0 : 0 ≤ ε) (hε1 : ε ≤ 1) :
     18*H^3 + 18*H^2*ε - 30*H^2*p + 60*H^2 - 12*H*ε*p + 84*H*ε + 14*H*p^2 - 98*H*p + 6*H
       + 32*X^3 + 2*ε*p^2 - 28*ε*p + 98*ε - 2*p^3 + 26*p^2 - 72*p - 84 ≤
-      6 * (4 * X ^ 3) + 6 * p * (2 * X - p) ^ 2 + 12 * (3 * H + 2) * X ^ 2 := by
+      6 * (4 * X ^ 3) + 6 * p * (2 * X - p) ^ 2 + 8 * (3 * H + 2) * X ^ 2 := by
   obtain ⟨u, rfl⟩ : ∃ u, H = u + 6 := ⟨H - 6, by ring⟩
   obtain ⟨v, rfl⟩ : ∃ v, X = v + 8 * u + 64 := ⟨X - 8 * u - 64, by ring⟩
   obtain ⟨w, rfl⟩ : ∃ w, p = v + 8 * u + 64 + 1 + w := ⟨p - (v + 8 * u + 64 + 1), by ring⟩
@@ -115,45 +117,43 @@ theorem m3r2_poly_gamma {H X p ε : ℤ} (hH : 6 ≤ H) (hX : 8 * H + 16 ≤ X)
   have hv : 0 ≤ v := by linarith
   have hw : 0 ≤ w := by linarith
   have hz : 0 ≤ 23 + 3 * u - w := by linarith
-  have hε1' : 0 ≤ 1 - ε := by linarith
-  linarith [mul_nonneg hu hv,
-    mul_nonneg (mul_nonneg hu hv) hε0,
-    mul_nonneg hu hw,
-    mul_nonneg (mul_nonneg hu hw) hε0,
-    mul_nonneg hu hz,
-    mul_nonneg (mul_nonneg hu hz) hε0,
-    mul_nonneg (mul_nonneg hu hu) hu,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hu) hu) hε0,
-    mul_nonneg (mul_nonneg hu hv) hv,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hv) hv) hε0,
-    mul_nonneg (mul_nonneg hu hv) hw,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hv) hw) hε0,
-    mul_nonneg (mul_nonneg hu hv) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hv) hz) hε0,
-    mul_nonneg (mul_nonneg hu hw) hw,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hw) hw) hε0,
-    mul_nonneg (mul_nonneg hu hw) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hw) hz) hε0,
-    mul_nonneg (mul_nonneg hu hz) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hu hz) hz) hε0,
-    mul_nonneg (mul_nonneg hv hv) hw,
-    mul_nonneg (mul_nonneg (mul_nonneg hv hv) hw) hε1',
-    mul_nonneg (mul_nonneg hv hv) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hv hv) hz) hε1',
-    mul_nonneg (mul_nonneg hv hw) hw,
-    mul_nonneg (mul_nonneg (mul_nonneg hv hw) hw) hε1',
-    mul_nonneg (mul_nonneg hv hw) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hv hw) hz) hε1',
-    mul_nonneg (mul_nonneg hv hz) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hv hz) hz) hε1',
-    mul_nonneg (mul_nonneg hw hw) hw,
-    mul_nonneg (mul_nonneg (mul_nonneg hw hw) hw) hε1',
-    mul_nonneg (mul_nonneg hw hw) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hw hw) hz) hε1',
-    mul_nonneg (mul_nonneg hw hz) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hw hz) hz) hε1',
-    mul_nonneg (mul_nonneg hz hz) hz,
-    mul_nonneg (mul_nonneg (mul_nonneg hz hz) hz) hε1']
+  obtain rfl | rfl : ε = 0 ∨ ε = 1 := by omega
+  · linarith [mul_nonneg hu hu,
+      mul_nonneg hu hz,
+      mul_nonneg hv hw,
+      mul_nonneg (mul_nonneg hu hv) hv,
+      mul_nonneg (mul_nonneg hu hv) hw,
+      mul_nonneg (mul_nonneg hu hv) hz,
+      mul_nonneg (mul_nonneg hu hw) hw,
+      mul_nonneg (mul_nonneg hu hw) hz,
+      mul_nonneg (mul_nonneg hu hz) hz,
+      mul_nonneg (mul_nonneg hv hw) hz,
+      mul_nonneg (mul_nonneg hv hz) hz,
+      mul_nonneg (mul_nonneg hw hw) hz,
+      mul_nonneg (mul_nonneg hw hz) hz,
+      mul_nonneg (mul_nonneg hz hz) hz,
+      sq_nonneg (80*u - 680*v - 85*w + 34),
+      sq_nonneg (323*u + 204*v - 1292*w + 76),
+      mul_nonneg hu (sq_nonneg (-260*u + 200*v - 240*w + 13)),
+      mul_nonneg hu (sq_nonneg (-340*u + 51*v + 408*w - 48))]
+  · linarith [mul_nonneg hu hz,
+      mul_nonneg hv hw,
+      mul_nonneg (mul_nonneg hu hv) hw,
+      mul_nonneg (mul_nonneg hu hv) hz,
+      mul_nonneg (mul_nonneg hu hw) hz,
+      mul_nonneg (mul_nonneg hu hz) hz,
+      mul_nonneg (mul_nonneg hv hw) hz,
+      mul_nonneg (mul_nonneg hv hz) hz,
+      mul_nonneg (mul_nonneg hw hw) hz,
+      mul_nonneg (mul_nonneg hw hz) hz,
+      mul_nonneg (mul_nonneg hz hz) hz,
+      sq_nonneg (19*u - 171*v - 27*w),
+      sq_nonneg (-44*u - 40*v + 220*w - 11),
+      sq_nonneg (120*u + 19*w - 380),
+      mul_nonneg hu (sq_nonneg (-1400*u - 2660*v - 760*w + 133)),
+      mul_nonneg hu (sq_nonneg (-4940*u + 3900*v - 4560*w + 247)),
+      mul_nonneg hu (sq_nonneg (-210*u + 34*v + 255*w - 30)),
+      mul_nonneg hw (sq_nonneg (2 - 17*u))]
 
 
 /-! ## 場合 (α)（`X + δ ≤ p ≤ 2X − 1`） -/
@@ -161,7 +161,7 @@ theorem m3r2_poly_gamma {H X p ε : ℤ} (hH : 6 ≤ H) (hX : 8 * H + 16 ≤ X)
 theorem m3r2_alpha_valid {H p : ℕ} (hH : 6 ≤ H) (hp1 : 2 ^ H + (3 * H + 7) ≤ p)
     (hp2 : p + 1 ≤ 2 ^ (H + 1)) :
     ∃ (T : ℕ) (ms : ℕ → Move), Valid (3 * H + 2) p T ms ∧
-      (T : ℤ) ≤ m3r2main H p + 12 * (3 * H + 2) * ((2 : ℤ) ^ H) ^ 2 := by
+      (T : ℤ) ≤ m3r2main H p + 8 * (3 * H + 2) * ((2 : ℤ) ^ H) ^ 2 := by
   have hXg := pow_ge_m3 H hH
   have h2X : 2 ^ (H + 1) = 2 * 2 ^ H := by rw [pow_succ]; ring
   have h4X : 2 ^ (H + 2) = 4 * 2 ^ H := by rw [pow_add]; ring
@@ -232,7 +232,7 @@ theorem m3r2_alpha_valid {H p : ℕ} (hH : 6 ≤ H) (hp1 : 2 ^ H + (3 * H + 7) �
 
 theorem m3r2_beta_valid {H : ℕ} (hH : 6 ≤ H) :
     ∃ (T : ℕ) (ms : ℕ → Move), Valid (3 * H + 2) (2 ^ (H + 1)) T ms ∧
-      (T : ℤ) ≤ m3r2main H (2 ^ (H + 1)) + 12 * (3 * H + 2) * ((2 : ℤ) ^ H) ^ 2 := by
+      (T : ℤ) ≤ m3r2main H (2 ^ (H + 1)) + 8 * (3 * H + 2) * ((2 : ℤ) ^ H) ^ 2 := by
   have hXg := pow_ge_m3 H hH
   have h2X : 2 ^ (H + 1) = 2 * 2 ^ H := by rw [pow_succ]; ring
   have h4X : 2 ^ (H + 2) = 4 * 2 ^ H := by rw [pow_add]; ring
@@ -297,7 +297,7 @@ theorem m3r2_beta_valid {H : ℕ} (hH : 6 ≤ H) :
 theorem m3r2_gamma_valid {H p : ℕ} (hH : 6 ≤ H) (hp1 : 2 ^ H + 1 ≤ p)
     (hp2 : p + 1 ≤ 2 ^ H + (3 * H + 7)) :
     ∃ (T : ℕ) (ms : ℕ → Move), Valid (3 * H + 2) p T ms ∧
-      (T : ℤ) ≤ m3r2main H p + 12 * (3 * H + 2) * ((2 : ℤ) ^ H) ^ 2 := by
+      (T : ℤ) ≤ m3r2main H p + 8 * (3 * H + 2) * ((2 : ℤ) ^ H) ^ 2 := by
   have hXg := pow_ge_m3 H hH
   have h2X : 2 ^ (H + 1) = 2 * 2 ^ H := by rw [pow_succ]; ring
   have hY := two_pow_pred_m3 (H := H) (by omega)
@@ -374,14 +374,14 @@ theorem m3r2_gamma_valid {H p : ℕ} (hH : 6 ≤ H) (hp1 : 2 ^ H + 1 ≤ p)
 /-! ## 定理 B3（r = 2） -/
 
 /-- **定理 B3（r = 2，手順の形）.** `H ≥ 6`，`h = 3H + 2`，`X = 2^H`，`X + 1 ≤ p ≤ 2X` なら，ペブル `p` 個の妥当な手順で
-`T ≤ 6·2^h + 6p(2X − p)² + 12hX²` のものがある（紙は `T ≤ main_2 + 8hX²`．係数の違いは冒頭）。 -/
+`T ≤ 6·2^h + 6p(2X − p)² + 8hX²` のものがある（紙の `T ≤ main_2 + 8hX²`）。 -/
 theorem window_m3r2_upper_bound {H p : ℕ} (hH : 6 ≤ H) (hp1 : 2 ^ H + 1 ≤ p)
     (hp2 : p ≤ 2 ^ (H + 1)) :
     ∃ (T : ℕ) (ms : ℕ → Move), Valid (3 * H + 2) p T ms ∧
-      T ≤ 6 * 2 ^ (3 * H + 2) + 6 * p * (2 * 2 ^ H - p) ^ 2 + 12 * (3 * H + 2) * (2 ^ H) ^ 2 := by
+      T ≤ 6 * 2 ^ (3 * H + 2) + 6 * p * (2 * 2 ^ H - p) ^ 2 + 8 * (3 * H + 2) * (2 ^ H) ^ 2 := by
   have h2X : 2 ^ (H + 1) = 2 * 2 ^ H := by rw [pow_succ]; ring
   have key : ∃ (T : ℕ) (ms : ℕ → Move), Valid (3 * H + 2) p T ms ∧
-      (T : ℤ) ≤ m3r2main H p + 12 * (3 * H + 2) * ((2 : ℤ) ^ H) ^ 2 := by
+      (T : ℤ) ≤ m3r2main H p + 8 * (3 * H + 2) * ((2 : ℤ) ^ H) ^ 2 := by
     rcases (show p + 1 ≤ 2 ^ H + (3 * H + 7) ∨ (2 ^ H + (3 * H + 7) ≤ p ∧ p + 1 ≤ 2 ^ (H + 1)) ∨
         p = 2 ^ (H + 1) by omega) with hc | ⟨hc1, hc2⟩ | hc
     · exact m3r2_gamma_valid hH hp1 hc
@@ -393,11 +393,11 @@ theorem window_m3r2_upper_bound {H p : ℕ} (hH : 6 ≤ H) (hp1 : 2 ^ H + 1 ≤ 
   zify [show p ≤ 2 * 2 ^ H by omega]
   linarith
 
-/-- **定理 B3（r = 2，最小手数）.** `T(T_{3H+2}, p) ≤ 6·2^h + 6p(2^{H+1} − p)² + 12h·4^H`（`H ≥ 6`，`2^H + 1 ≤ p ≤ 2^{H+1}`）。 -/
+/-- **定理 B3（r = 2，最小手数）.** `T(T_{3H+2}, p) ≤ 6·2^h + 6p(2^{H+1} − p)² + 8h·4^H`（`H ≥ 6`，`2^H + 1 ≤ p ≤ 2^{H+1}`）。 -/
 theorem Ttree_window_m3r2_upper {H p : ℕ} (hH : 6 ≤ H) (hp1 : 2 ^ H + 1 ≤ p)
     (hp2 : p ≤ 2 ^ (H + 1)) :
     Ttree (3 * H + 2) p ≤
-      6 * 2 ^ (3 * H + 2) + 6 * p * (2 * 2 ^ H - p) ^ 2 + 12 * (3 * H + 2) * (2 ^ H) ^ 2 := by
+      6 * 2 ^ (3 * H + 2) + 6 * p * (2 * 2 ^ H - p) ^ 2 + 8 * (3 * H + 2) * (2 ^ H) ^ 2 := by
   obtain ⟨T, ms, hV, hT⟩ := window_m3r2_upper_bound hH hp1 hp2
   exact (Ttree_le_of_valid hV).trans hT
 
@@ -405,7 +405,7 @@ theorem Ttree_window_m3r2_upper {H p : ℕ} (hH : 6 ≤ H) (hp1 : 2 ^ H + 1 ≤ 
 theorem TtreeK_window_m3r2_upper {H p : ℕ} (hH : 6 ≤ H) (hp1 : 2 ^ H + 1 ≤ p)
     (hp2 : p ≤ 2 ^ (H + 1)) :
     TtreeK (3 * H + 2) p ≤
-      6 * 2 ^ (3 * H + 2) + 6 * p * (2 * 2 ^ H - p) ^ 2 + 12 * (3 * H + 2) * (2 ^ H) ^ 2 := by
+      6 * 2 ^ (3 * H + 2) + 6 * p * (2 * 2 ^ H - p) ^ 2 + 8 * (3 * H + 2) * (2 ^ H) ^ 2 := by
   rw [← Ttree_eq_TtreeK]
   exact Ttree_window_m3r2_upper hH hp1 hp2
 

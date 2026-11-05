@@ -180,9 +180,9 @@ theorem m3r2_up_mid {H pp : ℕ} {c η δ : ℝ} (hc1 : 1 ≤ c) (hc2 : c ≤ 2)
   have e3' := mul_le_mul_of_nonneg_left e3 (show (0 : ℝ) ≤ 4 * X ^ 3 by positivity)
   have e4 := mul_le_mul_of_nonneg_right hl2 (show (0 : ℝ) ≤ X ^ 2 by positivity)
   have e5 := mul_le_mul_of_nonneg_right hη2 hX3
-  have e6 : 12 * (3 * (H : ℝ) + 2) * X ^ 2 ≤ 18 * ((2 * H + 14) * X ^ 2) := by
+  have e6 : 8 * (3 * (H : ℝ) + 2) * X ^ 2 ≤ 18 * ((2 * H + 14) * X ^ 2) := by
     have := mul_le_mul_of_nonneg_right
-      (show 12 * (3 * (H : ℝ) + 2) ≤ 18 * (2 * H + 14) by linarith)
+      (show 8 * (3 * (H : ℝ) + 2) ≤ 18 * (2 * H + 14) by linarith)
       (show (0 : ℝ) ≤ X ^ 2 by positivity)
     linarith
   have e7 : δ / 16 * X * X ^ 2 = δ / 16 * X ^ 3 := by ring
@@ -209,9 +209,9 @@ theorem m3r2_up_high {H pp : ℕ} {c δ : ℝ} (hc1 : 1 ≤ c) (hδ : 0 < δ)
   have hXpos : (0 : ℝ) < X := by rw [hXd]; positivity
   have hX3 : (0 : ℝ) ≤ X ^ 3 := by positivity
   have e4 := mul_le_mul_of_nonneg_right hl2 (show (0 : ℝ) ≤ X ^ 2 by positivity)
-  have e6 : 12 * (3 * (H : ℝ) + 2) * X ^ 2 ≤ 18 * ((2 * H + 14) * X ^ 2) := by
+  have e6 : 8 * (3 * (H : ℝ) + 2) * X ^ 2 ≤ 18 * ((2 * H + 14) * X ^ 2) := by
     have := mul_le_mul_of_nonneg_right
-      (show 12 * (3 * (H : ℝ) + 2) ≤ 18 * (2 * H + 14) by linarith)
+      (show 8 * (3 * (H : ℝ) + 2) ≤ 18 * (2 * H + 14) by linarith)
       (show (0 : ℝ) ≤ X ^ 2 by positivity)
     linarith
   have e7 : δ / 16 * X * X ^ 2 = δ / 16 * X ^ 3 := by ring
