@@ -113,6 +113,111 @@ theorem psiAntiL_of_clsMono (sh : Shape) (hM : ClsMono sh) : PsiAntiL sh := by
   rw [psiLe_eq] at h ⊢
   exact psiC_mono sh _ _ (hM l l' hl) h
 
+/-! ## ClsMono を有限の隣接検査へ帰着する（m96 周 3）
+
+`ClsMono` は ℓ 全体を量化するが、ℓ·D ≥ x_top·R では `classify` が常に `capped` を返す（`classify_capped`）。
+`ClsLe` は推移的（`clsLe_trans`）なので、0..N の隣接対と反射を Bool で検査すれば足りる（`clsMono_of_stepChk`）。
+反射は `exp p 0` で偽になるので、検査器は反射も点ごとに見る。数値（本番の形）は担がない。 -/
+
+/-- `ClsLe` の Bool 版。 -/
+def clsLeB : Cls → Cls → Bool
+  | _, .lost => true
+  | .zero, _ => true
+  | .exp p' q', .exp p q => decide (0 < q') && decide (0 < q) && decide (p' * q ≤ p * q')
+  | .exp _ _, .capped => true
+  | .capped, .capped => true
+  | _, _ => false
+
+theorem clsLeB_sound : ∀ a b : Cls, clsLeB a b = true → ClsLe a b := by
+  intro a b h
+  cases a <;> cases b <;> simp_all [clsLeB, ClsLe]
+
+/-- 推移律の算術の核: p''/q'' ≤ p'/q' ≤ p/q（q' > 0）。 -/
+theorem ratLe_trans {p q p' q' p'' q'' : Nat} (hq' : 0 < q')
+    (h1 : p'' * q' ≤ p' * q'') (h2 : p' * q ≤ p * q') : p'' * q ≤ p * q'' := by
+  have h : p'' * q * q' ≤ p * q'' * q' :=
+    calc p'' * q * q' = (p'' * q') * q := by rw [Nat.mul_assoc, Nat.mul_comm q, ← Nat.mul_assoc]
+      _ ≤ (p' * q'') * q := Nat.mul_le_mul_right q h1
+      _ = (p' * q) * q'' := by rw [Nat.mul_assoc, Nat.mul_comm q'', ← Nat.mul_assoc]
+      _ ≤ (p * q') * q'' := Nat.mul_le_mul_right q'' h2
+      _ = p * q'' * q' := by rw [Nat.mul_assoc, Nat.mul_comm q', ← Nat.mul_assoc]
+  exact Nat.le_of_mul_le_mul_right h hq'
+
+theorem clsLe_trans : ∀ a b c : Cls, ClsLe a b → ClsLe b c → ClsLe a c := by
+  intro a b c hab hbc
+  cases a <;> cases b <;> cases c
+  all_goals first
+    | trivial
+    | exact (hab : False).elim
+    | exact (hbc : False).elim
+    | exact ⟨hab.1, hbc.2.1, ratLe_trans hab.2.1 hab.2.2 hbc.2.2⟩
+
+/-- 0..N の反射と隣接対の検査器。 -/
+def stepChk (sh : Shape) : Nat → Bool
+  | 0 => clsLeB (classify sh 0) (classify sh 0)
+  | n + 1 => stepChk sh n && clsLeB (classify sh n) (classify sh (n + 1)) &&
+      clsLeB (classify sh (n + 1)) (classify sh (n + 1))
+
+theorem stepChk_spec (sh : Shape) : ∀ n : Nat, stepChk sh n = true →
+    (∀ k, k ≤ n → ClsLe (classify sh k) (classify sh k)) ∧
+    (∀ k, k < n → ClsLe (classify sh k) (classify sh (k + 1)))
+  | 0, h => by
+    refine ⟨fun k hk => ?_, fun k hk => absurd hk (Nat.not_lt_zero k)⟩
+    rw [Nat.le_zero.mp hk]
+    exact clsLeB_sound _ _ h
+  | n + 1, h => by
+    unfold stepChk at h
+    rcases Bool.and_eq_true_iff.mp h with ⟨h12, h3⟩
+    rcases Bool.and_eq_true_iff.mp h12 with ⟨h1, h2⟩
+    obtain ⟨ihr, ihs⟩ := stepChk_spec sh n h1
+    refine ⟨fun k hk => ?_, fun k hk => ?_⟩
+    · rcases Nat.lt_or_eq_of_le hk with hk | rfl
+      · exact ihr k (Nat.le_of_lt_succ hk)
+      · exact clsLeB_sound _ _ h3
+    · rcases Nat.lt_or_eq_of_le (Nat.le_of_lt_succ hk) with hk | rfl
+      · exact ihs k hk
+      · exact clsLeB_sound _ _ h2
+
+/-- ℓ·D ≥ x_top·R なら `capped`（一般の証明）。 -/
+theorem classify_capped (sh : Shape) {xt y : Nat} {rest : List (Nat × Nat)}
+    (hk : sh.knots = (xt, y) :: rest) {l : Nat} (hl : xt * sh.R ≤ l * sh.D) :
+    classify sh l = .capped := by
+  unfold classify
+  rw [hk]
+  cases h : ((xt, y) :: rest).getLast? with
+  | none => simp at h
+  | some v => exact if_pos hl
+
+/-- 帰着（一般の証明）: 有限の検査 `stepChk sh N` と、N が x_top を越えていることから `ClsMono sh`。 -/
+theorem clsMono_of_stepChk (sh : Shape) (N : Nat) {xt y : Nat} {rest : List (Nat × Nat)}
+    (hk : sh.knots = (xt, y) :: rest) (hN : xt * sh.R ≤ N * sh.D) (h : stepChk sh N = true) :
+    ClsMono sh := by
+  obtain ⟨hr, hs⟩ := stepChk_spec sh N h
+  have tail : ∀ k, N ≤ k → classify sh k = .capped := fun k hNk =>
+    classify_capped sh hk (Nat.le_trans hN (Nat.mul_le_mul_right _ hNk))
+  have refl : ∀ k, ClsLe (classify sh k) (classify sh k) := fun k => by
+    rcases Nat.lt_or_ge N k with hk | hk
+    · rw [tail k (Nat.le_of_lt hk)]; trivial
+    · exact hr k hk
+  have step : ∀ k, ClsLe (classify sh k) (classify sh (k + 1)) := fun k => by
+    rcases Nat.lt_or_ge k N with hk | hk
+    · exact hs k hk
+    · rw [tail k hk, tail (k + 1) (Nat.le_succ_of_le hk)]; trivial
+  intro l l' hl
+  obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_le hl
+  induction d with
+  | zero => exact refl l'
+  | succ d ih =>
+    exact clsLe_trans _ _ _ (ih (Nat.le_add_right _ _)) (step (l' + d))
+
+theorem psiAntiL_of_stepChk (sh : Shape) (N : Nat) {xt y : Nat} {rest : List (Nat × Nat)}
+    (hk : sh.knots = (xt, y) :: rest) (hN : xt * sh.R ≤ N * sh.D) (h : stepChk sh N = true) :
+    PsiAntiL sh :=
+  psiAntiL_of_clsMono sh (clsMono_of_stepChk sh N hk hN h)
+
+/-- 計算例: 小さい形 `tiny`（x_top·R = 160 ≤ 16·D）では有限検査が通り、PsiAntiL が無条件に出る（kernel decide）。 -/
+example : PsiAntiL tiny := psiAntiL_of_stepChk tiny 16 rfl (by decide) (by decide)
+
 end RevPebbling.PsiGap
 
 #print axioms RevPebbling.PsiGap.psiLe_mono_x
@@ -121,3 +226,6 @@ end RevPebbling.PsiGap
 #print axioms RevPebbling.PsiGap.exp_transfer
 #print axioms RevPebbling.PsiGap.psiC_mono
 #print axioms RevPebbling.PsiGap.psiAntiL_of_clsMono
+#print axioms RevPebbling.PsiGap.clsLe_trans
+#print axioms RevPebbling.PsiGap.clsMono_of_stepChk
+#print axioms RevPebbling.PsiGap.psiAntiL_of_stepChk
