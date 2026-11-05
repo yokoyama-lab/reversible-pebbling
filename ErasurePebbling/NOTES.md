@@ -171,7 +171,8 @@ components”.  (The easy direction `phi(b) ≤ phi(b − x)` is `x` last.)
 (DEL) for *every* optimal removal order `O` and every free `x`, deleting
 `x`'s step from `O` gives an order of `b − x` of cost ≤ `phi(b)` — so “`x`
 first” is always optimal; the surgery is canonical, only its cost bound is
-missing.  Checked: p ≤ 5, gaps ≤ 14.  (R′) and (S): p ≤ 6, gaps ≤ 14/22.
+missing.  Checked: p ≤ 5, gaps ≤ 14.  (R′) and (S): p = 5 gaps ≤ 20,
+p = 6 gaps ≤ 22, p = 7 gaps ≤ 11 (`rcheck.c`, 7.1·10^8 removals, 0 failures).
 
 *Where the recursion closes and where not.*  Let `z` be the pebble an optimal
 order removes first.  If `z = x`, or `z` is not adjacent to `x`, or `z` is

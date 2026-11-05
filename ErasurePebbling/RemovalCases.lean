@@ -13,7 +13,7 @@ established around that lemma.
 * `FreeRemoval p` (R′): a pebble whose *gap* is at most the threshold at the
   current count can be removed without raising `phi`.  `RemovalLemma` is the
   case gap = 1.  Computer check (`data/erasure/rcheck.c`): all gap sequences
-  with `p = 5` and gaps `≤ 20`, `p = 6` and gaps `≤ 14`, `p = 7` and gaps
+  with `p = 5` and gaps `≤ 20`, `p = 6` and gaps `≤ 22`, `p = 7` and gaps
   `≤ 11`.
 * `SlackRemoval p` (S): removing *any* pebble raises `phi` by at most its
   excess at the current count.  (S) implies (R′) implies `RemovalLemma`
