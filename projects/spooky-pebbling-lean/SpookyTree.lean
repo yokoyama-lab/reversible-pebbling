@@ -77,3 +77,4 @@ import SpookyTree.WindowGenRCriterion
 import SpookyTree.WindowGenROutside
 import SpookyTree.WindowGenRSigma
 import SpookyTree.WindowGenRDual
+import SpookyTree.WindowGenRLemmaT
