@@ -82,3 +82,6 @@ import SpookyTree.WindowGenRReduction
 import SpookyTree.WindowGenRZones
 import SpookyTree.WindowGenRStrategy
 import SpookyTree.WindowGenRLimit
+import SpookyTree.WindowGenRUpperAlg
+import SpookyTree.WindowGenRUpperBound
+import SpookyTree.WindowGenRUpperLimit
