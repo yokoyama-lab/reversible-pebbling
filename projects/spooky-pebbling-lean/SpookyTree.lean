@@ -85,3 +85,5 @@ import SpookyTree.WindowGenRLimit
 import SpookyTree.WindowGenRUpperAlg
 import SpookyTree.WindowGenRUpperBound
 import SpookyTree.WindowGenRUpperLimit
+import SpookyTree.WindowGenGap
+import SpookyTree.WindowGenGapLimit
