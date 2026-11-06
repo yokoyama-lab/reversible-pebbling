@@ -73,3 +73,5 @@ import SpookyTree.WindowM34Outside
 import SpookyTree.WindowM4Gap
 import SpookyTree.WindowM3Gap
 import SpookyTree.WindowRootNonConv
+import SpookyTree.WindowGenRCriterion
+import SpookyTree.WindowGenROutside
