@@ -1,4 +1,7 @@
 import RevPebbling.RetentionPremium
+import RevPebbling.RowExact
+import RevPebbling.HalvedDifference
+import RevPebbling.CompositionAnchor
 
 /-!
 # The near-full half-reach: `gameH n (n-1) = n + 1` (this work, 2026-08-29)
@@ -23,9 +26,10 @@ by `decide` or `native_decide`.
 
 Via `gameT = 2 * gameH` (`HalfReach`) this also fixes the complete
 optimum for the whole family, `gameT n (n - 1) = 2n + 2`
-(`gameT_near_full`), so what remains of the near-full retention premium
-`-1` is the single claim `gameF n (n - 1) = 2n + 1`
-(`premium_near_full_of_gameF`).
+(`gameT_near_full`).  For `n ≥ 4`, the generated-row count law then
+shows that the first entry beyond the linear prefix is exactly two,
+giving the clean optimum `gameF n (n - 1) = 2n + 1`
+(`gameF_near_full`) and retention premium `-1` (`premium_near_full`).
 
 Consistency with the BFS-certified values: `gameH 4 3 = 5` and
 `gameH 5 4 = 6` of `RetentionPremium` are re-derived from the family
@@ -44,6 +48,9 @@ namespace RevPebbling.NearFull
 open RevPebbling.PebblingFoundations RevPebbling.GameReach
 open RevPebbling.GameCost RevPebbling.GameCompleteCost
 open RevPebbling.HalfReach RevPebbling.RetentionPremium
+open RevPebbling.CountRecursion RevPebbling.DifferenceMergeProperty
+open RevPebbling.KnillObs RevPebbling.HalvedDifference
+open RevPebbling.CompositionAnchor RevPebbling.RowExact
 
 -- ------------------------------------------------------------------
 -- Prefix boards
@@ -469,13 +476,108 @@ theorem gameT_near_full {n : Nat} (h : 3 ≤ n) : gameT n (n - 1) = 2 * n + 2 :=
   rw [gameT_eq_two_mul_gameH hex, gameH_near_full h]
   omega
 
-/-- What is left of the near-full retention premium: with `gameH` and
-`gameT` now known for the whole family, `premium = -1` is equivalent to
-the single remaining claim `gameF n (n-1) = 2n + 1`. -/
+-- ------------------------------------------------------------------
+-- Clean reach: the first row entry after the linear prefix
+-- ------------------------------------------------------------------
+
+theorem near_reach_bound (r : Nat) : r + 4 ≤ 2 ^ (r + 2) := by
+  induction r with
+  | zero => decide
+  | succ r ih =>
+      rw [show r + 1 + 2 = (r + 2) + 1 by omega, Nat.pow_succ]
+      have hp : 1 ≤ 2 ^ (r + 2) := Nat.one_le_two_pow
+      omega
+
+/-- The first generated-row entry after its linear prefix is exactly two. -/
+theorem first_after_linear (r : Nat) :
+    (rowIter (r + 1))[r + 2]'(by
+      rw [rowIter_length]
+      have hpow := near_reach_bound r
+      apply Nat.lt_sub_of_add_lt
+      have hh : r + 3 < 2 ^ (r + 2) :=
+        Nat.lt_of_lt_of_le (by omega) hpow
+      simpa only [show r + 2 + 1 = r + 3 by omega] using hh) = 2 := by
+  obtain ⟨hsort, _⟩ := rowIter_invariant (r + 1)
+  have hlen : r + 2 < (rowIter (r + 1)).length := by
+    rw [rowIter_length]
+    have hpow := near_reach_bound r
+    apply Nat.lt_sub_of_add_lt
+    have hh : r + 3 < 2 ^ (r + 2) :=
+      Nat.lt_of_lt_of_le (by omega) hpow
+    simpa only [show r + 2 + 1 = r + 3 by omega] using hh
+  have hcount2 : r + 3 ≤ countLe (rowIter (r + 1)) 2 := by
+    have hrec := count_recursion_lower r 2 (by omega)
+    rw [show 2 / 2 = 1 by omega] at hrec
+    have hpos := countLe_pos r 2 (by omega)
+    have hone := rowIter_count_one r
+    omega
+  have hup : (rowIter (r + 1))[r + 2]'hlen ≤ 2 :=
+    sorted_getElem_le_of_countLe _ _ _ hsort hlen (by omega)
+  have hlo : 2 ≤ (rowIter (r + 1))[r + 2]'hlen := by
+    by_contra hc
+    have hle : (rowIter (r + 1))[r + 2]'hlen ≤ 1 := by omega
+    have hi := index_lt_countLe (rowIter (r + 1)) 1 (r + 2) hsort hlen hle
+    rw [rowIter_count_one] at hi
+    omega
+  omega
+
+/-- The generated row gives the near-full clean cost. -/
+theorem Fpre_near_full (r : Nat) :
+    Fpre (rowIter (r + 1)) (r + 4) = 2 * (r + 4) + 1 := by
+  have hstep := Fpre_step (rowIter (r + 1)) (r + 2)
+  have hstep' : Fpre (rowIter (r + 1)) (r + 4) =
+      Fpre (rowIter (r + 1)) (r + 3) +
+        2 * ((rowIter (r + 1))[r + 2]?.getD 0) := by
+    simpa only [show r + 2 + 2 = r + 4 by omega,
+      show r + 2 + 1 = r + 3 by omega] using hstep
+  have hlin := Fpre_linear (r + 1) (r + 3) (by omega) (by omega)
+  have hlen : r + 2 < (rowIter (r + 1)).length := by
+    rw [rowIter_length]
+    have hpow := near_reach_bound r
+    apply Nat.lt_sub_of_add_lt
+    have hh : r + 3 < 2 ^ (r + 2) :=
+      Nat.lt_of_lt_of_le (by omega) hpow
+    simpa only [show r + 2 + 1 = r + 3 by omega] using hh
+  have hget : (rowIter (r + 1))[r + 2]? = some 2 := by
+    rw [List.getElem?_eq_getElem hlen, first_after_linear]
+  rw [hget] at hstep'
+  simp only [Option.getD_some] at hstep'
+  omega
+
+/-- **Near-full clean optimum.** One pebble short of the linear regime
+costs exactly two additional moves. The restriction `4 ≤ n` is sharp:
+`n = 3, p = 2` cannot cleanly reach the last cell. -/
+theorem gameF_near_full {n : Nat} (hn : 4 ≤ n) :
+    gameF n (n - 1) = 2 * n + 1 := by
+  let r := n - 4
+  have hnform : n = r + 4 := by omega
+  have hpform : n - 1 = r + 3 := by omega
+  have hsform : n - 3 = r + 1 := by omega
+  have hexp : (n - 3) + 1 = r + 2 := by omega
+  have hreach : n ≤ 2 ^ ((n - 3) + 1) := by
+    rw [hexp, hnform]
+    exact near_reach_bound r
+  have hrow := gameF_eq_row (n - 3) n (by omega) hreach
+  have hspace : (n - 3) + 2 = n - 1 := by omega
+  rw [hspace, hpform, hsform, hnform] at hrow
+  calc gameF n (n - 1) = gameF (r + 4) (r + 3) := by
+        rw [hnform]
+        congr 1
+    _ = Fpre (rowIter (r + 1)) (r + 4) := hrow
+    _ = 2 * (r + 4) + 1 := Fpre_near_full r
+    _ = 2 * n + 1 := by rw [hnform]
+
+/-- A compatibility form for callers that already have the clean formula. -/
 theorem premium_near_full_of_gameF {n : Nat} (h : 3 ≤ n)
     (hF : gameF n (n - 1) = 2 * n + 1) :
     gameF n (n - 1) + 1 = 2 * gameH n (n - 1) := by
   rw [hF, gameH_near_full h]
+  omega
+
+/-- **Near-full retention premium `-1`, for the whole playable clean family.** -/
+theorem premium_near_full {n : Nat} (h : 4 ≤ n) :
+    gameF n (n - 1) + 1 = 2 * gameH n (n - 1) := by
+  rw [gameF_near_full h, gameH_near_full (by omega)]
   omega
 
 /-- Cross-check against `RetentionPremium.gameH_4_3`, which was obtained
@@ -492,10 +594,27 @@ theorem gameH_5_4_of_family : gameH 5 4 = 6 := by
   show gameH 5 (5 - 1) = 5 + 1
   exact h
 
+/-- Cross-check the clean family theorem against the independently
+BFS-certified value `RetentionPremium.gameF_4_3`. -/
+theorem gameF_4_3_of_family : gameF 4 3 = 9 := by
+  have h := gameF_near_full (n := 4) (by omega)
+  show gameF 4 (4 - 1) = 2 * 4 + 1
+  exact h
+
+/-- The same independent cross-check at `(5,4)`. -/
+theorem gameF_5_4_of_family : gameF 5 4 = 11 := by
+  have h := gameF_near_full (n := 5) (by omega)
+  show gameF 5 (5 - 1) = 2 * 5 + 1
+  exact h
+
 -- Axiom audit: the family theorem must be free of the compiler axioms
 -- that `RetentionPremium` uses for its finite checks.
 #print axioms gameH_near_full
 #print axioms gameT_near_full
+#print axioms gameF_near_full
+#print axioms premium_near_full
 #print axioms gameH_4_3_of_family
+#print axioms gameF_4_3_of_family
+#print axioms gameF_5_4_of_family
 
 end RevPebbling.NearFull

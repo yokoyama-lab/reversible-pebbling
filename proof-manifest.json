@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "da172d41df635af10b03e23eb86ecc2b4b355c361cd982435a5b5a7d99b3b91b",
+ "proof_bundle_sha256": "2ea5a79a4d6ad8febf7afef58c98caf6ef7d1dd02ca0932802c7534630867561",
  "source_sha256": {
   "lakefile.toml": "8519922280d9186b06d0580675dac9d9627e57331c9a20da023dd58e9fc7df60",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -21,6 +21,7 @@
   "RevPebbling/AttainSplit.lean": "70de32bf8c96007c556af976d8a10874478830776fb53971fe1e02a858a42dc9",
   "RevPebbling/BalanceIdentity.lean": "bde803a5c7126405d307771653c0a699f651e6c11b8521703e884354804b5c76",
   "RevPebbling/BandFromC3.lean": "54c43540f8f858555851da752a0429c3e99b3d50a69814cb25fdb8d1bd75c10e",
+  "RevPebbling/BandSubsolution.lean": "7547f7f5ce9ff3ffddc8bf01a9886b0771e48929e61f9d8cbdb0d0a6424c25ef",
   "RevPebbling/BlockSim.lean": "414dacddace88245dc1964eab8a417c16fbb0c9116bf3b5eb74b1228ff1b659b",
   "RevPebbling/BracketPositive.lean": "da7fa5a157dce4ea364d1ef88a6e6aaed78a8cc25be3853a12f144181c069f7b",
   "RevPebbling/CapAndSelfClosing.lean": "bb4cc593fb214a1380c85b64848d63ac9d40944b5bacd7f51fcb7e19cf137c57",
@@ -98,6 +99,8 @@
   "RevPebbling/KnillObs.lean": "561e280c41c9995298119896f7134331762bfebc69b0d584886a8332c7ca1cad",
   "RevPebbling/KnillRecursion.lean": "552bc5bdeaf8628a2461ad8aa738ad6bbe095fa8f9a24eba9fd23e700c25faff",
   "RevPebbling/KnillUnique.lean": "6a468f83ef019ab1f00ac482d35e3421bee209da8a4f2dadf6a071f292eeec81",
+  "RevPebbling/LegendreRounding.lean": "c119903d2f8c729e07f556286bc744ff1137abeb578857b0ec75f03707bbcff7",
+  "RevPebbling/LegendreSeam.lean": "5159e9b711ec9157868d31f54864da2750930857e1350dc9c5e0b161dc514db7",
   "RevPebbling/LiftAbove.lean": "f432e216423255d9c5f509bdbe0d5619eabefd45a9303b7d975fbbbe5a936a9e",
   "RevPebbling/LowerSuffixPeak.lean": "40476bdf32585b493790eee947817c0cf0de7ca6d8e417767f84ae0697ee3b56",
   "RevPebbling/MarginAnchors.lean": "d78548423bc7cb48acb7a3d6743713efea44c7bf46730680e0928b68ecff72f9",
@@ -105,13 +108,14 @@
   "RevPebbling/MarginTransfer.lean": "c98ff988fa01856c311f882108c003686acae367ec9d258154221d322dfd0851",
   "RevPebbling/MergeFixUnique.lean": "bc0f929fcac5e5a149b6820944839d58b98afb4668b54c1af8787a74e390c3f0",
   "RevPebbling/MinimaxDuality.lean": "567264becafd13f421732b2b0f77f35e6c3afd2fa44524c839f31a010791186e",
-  "RevPebbling/NearFull.lean": "872ced093750a54fb26b5a4f2df6bccffc66a76e7a8890aa649a65f4ce9e7746",
+  "RevPebbling/NearFull.lean": "2c5697caf3243a88eb977b04320b3ff8ed706889327a4efae6e860d4fc279b26",
   "RevPebbling/OptimalNormal.lean": "4920dea54c24fc117f7c0f72c911311901cf2bd006f6518c5056e183c578873d",
   "RevPebbling/PeakRestriction.lean": "ff1af3c9159cfc8d55ce6aea7614afc9232d92ecb8353bc0d04324922499a872",
   "RevPebbling/PebblingFoundations.lean": "71b64a285bf9a297af9ee754d65d3a23150b9a96e83349337cd27d8a3f718fe1",
   "RevPebbling/PebblingGame.lean": "559aa960515425e4ab3e645d2ee9eeb4a720311f1fe9bf5841a77eb7737a18db",
   "RevPebbling/PebblingTheory.lean": "1aef47f35d60bfb51f8237cc597cb13b163cf99e3acc4c830bb945d6afbe4718",
   "RevPebbling/Profile.lean": "d3950502767697dba1ecd7f3e81a19c5af2be2c3dfcc136ab3120d797914a996",
+  "RevPebbling/QuantileSum.lean": "c4c4208d3b828c71a3ad80b87f8e0587f70dee7ae7384c0efb9489af507c8575",
   "RevPebbling/RLECertify.lean": "9574ef88ababec6c7a13e0700afe1969117eeabe3e264f81a93d26d208799ea2",
   "RevPebbling/RLEFix.lean": "7c426cfb6d0dec633bdb4e463081ef174eb70ff3b650579a2bd1119d08f84f5b",
   "RevPebbling/RLEPebble.lean": "d2c19e83dc1e8fc4be15935a62e8f6ac7762900705aedaeac86acc286e1ac54b",
@@ -1289,6 +1293,22 @@
      "RevPebbling.RowExact.lowerRowExact_zero"
     ]
    }
+  },
+  "near_full_clean_family": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (this work, 2026-08-30): for every n >= 4, one pebble short of the linear regime has exact clean cost gameF n (n-1) = 2n+1. The proof is not a bounded search: rowIter_count_one pins the linear prefix, the count recursion pins its next entry to 2, Fpre_step reads off the two-move increment, and RowExact.gameF_eq_row transfers it to the game. Together with gameH_near_full, the retention premium is -1. The n >= 4 boundary is sharp because clean reach at n=3, p=2 is impossible. ",
+   "theorems": [
+    "RevPebbling.NearFull.first_after_linear",
+    "RevPebbling.NearFull.Fpre_near_full",
+    "RevPebbling.NearFull.gameF_near_full",
+    "RevPebbling.NearFull.gameF_4_3_of_family",
+    "RevPebbling.NearFull.gameF_5_4_of_family",
+    "RevPebbling.NearFull.premium_near_full"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
   },
   "unconditional_summary": {
    "status": "proved_general",

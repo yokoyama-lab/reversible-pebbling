@@ -461,6 +461,15 @@ Newest results (require mathlib, pinned in `lakefile.toml`):
   this direction (Knill 1995, p. 5) has a gap at the step that bounds the
   middle part; the three-part decomposition follows Královič
   (RAIRO-ITA **38** (2004) 137–161, proof of Thm 3.4).
+* `RevPebbling/NearFull.lean` — the near-full column in closed form.  For
+  every `n ≥ 4`, one pebble short of the linear regime has exact clean
+  optimum **`gameF n (n−1) = 2n+1`**, while half-reach and complete cost
+  are `n+1` and `2n+2`; hence the retention premium is `−1`.  The clean
+  lower bound is not a finite BFS certificate: `C_S(1)=S−1` fixes the
+  linear prefix, the count recursion forces its next row entry to be `2`,
+  and `gameF_eq_row` transfers that difference-row fact to every game.
+  The restriction is sharp: `n=3,p=2` can touch the end but cannot finish
+  cleanly.
 * `RevPebbling/AnchorRun.lean` + `RevPebbling/AnchorCertify4798.lean` —
   **the same anchor, one pass and one grid size larger**.  `certRun`
   runs the DP once, checks every row and reads the certificate cell,

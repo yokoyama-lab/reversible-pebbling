@@ -1770,6 +1770,26 @@ def main() -> int:
                     "RevPebbling.RowExact.reachIn_upper",
                 ],
             },
+            "near_full_clean_family": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (this work, 2026-08-30): for every n >= 4, "
+                          "one pebble short of the linear regime has exact clean "
+                          "cost gameF n (n-1) = 2n+1. The proof is not a bounded "
+                          "search: rowIter_count_one pins the linear prefix, the "
+                          "count recursion pins its next entry to 2, Fpre_step "
+                          "reads off the two-move increment, and RowExact.gameF_eq_row "
+                          "transfers it to the game. Together with gameH_near_full, "
+                          "the retention premium is -1. The n >= 4 boundary is "
+                          "sharp because clean reach at n=3, p=2 is impossible. "),
+                "theorems": [
+                    "RevPebbling.NearFull.first_after_linear",
+                    "RevPebbling.NearFull.Fpre_near_full",
+                    "RevPebbling.NearFull.gameF_near_full",
+                    "RevPebbling.NearFull.gameF_4_3_of_family",
+                    "RevPebbling.NearFull.gameF_5_4_of_family",
+                    "RevPebbling.NearFull.premium_near_full",
+                ],
+            },
             "unconditional_summary": {
                 "status": "proved_general",
                 "scope": ("UNBOUNDED (this work, 2026-08-06): the artifact's "

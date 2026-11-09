@@ -14,3 +14,10 @@ rocq/gen/__pycache__/
 
 # CLAUDE.md から退避した旧 handoff（絶対パスを含む・ローカル専用）
 .claude/handoff-*.md
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# scripts/layer_eval.py --build が生成するタスク集合（再生成できる中間ファイル）
+data/layer_eval_tasks.jsonl
