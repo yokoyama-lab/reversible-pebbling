@@ -6,9 +6,21 @@ name: build
 # matching file certifies that the recorded scope really is what the
 # kernel accepted).
 #
-# Expect ~30 minutes: the certification of row 60 (`RLECertify.fRow_60`,
-# 13.1 M runs) is deliberately over the usual per-theorem budget because
-# it carries the published bound c <= 2.6106.
+# Cost.  A cold build of the project is about 2.25 h (README, "Build"):
+# the composition anchor `AnchorCertify4798` alone runs 5700-6100 s and
+# the certification of row 60 (`RLECertify.fRow_60`, 13.1 M runs) about
+# 400 s, both deliberately over the usual per-theorem budget because they
+# carry the sharpest bounds.  That is why every run between 2026-08-22
+# and 2026-09-20 ended "cancelled": the job hit its 90-minute limit while
+# still inside `lake build` (14 runs in a row, see FINDINGS.md).
+#
+# So the build products are cached between runs.  Lake decides what to
+# rebuild from content hashes, not timestamps, so a restored `.lake/build`
+# makes an unchanged module a no-op and a typical run takes minutes.  The
+# cache is saved even when the job fails or times out, so a cold build
+# that does not fit in one run is finished by the next one.  Mathlib's
+# own oleans still come from its cache server (`lake exe cache get`,
+# via lean-action), as before.
 
 on:
   push:
@@ -16,30 +28,85 @@ on:
   pull_request:
   workflow_dispatch:
   schedule:
-    # Sundays 18:00 UTC (Mondays 03:00 JST) — catches toolchain rot
-    - cron: '0 18 * * 0'
+    # Sundays and Wednesdays 18:00 UTC (03:00 JST the next day): catches
+    # toolchain rot, and keeps the build cache alive (GitHub evicts
+    # entries not touched for 7 days).
+    - cron: '0 18 * * 0,3'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # A superseded pull-request run is cancelled; on `main` every run is
+  # allowed to finish, so a push cannot leave the branch without a verdict.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    # A backstop only (GitHub's ceiling is 360).  A warm run needs a small
+    # fraction of this; a cold one about 2.5-3 h on a hosted runner.
+    timeout-minutes: 340
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+
+      - name: Restore the build products of the previous run
+        id: restore
+        uses: actions/cache/restore@v4
+        with:
+          path: .lake/build
+          # Exact key: this commit.  Fallback: the newest cache built with
+          # the same toolchain and dependency pins, from which Lake
+          # rebuilds only what changed.
+          key: lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.toml') }}-${{ github.sha }}
+          restore-keys: |
+            lake-build-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.toml') }}-
 
       - name: Build all proofs
         uses: leanprover/lean-action@v1
         with:
           use-mathlib-cache: true
 
+      - name: Save the build products
+        # Always, so that a run cut short by a failure or the timeout
+        # still hands its finished modules to the next run.  Skipped on
+        # an exact hit, where nothing new would be saved.
+        if: always() && steps.restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: ${{ steps.restore.outputs.cache-primary-key }}
+
       - name: Reproduce the proof manifest
         run: python3 scripts/build_proof_manifest.py
 
+      - name: Keep the rebuilt manifest
+        # What a maintainer would have to commit when the next step fails.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: proof-manifest
+          path: proof-manifest.json
+          if-no-files-found: ignore
+
       - name: The committed manifest must match the rebuilt one
-        run: git diff --exit-code proof-manifest.json
+        run: |
+          if git diff --exit-code proof-manifest.json; then
+            exit 0
+          fi
+          # The diff is the finding, so it is also surfaced as annotations
+          # (at most ten, 3500 characters each); the full file is in the
+          # artifact above.
+          git diff proof-manifest.json > "$RUNNER_TEMP/manifest.diff"
+          python3 - "$RUNNER_TEMP/manifest.diff" <<'PY'
+          import sys
+          text = open(sys.argv[1], encoding="utf-8").read()
+          chunks = [text[i:i + 3500] for i in range(0, len(text), 3500)][:10]
+          for n, chunk in enumerate(chunks, 1):
+              body = (chunk.replace("%", "%25").replace("\r", "%0D")
+                      .replace("\n", "%0A"))
+              print(f"::error title=proof-manifest.json differs from the "
+                    f"rebuilt one ({n}/{len(chunks)})::{body}")
+          PY
+          exit 1
 
       - name: The documents must claim what the manifest records
         run: python3 scripts/check_claims.py

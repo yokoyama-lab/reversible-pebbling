@@ -14,9 +14,17 @@ Checks, in order:
   3b. each stage records which of its theorems carry an unproved
      hypothesis (Submult / GameOptimal / Superadd), read off the
      statements with #check — so "relative to X" cannot drift either;
+     a hypothesis whose argument is a bound variable of every theorem
+     carrying it (`Submult f` for an arbitrary `f`) is reported as
+     `schematic`: it is not an assumption about the development but
+     the premise of a general lemma, and cannot be "discharged";
+  3c. every module under RevPebbling/ or ErasurePebbling/ either has a
+     theorem in some stage
+     or is named in UNLISTED_MODULES with the reason -- a module nobody
+     listed would otherwise be invisible to the audit (FINDINGS.md,
+     2026-09-03: eleven such modules had accumulated);
   4. sources are hashed (sha256) into a pinned bundle.
-"""
-
+""" 
 from __future__ import annotations
 
 import hashlib
@@ -25,6 +33,8 @@ import re
 import subprocess
 import tempfile
 from pathlib import Path
+
+from check_axioms import declarations  # the theorem names a module declares
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "proof-manifest.json"
@@ -40,6 +50,26 @@ NATIVE_OK = ("Lean.ofReduceBool", "Lean.trustCompiler")
 # asserted in prose
 CARRIED_HYPOTHESES = ("Submult", "GameOptimal", "GameAttain", "LowerRowExact",
                       "Superadd", "KappaUpperBound", "KappaAttained")
+# Modules deliberately absent from every stage, each with the reason.  The
+# build refuses to produce a manifest while a module is in neither place,
+# so a new file cannot stay outside the audit by accident.
+UNLISTED_MODULES = {
+    "CutUpper": ("superseded: gameF_le_upper carries the global domination "
+                 "hypothesis hdom, which CutUpperFix.dom_impossible proves "
+                 "unsatisfiable (a finished play's lowest pebble is n-1), so "
+                 "the theorem is vacuous and is excluded on purpose (see the "
+                 "stage link1_ge_three_terms); the second term of the cut is "
+                 "CutFull.gameF_le_upper_cutFull.  The module stays because "
+                 "CutLower imports its board lemmas nth_doneBoard / "
+                 "doneBoard_drop"),
+    "ErasurePebbling/Board": (
+        "infrastructure: boards given by a characteristic function "
+        "(mk n f) and the pointwise lemmas that read toggles, pebble "
+        "counts and availability off f, so that the case analyses of "
+        "Sweep / Potential / Saturation reduce to omega.  No statement of "
+        "its own is a result; every lemma is used by a listed theorem of "
+        "the erasure_pebbling_* stages"),
+}
 
 
 def split_conclusion(ty: str) -> tuple:
@@ -121,7 +151,9 @@ def strip_lean_comments(text: str) -> str:
 
 def main() -> int:
     sources = sorted([ROOT / "RevPebbling.lean",
-                      *ROOT.glob("RevPebbling/**/*.lean")])
+                      *ROOT.glob("RevPebbling/**/*.lean"),
+                      ROOT / "ErasurePebbling.lean",
+                      *ROOT.glob("ErasurePebbling/**/*.lean")])
     config = [ROOT / "lakefile.toml", ROOT / "lean-toolchain"]
 
     holes = []
@@ -3153,13 +3185,665 @@ def main() -> int:
                     "RevPebbling.RateTransferLow.tendsto_log_gameT_Smin",
                 ],
             },
+            "pebbling_game_bfs_tables": {
+                "status": "proved_bounded",
+                "scope": (
+                          "BOUNDED (native_decide): the exact optimal move counts "
+                          "M*(n) of the clean-reach game for n = 1..8 at the minimal "
+                          "pebble count (mstar_table) and the minimality of those "
+                          "pebble counts (pmin_table), computed by the breadth-first "
+                          "search `mstar` of RevPebbling.PebblingGame.  CAVEAT: "
+                          "`mstar` is a standalone model of the game (a state is a "
+                          "bitmask, a move toggles cell i, legal iff i = 0 or cell "
+                          "i-1 is pebbled) and NO theorem connects it to the trace "
+                          "predicates ReachIn / gameF of GameReach / GameCost; the "
+                          "verified counterpart -- a BFS proved sound and complete "
+                          "for those predicates -- is the stage "
+                          "retention_premium_verified_bfs.  The module imports only "
+                          "Std.  Listed 2026-09-23; until then the module had no "
+                          "theorem in any stage, so it was outside the axiom audit."
+                          ),
+                "theorems": [
+                    "RevPebbling.PebblingGame.mstar_table",
+                    "RevPebbling.PebblingGame.pmin_table",
+                ],
+            },
+            "dispersion_general_parametric": {
+                "status": "proved_general",
+                "scope": (
+                          "UNBOUNDED, kernel axioms only: the dispersion lower bound "
+                          "at an arbitrary rational exponent q = n/r, stated ONCE "
+                          "with the constants (the scale M, the ratio L/D, the branch"
+                          " budget B, the slack E and the two thresholds) as "
+                          "parameters and the facts about them as hypotheses "
+                          "(DispersionGeneral.dispersion_general, root-free form "
+                          "dispersion_general_pow), so that a new exponent is an "
+                          "application rather than a new file of digits.  Wg r n M v "
+                          "= iroot r (M^r v^n) is the integer potential floor(M v^q);"
+                          " Wg_pow_le / lt_succ_Wg / Wg_ge / Wg_branch bracket it "
+                          "through IntRoot, and step_arith is the cleared-denominator"
+                          " arithmetic of one induction step.  Two applications: "
+                          "DispersionBound5033 supplies the constants at q = 50/33 "
+                          "(sigma = 100691869852/10^11 rounded up, the slack E = L - "
+                          "D - B absorbing the +1 of the recursion) and obtains "
+                          "dispersion5033_main, dispersion5033_main_pow and the "
+                          "midpoint form dispersion5033_midpoint_pow -- its five "
+                          "certificate facts hLsum / hDB / hth1 / hth2 / hDL are "
+                          "kernel `decide`s; "
+                          "DispersionRecover.dispersion4731_from_general re-derives "
+                          "the hand-written q = 47/31 instance "
+                          "DispersionBound4731.dispersion4731_main from the general "
+                          "theorem plus that file's own threshold decides, checking "
+                          "that the parametric statement subsumes the sharpest "
+                          "written-out one.  NOT here: the passage from "
+                          "dispersion5033_midpoint_pow to a bound on the real number "
+                          "c (the growth-side step "
+                          "DispersionGeneralGrowth.growth_ge_of_master does this for "
+                          "q = 197/130 in the stage dispersion_197130; nothing "
+                          "consumes the 50/33 instance, which CriticalRoot25366 has "
+                          "since overtaken).  Listed 2026-09-23; until then these "
+                          "modules had no theorem in any stage."
+                          ),
+                "theorems": [
+                    "RevPebbling.DispersionGeneral.Wg_pow_le",
+                    "RevPebbling.DispersionGeneral.lt_succ_Wg",
+                    "RevPebbling.DispersionGeneral.Wg_ge",
+                    "RevPebbling.DispersionGeneral.Wg_branch",
+                    "RevPebbling.DispersionGeneral.step_arith",
+                    "RevPebbling.DispersionGeneral.dispersion_general",
+                    "RevPebbling.DispersionGeneral.dispersion_general_pow",
+                    "RevPebbling.DispersionBound5033.hLsum",
+                    "RevPebbling.DispersionBound5033.hDB",
+                    "RevPebbling.DispersionBound5033.hth1",
+                    "RevPebbling.DispersionBound5033.hth2",
+                    "RevPebbling.DispersionBound5033.hDL",
+                    "RevPebbling.DispersionBound5033.dispersion5033_main",
+                    "RevPebbling.DispersionBound5033.dispersion5033_main_pow",
+                    "RevPebbling.DispersionBound5033.dispersion5033_midpoint_pow",
+                    "RevPebbling.DispersionRecover.dispersion4731_from_general",
+                ],
+            },
+            "retention_premium_verified_bfs": {
+                "status": "general_framework_plus_certified_values",
+                "scope": (
+                          "The retention premium gameF n p - 2 * gameH n p (keeping "
+                          "the far end pebbled against computing it and erasing "
+                          "everything), certified at four boards by a VERIFIED "
+                          "breadth-first search.  (a) UNBOUNDED, kernel axioms only: "
+                          "reachSet n p t, the boards reachable from the empty chain "
+                          "in at most t peak-respecting moves, is proved sound "
+                          "(reachSet_sound: every member is the end of a legal, "
+                          "in-range, peak-respecting trace) and complete "
+                          "(reachSet_complete_from), which makes the trace predicates"
+                          " ReachIn and HalfIn decidable (reachIn_iff_mem, "
+                          "halfIn_iff_mem) and gives the pinning lemmas gameF_eq_of /"
+                          " gameH_eq_of (a witness at v and a refutation at v-1 fix "
+                          "the optimum).  (b) BOUNDED: gameH / gameF at (2,2) go "
+                          "through the kernel (decide); (4,3), (5,4) and (8,4) rest "
+                          "on native_decide, and so do the premiums premium_4_3, "
+                          "premium_5_4, premium_8_4 (-1, -1, +1), gameT_8_4 and "
+                          "retention_beats_erasure_8_4: at (8,4) retaining the answer"
+                          " costs exactly one move more than a complete computation."
+                          "  The values agree with the independent oracle quoted in "
+                          "the module docstring, and NearFull (stage "
+                          "near_full_half_reach) re-derives gameH 4 3 and gameH 5 4 "
+                          "by a route sharing no computation with these certificates."
+                          "  Listed 2026-09-23; until then the module had no theorem "
+                          "in any stage."
+                          ),
+                "theorems": [
+                    "RevPebbling.RetentionPremium.mem_stepBoards",
+                    "RevPebbling.RetentionPremium.reachSet_succ",
+                    "RevPebbling.RetentionPremium.mem_reachSet_succ_of_mem",
+                    "RevPebbling.RetentionPremium.mem_reachSet_succ_of_step",
+                    "RevPebbling.RetentionPremium.reachSet_mono",
+                    "RevPebbling.RetentionPremium.reachSet_sound",
+                    "RevPebbling.RetentionPremium.reachSet_complete_from",
+                    "RevPebbling.RetentionPremium.reachIn_iff_mem",
+                    "RevPebbling.RetentionPremium.halfIn_iff_mem",
+                    "RevPebbling.RetentionPremium.gameF_eq_of",
+                    "RevPebbling.RetentionPremium.halfIn_mono",
+                    "RevPebbling.RetentionPremium.gameH_eq_of",
+                    "RevPebbling.RetentionPremium.gameH_2_2",
+                    "RevPebbling.RetentionPremium.gameF_2_2",
+                    "RevPebbling.RetentionPremium.gameH_4_3",
+                    "RevPebbling.RetentionPremium.gameF_4_3",
+                    "RevPebbling.RetentionPremium.gameH_5_4",
+                    "RevPebbling.RetentionPremium.gameF_5_4",
+                    "RevPebbling.RetentionPremium.gameH_8_4",
+                    "RevPebbling.RetentionPremium.gameF_8_4",
+                    "RevPebbling.RetentionPremium.premium_2_2",
+                    "RevPebbling.RetentionPremium.premium_4_3",
+                    "RevPebbling.RetentionPremium.premium_5_4",
+                    "RevPebbling.RetentionPremium.premium_8_4",
+                    "RevPebbling.RetentionPremium.gameT_8_4",
+                    "RevPebbling.RetentionPremium.retention_beats_erasure_8_4",
+                ],
+            },
+            "near_full_half_reach": {
+                "status": "proved_general",
+                "scope": (
+                          "UNBOUNDED, kernel axioms only (no decide, no "
+                          "native_decide): with one pebble fewer than there are "
+                          "cells, the half-reach is gameH n (n-1) = n + 1 for every n"
+                          " >= 3 (gameH_near_full).  Upper bound halfIn_near_full by "
+                          "the explicit play 0, 1, ..., n-2, 0, n-1 (fill the chain "
+                          "up to n-2, free cell 0, then reach the far end), built "
+                          "from the board lemmas pb / toggle_pb / exec_range / "
+                          "legal_range / maxOnes_range; lower bound "
+                          "not_halfIn_near_full: legality propagates backwards from "
+                          "the far end (pred_mem_of_mem, down_closed), so every cell "
+                          "is toggled at least once and a play of length exactly n "
+                          "leaves the chain full (nth_exec_parity, "
+                          "ones_eq_length_of_all), one pebble over budget.  Via gameT"
+                          " = 2 * gameH this fixes the complete optimum of the whole "
+                          "family, gameT n (n-1) = 2n + 2 (gameT_near_full).  "
+                          "premium_near_full_of_gameF reduces the near-full retention"
+                          " premium -1 to the single remaining claim gameF n (n-1) = "
+                          "2n + 1, which is NOT proved: it is a hypothesis of that "
+                          "theorem.  gameH_4_3_of_family / gameH_5_4_of_family "
+                          "cross-check the native_decide values of RetentionPremium "
+                          "by this certificate-free route.  Listed 2026-09-23; until "
+                          "then the module had no theorem in any stage."
+                          ),
+                "theorems": [
+                    "RevPebbling.NearFull.nth_cons_zero",
+                    "RevPebbling.NearFull.nth_cons_succ",
+                    "RevPebbling.NearFull.nth_replicate_false",
+                    "RevPebbling.NearFull.nth_emptyBoard",
+                    "RevPebbling.NearFull.ones_replicate_true",
+                    "RevPebbling.NearFull.nth_replicate_true_append",
+                    "RevPebbling.NearFull.nth_pb",
+                    "RevPebbling.NearFull.ones_pb",
+                    "RevPebbling.NearFull.ones_toggle_of_true",
+                    "RevPebbling.NearFull.ones_toggle_of_false",
+                    "RevPebbling.NearFull.length_pb",
+                    "RevPebbling.NearFull.set_replicate_true_append",
+                    "RevPebbling.NearFull.toggle_pb",
+                    "RevPebbling.NearFull.exec_range",
+                    "RevPebbling.NearFull.okMove_pb",
+                    "RevPebbling.NearFull.legal_range",
+                    "RevPebbling.NearFull.maxOnes_range",
+                    "RevPebbling.NearFull.halfIn_near_full",
+                    "RevPebbling.NearFull.length_execB",
+                    "RevPebbling.NearFull.pred_mem_of_mem",
+                    "RevPebbling.NearFull.down_closed",
+                    "RevPebbling.NearFull.nth_exec_parity",
+                    "RevPebbling.NearFull.ones_eq_length_of_all",
+                    "RevPebbling.NearFull.not_halfIn_near_full",
+                    "RevPebbling.NearFull.gameH_near_full",
+                    "RevPebbling.NearFull.gameT_near_full",
+                    "RevPebbling.NearFull.premium_near_full_of_gameF",
+                    "RevPebbling.NearFull.gameH_4_3_of_family",
+                    "RevPebbling.NearFull.gameH_5_4_of_family",
+                ],
+            },
+            "xlift_integer_lift_soundness": {
+                "status": "proved_general",
+                "scope": (
+                          "UNBOUNDED, kernel axioms only: soundness of the integer "
+                          "lift, the upper-bound DP of the replay generator "
+                          "(m48_exact_replay.py, lift).  From a row X of upper bounds"
+                          " for the count function at space level s over a finite "
+                          "grid gv, liftLevel gv X cap cand is a row of upper bounds "
+                          "at level s + 1 (the self term against the best of finitely"
+                          " many candidate splits), and liftIter chains k levels.  "
+                          "liftAux_sound / liftLevel_sound / liftIter_sound hold for "
+                          "ANY count function C that satisfies the recursion 1 + C t "
+                          "(u+w) + min (C t u) (C (t+1) w) <= C (t+1) (u+w) and is "
+                          "monotone in v, for ANY candidate selection cand and ANY "
+                          "cap: neither the two-finger heuristic nor the numeric cap "
+                          "enters the proof, they only affect sharpness.  "
+                          "liftIter_le_count instantiates C with the real count "
+                          "countLe (rowIter S) v through CountRecursion; floorVal_le "
+                          "/ floorVal_zip_le / foldl_max_add_le / bestSplit_le / "
+                          "liftAux_length are the list lemmas underneath, and "
+                          "liftAux_zero / liftAux_succ / liftIter_zero / "
+                          "liftIter_succ are the unfolding equations (rfl).  NOT "
+                          "here: that the grid and the base row a particular run used"
+                          " satisfy hgmono / hgpos / hbase (they are hypotheses), and"
+                          " the exactness checks against the replay's output are "
+                          "`example`s, checked at build time but not named.  Listed "
+                          "2026-09-23; until then the module had no theorem in any "
+                          "stage."
+                          ),
+                "theorems": [
+                    "RevPebbling.XLift.liftAux_zero",
+                    "RevPebbling.XLift.liftAux_succ",
+                    "RevPebbling.XLift.liftIter_zero",
+                    "RevPebbling.XLift.liftIter_succ",
+                    "RevPebbling.XLift.floorVal_le",
+                    "RevPebbling.XLift.floorVal_zip_le",
+                    "RevPebbling.XLift.foldl_max_add_le",
+                    "RevPebbling.XLift.bestSplit_le",
+                    "RevPebbling.XLift.liftAux_length",
+                    "RevPebbling.XLift.liftAux_sound",
+                    "RevPebbling.XLift.liftLevel_sound",
+                    "RevPebbling.XLift.liftIter_sound",
+                    "RevPebbling.XLift.liftIter_le_count",
+                ],
+            },
+            "shape_monotone_checker": {
+                "status": "proved_general",
+                "scope": (
+                          "UNBOUNDED soundness of a finite checker, applied to "
+                          "transcribed data (the hmono input of Lemma C-flat, residue"
+                          " (ii) of the manuscript's section 6.11).  The normalised "
+                          "family shape yhat of the upper-bound programme is "
+                          "continuous piecewise-linear on a rational knot list; "
+                          "okList checks, on integers only, that the abscissae "
+                          "strictly increase and the ordinates do not decrease, and "
+                          "Shape.eval_mono proves for EVERY shape that ok = true "
+                          "implies Monotone eval (eval is a sum of clamped ramps, "
+                          "each separately monotone when its slope is nonnegative, so"
+                          " no case split on where x falls).  Shape.eval_head is the "
+                          "value at the first knot and Shape.le_eval_head_add "
+                          "combines the two into exactly the hypothesis "
+                          "TieBand.yhat_ge_neg_one consumes.  The four repaired "
+                          "anchors eps0035 / eps003 / eps0025 / eps002 (74 + 74 + 73 "
+                          "+ 117 knots) pass the checker by kernel `decide` "
+                          "(eps*_ok), have head ordinate -1 (eps*_yr_head) and "
+                          "therefore satisfy the u-branch input of Lemma C-flat "
+                          "(eps*_ge_neg_one).  NOT proved in Lean: that a given Shape"
+                          " IS yhat of the anchor cfg (the transcription is checked "
+                          "over Fractions by the external script m68), and anything "
+                          "about the shapes below x_1/2, where eval is the constant "
+                          "-1 and yhat is not.  The private lemma toy_at is not "
+                          "audited.  Listed 2026-09-23; until then the module had no "
+                          "theorem in any stage."
+                          ),
+                "theorems": [
+                    "RevPebbling.ShapeMonotone.clamp'_mono",
+                    "RevPebbling.ShapeMonotone.piece_mono",
+                    "RevPebbling.ShapeMonotone.piece_of_le",
+                    "RevPebbling.ShapeMonotone.okList_cons",
+                    "RevPebbling.ShapeMonotone.okList_head_le",
+                    "RevPebbling.ShapeMonotone.xr_lt_xr",
+                    "RevPebbling.ShapeMonotone.xr_le_xr",
+                    "RevPebbling.ShapeMonotone.yr_le_yr",
+                    "RevPebbling.ShapeMonotone.pieces_mono",
+                    "RevPebbling.ShapeMonotone.Shape.eval_mono",
+                    "RevPebbling.ShapeMonotone.Shape.eval_monotoneOn",
+                    "RevPebbling.ShapeMonotone.pieces_left",
+                    "RevPebbling.ShapeMonotone.Shape.y0_cons",
+                    "RevPebbling.ShapeMonotone.Shape.eval_head",
+                    "RevPebbling.ShapeMonotone.Shape.le_eval_head_add",
+                    "RevPebbling.ShapeMonotone.eps0035_ok",
+                    "RevPebbling.ShapeMonotone.eps0035_yr_head",
+                    "RevPebbling.ShapeMonotone.eps0035_ge_neg_one",
+                    "RevPebbling.ShapeMonotone.eps003_ok",
+                    "RevPebbling.ShapeMonotone.eps003_yr_head",
+                    "RevPebbling.ShapeMonotone.eps003_ge_neg_one",
+                    "RevPebbling.ShapeMonotone.eps0025_ok",
+                    "RevPebbling.ShapeMonotone.eps0025_yr_head",
+                    "RevPebbling.ShapeMonotone.eps0025_ge_neg_one",
+                    "RevPebbling.ShapeMonotone.eps002_ok",
+                    "RevPebbling.ShapeMonotone.eps002_yr_head",
+                    "RevPebbling.ShapeMonotone.eps002_ge_neg_one",
+                ],
+            },
+            "tie_band_cflat": {
+                "status": "proved_general",
+                "scope": (
+                          "UNBOUNDED accounting of Lemma C-flat (the corner tie band "
+                          "of the upper-bound programme), RELATIVE TO explicit "
+                          "hypotheses.  Given the cap-zone characterisation at level "
+                          "S-1 (hcapzone), the u-branch shape input (-1 <= yhat to "
+                          "the right of x_1/2), the unconditional cap bound and the "
+                          "rational gate C1b (sigma_1 * 2^delta' + 2^-a <= 2^t_c), "
+                          "cflat_step closes the step Psi_S v <= 1 + Psi_{S-1} v + "
+                          "min (Psi_S u) (Psi_{S-1} w) with no margin and no floor "
+                          "budget: w_branch_ge / t1_branch_ge / u_add_one_le are the "
+                          "three branches, u_branch_real and yhat_ge_neg_one the "
+                          "shape side, cflat_assembly the cap identity 1 + cap_{S-1} "
+                          "+ cap_{S-1} = cap_S.  c1flat_of_enclosures is the "
+                          "interface to certified rational enclosures, and the "
+                          "numeric section instantiates the eps = 0.0035 anchor: "
+                          "c1flat_rational_eps0035 (norm_num), c1flat_eps0035 given "
+                          "the four enclosures, and floor_loses_at_most_eps0035 (X >="
+                          " 740 loses at most the factor 2^{-1/512} to the floor; "
+                          "floor_loses_at_most / floor_loses_at_most_of_ge are the "
+                          "general forms).  The hypotheses hcapzone and hmono are "
+                          "discharged for the concrete shapes by the stages "
+                          "cap_zone_level_below and shape_monotone_checker; the "
+                          "enclosures of the powers of two (hd, ha, ht, hc) remain "
+                          "hypotheses, supplied outside Lean by the certified checker"
+                          " m65.  Listed 2026-09-23; until then the module had no "
+                          "theorem in any stage."
+                          ),
+                "theorems": [
+                    "RevPebbling.TieBand.floor_loses_at_most",
+                    "RevPebbling.TieBand.floor_loses_at_most_of_ge",
+                    "RevPebbling.TieBand.c1flat_of_enclosures",
+                    "RevPebbling.TieBand.w_branch_ge",
+                    "RevPebbling.TieBand.t1_branch_ge",
+                    "RevPebbling.TieBand.u_add_one_le",
+                    "RevPebbling.TieBand.u_branch_real",
+                    "RevPebbling.TieBand.yhat_ge_neg_one",
+                    "RevPebbling.TieBand.cflat_assembly",
+                    "RevPebbling.TieBand.cflat_step",
+                    "RevPebbling.TieBand.c1flat_rational_eps0035",
+                    "RevPebbling.TieBand.c1flat_eps0035",
+                    "RevPebbling.TieBand.floor_loses_at_most_eps0035",
+                ],
+            },
+            "cap_zone_level_below": {
+                "status": "proved_general",
+                "scope": (
+                          "UNBOUNDED: the cap-zone characterisation at level S-1, the"
+                          " hcapzone input of Lemma C-flat (residue (i) of the "
+                          "manuscript's section 6.11).  Psi capexp yhat corner v = "
+                          "min (2^capexp - 1) floor(2^(capexp + yhat(log_2 v - "
+                          "corner))) is the replay's closed-form subsolution; "
+                          "Psi_eq_cap: for ANY yhat vanishing on [0, inf), Psi "
+                          "returns the cap at every v >= 2^corner (le_Psi_of_pow_le "
+                          "is the hcapzone shape of it), and Psi_eq_cap_of_natLog "
+                          "certifies the replay's integer early return (Nat.log 2 v "
+                          ">= corner is sufficient).  eval_flat_right / "
+                          "eval_zero_of_nonneg (with okList_le_lastK, piece_of_ge, "
+                          "pieces_right): a shape passing ShapeMonotone's ok check "
+                          "takes its last knot's ordinate everywhere to the right of "
+                          "it, so a shape whose last knot is the origin -- lastK = "
+                          "(0, 0), checked by rfl for the four anchors (eps*_lastK) "
+                          "-- vanishes on [0, inf) (eps*_flat) and sits in the cap "
+                          "zone (eps*_capzone, via pow_corner_sub).  "
+                          "cflat_step_capzone is TieBand.cflat_step with hcapzone "
+                          "removed, and cflat_step_eps0035 has both shape-side "
+                          "residues discharged; what remain there are the counting "
+                          "facts and the certified enclosure C1b.  toyFlat_* and "
+                          "logb_two_two pin non-vacuity on a hand-checkable shape "
+                          "(Psi is not constantly at the cap).  NOT proved in Lean: "
+                          "that the Shapes are yhat, nor that Psi is the replay's Psi"
+                          " (both checked externally by m69).  Listed 2026-09-23; "
+                          "until then the module had no theorem in any stage."
+                          ),
+                "theorems": [
+                    "RevPebbling.CapZone.lastK_cons_cons",
+                    "RevPebbling.CapZone.okList_le_lastK",
+                    "RevPebbling.CapZone.piece_of_ge",
+                    "RevPebbling.CapZone.pieces_right",
+                    "RevPebbling.CapZone.eval_flat_right",
+                    "RevPebbling.CapZone.eval_zero_of_nonneg",
+                    "RevPebbling.CapZone.Psi_eq_cap",
+                    "RevPebbling.CapZone.le_Psi_of_pow_le",
+                    "RevPebbling.CapZone.Psi_eq_cap_of_natLog",
+                    "RevPebbling.CapZone.cflat_step_capzone",
+                    "RevPebbling.CapZone.eps0035_lastK",
+                    "RevPebbling.CapZone.eps003_lastK",
+                    "RevPebbling.CapZone.eps0025_lastK",
+                    "RevPebbling.CapZone.eps002_lastK",
+                    "RevPebbling.CapZone.eps0035_flat",
+                    "RevPebbling.CapZone.eps003_flat",
+                    "RevPebbling.CapZone.eps0025_flat",
+                    "RevPebbling.CapZone.eps002_flat",
+                    "RevPebbling.CapZone.pow_corner_sub",
+                    "RevPebbling.CapZone.eps0035_capzone",
+                    "RevPebbling.CapZone.eps003_capzone",
+                    "RevPebbling.CapZone.eps0025_capzone",
+                    "RevPebbling.CapZone.eps002_capzone",
+                    "RevPebbling.CapZone.cflat_step_eps0035",
+                    "RevPebbling.CapZone.toyFlat_lastK",
+                    "RevPebbling.CapZone.toyFlat_at",
+                    "RevPebbling.CapZone.toyFlat_flat",
+                    "RevPebbling.CapZone.toyFlat_at_neg_one",
+                    "RevPebbling.CapZone.logb_two_two",
+                ],
+            },
+            "half_reach_closed_form_interval": {
+                "status": "proved_general",
+                "scope": (
+                          "UNBOUNDED, kernel axioms only (this work, 2026-09-03): the"
+                          " closed form of the half-reach optimum on the whole "
+                          "minimal-space interval, step (3) of the manuscript's "
+                          "thm:complete.  gameH_eq_halfCost: for n <= 2^S - 1, gameH "
+                          "n S = halfCost S n, the sum of the n smallest entries of "
+                          "the sorted multiset union of the clean marginal lists "
+                          "A_1..A_S (HalfReachMerge.halfMarginals over rowsDownFrom S"
+                          " = [row_S, ..., row_1]).  Achievability "
+                          "halfReachIn_halfCost and optimality "
+                          "halfCost_le_of_halfReachIn both go through the exchange "
+                          "theorem DifferenceMergeProperty.merged_prefix_is_min_split"
+                          " (halfCost_le_split, halfCost_split_exists) and the "
+                          "recurrence (H) of HalfReachRecurrence; the bridge from "
+                          "lists to costs is gameF_eq_Fcost (RowExact.gameF_eq_row "
+                          "extended to the one-pebble level and across m = 0 through "
+                          "Fcost, which unlike Fpre has Fcost row 0 = 0).  "
+                          "Consequences: gameT_eq_two_mul_halfCost; the right "
+                          "endpoint halfCost_full = RateTransfer.sumF (with "
+                          "fullMarginals_sum_eq_fRow, halfMarginals_sum, smerge_sum);"
+                          " the threshold count (4) of the manuscript, "
+                          "countLe_halfMarginals_eq_dCount with dCount S x = S + "
+                          "sum_{i=2..S} C_i(x/2) (countLe_halfMarginals, "
+                          "predictedCount_rowsDownFrom); and the minimal-space "
+                          "interval: Smin_eq_iff (Smin n = S iff 2^{S-1} <= n <= 2^S "
+                          "- 1), gameH_Smin, gameT_Smin and gameT_of_interval give "
+                          "the exact value of T(n, S^T_min(n)) at every n, with no "
+                          "sandwich.  Lengths, sortedness and positivity of the "
+                          "streams are rowOf_length .. halfMarginals_NDec.  The "
+                          "numerical anchors of the file (H(n,4), H(n,5), the "
+                          "endpoints) are `example`s by kernel decide, not named "
+                          "theorems.  Listed 2026-09-23; until then the module had no"
+                          " theorem in any stage."
+                          ),
+                "theorems": [
+                    "RevPebbling.HalfReachQuantile.rowsDownFrom_succ",
+                    "RevPebbling.HalfReachQuantile.halfCost_succ",
+                    "RevPebbling.HalfReachQuantile.Fcost_zero",
+                    "RevPebbling.HalfReachQuantile.halfCost_zero",
+                    "RevPebbling.HalfReachQuantile.rowOf_length",
+                    "RevPebbling.HalfReachQuantile.fullMarginals_length",
+                    "RevPebbling.HalfReachQuantile.marginals_length",
+                    "RevPebbling.HalfReachQuantile.halfMarginals_length",
+                    "RevPebbling.HalfReachQuantile.rowOf_invariant",
+                    "RevPebbling.HalfReachQuantile.fullMarginals_NDec",
+                    "RevPebbling.HalfReachQuantile.halfMarginals_NDec",
+                    "RevPebbling.HalfReachQuantile.sum_take_map_two_mul",
+                    "RevPebbling.HalfReachQuantile.Fcost_eq_Fpre",
+                    "RevPebbling.HalfReachQuantile.gameF_eq_Fcost",
+                    "RevPebbling.HalfReachQuantile.smerge_sum",
+                    "RevPebbling.HalfReachQuantile.fullMarginals_sum",
+                    "RevPebbling.HalfReachQuantile.fullMarginals_sum_eq_fRow",
+                    "RevPebbling.HalfReachQuantile.halfMarginals_sum",
+                    "RevPebbling.HalfReachQuantile.halfCost_full",
+                    "RevPebbling.HalfReachQuantile.halfCost_le_split",
+                    "RevPebbling.HalfReachQuantile.halfCost_split_exists",
+                    "RevPebbling.HalfReachQuantile.halfReachIn_halfCost",
+                    "RevPebbling.HalfReachQuantile.halfCost_le_of_halfReachIn",
+                    "RevPebbling.HalfReachQuantile.gameH_eq_halfCost",
+                    "RevPebbling.HalfReachQuantile.gameT_eq_two_mul_halfCost",
+                    "RevPebbling.HalfReachQuantile.countLe_halfMarginals",
+                    "RevPebbling.HalfReachQuantile.dCount_one",
+                    "RevPebbling.HalfReachQuantile.predictedCount_rowsDownFrom",
+                    "RevPebbling.HalfReachQuantile.countLe_halfMarginals_eq_dCount",
+                    "RevPebbling.HalfReachQuantile.Smin_eq_iff",
+                    "RevPebbling.HalfReachQuantile.gameH_Smin",
+                    "RevPebbling.HalfReachQuantile.gameT_Smin",
+                    "RevPebbling.HalfReachQuantile.gameT_of_interval",
+                ],
+            },
+            "half_reach_dispersion_route": {
+                "status": "proved_general",
+                "scope": (
+                          "UNBOUNDED, kernel axioms only (this work, 2026-09-03): the"
+                          " manuscript's own route to the left endpoint H(2^{S-1}, "
+                          "S), counting the whole merged marginal stream instead of "
+                          "one row.  Nat level: halfCost_ge_of_dCount and "
+                          "gameH_ge_of_dCount ((n - D_S(x)) (x+1) <= H(n,S), "
+                          "RateTransferLow.sum_take_ge_of_countLe on the merged "
+                          "stream), and gameH_left_ge_of_dCount: a threshold whose "
+                          "count is at most a quarter of the half-reach limit leaves "
+                          "2^{S-2} entries above it, where the pigeonhole route "
+                          "RateTransferLow.fpre_le_gameH_left keeps 2^{S-3}.  "
+                          "Analytic level: dCount_le_geom feeds "
+                          "DispersionReal.dispersion_real into D_S level by level, "
+                          "one_lt_lam and geom_range_le sum the geometric series, "
+                          "dCount_le_dispersion is D_S(x) <= S + M (x/2)^q lam^S/(lam"
+                          " - 1), and gameH_left_ge_of_dispersion turns the smallness"
+                          " condition into the combinatorial lower bound.  Witness at"
+                          " S = 5: dCount_five_one (decide) gives "
+                          "gameH_sixteen_five_ge, 22 <= H(16,5) (true value 29), "
+                          "against pigeonhole_five = 9 (decide) for the older route."
+                          "  The exponential rate is the same as "
+                          "RateTransferLow.gameH_left_ge; what this route buys is the"
+                          " constant (measured outside Lean: 0.554 against 0.216 of "
+                          "the true value).  NOT here: an effective version with an "
+                          "explicit error term.  Listed 2026-09-23; until then the "
+                          "module had no theorem in any stage."
+                          ),
+                "theorems": [
+                    "RevPebbling.HalfReachDispersion.halfCost_ge_of_dCount",
+                    "RevPebbling.HalfReachDispersion.gameH_ge_of_dCount",
+                    "RevPebbling.HalfReachDispersion.gameH_left_ge_of_dCount",
+                    "RevPebbling.HalfReachDispersion.one_lt_lam",
+                    "RevPebbling.HalfReachDispersion.dCount_le_geom",
+                    "RevPebbling.HalfReachDispersion.geom_range_le",
+                    "RevPebbling.HalfReachDispersion.dCount_le_dispersion",
+                    "RevPebbling.HalfReachDispersion.gameH_left_ge_of_dispersion",
+                    "RevPebbling.HalfReachDispersion.dCount_five_one",
+                    "RevPebbling.HalfReachDispersion.gameH_sixteen_five_ge",
+                    "RevPebbling.HalfReachDispersion.pigeonhole_five",
+                ],
+            },
+            # ---- ErasurePebbling: erasure-budgeted clean pebbling (RC-02) ----
+            "erasure_pebbling_model": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED: the erasure game on top of "
+                          "PebblingFoundations (okE / isErase / legalE / "
+                          "erasures; IsPlay = clean plan with peak p and at "
+                          "most e irreversible removals; Reachable, ReachIs, "
+                          "MstarLe, MstarIs, estar). Segment laws for legalE "
+                          "and erasures, and the two bridges to the "
+                          "reversible game: a legalB play is a legalE play "
+                          "with zero erasures, and a legalE play with zero "
+                          "erasures is legalB."),
+                "theorems": [
+                    "ErasurePebbling.legalE_append",
+                    "ErasurePebbling.erasures_append",
+                    "ErasurePebbling.legalE_of_legalB",
+                    "ErasurePebbling.erasures_of_legalB",
+                    "ErasurePebbling.legalB_of_erasures_zero",
+                ],
+            },
+            "erasure_pebbling_saturation": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, RC-02 Theorem A (saturation) for p >= 2, "
+                          "n >= 1: M*(n,p,e) = 2n-1 iff e >= e*(n,p) = "
+                          "ceil((n-1)/(p-1)) - 1 (theoremA). Upper bound by the "
+                          "block-sweep construction (theoremA_upper: a clean "
+                          "plan with exactly 2n-1 moves and e*(n,p) erasures); "
+                          "floor 2n-1 for every clean plan (floor_length, Knill "
+                          "Obs. 2.2(i)); lower bound (theoremA_lower, "
+                          "estar_le_erasures) by a state potential pot = "
+                          "ceil((n-1-fb)/(p-1)) + dCount - 1 that is invariant "
+                          "under placements (pot_place) and drops by at most "
+                          "the erasure indicator under removals (pot_remove) "
+                          "along tight plays (tight_of_length: a 2n-1-move plan "
+                          "toggles every cell exactly the forced number of "
+                          "times), replacing the paper's ascent count of the "
+                          "removal permutation. Corollary floor_not_attained: "
+                          "e < e*(n,p) forces M* > 2n-1."),
+                "theorems": [
+                    "ErasurePebbling.theoremA",
+                    "ErasurePebbling.theoremA_upper",
+                    "ErasurePebbling.theoremA_lower",
+                    "ErasurePebbling.estar_le_erasures",
+                    "ErasurePebbling.floor_length",
+                    "ErasurePebbling.floor_not_attained",
+                    "ErasurePebbling.tight_of_length",
+                    "ErasurePebbling.pot_le_erasures",
+                    "ErasurePebbling.pot_place",
+                    "ErasurePebbling.pot_remove",
+                    "ErasurePebbling.pot_empty",
+                    "ErasurePebbling.pot_target",
+                ],
+            },
+            "erasure_pebbling_reach": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED, RC-02 Theorem B1: reach(p,e) >= "
+                          "(e+2)*2^(p-2) for p >= 2 (theoremB1), by Bennett's "
+                          "schedule to 2^(p-1) (bennett_seg, via "
+                          "bennett_general) followed by e phases that climb "
+                          "2^(p-2) cells above a stone and erase the stone "
+                          "(phase_seg). Conjecture B2 at e = 0 in full "
+                          "generality, reach(p,0) = 2^(p-1) (reachIs_zero, via "
+                          "reach_impossible_general). The upper bound of B2 for "
+                          "e >= 1 is OPEN (see ErasurePebbling/NOTES.md)."),
+                "theorems": [
+                    "ErasurePebbling.theoremB1",
+                    "ErasurePebbling.bennett_seg",
+                    "ErasurePebbling.phase_seg",
+                    "ErasurePebbling.reachIs_zero",
+                ],
+            },
+            "erasure_pebbling_corollaries": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED corollary of Theorem A: the first chain "
+                          "length at which one more erasure lowers the optimal "
+                          "move count is n = (p-1)(e+1)+2 (drop_threshold; "
+                          "estar_threshold computes e* at (p-1)(e+1)+1 and "
+                          "(p-1)(e+1)+2), matching data/erasure/drops.md."),
+                "theorems": [
+                    "ErasurePebbling.drop_threshold",
+                    "ErasurePebbling.estar_threshold",
+                ],
+            },
+            "erasure_pebbling_bounded": {
+                "status": "proved_bounded",
+                "scope": ("BOUNDED, native_decide, ORACLE LEVEL: the bit-mask "
+                          "BFS oracle mstarE / reachableE of "
+                          "ErasurePebbling/Basic.lean (same rules as IsPlay, "
+                          "not linked to it by proof) reproduces the RC-02 "
+                          "anchors M*(4,3,.)=9,7,7,7; M*(6,4,.)=15,11,11,11; "
+                          "M*(16,5,.)=71,45,37,31; M*(16,6,0)=51; "
+                          "M*(16,7,0)=49; M*(16,6,1)=41; M*(17,6,0)=57 "
+                          "(anchors_table); Conjecture B2 reach(p,e) = "
+                          "(e+2)*2^(p-2) for p=3 (e<=6), p=4 (e<=4), p=5 "
+                          "(e<=2) (conjB2_p3/p4/p5); the inequality "
+                          "M*(n,p,e+1) <= M*(n,p+1,e) for n <= 2^(p-1), "
+                          "p<=4, e<=3 (ineq_small) and its counterexample "
+                          "M*(10,3,3)=21 > 19=M*(10,4,2) "
+                          "(ineq_counterexample); non-monotonicity "
+                          "M*(16,5,0)=71 > 57=M*(17,6,0) "
+                          "(non_monotone_16_17)."),
+                "theorems": [
+                    "ErasurePebbling.anchors_table",
+                    "ErasurePebbling.conjB2_p3",
+                    "ErasurePebbling.conjB2_p4",
+                    "ErasurePebbling.conjB2_p5",
+                    "ErasurePebbling.ineq_small",
+                    "ErasurePebbling.ineq_counterexample",
+                    "ErasurePebbling.non_monotone_16_17",
+                ],
+            },
     }
+
+    # ---- every module is either listed or accounted for ---------------
+    listed = {t for st in proved_stages.values() for t in st["theorems"]}
+    modules = sorted([*(p.stem for p in ROOT.glob("RevPebbling/**/*.lean")),
+                      *(f"ErasurePebbling/{p.stem}"
+                        for p in ROOT.glob("ErasurePebbling/**/*.lean"))])
+    unlisted = [m for m in modules
+                if not any(n in listed for n in declarations(m))]
+    stray = sorted(set(UNLISTED_MODULES) - set(unlisted))
+    unaccounted = sorted(set(unlisted) - set(UNLISTED_MODULES))
+    if stray or unaccounted:
+        raise SystemExit(
+            "module audit: "
+            + ("; ".join(filter(None, [
+                unaccounted and "no theorem of these modules is in any "
+                "stage and UNLISTED_MODULES gives no reason: "
+                + ", ".join(unaccounted),
+                stray and "UNLISTED_MODULES names modules that are listed "
+                "after all (or do not exist): " + ", ".join(stray)]))))
+    print(f"module audit OK: {len(modules)} modules, "
+          f"{len(modules) - len(unlisted)} with a stage, "
+          f"{len(unlisted)} accounted for in UNLISTED_MODULES")
 
     # ---- axiom audit for every listed theorem -----------------------
     thms = [t for st in proved_stages.values() for t in st["theorems"]]
     with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT,
                                      delete=False) as fh:
-        fh.write("import RevPebbling\n")
+        fh.write("import RevPebbling\nimport ErasurePebbling\n")
         for t in thms:
             fh.write(f"#print axioms {t}\n")
         tmp = Path(fh.name)
@@ -3224,7 +3908,7 @@ def main() -> int:
     # cannot claim more (or less) than the statements do.
     with tempfile.NamedTemporaryFile("w", suffix=".lean", dir=ROOT,
                                      delete=False) as fh:
-        fh.write("import RevPebbling\n")
+        fh.write("import RevPebbling\nimport ErasurePebbling\n")
         for t in thms:
             fh.write(f"#check @{t}\n")
         tmp = Path(fh.name)  # `#check` prints "Name : type", wrapped lines indented
@@ -3256,13 +3940,24 @@ def main() -> int:
             report the second as discharged when it is not."""
             out = set()
             for hyp in CARRIED_HYPOTHESES:
+                # the argument may be a Unicode identifier such as `κ`
                 for m in re.finditer(
-                        rf"\b{hyp}\b\s*(\(?[A-Za-z_][\w.]*)?", text):
+                        rf"\b{hyp}\b\s*(\(?[^\W\d][\w.]*)?", text):
                     arg = (m.group(1) or "").lstrip("(")
                     out.add(f"{hyp} {arg}".strip())
             return out
 
-        carried_all, proved_all = {}, {}
+        def binds(text: str, arg: str) -> bool:
+            """Whether `arg` is a bound variable of the binder group `text`.
+
+            `#check @f` prints every argument as a binder `(x y : T)` /
+            `{x : T}` / `⦃x : T⦄`, so a hypothesis `Submult f` with `f`
+            among the binder names is the premise of a general lemma,
+            not an assumption about a particular function."""
+            return any(arg in grp.split() for grp in re.findall(
+                r"[(\[{⦃]([^()\[\]{}⦃⦄:]+):", text))
+
+        carried_all, proved_all, schematic = {}, {}, {}
         for stage in proved_stages.values():
             carried, proves = {}, {}
             for t in stage["theorems"]:
@@ -3271,6 +3966,9 @@ def main() -> int:
                 for k in sorted(inh):
                     carried.setdefault(k, []).append(t)
                     carried_all.setdefault(k, []).append(t)
+                    arg = k.split(" ", 1)[1] if " " in k else ""
+                    schematic[k] = (schematic.get(k, True)
+                                    and bool(arg) and binds(hyp_part, arg))
                 # a theorem proves a hypothesis outright only if it
                 # concludes it while assuming none of them —
                 # `GameAttain → GameOptimal` must not count as a proof
@@ -3284,8 +3982,16 @@ def main() -> int:
             stage["carried_hypotheses"] = carried
             stage["proves_hypotheses"] = proves
         keys = sorted(set(carried_all) | set(proved_all))
+        # proved: some listed theorem concludes it (assuming none of them);
+        # schematic: every carrier binds the argument itself, so the key
+        # is the premise of a general lemma (`Submult f`, any `f`) and
+        # there is nothing to discharge -- the concrete instances have
+        # their own keys; carried: an assumption about a particular object
+        # that no listed theorem proves.
         hyp_status = {
-            k: {"status": "proved" if proved_all.get(k) else "carried",
+            k: {"status": ("proved" if proved_all.get(k)
+                           else "schematic" if schematic.get(k)
+                           else "carried"),
                 "carried_by": len(carried_all.get(k, [])),
                 "proved_by": sorted(proved_all.get(k, []))}
             for k in keys}
@@ -3293,7 +3999,9 @@ def main() -> int:
               + ", ".join(
                   f"{k}: {hyp_status[k]['carried_by']} carried"
                   + (f", PROVED by {hyp_status[k]['proved_by'][0]}"
-                     if hyp_status[k]['proved_by'] else "")
+                     if hyp_status[k]['proved_by']
+                     else " (schematic)" if hyp_status[k]["status"]
+                     == "schematic" else "")
                   for k in keys))
     finally:
         tmp.unlink(missing_ok=True)
@@ -3315,6 +4023,8 @@ def main() -> int:
         "proof_bundle_sha256": bundle.hexdigest(),
         "source_sha256": hashed,
         "hypotheses": hyp_status,
+        # modules with no theorem in any stage, and why (see 3c above)
+        "modules_without_stage": dict(sorted(UNLISTED_MODULES.items())),
         "proved_stages": proved_stages,
     }
     OUTPUT.write_text(json.dumps(manifest, indent=1, ensure_ascii=False)

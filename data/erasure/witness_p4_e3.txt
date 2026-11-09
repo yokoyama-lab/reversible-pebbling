@@ -1,0 +1,61 @@
+# witness for reach(p=4,e=3) = 20: 55 moves, 3 erasures at nodes [8, 12, 16]; optimal (BFS depth = M*(20,4,3) = 55); source reach_N33_p4_E6.txt
+# chain 0->1->...->20 (0 = free entrance), clean plan: empty -> {20}, peak <= 4
+# erasure positions (ascending): [8, 12, 16]; differences from 2^(p-1): [0, 4, 8]
+# tau-ascents (i in [2,n-1] with last removal of i after last removal of i-1): [8, 12, 16]
+# columns: step | move | config after move | #pebbles | erasures used
+    1 | place 1     | {1} | 1 | 0
+    2 | place 2     | {1,2} | 2 | 0
+    3 | place 3     | {1,2,3} | 3 | 0
+    4 | place 4     | {1,2,3,4} | 4 | 0
+    5 | remove 3    | {1,2,4} | 3 | 0
+    6 | place 5     | {1,2,4,5} | 4 | 0
+    7 | remove 2    | {1,4,5} | 3 | 0
+    8 | place 6     | {1,4,5,6} | 4 | 0
+    9 | remove 5    | {1,4,6} | 3 | 0
+   10 | place 7     | {1,4,6,7} | 4 | 0
+   11 | remove 1    | {4,6,7} | 3 | 0
+   12 | place 8     | {4,6,7,8} | 4 | 0
+   13 | remove 7    | {4,6,8} | 3 | 0
+   14 | place 5     | {4,5,6,8} | 4 | 0
+   15 | remove 6    | {4,5,8} | 3 | 0
+   16 | place 1     | {1,4,5,8} | 4 | 0
+   17 | remove 5    | {1,4,8} | 3 | 0
+   18 | place 2     | {1,2,4,8} | 4 | 0
+   19 | remove 1    | {2,4,8} | 3 | 0
+   20 | place 3     | {2,3,4,8} | 4 | 0
+   21 | remove 4    | {2,3,8} | 3 | 0
+   22 | place 9     | {2,3,8,9} | 4 | 0
+   23 | remove 3    | {2,8,9} | 3 | 0
+   24 | place 10    | {2,8,9,10} | 4 | 0
+   25 | remove 9    | {2,8,10} | 3 | 0
+   26 | place 1     | {1,2,8,10} | 4 | 0
+   27 | remove 2    | {1,8,10} | 3 | 0
+   28 | place 11    | {1,8,10,11} | 4 | 0
+   29 | remove 1    | {8,10,11} | 3 | 0
+   30 | place 12    | {8,10,11,12} | 4 | 0
+   31 | remove 11   | {8,10,12} | 3 | 0
+   32 | place 9     | {8,9,10,12} | 4 | 0
+   33 | remove 10   | {8,9,12} | 3 | 0
+   34 | remove 9    | {8,12} | 2 | 0
+   35 | ERASE 8     | {12} | 1 | 1
+   36 | place 13    | {12,13} | 2 | 1
+   37 | place 14    | {12,13,14} | 3 | 1
+   38 | place 15    | {12,13,14,15} | 4 | 1
+   39 | remove 13   | {12,14,15} | 3 | 1
+   40 | place 16    | {12,14,15,16} | 4 | 1
+   41 | remove 15   | {12,14,16} | 3 | 1
+   42 | place 13    | {12,13,14,16} | 4 | 1
+   43 | remove 14   | {12,13,16} | 3 | 1
+   44 | remove 13   | {12,16} | 2 | 1
+   45 | ERASE 12    | {16} | 1 | 2
+   46 | place 17    | {16,17} | 2 | 2
+   47 | place 18    | {16,17,18} | 3 | 2
+   48 | place 19    | {16,17,18,19} | 4 | 2
+   49 | remove 17   | {16,18,19} | 3 | 2
+   50 | place 20    | {16,18,19,20} | 4 | 2
+   51 | remove 19   | {16,18,20} | 3 | 2
+   52 | place 17    | {16,17,18,20} | 4 | 2
+   53 | remove 18   | {16,17,20} | 3 | 2
+   54 | remove 17   | {16,20} | 2 | 2
+   55 | ERASE 16    | {20} | 1 | 3
+# peak = 4, final = {20}, erasures = 3
