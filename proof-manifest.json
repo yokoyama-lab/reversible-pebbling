@@ -2,10 +2,11 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "8f535884638b1d2f490e8eb4acc2205a3146062ce327878c33c71e5f790d1353",
+ "proof_bundle_sha256": "0b5fee2c4f74de809c0030b444e846e09602288e0bff35e0e91bca27c2015558",
  "source_sha256": {
   "lakefile.toml": "e6279687261ee91a8173f529f1bc1951ab9287b6da740add8cd2dd8a3e78c8b2",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
+  "ErasurePebbling/Additive.lean": "7d174524ecb4306ae3b27a0cadff873738131ca3bb5587a059cda53546be9d44",
   "ErasurePebbling/Basic.lean": "87fc8d6bce31d443e867e089cbfb522b7a59f7b4d1e1bc25f5d1eb0bf3e879fe",
   "ErasurePebbling/Board.lean": "c53a6be5aad23d2d6d74f84f0aee8645c5a8df86f0d0553028fe693a826c5227",
   "ErasurePebbling/Bounded.lean": "7e0017f7a27c24e5c099250a3f39d04c9bb7fc0c25d8ee90e81bcc10a1ba4e1b",
@@ -18,7 +19,7 @@
   "ErasurePebbling/Sliding.lean": "d1524c0e4ee8ff95f635b67db54614c9cd6d14e362c64bf597ca1984f29405e9",
   "ErasurePebbling/Sweep.lean": "07f0fa019a73090d62c258f61d900fd7188a0083605c3845068cc227cfb5e0a6",
   "ErasurePebbling/UpperBound.lean": "35aed5b54dc970d69c8f366d144d946d26ee6f445e1578eba6799d711976d9b7",
-  "ErasurePebbling.lean": "cc9439e94bb82338e317d57f09801713e594a6cc137c22b13ecf7f9c143a1b89",
+  "ErasurePebbling.lean": "1e4b3a63739c92ff4a2210767995b32e7d9f5735583ef52580605b4d6804afc8",
   "RevPebbling/AnchorCertify.lean": "40bf53b0795b8dd8cdb14f14d405542403788b67495a1b5fb3e0d79e6246656b",
   "RevPebbling/AnchorCertify4798.lean": "b770164d7376dc8f5a0d8beb5e300b07cb3125fbaca00ff82ee10d4c5fb719dc",
   "RevPebbling/AnchorDP.lean": "782df7f9944c51738ae7d2f2a0e38d01a3ebf448a97bfd448c54e8b72440ab03",
@@ -2534,6 +2535,23 @@
     "ErasurePebbling.Compression.wphi_zero_of_free",
     "ErasurePebbling.Compression.wphi_toggle_le_of_remove",
     "ErasurePebbling.Compression.wphi_dec_exists"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_additive_upper": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (2026-11-11): the upper half of the additive identity at the maximal reach, M*((e+2)*2^(p-2),p,e) <= M*(2^(p-1),p,0) + e*(M*(2^(p-2),p-1,0)+1) for p >= 2 (mstar_reach_le): the Theorem B1 construction with arbitrary clean sub-plans in place of Bennett's, via extend_right (a play runs unchanged on a board extended to the right) and embed (a clean play lifted onto an empty window above a pebble places exactly the top cell). anchor_6_3_1 instantiates it with two concrete plans checked by decide (M*(6,3,1) <= 13, the tabulated value). The reverse inequality is NOT proved; equality is observed for p <= 6, e <= 6 in data/erasure/.",
+   "theorems": [
+    "ErasurePebbling.Additive.mstar_reach_le",
+    "ErasurePebbling.Additive.phases_seg'",
+    "ErasurePebbling.Additive.phase_seg'",
+    "ErasurePebbling.Additive.first_seg",
+    "ErasurePebbling.Additive.embed",
+    "ErasurePebbling.Additive.extend_right",
+    "ErasurePebbling.Additive.anchor_6_3_1"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],

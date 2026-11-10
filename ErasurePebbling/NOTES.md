@@ -18,6 +18,7 @@ live in `data/erasure/` (see `data/erasure/SUMMARY.md`).
 | Conjecture B2 at e = 0 (Knill): `reach(p,0) = 2^(p−1)` | `reachIs_zero` | `Conjectures.lean` |
 | **Conjecture B2 (now a theorem)**, p ≥ 2, every e: `reach(p,e) = (e+2)·2^(p−2)`; upper bound `n ≤ (e+2)·2^(p−2)` for every clean plan | `Compression.conjB2`, `Compression.reach_le` | `Compression.lean` |
 | Drop threshold: the first n where one more erasure helps is `(p−1)(e+1)+2` | `drop_threshold`, `estar_threshold` | `Conjectures.lean` |
+| Additive upper bound at the maximal reach (2026-11-11): `M*((e+2)·2^(p−2),p,e) ≤ M*(2^(p−1),p,0) + e·(M*(2^(p−2),p−1,0)+1)` for p ≥ 2 (any sub-plans, not only Bennett's; anchor `M*(6,3,1) ≤ 13`) | `Additive.mstar_reach_le`, `anchor_6_3_1` | `Additive.lean` |
 
 Bounded (oracle-level, `native_decide`, `Bounded.lean`): RC-02 anchors
 (`M*(4,3,·)=9,7,7,7`, `M*(6,4,·)=15,11,11,11`, `M*(16,5,·)=71,45,37,31`,
@@ -34,7 +35,8 @@ exhaustively for p ≤ 6, e ≤ 6 and for p = 7, e ≤ 4 (40 cells, 0 mismatches
 p = 7, e ∈ {5,6} and p = 8 are lower bounds only.  The drop point
 `(p−1)(e+1)+2` is verified for p ≤ 8, e ≤ 5.  The identity
 `M*(reach(p,e),p,e) = M*(2^(p−1),p,0) + e·(M*(2^(p−2),p−1,0)+1)` holds for
-p ≤ 6, e ≤ 6.
+p ≤ 6, e ≤ 6 (36 cells with data, 0 mismatches).  Its `≤` half is proved in
+general (`Additive.mstar_reach_le`); the `≥` half is open.
 
 ## 2. How the lower bound of Theorem A is proved (no permutations)
 
@@ -355,6 +357,10 @@ floor, drop threshold, Knill's reach at e = 0 (`reachIs_zero`), and
 e ≤ 4 (C search in `data/erasure/`).
 
 Open:
+0. The `≥` half of the additive identity at the maximal reach (§1): every
+   clean plan for `(e+2)·2^(p−2)` with peak p and e erasures has at least
+   `M*(2^(p−1),p,0) + e·(M*(2^(p−2),p−1,0)+1)` moves.  The `≤` half is
+   `Additive.mstar_reach_le`.
 1. (No longer needed for B2, which is proved in `Compression.lean`.)  The
    invariance of `phi` itself: `RemovalLemma p` (§3, `UpperBound.lean`),
    reduced to `BoundaryStep p`

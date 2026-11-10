@@ -198,7 +198,7 @@ make -C rocq                            # Rocq + CoqInterval (see rocq/README.md
 
 All theorems are checked by the Lean kernel; `native_decide` theorems
 are exhaustive finite certificates (marked BOUNDED in docstrings),
-the rest are general (unbounded) proofs.  Of the 1192 theorems the
+the rest are general (unbounded) proofs.  Of the 1199 theorems the
 manifest lists, **93 rest on a `native_decide` certificate and 33 need
 no axiom at all**; the rest use only `propext` / `Quot.sound` /
 `Classical.choice`.  Which theorems fall in which class is recorded
@@ -279,7 +279,7 @@ hypothesis that `CutUpperFix.dom_impossible` shows unsatisfiable, so it
 is excluded on purpose (see the stage `link1_ge_three_terms`).
 
 A full build takes about two and a quarter hours
-(89 stages, 1192 theorems), nearly all of it three checks: the composition anchor at
+(90 stages, 1199 theorems), nearly all of it three checks: the composition anchor at
 `T₀ = 4800` on the mantissa-6 grid (4.9·10⁸ cells, ~1.8 GB, 5695 s
 and 6084 s on two timed runs),
 which carries the sharpest internal bound `c ≤ 2.5240034`; the

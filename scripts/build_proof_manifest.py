@@ -3812,6 +3812,30 @@ def main() -> int:
                     "ErasurePebbling.Compression.wphi_dec_exists",
                 ],
             },
+            "erasure_pebbling_additive_upper": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (2026-11-11): the upper half of the additive "
+                          "identity at the maximal reach, M*((e+2)*2^(p-2),p,e) <= "
+                          "M*(2^(p-1),p,0) + e*(M*(2^(p-2),p-1,0)+1) for p >= 2 "
+                          "(mstar_reach_le): the Theorem B1 construction with "
+                          "arbitrary clean sub-plans in place of Bennett's, via "
+                          "extend_right (a play runs unchanged on a board extended "
+                          "to the right) and embed (a clean play lifted onto an "
+                          "empty window above a pebble places exactly the top "
+                          "cell). anchor_6_3_1 instantiates it with two concrete "
+                          "plans checked by decide (M*(6,3,1) <= 13, the tabulated "
+                          "value). The reverse inequality is NOT proved; equality "
+                          "is observed for p <= 6, e <= 6 in data/erasure/."),
+                "theorems": [
+                    "ErasurePebbling.Additive.mstar_reach_le",
+                    "ErasurePebbling.Additive.phases_seg'",
+                    "ErasurePebbling.Additive.phase_seg'",
+                    "ErasurePebbling.Additive.first_seg",
+                    "ErasurePebbling.Additive.embed",
+                    "ErasurePebbling.Additive.extend_right",
+                    "ErasurePebbling.Additive.anchor_6_3_1",
+                ],
+            },
             "erasure_pebbling_removal_reduction": {
                 "status": "proved_general_but_unused",
                 "scope": ("UNBOUNDED but CONDITIONAL and superseded for B2 "
