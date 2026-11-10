@@ -26,7 +26,8 @@ namespace ErasurePebbling
 
 open RevPebbling.PebblingFoundations
 
-/-- Conjecture B2 of RC-02. -/
+/-- Conjecture B2 of RC-02.  Proved for every `p ≥ 2` and every `e` in
+`ErasurePebbling/Compression.lean` (`Compression.conjB2`). -/
 def ConjB2 (p e : Nat) : Prop := ReachIs p e ((e + 2) * 2 ^ (p - 2))
 
 /-- The inequality of the topic card, in the plan-matching form. -/
