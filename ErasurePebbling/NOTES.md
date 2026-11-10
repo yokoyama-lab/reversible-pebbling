@@ -16,6 +16,7 @@ live in `data/erasure/` (see `data/erasure/SUMMARY.md`).
 | Corollary: `e < e*(n,p)` ⇒ every plan is strictly longer than 2n−1 | `floor_not_attained` | `Saturation.lean` |
 | **Theorem B1**: `reach(p,e) ≥ (e+2)·2^(p−2)` for p ≥ 2 | `theoremB1` | `Reach.lean` |
 | Conjecture B2 at e = 0 (Knill): `reach(p,0) = 2^(p−1)` | `reachIs_zero` | `Conjectures.lean` |
+| **Conjecture B2 (now a theorem)**, p ≥ 2, every e: `reach(p,e) = (e+2)·2^(p−2)`; upper bound `n ≤ (e+2)·2^(p−2)` for every clean plan | `Compression.conjB2`, `Compression.reach_le` | `Compression.lean` |
 | Drop threshold: the first n where one more erasure helps is `(p−1)(e+1)+2` | `drop_threshold`, `estar_threshold` | `Conjectures.lean` |
 
 Bounded (oracle-level, `native_decide`, `Bounded.lean`): RC-02 anchors
@@ -268,6 +269,54 @@ cannot be kept by any bound that only looks at gaps: the true reason is that
 `x` are then removed top-down instead of bottom-up).  A proof of the last
 case has to compare with that order.
 
+**Fourth attempt (2026-11-10, `Compression.lean`, report
+`/work/tmp/work-runs/G-erasure-b2-del/t2/REPORT.md`): the upper bound is
+proved, without the removal lemma.**  `RemovalLemma` / (R′) / (DEL) for `phi`
+are still open, but Conjecture B2 no longer needs them: use a *smaller*
+potential for which the reversible step is easy.
+
+*The potential.*  Give each cell a width `w i` (`w ≡ 1` on the real chain)
+and let `wphi p w b` be `phi` computed with weighted gaps.  Call `b` *flat*
+for `w` if `wphi p w b = 0`.  The squeezing number `psi(b)` is the least
+number of cells whose width must be set to 0 to make `b` flat (never defined
+in Lean; the proof carries the widths along the play instead).
+
+*The four steps* (all in Lean, sorry 0, standard axioms):
+(a) a legal placement keeps a flat board flat for the same widths
+(`wphi_toggle_le_of_place`; the new pebble has weighted gap `w x ≤ 1`);
+(b) a reversible removal keeps a flat board flat for the same widths
+(`wphi_zero_of_free`).  This is (R′) **restricted to boards of potential 0**,
+and there the first-step induction closes: the pebble `z` removed first by a
+zero-cost order has gap `≤ T`, so the merged gap of `x` is `≤ 2T`, the next
+threshold.  The blocking case of the earlier attempts (the predecessor is
+removed first *with positive excess*) cannot occur at cost 0;
+(c) an erasure raises `wphi` from 0 to at most `2^(p−2)`
+(`wphi_toggle_le_of_remove`, weighted copy of the old proof), and a board of
+potential `k` is flat after squeezing at most `k` cells (`compress`: if the
+pebble removed first by an optimal order has positive excess, shrink one
+cell of its gap; otherwise recurse; shrinking never raises `wphi`,
+`wphi_mono`);
+(d) the target `{n}` is flat only if the total width is `≤ 2^(p−1)`
+(`wphi_target`).
+So after `e` erasures at most `e·2^(p−2)` cells are squeezed and
+`n ≤ 2^(p−1) + e·2^(p−2)` (`flat_execB`, `reach_le`, `conjB2`).
+
+*Why this was missed.*  `psi ≤ phi` (`compress`) and the inequality can be
+strict: nodes `{2, 5, 7}` with `p = 3` have `phi = 2`, `psi = 1` (squeeze the
+entrance cell; `#guard`s at the end of `Compression.lean`;
+`data/erasure/compression_check.py` finds 10 such boards for `p = 3`,
+`n = 10` and 5 for `p = 4`, `n = 11`).  One squeezed cell can repair several
+*nested* excessive gaps at once, whereas `phi` pays for each of them.  So
+`phi` is **not** the least potential of the game, and its invariance under
+reversible moves — which the three earlier attempts tried to prove — is a
+harder statement than the conjecture needs.  (If (R′) holds, `phi` is a
+second, larger valid potential.)
+
+*Checked numerically* (`data/erasure/compression_check.py`, all boards with
+at most `p` pebbles among `n` cells, `(p, n) = (2, 8), (3, 10), (4, 11)`):
+`psi` never rises under a placement or a reversible removal, rises by at most
+`2^(p−2)` under an erasure, and `psi({m}) = max(0, m − 2^(p−1))`; 0 failures.
+
 ## 4. The inequality `M*(n,p,e+1) ≤ M*(n,p+1,e)`
 
 False in general: `M*(10,3,3) = 21 > 19 = M*(10,4,2)` (`ineq_counterexample`;
@@ -300,13 +349,15 @@ a manifest diff on CI, if any, is expected only in these stages.
 ## RESUME (for the next session)
 
 Proved: Theorem A (both directions, `theoremA`), Theorem B1 (`theoremB1`),
-floor, drop threshold, Knill's reach at e = 0 (`reachIs_zero`); all sorry-free
-with standard axioms.  Bounded: B2 for p ≤ 5 (Lean oracle), p ≤ 6 and p = 7,
+floor, drop threshold, Knill's reach at e = 0 (`reachIs_zero`), and
+**Conjecture B2 for every p ≥ 2 and every e** (`Compression.conjB2`,
+2026-11-10); all sorry-free with standard axioms.  Bounded: B2 for p ≤ 5 (Lean oracle), p ≤ 6 and p = 7,
 e ≤ 4 (C search in `data/erasure/`).
 
 Open:
-1. Conjecture B2 upper bound `reach(p,e) ≤ (e+2)·2^(p−2)`.  Reduced to
-   `RemovalLemma p` (§3, `UpperBound.lean`) and further to `BoundaryStep p`
+1. (No longer needed for B2, which is proved in `Compression.lean`.)  The
+   invariance of `phi` itself: `RemovalLemma p` (§3, `UpperBound.lean`),
+   reduced to `BoundaryStep p`
    (`Sliding.lean`, §3 third attempt): the free pebble sits exactly at the
    threshold and its non-free predecessor is the unique optimal first step.
    Next step: prove the move-down inequality (MD) of §3 in its last case

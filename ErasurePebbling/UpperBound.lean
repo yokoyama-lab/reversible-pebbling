@@ -48,6 +48,11 @@ companion statements used in the search (`phi` is the exact charged value
 of the erasure game, i.e. `max_e (reach_e − e·2^(p−2))`, for `p ≤ 4`) were
 verified against the exhaustive tables of `data/erasure/`.  A paper proof
 is open; see the worker report for the state of the attempts.
+
+**Update (2026-11-10).**  Conjecture B2 is proved in `Compression.lean`
+without `RemovalLemma`, with a smaller potential (the number of cells that
+must be squeezed out of the chain to make the weighted `phi` vanish).
+`RemovalLemma p` remains open but is no longer needed.
 -/
 
 namespace ErasurePebbling
