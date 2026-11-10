@@ -321,8 +321,8 @@ at most `p` pebbles among `n` cells, `(p, n) = (2, 8), (3, 10), (4, 11)`):
 
 False in general: `M*(10,3,3) = 21 > 19 = M*(10,4,2)` (`ineq_counterexample`;
 all 213 violations in `data/erasure/inequality.md`, e.g. (12,3,3), (14,3,4),
-(17,4,3)).  It holds for every checked (n,p,e) with n ≤ 2^(p−1) (474 comparisons,
-0 violations); stated as `IneqM_conj` in `Conjectures.lean`.
+(17,4,3)).  It holds for every checked (n,p,e) with n ≤ 2^(p−1) (482 comparisons:
+474 from the dense table `mstar.csv` plus 8 from `mstar_ext.csv`; 0 violations); stated as `IneqM_conj` in `Conjectures.lean`.
 
 Proof idea for n ≤ 2^(p−1) (draft, not formalised).  Take an optimal plan with
 peak p+1 and e erasures.  Since n ≤ 2^(p−1), the plan never needs the (p+1)-st

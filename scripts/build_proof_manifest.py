@@ -62,6 +62,13 @@ UNLISTED_MODULES = {
                  "CutFull.gameF_le_upper_cutFull.  The module stays because "
                  "CutLower imports its board lemmas nth_doneBoard / "
                  "doneBoard_drop"),
+    **{m: ("draft, not imported by RevPebbling.lean, hence neither built "
+           "by `lake build` nor axiom-audited: a piece of the pending "
+           "Legendre-envelope / band-subsolution route to the upper bound "
+           "of c (committed 2026-11-09). It makes no claim until it is "
+           "imported and given a stage")
+       for m in ("BandSubsolution", "LegendreRounding", "LegendreSeam",
+                 "QuantileSum")},
     "ErasurePebbling/Board": (
         "infrastructure: boards given by a characteristic function "
         "(mk n f) and the pointwise lemmas that read toggles, pebble "
@@ -3767,12 +3774,76 @@ def main() -> int:
                           "(phase_seg). Conjecture B2 at e = 0 in full "
                           "generality, reach(p,0) = 2^(p-1) (reachIs_zero, via "
                           "reach_impossible_general). The upper bound of B2 for "
-                          "e >= 1 is OPEN (see ErasurePebbling/NOTES.md)."),
+                          "e >= 1 is the stage erasure_pebbling_b2_upper "
+                          "(2026-11-10)."),
                 "theorems": [
                     "ErasurePebbling.theoremB1",
                     "ErasurePebbling.bennett_seg",
                     "ErasurePebbling.phase_seg",
                     "ErasurePebbling.reachIs_zero",
+                ],
+            },
+            "erasure_pebbling_b2_upper": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (2026-11-10): Conjecture B2 is a theorem "
+                          "for every p >= 2 and every e, in the ReachIs form "
+                          "(r is reachable AND every reachable n is <= r), "
+                          "r = (e+2)*2^(p-2) (Compression.conjB2 = theoremB1 + "
+                          "Compression.reach_le). The upper bound tracks the "
+                          "number of cells that must be squeezed (width 1 -> 0) "
+                          "to make the board flat for the weighted gap "
+                          "potential wphi: placements and reversible removals "
+                          "keep a flat board flat (wphi_toggle_le_of_place, "
+                          "wphi_zero_of_free), an erasure raises wphi to at "
+                          "most 2^(p-2) (wphi_toggle_le_of_remove), potential k "
+                          "is flattened by squeezing <= k cells (compress), and "
+                          "the target is flat only if the remaining width is "
+                          "<= 2^(p-1) (wphi_target). Does not use "
+                          "RemovalLemma (see erasure_pebbling_removal_reduction)."),
+                "theorems": [
+                    "ErasurePebbling.Compression.conjB2",
+                    "ErasurePebbling.Compression.reach_le",
+                    "ErasurePebbling.Compression.compress",
+                    "ErasurePebbling.Compression.flat_execB",
+                    "ErasurePebbling.Compression.wphi_target",
+                    "ErasurePebbling.Compression.wphi_toggle_le_of_place",
+                    "ErasurePebbling.Compression.wphi_zero_of_free",
+                    "ErasurePebbling.Compression.wphi_toggle_le_of_remove",
+                    "ErasurePebbling.Compression.wphi_dec_exists",
+                ],
+            },
+            "erasure_pebbling_removal_reduction": {
+                "status": "proved_general_but_unused",
+                "scope": ("UNBOUNDED but CONDITIONAL and superseded for B2 "
+                          "(2026-11-10). The earlier route to the B2 upper "
+                          "bound through the gap potential phi: B2 follows "
+                          "from RemovalLemma p (conjB2_of_removalLemma), "
+                          "RemovalLemma from FreeRemoval or SlackRemoval, and "
+                          "FreeRemoval from BoundaryStep p "
+                          "(conjB2_of_boundaryStep). RemovalLemma / "
+                          "FreeRemoval / SlackRemoval / BoundaryStep are NOT "
+                          "proved: the theorems taking them as arguments are "
+                          "reductions, not results. Proved unconditionally: "
+                          "phi under placements and erasures "
+                          "(phi_toggle_le_of_place / _of_remove), the target "
+                          "bound (phi_target), the two special removal cases "
+                          "(phi_toggle_le_of_top, phi_toggle_le_of_lowest_free) "
+                          "and sliding (phi_moveUp_le). B2 itself is proved "
+                          "without this route, in erasure_pebbling_b2_upper."),
+                "theorems": [
+                    "ErasurePebbling.UpperBound.phi_toggle_le_of_place",
+                    "ErasurePebbling.UpperBound.phi_toggle_le_of_remove",
+                    "ErasurePebbling.UpperBound.phi_target",
+                    "ErasurePebbling.UpperBound.phi_execB_le",
+                    "ErasurePebbling.UpperBound.reach_le_of_removalLemma",
+                    "ErasurePebbling.UpperBound.conjB2_of_removalLemma",
+                    "ErasurePebbling.UpperBound.removalLemma_of_freeRemoval",
+                    "ErasurePebbling.UpperBound.freeRemoval_of_slackRemoval",
+                    "ErasurePebbling.UpperBound.phi_toggle_le_of_top",
+                    "ErasurePebbling.UpperBound.phi_toggle_le_of_lowest_free",
+                    "ErasurePebbling.UpperBound.phi_moveUp_le",
+                    "ErasurePebbling.UpperBound.freeRemoval_of_boundaryStep",
+                    "ErasurePebbling.UpperBound.conjB2_of_boundaryStep",
                 ],
             },
             "erasure_pebbling_corollaries": {
@@ -3796,9 +3867,12 @@ def main() -> int:
                           "anchors M*(4,3,.)=9,7,7,7; M*(6,4,.)=15,11,11,11; "
                           "M*(16,5,.)=71,45,37,31; M*(16,6,0)=51; "
                           "M*(16,7,0)=49; M*(16,6,1)=41; M*(17,6,0)=57 "
-                          "(anchors_table); Conjecture B2 reach(p,e) = "
-                          "(e+2)*2^(p-2) for p=3 (e<=6), p=4 (e<=4), p=5 "
-                          "(e<=2) (conjB2_p3/p4/p5); the inequality "
+                          "(anchors_table); at r = (e+2)*2^(p-2) the oracle "
+                          "reaches r and does not reach r+1 for p=3 (e<=6), "
+                          "p=4 (e<=4), p=5 (e<=2) (conjB2_p3/p4/p5; weaker "
+                          "than ReachIs, which quantifies over every n > r; "
+                          "the general ReachIs form is "
+                          "Compression.conjB2); the inequality "
                           "M*(n,p,e+1) <= M*(n,p+1,e) for n <= 2^(p-1), "
                           "p<=4, e<=3 (ineq_small) and its counterexample "
                           "M*(10,3,3)=21 > 19=M*(10,4,2) "
