@@ -8,3 +8,4 @@ import ErasurePebbling.Conjectures
 import ErasurePebbling.Bounded
 import ErasurePebbling.UpperBound
 import ErasurePebbling.RemovalCases
+import ErasurePebbling.Sliding

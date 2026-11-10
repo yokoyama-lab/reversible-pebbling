@@ -211,6 +211,63 @@ the block just above `x` before `x` is removed): each such step costs at most
 `max(0, X_s − T_s)` extra, `X_s` = content of `x`'s block at that time; the
 savings are the doubled thresholds of the other steps and `x`'s own payment.
 
+**Third attempt (2026-11-10, `Sliding.lean`, report
+`/work/tmp/work-runs/G-erasure-b2-del/t1/REPORT.md`).**  Still open; the open
+case is now a single boundary configuration.
+
+*Sliding the predecessor (proved, `freeRemoval_of_boundaryStep`).*  Let `x`
+be free with `gap x < T` (strictly), let its predecessor `v` have
+`gap v > T`, and let an optimal order remove `v` first.  Move `v` down by one
+cell to get `b'`.  Then `b' − v' = b − v`, so `phi b' ≤ phi b − 1`; `x` is
+still free in `b'`; and `b − x` is `b' − x` with `v'` moved up by one cell,
+which raises `phi` by at most one (`phi_moveUp_le`: follow an optimal order,
+only the block of the moved pebble grows).  With an inner induction on the
+position of the predecessor, `phi (b − x) ≤ phi (b' − x) + 1 ≤ phi b' + 1 ≤
+phi b`.  So the whole of (R′) follows from the **boundary step**
+(`BoundaryStep p`): `gap x = T` exactly, `gap v > T`, `v` first is the
+*unique* optimal first step; (R′) may be used on boards with fewer pebbles
+and on boards of the same count with a lower predecessor.  Lean:
+`conjB2_of_boundaryStep`.  Numerically the premises of the boundary step
+never hold together (`data/erasure/slide_check.py`: whenever `v` first is
+optimal at the boundary, `x` first is optimal too, and then
+`T < gap v ≤ 2T`).
+
+*Other tools found (paper only, checked numerically).*
+(1) *Two free pebbles.*  If `b` has two free pebbles `x ≠ y`, the first
+pebble of an optimal order is not the predecessor of both, so the induction
+closes for one of them; `phi (b − x) = phi (b − y) = phi (b − x − y)` by
+confluence, so it closes for both.
+(2) *Promotion.*  For two non-adjacent pebbles removed consecutively the
+order "smaller `min((gap − T)^+, T)` first" is never worse.  In particular a
+doubly excessive pebble (`gap ≥ 2T`) can be delayed past any non-adjacent
+step, so an optimal order that starts with a doubly excessive `v` and then
+removes `y ∉ {x, pred v}` can be replaced by one that starts with `y`.
+A doubly excessive pebble is never followed immediately by its successor.
+(3) *Move-down inequality (MD), the statement that is really missing.*
+For `Y = (L, G, r, R)` at threshold `S` and `0 < d < G`,
+`phi_S(L, G − d, r + d, R) ≤ phi_S(Y) + W3(G, d, S)`,
+`W3 = Σ_{n ≥ 0} min(d, (G − 2^n S)^+)` — one unit of `d` for every future
+threshold below the gap of `x`.  It holds on all enumerated boards
+(`data/erasure/move_down_check.py`) and gives the boundary step
+(`Y = b − v`, `S = 2T`, `d = T`: `W3 ≤ gap v − T`) and (S) for gaps `≤ 2T`.
+Given (R′) and (S) for gaps `≤ 2T` at the same count (they cover the case
+`G − d ≤ S`), its first-step induction closes when the first optimal pebble
+is `x`, is not adjacent to `x`, is the successor of `x` (one unit of `d` is spent), or is
+the predecessor `u` of `x` with `gap u ≤ 2S`; with a sliding step it also
+closes for `gap u > 2S` unless a threshold `2^n S` lies in `(G − d, G]`.
+What remains is: `u` first is the unique optimum, `gap u > 2S`, the next
+optimal step is the predecessor of `u`, and `G` is within `d` above a
+threshold.  Under the same two assumptions a weaker static bound *is* provable by the
+plain induction:
+`d · #{n ≥ 0 : 2^n S < max_l (G + C_l)/2^l}`, `C_l` = the sum of the `l` gaps
+just below `x` — it does not use optimality and is too weak when a deep
+pebble below `x` is very excessive.
+(4) *Why optimality must enter.*  With `u` very excessive the budget of MD
+cannot be kept by any bound that only looks at gaps: the true reason is that
+"`x` first, `u` survives" becomes cheaper than "`u` first" (the successors of
+`x` are then removed top-down instead of bottom-up).  A proof of the last
+case has to compare with that order.
+
 ## 4. The inequality `M*(n,p,e+1) ≤ M*(n,p+1,e)`
 
 False in general: `M*(10,3,3) = 21 > 19 = M*(10,4,2)` (`ineq_counterexample`;
@@ -249,12 +306,13 @@ e ≤ 4 (C search in `data/erasure/`).
 
 Open:
 1. Conjecture B2 upper bound `reach(p,e) ≤ (e+2)·2^(p−2)`.  Reduced to
-   `RemovalLemma p` (§3, `UpperBound.lean`); the strongest clean form is (DEL)
-   in `RemovalCases.lean`/§3: deleting a free pebble from *any* optimal
-   removal order keeps the cost.  Next step: bound the extra cost of the
-   c-steps (see §3, second attempt) using the optimality of the order
-   against orders that move the c-step or the flow steps, not only orders
-   that move `x`.  Two special cases are proved (`phi_toggle_le_of_top`,
+   `RemovalLemma p` (§3, `UpperBound.lean`) and further to `BoundaryStep p`
+   (`Sliding.lean`, §3 third attempt): the free pebble sits exactly at the
+   threshold and its non-free predecessor is the unique optimal first step.
+   Next step: prove the move-down inequality (MD) of §3 in its last case
+   (very excessive predecessor, gap of `x` just above a threshold) by
+   comparing with the order "`x` first, predecessor survives"; or show
+   directly that the premises of `BoundaryStep` are contradictory.  Two special cases are proved (`phi_toggle_le_of_top`,
    `phi_toggle_le_of_lowest_free`).  The Knill-style route (generalised
    complete-computation bound) breaks because the reversed suffix of a play
    with erasures has free placements and no longer covers the chain.
