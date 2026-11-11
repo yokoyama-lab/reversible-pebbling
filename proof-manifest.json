@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "0b5fee2c4f74de809c0030b444e846e09602288e0bff35e0e91bca27c2015558",
+ "proof_bundle_sha256": "39b017f78194720dca466df193e5b79682ac01dc719741c9b879b5a20c238d21",
  "source_sha256": {
   "lakefile.toml": "e6279687261ee91a8173f529f1bc1951ab9287b6da740add8cd2dd8a3e78c8b2",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -10,6 +10,7 @@
   "ErasurePebbling/Basic.lean": "87fc8d6bce31d443e867e089cbfb522b7a59f7b4d1e1bc25f5d1eb0bf3e879fe",
   "ErasurePebbling/Board.lean": "c53a6be5aad23d2d6d74f84f0aee8645c5a8df86f0d0553028fe693a826c5227",
   "ErasurePebbling/Bounded.lean": "7e0017f7a27c24e5c099250a3f39d04c9bb7fc0c25d8ee90e81bcc10a1ba4e1b",
+  "ErasurePebbling/Checker.lean": "aeba0346c56edec669a37bda883f8b49da2688c0a285a4f42cbb2b1620a92985",
   "ErasurePebbling/Compression.lean": "dab48f42261e87b42bf43dc6e3416ea8aeba625a850b5a35e2d7c9e57a34afff",
   "ErasurePebbling/Conjectures.lean": "f0b53ecec431e9f6e1b54b7f3881014040c4f33917120df12a166d8b7946fe59",
   "ErasurePebbling/Potential.lean": "fde9109d8acbfd6c1a1b533c47b91c6bd5dfc514ea0a7d46d26c1b128a305cfe",
@@ -19,7 +20,7 @@
   "ErasurePebbling/Sliding.lean": "d1524c0e4ee8ff95f635b67db54614c9cd6d14e362c64bf597ca1984f29405e9",
   "ErasurePebbling/Sweep.lean": "07f0fa019a73090d62c258f61d900fd7188a0083605c3845068cc227cfb5e0a6",
   "ErasurePebbling/UpperBound.lean": "35aed5b54dc970d69c8f366d144d946d26ee6f445e1578eba6799d711976d9b7",
-  "ErasurePebbling.lean": "1e4b3a63739c92ff4a2210767995b32e7d9f5735583ef52580605b4d6804afc8",
+  "ErasurePebbling.lean": "92cc7a97aed0016d0aa71145319a1d07fe4f95f62cb2836a2fdce663043539ed",
   "RevPebbling/AnchorCertify.lean": "40bf53b0795b8dd8cdb14f14d405542403788b67495a1b5fb3e0d79e6246656b",
   "RevPebbling/AnchorCertify4798.lean": "b770164d7376dc8f5a0d8beb5e300b07cb3125fbaca00ff82ee10d4c5fb719dc",
   "RevPebbling/AnchorDP.lean": "782df7f9944c51738ae7d2f2a0e38d01a3ebf448a97bfd448c54e8b72440ab03",
@@ -2558,6 +2559,42 @@
    "carried_hypotheses": {},
    "proves_hypotheses": {}
   },
+  "erasure_pebbling_checker": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (2026-11-12): a layered search on the boards of IsPlay (lists of Bool), proved to contain every state reachable by an admissible play within peak p and budget e (mem_layer_of_play). Hence an empty layer m refutes MstarLe n p e m (not_mstarLe_of_layer), and with one play of length m it gives MstarIs (mstarIs_of). This is the bridge the bit-mask oracle mstarE lacks; the oracle itself is still unlinked.",
+   "theorems": [
+    "ErasurePebbling.Checker.mem_layer_of_play",
+    "ErasurePebbling.Checker.not_mstarLe_of_layer",
+    "ErasurePebbling.Checker.mstarIs_of",
+    "ErasurePebbling.Checker.mem_dedupL",
+    "ErasurePebbling.Checker.layer_mono"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_counterexample_verified": {
+   "status": "proved_bounded",
+   "scope": "BOUNDED, native_decide (two layer evaluations), but a statement about IsPlay, not about the oracle (2026-11-12): M*(10,3,3) = 21 and M*(10,4,2) = 19 as MstarIs (counterexample_verified), so the inequality M*(n,p,e+1) <= M*(n,p+1,e) fails at (10,3,2). The upper ends are explicit plays checked by decide (play_10_3_3, play_10_4_2); the lower ends are empty layers (layer_10_3_3, layer_10_4_2) fed to Checker.mstarIs_of. layer_10_4_2_hit is the control that the search does reach the target at the optimum.",
+   "theorems": [
+    "ErasurePebbling.Checker.counterexample_verified",
+    "ErasurePebbling.Checker.play_10_3_3",
+    "ErasurePebbling.Checker.play_10_4_2",
+    "ErasurePebbling.Checker.layer_10_3_3",
+    "ErasurePebbling.Checker.layer_10_4_2",
+    "ErasurePebbling.Checker.layer_10_4_2_hit"
+   ],
+   "native_decide_theorems": [
+    "ErasurePebbling.Checker.counterexample_verified",
+    "ErasurePebbling.Checker.layer_10_3_3",
+    "ErasurePebbling.Checker.layer_10_4_2",
+    "ErasurePebbling.Checker.layer_10_4_2_hit"
+   ],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
   "erasure_pebbling_removal_reduction": {
    "status": "proved_general_but_unused",
    "scope": "UNBOUNDED but CONDITIONAL and superseded for B2 (2026-11-10). The earlier route to the B2 upper bound through the gap potential phi: B2 follows from RemovalLemma p (conjB2_of_removalLemma), RemovalLemma from FreeRemoval or SlackRemoval, and FreeRemoval from BoundaryStep p (conjB2_of_boundaryStep). RemovalLemma / FreeRemoval / SlackRemoval / BoundaryStep are NOT proved: the theorems taking them as arguments are reductions, not results. Proved unconditionally: phi under placements and erasures (phi_toggle_le_of_place / _of_remove), the target bound (phi_target), the two special removal cases (phi_toggle_le_of_top, phi_toggle_le_of_lowest_free) and sliding (phi_moveUp_le). B2 itself is proved without this route, in erasure_pebbling_b2_upper.",
@@ -2595,7 +2632,7 @@
   },
   "erasure_pebbling_bounded": {
    "status": "proved_bounded",
-   "scope": "BOUNDED, native_decide, ORACLE LEVEL: the bit-mask BFS oracle mstarE / reachableE of ErasurePebbling/Basic.lean (same rules as IsPlay, not linked to it by proof) reproduces the RC-02 anchors M*(4,3,.)=9,7,7,7; M*(6,4,.)=15,11,11,11; M*(16,5,.)=71,45,37,31; M*(16,6,0)=51; M*(16,7,0)=49; M*(16,6,1)=41; M*(17,6,0)=57 (anchors_table); at r = (e+2)*2^(p-2) the oracle reaches r and does not reach r+1 for p=3 (e<=6), p=4 (e<=4), p=5 (e<=2) (conjB2_p3/p4/p5; weaker than ReachIs, which quantifies over every n > r; the general ReachIs form is Compression.conjB2); the inequality M*(n,p,e+1) <= M*(n,p+1,e) for n <= 2^(p-1), p<=4, e<=3 (ineq_small) and its counterexample M*(10,3,3)=21 > 19=M*(10,4,2) (ineq_counterexample); non-monotonicity M*(16,5,0)=71 > 57=M*(17,6,0) (non_monotone_16_17).",
+   "scope": "BOUNDED, native_decide, ORACLE LEVEL: the bit-mask BFS oracle mstarE / reachableE of ErasurePebbling/Basic.lean (same rules as IsPlay, not linked to it by proof) reproduces the RC-02 anchors M*(4,3,.)=9,7,7,7; M*(6,4,.)=15,11,11,11; M*(16,5,.)=71,45,37,31; M*(16,6,0)=51; M*(16,7,0)=49; M*(16,6,1)=41; M*(17,6,0)=57 (anchors_table); at r = (e+2)*2^(p-2) the oracle reaches r and does not reach r+1 for p=3 (e<=6), p=4 (e<=4), p=5 (e<=2) (conjB2_p3/p4/p5; weaker than ReachIs, which quantifies over every n > r; the general ReachIs form is Compression.conjB2); the inequality M*(n,p,e+1) <= M*(n,p+1,e) for n <= 2^(p-1), p<=4, e<=3 (ineq_small) and its counterexample M*(10,3,3)=21 > 19=M*(10,4,2) (ineq_counterexample; the same two values as statements about IsPlay are Checker.counterexample_verified); non-monotonicity M*(16,5,0)=71 > 57=M*(17,6,0) (non_monotone_16_17).",
    "theorems": [
     "ErasurePebbling.anchors_table",
     "ErasurePebbling.conjB2_p3",

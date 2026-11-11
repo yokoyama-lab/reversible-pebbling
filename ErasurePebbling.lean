@@ -11,3 +11,4 @@ import ErasurePebbling.RemovalCases
 import ErasurePebbling.Sliding
 import ErasurePebbling.Compression
 import ErasurePebbling.Additive
+import ErasurePebbling.Checker

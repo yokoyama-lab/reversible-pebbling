@@ -3836,6 +3836,46 @@ def main() -> int:
                     "ErasurePebbling.Additive.anchor_6_3_1",
                 ],
             },
+            "erasure_pebbling_checker": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (2026-11-12): a layered search on the "
+                          "boards of IsPlay (lists of Bool), proved to contain "
+                          "every state reachable by an admissible play within "
+                          "peak p and budget e (mem_layer_of_play). Hence an "
+                          "empty layer m refutes MstarLe n p e m "
+                          "(not_mstarLe_of_layer), and with one play of length "
+                          "m it gives MstarIs (mstarIs_of). This is the bridge "
+                          "the bit-mask oracle mstarE lacks; the oracle itself "
+                          "is still unlinked."),
+                "theorems": [
+                    "ErasurePebbling.Checker.mem_layer_of_play",
+                    "ErasurePebbling.Checker.not_mstarLe_of_layer",
+                    "ErasurePebbling.Checker.mstarIs_of",
+                    "ErasurePebbling.Checker.mem_dedupL",
+                    "ErasurePebbling.Checker.layer_mono",
+                ],
+            },
+            "erasure_pebbling_counterexample_verified": {
+                "status": "proved_bounded",
+                "scope": ("BOUNDED, native_decide (two layer evaluations), but "
+                          "a statement about IsPlay, not about the oracle "
+                          "(2026-11-12): M*(10,3,3) = 21 and M*(10,4,2) = 19 as "
+                          "MstarIs (counterexample_verified), so the inequality "
+                          "M*(n,p,e+1) <= M*(n,p+1,e) fails at (10,3,2). The "
+                          "upper ends are explicit plays checked by decide "
+                          "(play_10_3_3, play_10_4_2); the lower ends are empty "
+                          "layers (layer_10_3_3, layer_10_4_2) fed to "
+                          "Checker.mstarIs_of. layer_10_4_2_hit is the control "
+                          "that the search does reach the target at the optimum."),
+                "theorems": [
+                    "ErasurePebbling.Checker.counterexample_verified",
+                    "ErasurePebbling.Checker.play_10_3_3",
+                    "ErasurePebbling.Checker.play_10_4_2",
+                    "ErasurePebbling.Checker.layer_10_3_3",
+                    "ErasurePebbling.Checker.layer_10_4_2",
+                    "ErasurePebbling.Checker.layer_10_4_2_hit",
+                ],
+            },
             "erasure_pebbling_removal_reduction": {
                 "status": "proved_general_but_unused",
                 "scope": ("UNBOUNDED but CONDITIONAL and superseded for B2 "
@@ -3900,7 +3940,7 @@ def main() -> int:
                           "M*(n,p,e+1) <= M*(n,p+1,e) for n <= 2^(p-1), "
                           "p<=4, e<=3 (ineq_small) and its counterexample "
                           "M*(10,3,3)=21 > 19=M*(10,4,2) "
-                          "(ineq_counterexample); non-monotonicity "
+                          "(ineq_counterexample; the same two values as statements about IsPlay are Checker.counterexample_verified); non-monotonicity "
                           "M*(16,5,0)=71 > 57=M*(17,6,0) "
                           "(non_monotone_16_17)."),
                 "theorems": [

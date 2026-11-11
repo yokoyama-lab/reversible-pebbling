@@ -27,7 +27,11 @@ Conjecture B2 for p = 3 (e ≤ 6), p = 4 (e ≤ 4), p = 5 (e ≤ 2); the inequal
 `M*(n,p,e+1) ≤ M*(n,p+1,e)` for n ≤ 2^(p−1), p ≤ 4, e ≤ 3; its counterexample
 `M*(10,3,3) = 21 > 19 = M*(10,4,2)`; non-monotonicity `M*(16,5,0)=71 > M*(17,6,0)=57`.
 The oracle (`mstarE`, `reachableE`) implements the same rules as `IsPlay` on
-bit-mask boards but is *not* linked to `IsPlay` by proof.
+bit-mask boards but is *not* linked to `IsPlay` by proof.  **Since 2026-11-12 the counterexample is
+also a statement about `IsPlay`**: `Checker.counterexample_verified` proves
+`MstarIs 10 3 3 21 ∧ MstarIs 10 4 2 19` with a second search (`Checker.layer`,
+on the boards of `IsPlay`) whose soundness `Checker.mem_layer_of_play` is
+proved; only the two layer evaluations use `native_decide`.
 
 Outside Lean (`data/erasure/`, exhaustive C/Python search, all plans re-verified
 by an independent checker): Conjecture B2 `reach(p,e) = (e+2)·2^(p−2)` holds
@@ -373,8 +377,11 @@ Open:
    `phi_toggle_le_of_lowest_free`).  The Knill-style route (generalised
    complete-computation bound) breaks because the reversed suffix of a play
    with erasures has free placements and no longer covers the chain.
-2. Link the oracle to `IsPlay` (soundness/completeness of `mstarE`), so the
-   bounded certificates become statements about `MstarIs`/`ReachIs`.
+2. Partly done (2026-11-12, `Checker.lean`): a separate search proved sound
+   against `IsPlay`, which turns any lower bound on `M*` into a statement about
+   `MstarIs` and has re-derived the counterexample.  Still open: the bit-mask
+   oracle `mstarE` itself, and moving the other `Bounded.lean` anchors to
+   `Checker` (cheap: one play plus one empty layer each).
 3. `IneqM_conj` (inequality for n ≤ 2^(p−1)).
 4. Optional: `reach` monotone in n (`Reachable (n+1) → Reachable n`, by the
    projection lemma of `data/erasure/SUMMARY.md`), which turns `ReachIs` into a
