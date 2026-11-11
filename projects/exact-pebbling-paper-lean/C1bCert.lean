@@ -18,9 +18,10 @@ numbers (K = 48 dyadic enclosures D, A, T, S of 2^{1/512}, 2^{−a}, 2^{−1/100
 * `hC1_eps0035` discharges `hC1` for every `σ₁ ≤ 2^{x̄}`, and
   `cflat_step_eps0035_cert` is `cflat_step_eps0035` with `hC1` removed.
 
-What is *not* done here: `σ₁` is the value `2^{x_half}` of the family at its half point,
-and `x_half ≤ x̄ = −2394/1024` is a Python fact (m99 asserts it over `Fraction`s, layer 2).
-The theorem below takes `σ₁ ≤ 2^{x̄}` as its hypothesis instead of `hC1`.
+`σ₁` is the value `2^{x_half}` of the family at its half point.  `cflat_step_eps0035_cert`
+takes `σ₁ ≤ 2^{x̄}` as its hypothesis instead of `hC1`; `cflat_step_eps0035_half` (round 2)
+fixes `σ₁ := 2^{eps0035.xr h0035}` and discharges `x_half ≤ x̄` by `xhalf_le` (`norm_num`
+on the knot `h0035` of `ShapeMonotone`), so no hypothesis on `σ₁` remains.
 This is the ε = 0.0035 instance, not the published ε = 0.002 one.
 -/
 
@@ -127,10 +128,41 @@ theorem cflat_step_eps0035_cert {ΨS : ℕ → ℕ} {n : ℕ} {cornerS σ₁ : �
              + min (ΨS u) (Psi n eps0035.eval (cornerS - (1341 : ℝ) / 4000) w) :=
   cflat_step_eps0035 (hC1_eps0035 hσ) hσ0 hcap hu hv hule hw hwr
 
+/-! ## The half point (m100 周 2): `x_half ≤ x̄` inside Lean
+
+`σ₁` is `2^{x_half}` with `x_half = eps0035.xr h0035`, the abscissa of the knot `(x_½, −1)`
+of the very shape `eps0035` whose `eval` appears in the conclusion. -/
+
+/-- `x_half ≤ x̄ = −2394/1024` (a rational inequality; `norm_num`). -/
+theorem xhalf_le : eps0035.xr h0035 ≤ -((2394 : ℝ) / 1024) := by
+  simp only [Shape.xr, h0035, eps0035]
+  norm_num
+
+/-- `σ₁ = 2^{x_half} ≤ 2^{x̄}`. -/
+theorem sigma_half_le :
+    (2 : ℝ) ^ (eps0035.xr h0035) ≤ (2 : ℝ) ^ (-((2394 : ℝ) / 1024)) :=
+  Real.rpow_le_rpow_of_exponent_le (by norm_num) xhalf_le
+
+/-- **Lemma C-flat at ε = 0.0035 with `σ₁ := 2^{x_half}` of the shape itself.**
+No hypothesis on `σ₁` remains: `x_half ≤ x̄` is `xhalf_le`. -/
+theorem cflat_step_eps0035_half {ΨS : ℕ → ℕ} {n : ℕ} {cornerS : ℝ} {v u w : ℕ}
+    (hcap : ΨS v ≤ 2 ^ (n + 1) - 1)
+    (hu : 2 ^ n - 1 ≤ ΨS u)
+    (hv : (2 : ℝ) ^ cornerS * (2 : ℝ) ^ (-((1 : ℝ) / 100)) ≤ (v : ℝ))
+    (hule : (u : ℝ) ≤ (2 : ℝ) ^ (eps0035.xr h0035) * (2 : ℝ) ^ ((1 : ℝ) / 512)
+                        * (2 : ℝ) ^ cornerS)
+    (hw : (w : ℕ) = v - u) (hwr : ((w : ℕ) : ℝ) = (v : ℝ) - (u : ℝ)) :
+    ΨS v ≤ 1 + Psi n eps0035.eval (cornerS - (1341 : ℝ) / 4000) v
+             + min (ΨS u) (Psi n eps0035.eval (cornerS - (1341 : ℝ) / 4000) w) :=
+  cflat_step_eps0035_cert sigma_half_le (Real.rpow_nonneg (by norm_num) _)
+    hcap hu hv hule hw hwr
+
 end
 
 #print axioms wA
 #print axioms hC1_eps0035
 #print axioms cflat_step_eps0035_cert
+#print axioms xhalf_le
+#print axioms cflat_step_eps0035_half
 
 end RevPebbling.C1bCert
