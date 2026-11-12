@@ -45,6 +45,9 @@ and `wGap` (`740 · (NL − 2^48) ≥ 2^48`).  They reach `Real.rpow` through th
 bridge `C1bCert.le_rpow_of_nat`.
 
 ε = 0.0035 instance.  This is **not** the published instance ε = 0.002.
+
+Checked by `scripts/probe_brw/m101_cflat_model.py --selftest` (compile, axioms, constants
+recomputed in Python, a harmless control) and `--mutant all` (five mutants, all rejected).
 -/
 
 namespace RevPebbling.CflatModel
