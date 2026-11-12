@@ -70,6 +70,33 @@ theorem cflat_step_level {n v : ℕ} (hn : 19 ≤ n)
   rw [e] at h
   exact h
 
+/-- **In the band, the level-`(S−1)` term at `v` is its cap.**  The band exponent
+`−1/100` is above `−a = −1341/4000`, so `v ≥ F_S·2^{−1/100} ≥ F_S·2^{−a} = F_{S−1}`, and
+`v` lies in the cap zone of level `S − 1` (`CapZone.eps0035_capzone`). -/
+theorem prev_cap {n S : ℕ} {v : ℕ}
+    (hv : (2 : ℝ) ^ cornerOf (S + 1) * (2 : ℝ) ^ (-((1 : ℝ) / 100)) ≤ (v : ℝ)) :
+    Psi n eps0035.eval (cornerOf S) v = 2 ^ n - 1 := by
+  have hexp : (2 : ℝ) ^ (-((1341 : ℝ) / 4000)) ≤ (2 : ℝ) ^ (-((1 : ℝ) / 100)) :=
+    Real.rpow_le_rpow_of_exponent_le (by norm_num) (by norm_num)
+  have hv' : (2 : ℝ) ^ cornerOf (S + 1) * (2 : ℝ) ^ (-((1341 : ℝ) / 4000)) ≤ (v : ℝ) :=
+    le_trans (mul_le_mul_of_nonneg_left hexp (Real.rpow_pos_of_pos (by norm_num) _).le) hv
+  rw [← corner_pred S]
+  exact eps0035_capzone hv'
+
+/-- **The level step with the level-`(S−1)` term evaluated.**  Same hypotheses as
+`cflat_step_level`; the `1 + Ψ_{S−1}(v)` of the conclusion is exactly `2^n`. -/
+theorem cflat_step_level_cap {n v : ℕ} (hn : 19 ≤ n)
+    (hv : (2 : ℝ) ^ cornerOf (n + 2) * (2 : ℝ) ^ (-((1 : ℝ) / 100)) ≤ (v : ℝ)) :
+    Psi (n + 1) eps0035.eval (cornerOf (n + 2)) v
+      ≤ 2 ^ n
+          + min (Psi (n + 1) eps0035.eval (cornerOf (n + 2)) (uSplit (cornerOf (n + 2))))
+                (Psi n eps0035.eval (cornerOf (n + 1)) (v - uSplit (cornerOf (n + 2)))) := by
+  have h := cflat_step_level hn hv
+  have hc : Psi n eps0035.eval (cornerOf (n + 1)) v = 2 ^ n - 1 := prev_cap hv
+  have h1 : 1 ≤ 2 ^ n := Nat.one_le_two_pow
+  rw [hc] at h
+  omega
+
 /-- Non-vacuity of the band: every level has a `v` meeting `hv` (its ceiling). -/
 theorem band_nonempty (S : ℕ) :
     ∃ v : ℕ, (2 : ℝ) ^ cornerOf S * (2 : ℝ) ^ (-((1 : ℝ) / 100)) ≤ (v : ℝ) :=
@@ -85,5 +112,7 @@ end
 #print axioms corner_pred
 #print axioms cflat_step_level
 #print axioms band_nonempty
+#print axioms prev_cap
+#print axioms cflat_step_level_cap
 
 end RevPebbling.CflatLevel
