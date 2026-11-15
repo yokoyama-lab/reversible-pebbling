@@ -97,3 +97,10 @@ p≥2h での等幅ブロック構成から従う。
 - 下界の旧い解析スクリプトは `lb/`（`critic3/` `critic4/` `review_chain/` は批判者・検算者のもの）。SKETCH の前半（第 1〜3 回）には撤回した主張がある
 - `notes/spooky-pebbling/` の未追跡ファイル（one_T.py、spooky_bfs.c など）と `sat_spooky.py` の変更は別セッションのもの。触らない
 - sf1 に `~/tree-gap-h31/`（h = 31 の再生の入出力、80KB）が残っている
+
+## 並列の固定仕事量（さくらいの 11-15 夜の成果の取り込み，2026-11-16）
+
+- 置き場 `audits/sakurai-2026-11-15/INDEX.md`（一覧・再検査・突き合わせ）。LLJ の並列模型を Std だけの Lean 4.35.0 で別に形式化したもの（spooky-pebbling-lean とは独立）。
+- 本命 `Sandwich.sandwich`: H ≥ 16384，s_H = ⌈6·2^H/H⌉，**W ≤ 3n** で最小の深さは H⌊log₂H⌋/16 以上 3H⌊log₂H⌋+2H 以下。手元で source から再ビルドして緑（39 本，標準 3 公理，変異 2/2）。新規性は R2 査読の範囲（KSS・KMRV・QL・LLJ）だけ。
+- 7 頂点の (深さ, 仕事量, 空間) の Pareto 前線 5 点（native_decide 23 個）。深さ–空間の射影は手元の D⋆(B_3,s) = 12, 8, 7, 5 と一致。
+- W ≤ 4n（C4）は未解決。W ≥ 3n − s − 1 は逐次の 4n − 2p − 1 と R-Q35-05 から出る形の並列版（既知の型）。

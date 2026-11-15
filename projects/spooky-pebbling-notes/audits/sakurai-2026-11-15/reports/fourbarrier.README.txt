@@ -1,0 +1,1 @@
+LEAN_PATH=. lean -j1 -M1024 -o FourBarrier.olean FourBarrier.lean; pinned Lean4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc. Final F2 successful; F1 failed preserved. No tree search repeats. This is a method barrier/local counterexample, not new general depth theorem.

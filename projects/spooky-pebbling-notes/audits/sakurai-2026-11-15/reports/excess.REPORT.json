@@ -1,0 +1,31 @@
+{
+  "id": "SPOOKY-EXCESS-20261115-E3",
+  "saved": "2026-11-15T19:32:52.582836+00:00",
+  "source_sha256": "30549b576ad90f120d4422f618cfb3e4e946fa33b3d21ecc987cbb6429e07e60",
+  "lean": "4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+  "theorems": [
+    "Excess.loss",
+    "Excess.scale",
+    "Excess.paper_scale",
+    "Excess.quotient_scale",
+    "Excess.paper_ratio"
+  ],
+  "statement": "Actual PaperRuns, clean root, initially no pebbles, W<=3n+e,S<=s. If 8(s+e+1)<=n then n*(2 floorlog2(floor(n/[8(s+e+1)]))+1)<=2ds. Also arbitrary ell form under 8(s+e+1)2^ell<=n.",
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "sorry": false,
+  "native": false,
+  "failed_attempt": "E2 rc1 argument order, preserved; sorryAx in that diagnostic NOT accepted result",
+  "asymptotic_interpretation_not_new_Lean_asymptotic_theorem": [
+    "s=Theta(n/H),e=O(s) preserves Omega(H log H)",
+    "s=Theta(n/H),s<<e=o(n): lower Omega(H log(n/e)); e=n/log H yields Omega(H loglog H)",
+    "e=o(n) and s=Theta(n/H) imply d/H diverges; rate depends on e",
+    "e=epsilon n fixed positive only constant ratio from this method; not a proved sharp transition or matching upper",
+    "This is an algebraic corollary of existing finite theorem, not independent new S-level theorem or exhaustive novelty claim"
+  ],
+  "scope": "same model as SumArea; no changes to existing files; new excess unit only",
+  "<host>": "not transmitted; awaiting approval"
+}

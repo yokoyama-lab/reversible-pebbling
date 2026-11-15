@@ -1,0 +1,1 @@
+New private derivative of T6. Lean source/manifest remains in unchanged REPRO capsule: https://drive.google.com/file/d/1ZRppxkk1RxRdIEgNo_Vxe-Rn5u9yTxQL/view . Compile wrapper.tex using local format generated from installed pdflatex.ini, TEXMF=/usr/share/texlive/texmf-dist and TEXFORMATS=.:/usr/share/texlive/texmf-dist/web2c// . No author/venue decision or Overleaf update.

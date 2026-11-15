@@ -1,0 +1,67 @@
+{
+  "id": "SPOOKY-SANDWICH-20261115-S2",
+  "source_sha256": "92b871487f7926e26e2aa807a83b939492132ce3661df66c3f24a67e4b7dda47",
+  "lean": "4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "native": false,
+  "sorry": false,
+  "budget": "s_H=(6*2^H+H-1)/H = ceil(6*2^H/H), for H>0",
+  "completed": [
+    "achievable for all H>=2: actual PaperRuns empty -> rootOnly, W<=3n, S<=s_H, depth<=3H floor(log2 H)+2H",
+    "budget_range_iff: for H>0, s_H<=n iff H>=7; H=1..6 exceeds n",
+    "budget_cost: for H>=3, H*s_H<=8n",
+    "lower for H>=16384: every actual PaperRuns empty -> rootOnly with W<=3n,S<=s_H has H floor(log2 H)<=16d, from L3 c=8,k=7",
+    "sandwich for H>=16384 combines same concrete model, same budget and clean final state; existence and universal lower bound explicit"
+  ],
+  "interpretation": "For THIS FIXED s_H only, optimal depth between H floor(log2 H)/16 and 3H floor(log2 H)+2H. Not asserted for every multiplicative constant in Theta(n/H).",
+  "small_H": "H>=2 constructive upper valid; H=2..6 budget exceeds n, no optimality meaning claimed. H=7..16383 budget<=n and upper valid, logarithmic lower theorem not asserted. H=0 excluded from ceil meaning; H=1 not covered by constructive theorem.",
+  "remaining": [
+    "independent model/text and novelty audit",
+    "paper theorem exposition and comparison to Lee; no S-grade claim",
+    "constants/threshold not optimized"
+  ],
+  "<host>": "no transmission; prior rejection approval pending",
+  "attempts": {
+    "S1": {
+      "id": "SPOOKY-SANDWICH-20261115-S1",
+      "start": "2026-11-15T19:07:47.160287+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "Sandwich.olean",
+        "Sandwich.lean"
+      ],
+      "stop": "2026-11-15T19:07:47.539243+00:00",
+      "exit_code": 0,
+      "wall": 0.378767417,
+      "cpu_seconds": 0.34841,
+      "peak_bytes": 690339840,
+      "output_sha256": "8a2f85ec4d8b4601fb916eb698dfc4ebc432d7d264992b0e7f3233bcc2ed74e9"
+    },
+    "S2": {
+      "id": "SPOOKY-SANDWICH-20261115-S2",
+      "start": "2026-11-15T19:08:25.193508+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "Sandwich.olean",
+        "Sandwich.lean"
+      ],
+      "stop": "2026-11-15T19:08:25.574802+00:00",
+      "exit_code": 0,
+      "wall": 0.381109458,
+      "cpu_seconds": 0.370853,
+      "peak_bytes": 692158464,
+      "output_sha256": "c026a55579a1b406b399c434cb210c1808a6d4e373861ea4ba18cfd49700c83e"
+    }
+  },
+  "stop": "2026-11-15T19:09:04.590832+00:00"
+}

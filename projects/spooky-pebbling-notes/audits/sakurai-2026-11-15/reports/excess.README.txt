@@ -1,0 +1,1 @@
+Compile with LEAN_PATH=. lean -j1 -M1024 -o Excess.olean Excess.lean using pinned Lean4.35.0. Sources and predecessor oleans included; final E3 logs authoritative. E2 failed and is retained. Asymptotic discussion in REPORT is mathematical interpretation, not separate Lean filter/BigOmega formalization.

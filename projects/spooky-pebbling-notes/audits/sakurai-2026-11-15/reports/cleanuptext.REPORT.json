@@ -1,0 +1,18 @@
+{
+  "id": "SPOOKY-CLEANUPTEXT-20261115-C2",
+  "stop": "2026-11-15T19:40:43.889704+00:00",
+  "status": "6-page PDF; two compile passes rc0; no warnings/overflows; all pages inspected",
+  "changes": [
+    "cleanup propagation from final root compute down descendants via later uncompute, old-pebble preconditions, active exclusion and final empty",
+    "cut nonpebble implies postcompute after postuncompute existence",
+    "precut compute backward propagation and root indicators",
+    "H>=1 finite lemma; all-deleted versus additional exceptional set clarified",
+    "below corrected to above"
+  ],
+  "scope": "reader-facing clarification only, no new Lean result; prior artifacts unchanged; worldwide novelty/model-text correspondence and venue/authorship unresolved",
+  "<host>": "not transmitted; approval pending",
+  "hashes": {
+    "audited-draft.tex": "728e6850dc7f48222ead3d7881801fc5c092d009af9653d78418a14cc664d26d",
+    "audited-draft.pdf": "f3f385a39f57d9ab89ab00b053c1c5b4fd33b6991a9e37f6a0d78e128a7ee840"
+  }
+}

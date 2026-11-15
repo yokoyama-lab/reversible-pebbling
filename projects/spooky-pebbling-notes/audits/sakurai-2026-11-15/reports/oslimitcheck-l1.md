@@ -1,0 +1,12 @@
+# OS limit diagnosis L1 (not research computation)
+Research remains stopped pending parent review. No environment-wide settings, installs, permission changes, or <host> transfer.
+
+m3 Darwin 27.2: disposable child tests at 2026-11-15T21:00:29.297314Z–21:00:31.365883Z. RLIMIT_AS, DATA, RSS setting 64 MiB each failed before allocation: ValueError current limit exceeds maximum limit, rc20. RLIMIT_CPU readback (2,2), CPU2.009026s, SIGXCPU rc-24. Original probe/results retained <home>/spooky-oslimitcheck-20261115; this paragraph is transcription of observed tool output, not a copy of those files. Memory enforcement NOT established on Mac. Research must not restart there.
+
+Existing cloud Linux 6.18.57: both AS 64 MiB and CPU2 seconds set in every disposable child and read back. Allocation probe denied allocation after48MiB payload (MemoryError), observed peak56704KiB, CPU0.175999s rc0. CPU-loop probe killed SIGKILL rc-9 after CPU2.149910s. Peak ru_maxrss is cumulative child maximum, not attributable per child. Exact results and source accompany report. No research computation performed.
+
+Scope: Linux RLIMIT_AS bounds per-process virtual address space, not aggregate process-tree RSS. CPU is per-process and enforcement has observed overrun; it does NOT prove exact hard wall/CPU accounting at requested instant. No fork/worker subprocesses may be allowed for a resumed workload under this approach. An exec-only one-process workload with -j1 can inherit constraints, but actual tool startup and dependency paths still need preflight. No Lean is currently on PATH in cloud. No installation or build attempted.
+
+Proposed remediation, not yet implemented: exec-only runner calls setrlimit, checks getrlimit exactly, and refuses exec on any exception/mismatch; retain independent wall deadline and output cap. Choose internal CPU cap strictly below the existing external budget, e.g.28s under30s, never increase budget. Set AS at or below existing1GiB. Reject child spawning/parallel jobs; if needed, require an already-delegated cgroup resource container instead (none verified here; memory.max/cpu.max absent). Stream witnesses one round at a time; never snapshot entire configurations. Each failed call preserves START/STOP/rc and no success claim. Parent review required before research resumes. The old failed large audit must not be rerun.
+
+The diagnostics verify a viable OS-level per-process mechanism only on cloud, not a research result or whole-job aggregate guarantee. C4 remains unproved.

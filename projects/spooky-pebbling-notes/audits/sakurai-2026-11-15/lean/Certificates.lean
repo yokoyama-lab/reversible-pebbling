@@ -1,0 +1,51 @@
+import ConcreteRound
+namespace FringeCertificates
+open SpookyRound SpookyDP
+def pred (v u : Fin n) : Bool := u.val == 2*v.val+1 || u.val == 2*v.val+2
+def empty (n : Nat) : Config n := ⟨fun _ => false,fun _ => false⟩
+def goal (q : Config n) : Bool :=
+  (List.finRange n).all fun v => q.peb v == (v.val == 0) && !q.ghost v
+
+def check (q : Config n) (w s : Nat) : List Action → Nat → Nat → Bool
+ | [], W, S => goal q && w == W && s == S
+ | a::as, W, S => decide (a.first.length = n ∧ a.ghosts.length = n ∧ Legal pred q a) &&
+     check (afterRound q a) (w+roundWork a) (max s (roundSpace q a)) as W S
+
+theorem check_sound (as : List Action) (q : Config n) (w s W S : Nat)
+    (h : check q w s as W S = true) :
+    ∃ r, PaperRuns pred as.length q r ∧ goal r.state = true ∧
+      w + r.work = W ∧ max s r.space = S := by
+  induction as generalizing q w s with
+  | nil =>
+    simp only [check, Bool.and_eq_true, beq_iff_eq] at h
+    refine ⟨⟨q,0,0⟩, PaperRuns.zero q, ?_⟩
+    simpa [and_assoc] using h
+  | cons a as ih =>
+    simp only [check, Bool.and_eq_true, decide_eq_true_eq] at h
+    obtain ⟨r,hr,hg,hw,hs⟩ := ih _ _ _ h.2
+    refine ⟨prepend (edge q a) r, ?_, hg, ?_, ?_⟩
+    · apply PaperRuns.step (e := edge q a)
+      · exact ⟨a,h.1.1,h.1.2.1,h.1.2.2,rfl⟩
+      · exact hr
+    · simpa [prepend,edge,Nat.add_assoc] using hw
+    · simpa [prepend,edge,Nat.max_assoc] using hs
+#print axioms check_sound
+def schedule0 : List Action := [⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble],List.replicate 15 false⟩,⟨[.idle,.pebble,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.unpebble,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble],List.replicate 15 false⟩]
+theorem cert0 : check (empty 15) 0 0 schedule0 45 7 = true ∧ schedule0.length = 27 := by decide
+theorem run0 : ∃ r, PaperRuns pred 27 (empty 15) r ∧ goal r.state = true ∧ r.work = 45 ∧ r.space = 7 := by
+  have hh := check_sound schedule0 (empty 15) 0 0 45 7 cert0.1
+  simpa [cert0.2] using hh
+#print axioms run0
+def schedule1 : List Action := [⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.pebble,.pebble,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.pebble,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.unpebble,.unpebble,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.pebble,.pebble],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.unpebble,.unpebble],List.replicate 15 false⟩,⟨[.idle,.pebble,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.unpebble,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.pebble,.pebble,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.unpebble,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.unpebble,.unpebble,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.pebble,.pebble],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.unpebble,.unpebble],List.replicate 15 false⟩]
+theorem cert1 : check (empty 15) 0 0 schedule1 45 9 = true ∧ schedule1.length = 15 := by decide
+theorem run1 : ∃ r, PaperRuns pred 15 (empty 15) r ∧ goal r.state = true ∧ r.work = 45 ∧ r.space = 9 := by
+  have hh := check_sound schedule1 (empty 15) 0 0 45 9 cert1.1
+  simpa [cert1.2] using hh
+#print axioms run1
+def schedule2 : List Action := [⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.pebble,.pebble,.pebble,.pebble,.pebble,.pebble],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.pebble,.pebble,.pebble,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.unpebble,.unpebble,.unpebble,.unpebble,.unpebble,.unpebble],List.replicate 15 false⟩,⟨[.idle,.pebble,.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.pebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.unpebble,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.pebble,.pebble,.pebble,.pebble,.pebble,.pebble,.pebble,.pebble],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.unpebble,.unpebble,.unpebble,.unpebble,.idle,.idle,.idle,.idle,.idle,.idle,.idle,.idle],List.replicate 15 false⟩,⟨[.idle,.idle,.idle,.idle,.idle,.idle,.idle,.unpebble,.unpebble,.unpebble,.unpebble,.unpebble,.unpebble,.unpebble,.unpebble],List.replicate 15 false⟩]
+theorem cert2 : check (empty 15) 0 0 schedule2 45 13 = true ∧ schedule2.length = 9 := by decide
+theorem run2 : ∃ r, PaperRuns pred 9 (empty 15) r ∧ goal r.state = true ∧ r.work = 45 ∧ r.space = 13 := by
+  have hh := check_sound schedule2 (empty 15) 0 0 45 13 cert2.1
+  simpa [cert2.2] using hh
+#print axioms run2
+end FringeCertificates

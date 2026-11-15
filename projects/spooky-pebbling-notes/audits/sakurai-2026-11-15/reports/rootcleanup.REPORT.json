@@ -1,0 +1,152 @@
+{
+  "id": "SPOOKY-ROOTCLEANUP-20261115-C7",
+  "source_sha256": "17fbd426e254e4eb892697bc7ba251a4911ccad08a2fae84e27b3104b40a71ce",
+  "lean": "4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "native": false,
+  "sorry": false,
+  "completed": [
+    "cleanup h: local root P/interior ghosts -> empty, depth2h+1,work2m-1,space<=m, m=2^(1+h)-1",
+    "arbitrary K synced global cleanup; nonoverlapping B batches; pebbles nonincreasing at batch boundaries",
+    "held_to_clean D h B K: D>0,K>0,BK=2^D; held has global root and depthD roots P, only lower-depth-D interiors ghosts. Actual PaperRuns -> global rootOnly, W=BK(2m-1), depth B(2h+1), space<=Km+2^(D+1)-1"
+  ],
+  "remaining": [
+    "prove upper skeleton uncompute retaining global root AND boundary fringe roots; input needed is held, not staged from B4",
+    "compose correct initial boundary -> skeleton -> held -> clean root; total W<=3n and explicit parameters"
+  ],
+  "correction": "Unlike B4 this cleanup includes fringe root removal while its children are present. Do not use B4 staged as held: ghost configurations differ.",
+  "<host>": "no transmission; approval pending",
+  "attempts": {
+    "C1": {
+      "id": "SPOOKY-ROOTCLEANUP-20261115-C1",
+      "start": "2026-11-15T18:52:40.095959+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RootCleanup.olean",
+        "RootCleanup.lean"
+      ],
+      "stop": "2026-11-15T18:52:40.432413+00:00",
+      "exit_code": 1,
+      "wall": 0.33627049999999997,
+      "cpu_seconds": 0.315513,
+      "peak_bytes": 670351360,
+      "output_sha256": "6fcdebb31ce18cbd0ab480e9827c8c8436a7ad0dd2d326c7bd5b6c16c280d5e8"
+    },
+    "C2": {
+      "id": "SPOOKY-ROOTCLEANUP-20261115-C2",
+      "start": "2026-11-15T18:53:10.933226+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RootCleanup.olean",
+        "RootCleanup.lean"
+      ],
+      "stop": "2026-11-15T18:53:11.265318+00:00",
+      "exit_code": 0,
+      "wall": 0.331865875,
+      "cpu_seconds": 0.323466,
+      "peak_bytes": 684441600,
+      "output_sha256": "8057933428d86246a754faad8cf72cd4a02a7a75c6c9e6162ea1a252a0bc6cc1"
+    },
+    "C3": {
+      "id": "SPOOKY-ROOTCLEANUP-20261115-C3",
+      "start": "2026-11-15T18:54:34.234395+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RootCleanup.olean",
+        "RootCleanup.lean"
+      ],
+      "stop": "2026-11-15T18:54:34.675254+00:00",
+      "exit_code": 1,
+      "wall": 0.440651917,
+      "cpu_seconds": 0.433932,
+      "peak_bytes": 682950656,
+      "output_sha256": "b87fbf4ef4559d2485643a4b10f9a8d3c59a24d3e4564e8ff62aa7cbe30cb42d"
+    },
+    "C4": {
+      "id": "SPOOKY-ROOTCLEANUP-20261115-C4",
+      "start": "2026-11-15T18:55:04.838477+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RootCleanup.olean",
+        "RootCleanup.lean"
+      ],
+      "stop": "2026-11-15T18:55:05.288847+00:00",
+      "exit_code": 0,
+      "wall": 0.450178917,
+      "cpu_seconds": 0.44011599999999995,
+      "peak_bytes": 693092352,
+      "output_sha256": "e30ce9286deefeb7f076fb7f0f6b0072f999a5b92c8b1b733f69f8d4f7eefc37"
+    },
+    "C5": {
+      "id": "SPOOKY-ROOTCLEANUP-20261115-C5",
+      "start": "2026-11-15T18:56:06.481941+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RootCleanup.olean",
+        "RootCleanup.lean"
+      ],
+      "stop": "2026-11-15T18:56:07.055914+00:00",
+      "exit_code": 1,
+      "wall": 0.57378125,
+      "cpu_seconds": 0.5769569999999999,
+      "peak_bytes": 692649984,
+      "output_sha256": "8bb416228ad073f7207499fb57515a8a18cb3b454fe4a02097bdd0777cb0f5f6"
+    },
+    "C6": {
+      "id": "SPOOKY-ROOTCLEANUP-20261115-C6",
+      "start": "2026-11-15T18:56:35.019437+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RootCleanup.olean",
+        "RootCleanup.lean"
+      ],
+      "stop": "2026-11-15T18:56:35.657089+00:00",
+      "exit_code": 0,
+      "wall": 0.637468417,
+      "cpu_seconds": 0.63662,
+      "peak_bytes": 704921600,
+      "output_sha256": "6bf4e7168b48dcd016fb0e482814a81ccfc877b19e401f28066f589182b553d6"
+    },
+    "C7": {
+      "id": "SPOOKY-ROOTCLEANUP-20261115-C7",
+      "start": "2026-11-15T18:57:22.949864+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RootCleanup.olean",
+        "RootCleanup.lean"
+      ],
+      "stop": "2026-11-15T18:57:23.635046+00:00",
+      "exit_code": 0,
+      "wall": 0.6849975,
+      "cpu_seconds": 0.685192,
+      "peak_bytes": 708476928,
+      "output_sha256": "db958d30d0232bc9de7236d5bea34fa837715ac7fdc101fdc0ee50e9180662f3"
+    }
+  },
+  "stop": "2026-11-15T18:57:59.079965+00:00"
+}

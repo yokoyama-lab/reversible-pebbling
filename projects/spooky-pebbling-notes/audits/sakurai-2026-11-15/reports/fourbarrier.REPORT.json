@@ -1,0 +1,29 @@
+{
+  "id": "SPOOKY-FOURBARRIER-20261115-F2",
+  "saved": "2026-11-15T19:44:23.776705+00:00",
+  "source_sha256": "c57abeb3434048d6ffa81d39da0afe1ef38eb43d5077010abed59d9859115cdd",
+  "verified": [
+    "Existing finite bound identically0 for n<=e+2s+1, in particular e=n (W<=4n)",
+    "Legal scalar postcut trace ghost->compute->ghost->compute->uncompute->empty has2C,1U,1ghost; precompute1 makes four-unit account",
+    "Thus replacing uniqueC by at-most2C does not preserve continuous occupancy"
+  ],
+  "scope": [
+    "Scalar trace does NOT certify a global tree counterexample",
+    "Vacuity is of this inequality, not absence of any C4 depth lower bound",
+    "No new S result; small next research barrier clarified"
+  ],
+  "prior_checked": "spooky-fixedc-20261115/REPORT.md and ALG1 accounting: j stages work<=(j+3)n-1; prior Lee-based depth O(H iteratedlog_(j+1)H), general model-to-construction connection still outstanding",
+  "next_candidate": "Conjecture at fixed s_H: W<=4n implies d=Omega(H loglog H). NOT PROVED; matching upper at exact s_H must be separately checked; existing asymptotic Lee-derived construction prevents careless Omega(HlogH) conjecture.",
+  "next_proof_unit": "Define actual pebble epochs from each compute to next ghost/uncompute; charge epoch durations to area exactly once. At a parent operation select child epochs containing that OLD configuration. Prove endpoint-incidence facts first. Parent compute and uncompute may select DIFFERENT child epochs; any contraction invariant must account for this, not assume nesting. Need an amortized split charge from extra computes before a second-scale forest argument.",
+  "axioms": {
+    "vacuity": [
+      "propext",
+      "Quot.sound"
+    ],
+    "scalar_trace": []
+  },
+  "native": false,
+  "sorry": false,
+  "failure": "F1 missing Decidable Valid, rc1 preserved; F2 unfolded Valid and passed",
+  "<host>": "not transmitted; approval pending"
+}

@@ -1,0 +1,16 @@
+# SPACEPATH P3: height + exact small-space budget does not force a long evaluation suffix on every path
+Owner /root/spooky_dp, Z1 STOP continuation. No duplicate worker. New inputs H9,10,12 cuts[4,2], not the earlier completed H2..8 audit. Generator based on previously inspected Lee-style contract/cleanup schedules; new measurement concerns evaluation-reference geometry. Prior asymptotic hierarchy remains an upper-construction baseline, not a newly proved theorem here.
+
+Candidate tested and rejected (finite statement): every root-to-leaf path contains a positive last-compute-to-first-parent-compute suffix, even under W<=4n and the exact budget ceil(6*2^H/H). Three counterexamples:
+H9 n511 W1885 S63 budget342 D1066, zero evaluation suffixes479/510;
+H10 n1023 W3773 S127 budget615 D2124, zero suffixes959/1022;
+H12 n4095 W15101 S511 budget2048 D8464, zero suffixes3839/4094.
+Every rightmost path edge has suffix0 (8/9/11 edges respectively). All rounds have some operation (including ghost-only rounds); no globally idle padding. All runs start empty and end only root pebbled/no ghosts. Checks include old-state dependencies, active closed-neighborhood disjointness, ghost second-phase legality, P/G disjointness, union-space peak and exact work formula. H12 full action witness saved. Indices in results are zero-based.
+
+Scope: this disproves the tested universal finite local/path requirement, not an eventual asymptotic C4 lower bound. These are slow schedules, not optimal depth; no statement about normalization/minimality is established. Budget is an upper bound, so witnesses with S strictly below it satisfy the condition. The arbitrary fixed height cutoff of a future theorem must not be inferred from these examples.
+
+Global consequence for strategy: pathwise evaluation suffix stretching is the wrong necessary condition for all legal schedules. Work/space can be consumed holding other branches while a just-in-time critical path has zero suffixes. A viable C4 argument must account for off-path branches, subsequent cleanup references, and recomputation alternatives simultaneously. Candidate target (UNPROVED): a weighted branching charge over vertex-round cells, counting each cell once, with an excess-work term for broken sibling obligations. It must derive sd >= c*n*loglog(H) (fixed work4n and exact/compatible s_H) or produce a sharper counterconstruction. K3/V3 supply count accounting, but do NOT supply this geometric inequality. Do not create more trivial local lemmas without identifying the branching invariant.
+
+No new Lean theorem in this unit. Results are Python-checked finite executions, not Lean-certified full witnesses or asymptotic proof. Existing Z1/T2 Lean sources remain unchanged. Next bounded unit should independently audit candidate branching inequality on saved witnesses, including distribution across levels, before formalizing it.
+
+P1/P2 stopped before experiments due Darwin ValueError trying AS/DATA memory rlimits. No completed cases rerun. P3 used fixed input cap H<=12, two cuts, CPU30/wall60, and RSS<1GiB checks at round-analysis boundaries; OS hard memory cap NOT established. Peak30,146,560 bytes. P3 2026-11-15T20:32:46.964756Z–20:32:47.122187Z rc0 CPU.15496s. Unit wall600. Failures retained, not mathematical counterexamples. Python3.9.6. No <host> transfer, only new showa artifact.

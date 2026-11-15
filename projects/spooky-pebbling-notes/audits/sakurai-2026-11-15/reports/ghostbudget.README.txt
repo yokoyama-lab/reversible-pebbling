@@ -1,0 +1,1 @@
+LEAN_PATH=. lean -j1 -M1024 -o GhostBudget.olean GhostBudget.lean; Lean4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc. G5 final success, G1/G4 failures preserved. Actual cut ghost budget complete. Reference partition extractor not proved.

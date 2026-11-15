@@ -1,0 +1,7 @@
+# 変異（Lean 4.35.0、依存は手元で source から再ビルドした olean）2026-11-16
+M0 対照: Sandwich.lean の無変更の写し                                  → rc=0
+M1 Sandwich.lower の仮定 t.work≤3*(2^H-1) → 4*(2^H-1)                 → rc=1（hw の型の不一致）
+M2 Sandwich.lower の結論 H*H.log2≤16*d → 15*d                          → rc=1（apply LogLower.paper_log_lower が単一化に失敗）
+M5 対照: ExactFrontier.lean の無変更の写し                             → rc=0
+M3 ExactFrontier.points の ⟨12,17,4⟩ → ⟨12,16,4⟩                       → rc=1（hf の型の不一致）
+M4 ExactFrontier.points から ⟨9,15,5⟩ を削る                            → rc=1

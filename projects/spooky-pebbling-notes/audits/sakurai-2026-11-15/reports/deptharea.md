@@ -1,0 +1,6 @@
+# Shallow counts and actual depth-span D3
+Lean4.35.0 no sorry/admit/native_decide; main results propext,Classical.choice,Quot.sound.
+shallow_bound proves number of good vertices at component depth<ell is <=K(2^ell-1), using exact level count and geometric induction. pairs enumerates actual heap labels paired with consecutive-good-ancestor depth; pair_depths identifies its projected depth list with the general forest's list.
+depth_span proves span>=2depth+1 from strict nesting. actual_depth_span instantiates clocks with actual findIdx round times and keep with S2 exact goodAt via lift, proves validity/nesting from original heap ActionRuns, and removes abstract clock/nesting assumptions. Thus every actual labeled good-depth pair has u-c>=2d+1. No finite-height restriction.
+Remaining: pair-label projected sum equals selected Fin span sum (coverage already proved); count deep vertices and sum their weight to combine shallow_bound with actual_good_area; bundle final cut/suffix, parameter substitutions and asymptotic statement. Full C3 lower bound not yet complete; novelty unresolved.
+D1-D3 all successful. D3 START2026-11-15T16:43:09.500697Z STOP16:43:09.954924Z CPU0.450092s peak688750592B rc0. All STOP. Budget600wall CPU30/call wall60 mem1GiB. <host> blocked, no retry. Local and authorized showa only.

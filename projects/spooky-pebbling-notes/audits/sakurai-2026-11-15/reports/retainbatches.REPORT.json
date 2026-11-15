@@ -1,0 +1,100 @@
+{
+  "id": "SPOOKY-RETAINBATCHES-20261115-B4",
+  "source_sha256": "ade93d95d4e99417b0114d38c2b745c43e6ec6f2adafd24a60d1d988791c3226",
+  "lean": "4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "native": false,
+  "sorry": false,
+  "completed": [
+    "global_prepare: arbitrary free fringe family to rootOnly with exact work k(2m-1)",
+    "retain_batches: nonoverlapping B batches, exact work Bk(2m-1), depth B(2h+1), space <= km+Bk+initialP",
+    "prepare_to_staged: D>0,K>0,BK=2^D,n=2^(D+1+h)-1,m=2^(1+h)-1, rootGhost -> global root and depth-D roots P, ghost only upper nonroot; W=BK(2m-1), D=B(2h+1), S<=Km+2^D+1"
+  ],
+  "route_correction": "This proved route is NOT sufficient for W<=3n full cleanup. Already-cleaned fringe interiors cannot support later uncomputing their root without re-pebbling. Do not compose the old whole-ghost collapse blindly. Prefer original boundary roots retained, upper skeleton nonroot uncomputed FIRST, then root-including fringe cleanup. No counterexample to proved theorem, but obstacle to proposed application.",
+  "remaining": [
+    "upper skeleton uncompute keeping global root and depth-D roots",
+    "local root-including cleanup from root P and interior ghosts",
+    "batch composition of that cleanup",
+    "final W<=3n and parameter choice"
+  ],
+  "<host>": "no transfer; rejection awaiting approval",
+  "attempts": {
+    "B1": {
+      "id": "SPOOKY-RETAINBATCHES-20261115-B1",
+      "start": "2026-11-15T18:46:24.736105+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RetainBatches.olean",
+        "RetainBatches.lean"
+      ],
+      "stop": "2026-11-15T18:46:25.253551+00:00",
+      "exit_code": 1,
+      "wall": 0.5172567499999999,
+      "cpu_seconds": 0.49508399999999997,
+      "peak_bytes": 674856960,
+      "output_sha256": "e72dfdc65546f56a070e5bd201872aeb5c94bf2d4f24b7b93eaae7289d1dc879"
+    },
+    "B2": {
+      "id": "SPOOKY-RETAINBATCHES-20261115-B2",
+      "start": "2026-11-15T18:46:54.103000+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RetainBatches.olean",
+        "RetainBatches.lean"
+      ],
+      "stop": "2026-11-15T18:46:54.445542+00:00",
+      "exit_code": 0,
+      "wall": 0.342318792,
+      "cpu_seconds": 0.333702,
+      "peak_bytes": 683884544,
+      "output_sha256": "2b465e2106b145ab7b2eb90bef3d0c017d77a3c243f2104e0d759cc8d7186beb"
+    },
+    "B3": {
+      "id": "SPOOKY-RETAINBATCHES-20261115-B3",
+      "start": "2026-11-15T18:47:58.721260+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RetainBatches.olean",
+        "RetainBatches.lean"
+      ],
+      "stop": "2026-11-15T18:47:59.248006+00:00",
+      "exit_code": 1,
+      "wall": 0.52653525,
+      "cpu_seconds": 0.517871,
+      "peak_bytes": 690159616,
+      "output_sha256": "04cff0de524387f7b489187c8fc4203210c99adfa5f6a0129cd55db6ac17f561"
+    },
+    "B4": {
+      "id": "SPOOKY-RETAINBATCHES-20261115-B4",
+      "start": "2026-11-15T18:48:30.056802+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "RetainBatches.olean",
+        "RetainBatches.lean"
+      ],
+      "stop": "2026-11-15T18:48:30.573420+00:00",
+      "exit_code": 0,
+      "wall": 0.516420208,
+      "cpu_seconds": 0.51312,
+      "peak_bytes": 700006400,
+      "output_sha256": "4a69df47bdc52b6047d5a1ab36af10ad54d024d50b679abde54bfc01442c3ebe"
+    }
+  },
+  "stop": "2026-11-15T18:50:27.603945+00:00"
+}
