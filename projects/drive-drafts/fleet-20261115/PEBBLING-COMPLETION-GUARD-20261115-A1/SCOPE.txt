@@ -1,0 +1,1 @@
+A1 timeout, no axioms output/olean. Source correctness unverified; cause not determined from timeout. CPU402ms peak42M. No retry. Guard/cost preservation, cover count, novelty and physical connection remain unproved by this attempt.

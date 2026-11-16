@@ -1,0 +1,1 @@
+Evaluation C: local same-increment adjacent swap preserves opposite-increment pairTrace, signature, increment map. Before relation bridge, connectivity, completion/cardinality/general cover theorem and manuscript model connection unproved.

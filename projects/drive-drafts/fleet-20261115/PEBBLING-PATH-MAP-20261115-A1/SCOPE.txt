@@ -1,0 +1,1 @@
+C: path_map_eq_of_comparable, explicit opposite-increment comparability assumption. Lean4.31 rc0 axioms[propext], no sorryAx. One unused DecidableEq lint warning. Completion comparability bridge/general guard/cover minimality/physical manuscript connection remain unverified. Guard not rerun.

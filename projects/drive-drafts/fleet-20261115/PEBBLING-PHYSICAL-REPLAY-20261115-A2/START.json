@@ -1,0 +1,24 @@
+{
+  "manager_launch": "2026-11-15T14:17:46.916901+00:00",
+  "command": [
+    "systemd-run",
+    "--user",
+    "--wait",
+    "--pipe",
+    "--unit=pebbling-physical-replay-20261115-a2",
+    "-p",
+    "MemoryMax=2147483648",
+    "-p",
+    "MemorySwapMax=0",
+    "-p",
+    "RuntimeMaxSec=60",
+    "-p",
+    "LimitCPU=30",
+    "-p",
+    "WorkingDirectory=<local>/paper-audits/PEBBLING-PHYSICAL-REPLAY-20261115-A2",
+    "/bin/bash",
+    "-c",
+    "exec python3 payload.py"
+  ],
+  "evaluation": "C; limited arithmetic preparation"
+}

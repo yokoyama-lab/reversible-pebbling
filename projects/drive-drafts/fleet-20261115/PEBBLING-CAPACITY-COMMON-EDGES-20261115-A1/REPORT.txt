@@ -1,0 +1,1 @@
+UpperCore rc0 and EnumerationCorrectness rc0. Candidate CapacityCommonEdges reached but rc-9 at remaining RLIMIT_CPU25, no olean or candidate axiom prints. Total CPU28.142 sec peak1G; no extension/retry. CPU-limit termination is consistent with observed timing, not independently classify OOM from rc. Four candidate claims UNVERIFIED, full stored Q relation remains unproved.

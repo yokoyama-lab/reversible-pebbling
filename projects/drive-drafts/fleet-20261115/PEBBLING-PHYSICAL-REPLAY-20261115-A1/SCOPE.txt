@@ -1,0 +1,1 @@
+Replay A1 failed: PhysicalReplayHeight line27:25 he : events[i]?=some e expected some e=some e after cases rewriting. rc1 no output olean; printed sorryAx indicates error recovery, no verified theorem. PhysicalReplayNodup not started because predecessor failed. Dependencies reused unchanged. No retry. Source restoration SHA matched supplied originals.

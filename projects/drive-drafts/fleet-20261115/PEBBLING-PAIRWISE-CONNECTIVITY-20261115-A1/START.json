@@ -1,0 +1,24 @@
+{
+  "manager_launch": "2026-11-15T09:28:30.911776+00:00",
+  "command": [
+    "systemd-run",
+    "--user",
+    "--wait",
+    "--pipe",
+    "--unit=pebbling-pairwise-connectivity-20261115-a1",
+    "-p",
+    "MemoryMax=2147483648",
+    "-p",
+    "MemorySwapMax=0",
+    "-p",
+    "RuntimeMaxSec=60",
+    "-p",
+    "LimitCPU=30",
+    "-p",
+    "WorkingDirectory=<local>/paper-audits/PEBBLING-PAIRWISE-CONNECTIVITY-20261115-A1",
+    "/bin/bash",
+    "-c",
+    "set -eu\ncg=$(cut -d: -f3 /proc/self/cgroup)\ncat /proc/self/cgroup\nm=$(cat /sys/fs/cgroup$cg/memory.max); s=$(cat /sys/fs/cgroup$cg/memory.swap.max)\necho memory.max=$m memory.swap.max=$s\n[ \"$m\" = 2147483648 ] && [ \"$s\" = 0 ]\necho SETUP_PASS\nprintf 'COMPUTE_ENTRY '; date -u +%FT%T.%NZ\nexport LEAN_PATH=.\nexec <home>/.elan/toolchains/leanprover--lean4---v4.31.0/bin/lean -j1 -M1800 -o PairwiseConnectivity.olean PairwiseConnectivity.lean"
+  ],
+  "evaluation": "C; limited arithmetic preparation"
+}

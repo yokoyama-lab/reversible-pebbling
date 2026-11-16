@@ -1,0 +1,1 @@
+Evaluation C. Concrete recursive cost with arbitrary Int increments; adjacent swap difference and equal-cost iff equal increments verified. Applies to +/-1. General cover/connectivity/signature invariance/completion/cardinality/manuscript Q/guard connection unproved. Previous Mathlib timeout cause remains unknown.

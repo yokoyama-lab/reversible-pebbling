@@ -1,0 +1,1 @@
+Evaluation C: concrete Before transitivity and completion closure legality verified under Nodup and hR (all R edges are Before w). hR from Pairwise not proved in this unit. Completion language exactness/minimal cover/physical manuscript unproved. Three nonfatal linter warnings retained.
