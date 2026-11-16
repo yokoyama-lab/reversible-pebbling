@@ -2,7 +2,7 @@ import PairwiseConnectivityA2
 import SignatureSwapStd
 import SignatureInvariant
 
-/- Uncompiled source candidate. Imports are the previously validated concrete
+/- Source unit, compiled (green 2026-11-15/16). Imports are the previously validated concrete
    units; no path-invariance or constant-signature premise is introduced. -/
 namespace PebblingSignature
 open PebblingConnectivity

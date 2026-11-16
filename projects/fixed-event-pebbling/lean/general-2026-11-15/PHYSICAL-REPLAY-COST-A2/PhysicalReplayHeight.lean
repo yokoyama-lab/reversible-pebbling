@@ -1,6 +1,6 @@
 import PhysicalStepHeight
 
-/- SOURCE CANDIDATE, uncompiled. This imports and uses the original
+/- Source unit, compiled (green 2026-11-15/16). This imports and uses the original
    LocalCertificate.replay and the validated original-step height lemma. -/
 set_option maxRecDepth 2048
 set_option maxHeartbeats 2000000

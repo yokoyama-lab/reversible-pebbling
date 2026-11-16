@@ -1,6 +1,6 @@
 import BeforeTrace
 
-/- Uncompiled source candidate, ordinary finite-order infrastructure.
+/- Source unit, compiled (green 2026-11-15/16), ordinary finite-order infrastructure.
    No novelty claim. No assumed orientation/Before bridge. -/
 namespace PebblingSignature
 variable {E : Type} [DecidableEq E]

@@ -1,6 +1,6 @@
 import LocalCertificate
 
-/- Uncompiled counterexample certificates against the ORIGINAL semantics.
+/- Counterexample certificates, compiled (green 2026-11-15/16), against the ORIGINAL semantics.
    These establish physical behavior, not yet a relation to a Q definition. -/
 set_option maxRecDepth 2048
 set_option maxHeartbeats 2000000

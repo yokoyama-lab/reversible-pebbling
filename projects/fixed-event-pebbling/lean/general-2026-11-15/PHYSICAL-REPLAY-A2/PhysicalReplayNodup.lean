@@ -1,7 +1,7 @@
 import PhysicalReplayHeight
 
 /- Separate optional finite unit: physical set interpretation is preserved,
-   rather than treating arbitrary list length as set cardinality. Uncompiled. -/
+   rather than treating arbitrary list length as set cardinality. Compiled (green 2026-11-15/16). -/
 set_option maxRecDepth 2048
 set_option maxHeartbeats 2000000
 namespace LocalCertificate

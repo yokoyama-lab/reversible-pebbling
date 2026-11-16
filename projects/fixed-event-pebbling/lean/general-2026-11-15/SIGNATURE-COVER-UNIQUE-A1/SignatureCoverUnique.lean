@@ -1,6 +1,6 @@
 import SignatureCoverCard
 
-/- Uncompiled source candidate. No new mathlib imports beyond verified Card.
+/- Source unit, compiled (green 2026-11-15/16). No new mathlib imports beyond verified Card.
    Uniqueness is of FULL COMPONENT LANGUAGES, not relation equality. -/
 namespace PebblingSignature
 variable {E : Type} [DecidableEq E]

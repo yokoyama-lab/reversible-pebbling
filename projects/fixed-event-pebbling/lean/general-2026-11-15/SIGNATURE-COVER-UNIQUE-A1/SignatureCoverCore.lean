@@ -1,7 +1,7 @@
 import ConstantCostSignature
 import CompletionGuard
 
-/- Uncompiled source candidate. Std-only mathematical core; numerical
+/- Source unit, compiled (green 2026-11-15/16). Std-only mathematical core; numerical
    cardinality/finiteness is intentionally a separate finite unit. -/
 namespace PebblingSignature
 variable {E : Type} [DecidableEq E]

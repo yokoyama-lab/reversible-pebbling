@@ -3,7 +3,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.OfMap
 
-/- Uncompiled OPTIONAL narrow-mathlib unit. Do not rebuild missing mathlib
+/- Narrow-mathlib unit, compiled (green 2026-11-15/16). Do not rebuild missing mathlib
    dependencies without checking the bounded available environment first. -/
 namespace PebblingSignature
 variable {E : Type} [DecidableEq E] [Fintype E]

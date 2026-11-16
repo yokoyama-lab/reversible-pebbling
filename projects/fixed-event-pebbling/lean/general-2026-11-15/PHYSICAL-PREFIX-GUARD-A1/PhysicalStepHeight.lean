@@ -1,6 +1,6 @@
 import LocalCertificate
 
-/- Uncompiled source candidate importing the ORIGINAL fixed concrete model.
+/- Source unit, compiled (green 2026-11-15/16) importing the ORIGINAL fixed concrete model.
    Do not replace LocalCertificate.step with a reimplemented model.
    Restore finite elaboration limits after importing legacy module options. -/
 set_option maxRecDepth 2048

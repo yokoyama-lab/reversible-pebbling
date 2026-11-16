@@ -1,6 +1,6 @@
 import PhysicalStepCapacity
 
-/- Uncompiled finite candidate. This only separates original capacity checks
+/- Finite unit, compiled (green 2026-11-15/16). This only separates original capacity checks
    from original successful noncapacity replay; it does not identify Q. -/
 set_option maxRecDepth 2048
 set_option maxHeartbeats 2000000

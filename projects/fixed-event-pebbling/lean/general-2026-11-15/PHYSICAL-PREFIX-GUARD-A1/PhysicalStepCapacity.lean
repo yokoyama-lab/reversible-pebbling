@@ -1,6 +1,6 @@
 import PhysicalReplayHeight
 
-/- Uncompiled finite candidate; original LocalCertificate.step only.
+/- Finite unit, compiled (green 2026-11-15/16); original LocalCertificate.step only.
    No copy of its predecessor/erasure legality predicate. -/
 set_option maxRecDepth 2048
 set_option maxHeartbeats 2000000

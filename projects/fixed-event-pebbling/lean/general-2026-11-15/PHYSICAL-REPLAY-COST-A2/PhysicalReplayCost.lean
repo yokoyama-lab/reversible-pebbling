@@ -1,7 +1,7 @@
 import PhysicalReplayHeight
 import SignatureSwapStd
 
-/- Uncompiled finite candidate. Instrumentation is NEW; projection below,
+/- Finite unit, compiled (green 2026-11-15/16). Instrumentation is NEW; projection below,
    not definitional identification, connects it to the original replay. -/
 set_option maxRecDepth 2048
 set_option maxHeartbeats 2000000
