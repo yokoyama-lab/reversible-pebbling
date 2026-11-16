@@ -1,0 +1,26 @@
+{
+  "id": "SPOOKY-GHOSTBUDGET-20261115-G5",
+  "saved": "2026-11-15T19:54:06.664452+00:00",
+  "source_sha256": "ad98f356bfc057a6f881bdfdf82aeb9fc0502947c919a8f7b305387c0a7ab0d3",
+  "proved": [
+    "GhostBudget.paper_ghost_budget: actual nonempty heap PaperRuns, initially no pebbles, final clean root, W<=3n+e,S<=s; exists actual last-root cut with total postcut G<=e+s+1",
+    "No aggregate cut-charge assumptions remain; precompute and cleanup accounts discharged via common_root_cut/Precut/accounts_valid",
+    "count_flatten exact; disjoint_split_charge counts ghosts over concatenated pebble-to-pebble gaps at most total computes"
+  ],
+  "selection_rule": "For each child, sort all actual parent-reference observations in chronological order and use consecutive gaps only, never every pair. Such gaps are disjoint in scalar-event order. Current Lean theorem verifies a supplied consecutive decomposition; constructing this partition from all references is not yet formalized.",
+  "unproved": [
+    "canonical reference-index partition extraction",
+    "epoch-length/union-area and second-scale forest",
+    "C4 depth lower bound and exact-budget upper match"
+  ],
+  "failures": "G1 simplification/type error and G4 reserved-token parse failure retained; G5 final rc0",
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "native": false,
+  "sorry": false,
+  "novelty": "helper invariant, no S or exhaustive novelty claim; consistent with known Lee repeated-block upper",
+  "<host>": "not transmitted; approval pending"
+}

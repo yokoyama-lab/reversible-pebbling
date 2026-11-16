@@ -1,0 +1,28 @@
+{
+  "id": "SPOOKY-EPOCHCHARGE-20261115-P3",
+  "saved": "2026-11-15T19:48:44.572995+00:00",
+  "verified": [
+    "scalar exact balance C+occupied(start)=G+U+occupied(end)",
+    "actual ActionRuns segment between two legal parent references: child starts/ends pebble so C=G+U",
+    "ghost between references requires extra compute",
+    "consecutive nonoverlapping scalar segment charges sum exactly",
+    "conditional aggregate cut ghost budget G<=e+p+1 from preC>=n,U>=n-1,balance and W<=3n+e",
+    "legal pebble-G-C-pebble counterexample: counting same reference interval twice double charges one compute"
+  ],
+  "unproved": [
+    "canonical epoch list and original-round occupancy area equivalence",
+    "aggregate ghost budget hypotheses instantiated at actual root cut",
+    "nonoverlapping charging assignment for all parent references",
+    "C4 Omega(HloglogH) and exact-budget matching upper"
+  ],
+  "scope": "counterexample is local scalar, not full tree; no new general fixedC lower; existing Lee repeated-block construction constrains target",
+  "axioms": [
+    "propext",
+    "Quot.sound"
+  ],
+  "native": false,
+  "sorry": false,
+  "failure": "P1 finite-index implicit bind mismatch rc1 preserved; P2/P3 rc0",
+  "source_sha256": "dcc0baf8b4d81862150fa3cfe156e2435bc4a52406df454930dcdf90c214ff92",
+  "<host>": "not transmitted; approval pending"
+}

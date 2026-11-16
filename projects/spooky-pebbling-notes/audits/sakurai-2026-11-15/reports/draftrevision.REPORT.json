@@ -1,0 +1,32 @@
+{
+  "id": "SPOOKY-DRAFTREVISION-20261115-R3",
+  "stop": "2026-11-15T19:37:03.309993+00:00",
+  "status": "6-page PDF, two passes rc0, no warnings/overflows, all6pages visually checked",
+  "changes": [
+    "compute/uncompute target and children old-configuration preconditions explicit",
+    "last-root cut, cutpebble count p and vertex accounts a,b,c,p,r explicit",
+    "removed vertices and charge 3n+B<=W+2p+1 explained",
+    "unique C/U forbids intermediate ghost; strict parent-child nesting and actual round area indices",
+    "independent final-module rebuild with fixed oleans distinguished from developer clean39source rebuild",
+    "primary-text KSS4.13/4.24/5.5,KMRV2.11/2.12,Quist3.2/3.5 scopes from lower_audit incorporated"
+  ],
+  "audit_source": "internal independent lower_audit report; source URLs cited in manuscript; model/charge rechecked against ConcreteRound Legal, Exceptions, CutBound, WorkBridge source",
+  "remaining": [
+    "no exhaustive worldwide novelty claim",
+    "informal/formal correspondence human review obligation",
+    "venue, authorship, figures, submission format pending",
+    "E3 small-excess corollary separate artifact, not falsely included in39source closure"
+  ],
+  "no_changes": [
+    "existing Drive files",
+    "existing prior draft",
+    "Overleaf",
+    "<host>",
+    "Lean sources"
+  ],
+  "<host>": "not transmitted; approval pending",
+  "hashes": {
+    "audited-draft.tex": "bc4358aee5cb8e6f1029595c2eddc4f7a0fdb4064d42de7693178ac5e9723811",
+    "audited-draft.pdf": "b8f08468eeaa4118767d05492a0f898d2f7eea50faff3ee852835b7112a16b6f"
+  }
+}

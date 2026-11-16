@@ -1,0 +1,41 @@
+{
+  "id": "SPOOKY-DRAFTREVIEW-20261115-R2",
+  "stop": "2026-11-15T19:28:38.272882+00:00",
+  "status": "5-page private draft; two real compile passes rc0; no warnings/overflows; all pages visually inspected",
+  "changes": [
+    "three verified primary-source references added",
+    "Lee equation38 rearrangement distinguished from candidate new lower bound",
+    "finite lower-bound parameters, exceptional vertices, shallow count, occupancy explanation",
+    "why e=(C-3)n prevents current proof from extending directly to fixed C>3"
+  ],
+  "sources": [
+    {
+      "url": "https://arxiv.org/html/2610.09434v1",
+      "checked": "sections1,5.3,7 and references"
+    },
+    {
+      "url": "https://arxiv.org/abs/2110.08973v3",
+      "checked": "abstract and metadata only"
+    },
+    {
+      "url": "https://arxiv.org/abs/2510.08432v3",
+      "checked": "abstract and metadata only"
+    },
+    {
+      "url": "https://arxiv.org/abs/2401.10579v7",
+      "checked": "abstract and metadata only"
+    }
+  ],
+  "limitations": [
+    "not exhaustive novelty search; three added full papers not theorem-by-theorem audited",
+    "no new Lean theorem or changed Lean source",
+    "author and venue not chosen; submission formatting pending",
+    "independent compilation status is R1 snapshot; later independent audit separate"
+  ],
+  "repro_capsule": "https://drive.google.com/file/d/1ZRppxkk1RxRdIEgNo_Vxe-Rn5u9yTxQL/view",
+  "<host>": "not transmitted; approval pending",
+  "hashes": {
+    "audited-draft.tex": "ae4214b9cce1cd011c658a6682266dee949dbd18bf1c6a3eba6e0865a637a0e8",
+    "audited-draft.pdf": "6581365d60bd8aa6c164aebed808cd81c1e1866808aea287d1266c1b19ebd8db"
+  }
+}

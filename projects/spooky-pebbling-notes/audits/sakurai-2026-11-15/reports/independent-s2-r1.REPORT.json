@@ -1,0 +1,17 @@
+{
+  "id": "SPOOKY-INDEPENDENT-S2-20261115-R1",
+  "result": "success",
+  "scope": "S2 source recompiled once in separate directory; fixed manifest-checked dependency olean reused; NOT all-dependency clean rebuild",
+  "manifest_entries_verified": 86,
+  "lean": "4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "source_keyword_hits": [],
+  "type_audit": "Sandwich.sandwich: H>=16384; n=2^H-1; fixed s_H=ceil(6*2^H/H); PaperRuns empty to clean rootOnly; W<=3n,S<=s_H; existence upper d<=3H floor(log2H)+2H and universal lower H floor(log2H)<=16d. Unit-cost fixed tree only.",
+  "novelty": "world priority and S grade unconfirmed",
+  "<host>": "no transmission",
+  "prior_audit": "https://drive.google.com/file/d/1iUNQVvEXUYH6L3M6Tkuff0FLyEFrSCGY/view"
+}

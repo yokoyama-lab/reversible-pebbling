@@ -1,0 +1,14 @@
+{
+ "order": [
+  "Certificates"
+ ],
+ "res": {
+  "Certificates": {
+   "rc": 0,
+   "olean": true,
+   "sec": 5.1,
+   "errors": 0,
+   "sorry": false
+  }
+ }
+}

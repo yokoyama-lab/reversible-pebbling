@@ -1,0 +1,38 @@
+{
+  "id": "SPOOKY-REPRO-20261115-R1",
+  "scope": "source-only 39-module clean rebuild and private paper draft",
+  "validation": {
+    "start": "20261115T191151.468708Z",
+    "stop": "2026-11-15T19:12:08.966861+00:00",
+    "modules": 39,
+    "all_exit_zero": true,
+    "wall_seconds": 17.498183875,
+    "cpu_seconds": 16.957417999999997,
+    "build_dir": "build-20261115T191151.468708Z",
+    "lean": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)"
+  },
+  "independent_third_party_recompile": false,
+  "paper_tex_compiled": false,
+  "artifact_toolchain": {
+    "version": "4.35.0",
+    "commit": "eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+    "external_imports": [
+      "Std"
+    ],
+    "external_lock": "Std/Init bundled with exact Lean commit, no mathlib, no package registry deps"
+  },
+  "manifest_sha256": "40c55ce3b8de4703f1fc275f44a4145c5e520d587cfddac006eeabc497b418e0",
+  "reproducer_sha256": "6705498cd2eef60b3f631d69b24455e53e28fd4877733ffef1432fe1837a92db",
+  "paper_sha256": "bdb2ca368942cd904131fb4f96f00d8d659f4d176b32da6a951d127927008ef7",
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "native": false,
+  "sorry": false,
+  "model": "same ConcreteRound PaperRuns; fixed s_H=ceil(6*2^H/H), W<=3n, empty to clean rootOnly",
+  "known_and_open": "Upper block/skeleton method related to Lee. Prospective novelty is exact coefficient3 lower; no exhaustive novelty/S claim. Text/formal correspondence human-audited, not machine-proved.",
+  "<host>": "not transmitted; approval pending",
+  "saved": "2026-11-15T19:14:49.802451+00:00"
+}

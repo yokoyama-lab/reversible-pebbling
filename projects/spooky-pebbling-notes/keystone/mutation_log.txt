@@ -1,0 +1,27 @@
+原本 sha256 = 72c358aaf565719ee4d8adbd5c769369d579e2c7e51d147748b76e836286b52c
+C0   対照 期待=pass 実際=pass rc=0 error=0 warning=0 olean=有 期待どおり  無変異
+C1   対照 期待=pass 実際=pass rc=0 error=0 warning=0 olean=有 期待どおり  本体の仮定を n ≥ θ(s) と書く（意味は同じ）
+C2   対照 期待=pass 実際=pass rc=0 error=0 warning=0 olean=有 期待どおり  keystone の仮定を 4 ≤ s に強める（真のまま）
+F1   言明 期待=fail 実際=fail rc=1 error=5 warning=0 olean=無 期待どおり  本体の不等号を逆向きに（T_UP ≤ T_UG）  ［error の場所: TUG_le_TUP_of_theta_le, TUP_eq_TUG_add_one_of_theta_le, keystone］
+F2   言明 期待=fail 実際=fail rc=1 error=4 warning=0 olean=無 期待どおり  本体の n の下限を θ(s)-1 に広げる  ［error の場所: TUG_le_TUP_of_theta_le, TUP_eq_TUG_add_one_of_theta_le］
+F3   言明 期待=fail 実際=fail rc=1 error=6 warning=0 olean=無 期待どおり  本体の s の下限を 1 に広げる  ［error の場所: TUG_le_TUP_of_theta_le, TUP_eq_TUG_add_one_of_theta_le］
+F4   言明 期待=fail 実際=fail rc=1 error=3 warning=0 olean=無 期待どおり  本体の結論を T_UG + 2 ≤ T_UP に強める  ［error の場所: TUG_le_TUP_of_theta_le, keystone］
+F5   言明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  keystone の n の下限を B4(s) から s に広げる  ［error の場所: keystone］
+F6   言明 期待=fail 実際=fail rc=1 error=2 warning=0 olean=無 期待どおり  keystone_delta の符号を逆に（T_UG = T_UP + 1）  ［error の場所: example, keystone_delta］
+F7   言明 期待=fail 実際=fail rc=1 error=2 warning=0 olean=無 期待どおり  補題2 の範囲を m ≥ s-1 に広げる  ［error の場所: TUG_le_TUP_of_theta_le, TUP_succ_ge_four］
+F8   言明 期待=fail 実際=fail rc=1 error=2 warning=0 olean=無 期待どおり  補題1 の定数を 3 に強める  ［error の場所: TUP_succ_ge_two］
+F9   言明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  尻尾の代価の定数を 4 に強める  ［error の場所: TUG_succ_le_TUP_add_five］
+F10  言明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  delta_sign の +1 側の範囲を n ≤ θ(s) に広げる  ［error の場所: delta_sign］
+P1   証明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  場合B で補題2（+4）の代わりに補題1（+2）を使う  ［error の場所: TUG_le_TUP_of_theta_le］
+P2   証明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  場合A で帰納法の仮定を使わない  ［error の場所: TUG_le_TUP_of_theta_le］
+P3   証明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  場合B で尻尾の代価の補題を使わない  ［error の場所: TUG_le_TUP_of_theta_le］
+R0   反証 期待=pass 実際=pass rc=0 error=0 warning=0 olean=有 期待どおり  F1..F10 の言明の否定を証明する
+R1   反証 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  反証ファイルの変異（F1 の代わりに真の言明の否定）  ［error の場所: example］
+原本 sha256 = 72c358aaf565719ee4d8adbd5c769369d579e2c7e51d147748b76e836286b52c（不変）
+
+言明の変異: 10/10 検出
+証明の変異: 3/3 検出
+対照: 3/3 通過（誤検出 0）
+反証: 本体 1/1 通過、反証の変異 1/1 検出
+未確定: 0
+rc=0

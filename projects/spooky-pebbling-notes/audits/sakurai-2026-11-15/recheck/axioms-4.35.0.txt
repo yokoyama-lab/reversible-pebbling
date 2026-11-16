@@ -1,0 +1,138 @@
+# Lean 4.35.0 <home>/.elan/toolchains/leanprover--lean4---v4.35.0。葉モジュールごとに閉包内の全定理の公理を collectAxioms で列挙（2026-11-16）
+# 標準 = propext, Classical.choice, Quot.sound。NONSTD は標準外の公理を持つ定理
+== Arithmetic rc=0 closure=1: Arithmetic
+AXCHECK theorems=5 modules=1 nonstandard=0
+sorryAx: none
+== AttemptWith31 rc=0 closure=2: AttemptWith31 ConcreteRound
+AXCHECK theorems=91 modules=2 nonstandard=0
+sorryAx: none
+== BoundedDP rc=0 closure=1: BoundedDP
+AXCHECK theorems=20 modules=1 nonstandard=0
+sorryAx: none
+== Bridge rc=0 closure=1: Bridge
+AXCHECK theorems=90 modules=1 nonstandard=0
+sorryAx: none
+== Certificates rc=0 closure=2: Certificates ConcreteRound
+AXCHECK theorems=89 modules=2 nonstandard=0
+sorryAx: none
+== Check rc=0 closure=34: Area BatchUpper BatchedCleanup Check ConcreteRound Coverage CutBound CutSpace DepthArea Descendants Exceptions FamilyCost FamilyRound FamilySync FillUpper Forest FrameUpper FringeEmbed GoodInterval HeapForest HeapPath InitialGhost LiftCost LogLower Nesting ParallelMerge Precut RetainRoot Reverse RootCut SumArea SyncTrace TraceBridge WorkBridge
+AXCHECK theorems=844 modules=34 nonstandard=0
+sorryAx: none
+== Closure rc=0 closure=1: Closure
+AXCHECK theorems=41 modules=1 nonstandard=0
+sorryAx: none
+== ContinuityCombined rc=0 closure=4: ConcreteRound ContinuityCombined CutBound TraceBridge
+AXCHECK theorems=175 modules=4 nonstandard=0
+sorryAx: none
+== EnumCombined rc=0 closure=4: ConcreteRound CutBound EnumCombined TraceBridge
+AXCHECK theorems=209 modules=4 nonstandard=0
+sorryAx: none
+== EpochOverlap rc=0 closure=1: EpochOverlap
+AXCHECK theorems=7 modules=1 nonstandard=0
+sorryAx: none
+== EpochPrefix rc=0 closure=4: ConcreteRound CutBound EpochPrefix TraceBridge
+AXCHECK theorems=170 modules=4 nonstandard=0
+sorryAx: none
+== EpochReuse rc=0 closure=32: Area ChargeFailure ConcreteRound Coverage CutBound CutSpace DepthArea Descendants EpochCharge EpochReuse Exceptions Excess Forest FourBarrier GapLength GhostBudget GoodInterval HeapForest HeapPath LastLive LogLower Nesting Precut RefArea RefGlobal RefPartition RefSelect RefSum RootCut SumArea TraceBridge WorkBridge
+AXCHECK theorems=625 modules=32 nonstandard=0
+sorryAx: none
+== ExactFrontier rc=0 closure=21: BridgeBase Complete ExactFrontier Fast0 Fast1 Fast10 Fast11 Fast12 Fast13 Fast14 Fast2 Fast3 Fast4 Fast5 Fast6 Fast7 Fast8 Fast9 FastBase Physical Shard0
+AXCHECK theorems=186 modules=21 nonstandard=30
+NONSTD EdgeBridge.fast8 :: #[EdgeBridge.fast8._native.native_decide.ax_1_1]
+NONSTD NativeTable.closure_checked :: #[NativeTable.closure_checked._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast14 :: #[EdgeBridge.fast14._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast9 :: #[EdgeBridge.fast9._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.all_edges :: #[EdgeBridge.check_first16._native.native_decide.ax_1_1, EdgeBridge.fast0._native.native_decide.ax_1_1, EdgeBridge.fast1._native.native_decide.ax_1_1, EdgeBridge.fast10._native.native_decide.ax_1_1, EdgeBridge.fast11._native.native_decide.ax_1_1, EdgeBridge.fast12._native.native_decide.ax_1_1, EdgeBridge.fast13._native.native_decide.ax_1_1, EdgeBridge.fast14._native.
+NONSTD EdgeBridge.index_coverage :: #[EdgeBridge.index_coverage._native.native_decide.ax_1_1]
+NONSTD ExactFrontier.exact_frontier :: #[EdgeBridge.check_first16._native.native_decide.ax_1_1, EdgeBridge.fast0._native.native_decide.ax_1_1, EdgeBridge.fast1._native.native_decide.ax_1_1, EdgeBridge.fast10._native.native_decide.ax_1_1, EdgeBridge.fast11._native.native_decide.ax_1_1, EdgeBridge.fast12._native.native_decide.ax_1_1, EdgeBridge.fast13._native.native_decide.ax_1_1, EdgeBridge.fast14.
+NONSTD EdgeBridge.fast11 :: #[EdgeBridge.fast11._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast0 :: #[EdgeBridge.fast0._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.shard0 :: #[EdgeBridge.shard0._native.native_decide.ax_1_1]
+NONSTD NativeTable.five_point_lower :: #[NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.goal_front_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.start_empty :: #[EdgeBridge.start_empty._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast12 :: #[EdgeBridge.fast12._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast3 :: #[EdgeBridge.fast3._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast1 :: #[EdgeBridge.fast1._native.native_decide.ax_1_1]
+NONSTD NativeTable.table_closed :: #[NativeTable.closure_checked._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast2 :: #[EdgeBridge.fast2._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast10 :: #[EdgeBridge.fast10._native.native_decide.ax_1_1]
+NONSTD NativeTable.goal_front_checked :: #[NativeTable.goal_front_checked._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.check_first16 :: #[EdgeBridge.check_first16._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast4 :: #[EdgeBridge.fast4._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast13 :: #[EdgeBridge.fast13._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.physical_lower_complete :: #[EdgeBridge.check_first16._native.native_decide.ax_1_1, EdgeBridge.fast0._native.native_decide.ax_1_1, EdgeBridge.fast1._native.native_decide.ax_1_1, EdgeBridge.fast10._native.native_decide.ax_1_1, EdgeBridge.fast11._native.native_decide.ax_1_1, EdgeBridge.fast12._native.native_decide.ax_1_1, EdgeBridge.fast13._native.native_decide.ax_1_1, EdgeBridge.f
+NONSTD EdgeBridge.fast7 :: #[EdgeBridge.fast7._native.native_decide.ax_1_1]
+NONSTD NativeTable.start_covered :: #[NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast6 :: #[EdgeBridge.fast6._native.native_decide.ax_1_1]
+NONSTD NativeTable.all_depth_table_lower :: #[NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.fast5 :: #[EdgeBridge.fast5._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.physical_lower :: #[EdgeBridge.goal_decode._native.native_decide.ax_1_1, NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.goal_front_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.goal_decode :: #[EdgeBridge.goal_decode._native.native_decide.ax_1_1]
+sorryAx: none
+== FixedWork rc=0 closure=1: FixedWork
+AXCHECK theorems=14 modules=1 nonstandard=0
+sorryAx: none
+== FullBridge rc=0 closure=1: FullBridge
+AXCHECK theorems=124 modules=1 nonstandard=7
+NONSTD NativeTable.closure_checked :: #[NativeTable.closure_checked._native.native_decide.ax_1_1]
+NONSTD NativeTable.five_point_lower :: #[NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.goal_front_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD NativeTable.table_closed :: #[NativeTable.closure_checked._native.native_decide.ax_1_1]
+NONSTD NativeTable.goal_front_checked :: #[NativeTable.goal_front_checked._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.check_first16 :: #[EdgeBridge.check_first16._native.native_decide.ax_1_1]
+NONSTD NativeTable.start_covered :: #[NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD NativeTable.all_depth_table_lower :: #[NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+sorryAx: none
+== IncidenceCombined rc=0 closure=4: ConcreteRound CutBound IncidenceCombined TraceBridge
+AXCHECK theorems=220 modules=4 nonstandard=0
+sorryAx: none
+== Intervals rc=0 closure=1: Intervals
+AXCHECK theorems=16 modules=1 nonstandard=0
+sorryAx: none
+== NativeCertificate rc=0 closure=1: NativeCertificate
+AXCHECK theorems=51 modules=1 nonstandard=6
+NONSTD NativeTable.closure_checked :: #[NativeTable.closure_checked._native.native_decide.ax_1_1]
+NONSTD NativeTable.five_point_lower :: #[NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.goal_front_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD NativeTable.table_closed :: #[NativeTable.closure_checked._native.native_decide.ax_1_1]
+NONSTD NativeTable.goal_front_checked :: #[NativeTable.goal_front_checked._native.native_decide.ax_1_1]
+NONSTD NativeTable.start_covered :: #[NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD NativeTable.all_depth_table_lower :: #[NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+sorryAx: none
+== OrderCombined rc=0 closure=4: ConcreteRound CutBound OrderCombined TraceBridge
+AXCHECK theorems=192 modules=4 nonstandard=0
+sorryAx: none
+== OrderT1 rc=0 closure=4: ConcreteRound CutBound OrderT1 TraceBridge
+AXCHECK theorems=187 modules=4 nonstandard=0
+sorryAx: none
+== OriginCombined rc=0 closure=4: ConcreteRound CutBound OriginCombined TraceBridge
+AXCHECK theorems=178 modules=4 nonstandard=0
+sorryAx: none
+== Potential rc=0 closure=2: ConcreteRound Potential
+AXCHECK theorems=79 modules=2 nonstandard=0
+sorryAx: none
+== Pruning rc=0 closure=1: Pruning
+AXCHECK theorems=103 modules=1 nonstandard=3
+NONSTD SmallTree.no_goal_lt_three :: #[SmallTree.shallow_no_goal_eval._native.native_decide.ax_1_1]
+NONSTD SmallTree.shallow_no_goal_eval :: #[SmallTree.shallow_no_goal_eval._native.native_decide.ax_1_1]
+NONSTD SmallTree.depth_min_three :: #[SmallTree.shallow_no_goal_eval._native.native_decide.ax_1_1]
+sorryAx: none
+== Sandwich rc=0 closure=39: Area BatchUpper BatchedCleanup ConcreteRound Coverage CutBound CutSpace DepthArea Descendants Exceptions FamilyCost FamilyRound FamilySync FillUpper Forest FrameUpper FringeEmbed FullPartition GoodInterval HeapForest HeapPath InitialGhost LiftCost LogLower Nesting ParallelMerge Precut RetainBatches RetainRoot Reverse RootCleanup RootCut Sandwich Skeleton SkeletonUnfill SumArea SyncTrace TraceBridge WorkBridge
+AXCHECK theorems=1111 modules=39 nonstandard=0
+sorryAx: none
+== SmallTree rc=0 closure=1: SmallTree
+AXCHECK theorems=73 modules=1 nonstandard=0
+sorryAx: none
+== Transfer rc=0 closure=2: BridgeBase Transfer
+AXCHECK theorems=134 modules=2 nonstandard=9
+NONSTD NativeTable.closure_checked :: #[NativeTable.closure_checked._native.native_decide.ax_1_1]
+NONSTD NativeTable.five_point_lower :: #[NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.goal_front_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD NativeTable.table_closed :: #[NativeTable.closure_checked._native.native_decide.ax_1_1]
+NONSTD NativeTable.goal_front_checked :: #[NativeTable.goal_front_checked._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.check_first16 :: #[EdgeBridge.check_first16._native.native_decide.ax_1_1]
+NONSTD NativeTable.start_covered :: #[NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD NativeTable.all_depth_table_lower :: #[NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.physical_lower :: #[EdgeBridge.goal_decode._native.native_decide.ax_1_1, NativeTable.closure_checked._native.native_decide.ax_1_1, NativeTable.goal_front_checked._native.native_decide.ax_1_1, NativeTable.start_covered._native.native_decide.ax_1_1]
+NONSTD EdgeBridge.goal_decode :: #[EdgeBridge.goal_decode._native.native_decide.ax_1_1]
+sorryAx: none
+== TreeSuffix rc=0 closure=31: Area ConcreteRound Coverage CutBound CutSpace DepthArea Descendants EpochCharge Exceptions Excess Forest FourBarrier GapLength GhostBudget GoodInterval HeapForest HeapPath LastLive LogLower Nesting Precut RefArea RefGlobal RefPartition RefSelect RefSum RootCut SumArea TraceBridge TreeSuffix WorkBridge
+AXCHECK theorems=613 modules=31 nonstandard=0
+sorryAx: none

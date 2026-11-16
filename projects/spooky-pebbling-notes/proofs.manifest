@@ -1,0 +1,15 @@
+# DRAT 証明ログのマニフェスト（実体は proofs/ で git 管理外。73MB）
+# 生成: sat_spooky.py --exact ... --proofs proofs / 検証: drat-trim（すべて s VERIFIED）
+# 各行 = 下界の主張「その手数以内の解は存在しない」の証明ログ
+
+file                          bytes  sha256
+P_4_3_8.drat                   2205  cae9e021c235b912a32988218b956091ff280ded56fb78a3276f4683b7950b36
+P_6_3_26.drat                 42688  d54017db0532f97dc8c18d07225f9eae570ac85d85590cb6e41e3f25f85fe072
+UG_10_4_31.drat              237293  2ec360950dd711f47648a8bd459ce89c30bc87036374fb56ef5dd75835c4318d
+UG_20_6_67.drat            23927700  83ebb8697d9440f3955c724b3e19c9fdeec84dd95d9ab9ff4c4a1bf9b23d3af1
+UG_21_6_71.drat            27690054  190a4cae36e1c73df4f0b913d55cf193657f4cbf3853200ced0de6c99e141d71
+UG_9_4_27.drat               139540  52463e04db9c6bade5c1cc518e071a290f1fb367c91ecb4b28c66ba045fc34a7
+UP_10_4_32.drat              248126  085429224e31278d1695a8c9c5c40401bf0e4f4fd4de1a0f40f75e67310962d7
+UP_20_6_66.drat            17007515  afc65cec8cf428f01c772f4925f3314b7bc9408d1af75ccf101b2205c15e5b6b
+UP_21_6_72.drat            31189121  21c5311c3496c202413d4819674bda4d28bf7cd791a333242108a1c6891fd479
+UP_9_4_26.drat               117354  0d953e6bd3ec07b7a294d4b01765c43b954f5c79150ba9552867d9756f8846ef

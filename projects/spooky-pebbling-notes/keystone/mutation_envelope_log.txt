@@ -1,0 +1,27 @@
+原本 sha256 = 44a7a00356cd510f15f2584b9f8f726ea2dc8ab2b64be9bec55f9304a5599f2c
+CE0  対照 期待=pass 実際=pass rc=0 error=0 warning=0 olean=有 期待どおり  無変異
+CE1  対照 期待=pass 実際=pass rc=0 error=0 warning=0 olean=有 期待どおり  上界の仮定を brk (m+1) s ≥ n と書く（意味は同じ）
+CE2  対照 期待=pass 実際=pass rc=0 error=0 warning=0 olean=有 期待どおり  brk_two の等式の左右を入れ替える（意味は同じ）
+G1   言明 期待=fail 実際=fail rc=1 error=4 warning=0 olean=無 期待どおり  区間の右端を brk (m+1) s + 1 に広げる  ［error の場所: TUP_eq_envelope, TUP_le_envelope］
+G2   言明 期待=fail 実際=fail rc=1 error=8 warning=0 olean=無 期待どおり  区間の左端を brk m s - 1 に広げる  ［error の場所: TUP_eq_envelope, TUP_le_envelope］
+G3   言明 期待=fail 実際=fail rc=1 error=9 warning=0 olean=無 期待どおり  上界の s の下限を 1 に広げる  ［error の場所: TUP_eq_envelope, TUP_le_envelope］
+G4   言明 期待=fail 実際=fail rc=1 error=4 warning=0 olean=無 期待どおり  上界の傾きを 2m にずらす  ［error の場所: TUP_eq_envelope, TUP_le_envelope］
+G5   言明 期待=fail 実際=fail rc=1 error=3 warning=0 olean=無 期待どおり  定義 brk の底を brk m 2 = m + 1 に変える  ［error の場所: brk_base, example］
+G6   言明 期待=fail 実際=fail rc=1 error=5 warning=0 olean=無 期待どおり  折れ目の式の係数 2 を落とす  ［error の場所: bb_succ_eq_add_brk, brk_eq_half_diff, brk_three, brk_two］
+G7   言明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  上包絡の等号を 1 ずらす  ［error の場所: TUP_upper_envelope］
+G8   言明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  T_UG の θ(s) ≤ n 側の符号を逆に  ［error の場所: TUG_eq_envelope］
+G9   言明 期待=fail 実際=fail rc=1 error=2 warning=0 olean=無 期待どおり  被覆の左端を真の不等号にする  ［error の場所: TUP_upper_envelope, exists_brk_interval］
+G10  言明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  brk 3 s = B4 s（1 ずれ）  ［error の場所: brk_three］
+PE1  証明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  小さい側で頭の帰納法の仮定を使わない  ［error の場所: TUP_le_envelope］
+PE2  証明 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  大きい側で尻尾の帰納法の仮定を使わない  ［error の場所: TUP_le_envelope］
+PE3  証明 期待=fail 実際=fail rc=1 error=2 warning=0 olean=無 期待どおり  底 s=2 で閉形式 T_UP(n,2) を使わない  ［error の場所: TUP_le_envelope］
+RE0  反証 期待=pass 実際=pass rc=0 error=0 warning=0 olean=有 期待どおり  G1〜G4・G6〜G10 の言明の否定を証明する
+RE1  反証 期待=fail 実際=fail rc=1 error=1 warning=0 olean=無 期待どおり  反証ファイルの変異（G9 の代わりに真の言明の否定）  ［error の場所: example］
+原本 sha256 = 44a7a00356cd510f15f2584b9f8f726ea2dc8ab2b64be9bec55f9304a5599f2c（不変）
+
+言明の変異: 10/10 検出
+証明の変異: 3/3 検出
+対照: 3/3 通過（誤検出 0）
+反証: 本体 1/1 通過、反証の変異 1/1 検出
+未確定: 0
+rc=0

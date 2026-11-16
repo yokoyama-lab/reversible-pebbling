@@ -1,0 +1,1 @@
+New C2 private draft revision of R3. Existing Lean sources unchanged; REPRO capsule remains separate. TEXMF=/usr/share/texlive/texmf-dist TEXFORMATS=.:/usr/share/texlive/texmf-dist/web2c//; generate local pdflatex format from pdflatex.ini; compile wrapper.tex twice, no-shell-escape, jobname audited-draft.

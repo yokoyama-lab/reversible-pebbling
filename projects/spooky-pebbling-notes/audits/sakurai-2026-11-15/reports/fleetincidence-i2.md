@@ -1,0 +1,9 @@
+# FLEETINCIDENCE I2
+Owner /root/spooky_dp. Prior E4 STOP rc0 verified; no concurrent Lean process found. New finite unit: 600 seconds, at most 4 attempts. Only I1/I2 executed; unit now closed.
+Lean 4.35.0 sf2, fixed TraceBridge/ConcreteRound/CutBound dependencies from fleetprefix. OS cgroup MemoryMax1GiB swap0 CPUQuota100% TasksMax16 Runtime20s LimitCPU18s, Lean -j1 -M768. Previous enforcement diagnostics apply. Reported MemoryPeak256KiB/508KiB is suspicious; accurate RSS unavailable.
+I1 START22:55:15 STOP22:55:21 UTC rc1 CPU6.071s. Failure: theorem type attempted undecidable existential Member conditional. Diagnostic sorryAx unaccepted; failed source retained.
+I2 START22:56:42 STOP22:56:48 UTC rc0 CPU6.058s runtime6.056s. Standard propext/Classical.choice/Quot.sound only, no sorry/native.
+Actual incidence predicate equals membership in exact enumerated reference set. Finite incidence matrix row/column totals equal for any supplied parent/child index lists. This is now instantiated to actual refs, but no assertion that arbitrary lists cover exactly all valid IDs or are Nodup.
+Initial-index charge: index0 shared set empty; for first positive index1, shared set empty PROVIDED refs0=[]; total shared lengths over1::rest bounded by rest.length. refs0 empty has NOT yet been derived from ActionRuns, and rest may repeat; conversion to k_v-1 still needs exact valid index range. Thus no full incidence reuse identity or full tree theorem claimed.
+Remaining: derive no-zero reference from legal runs (including initial pebble), exact finite range completeness, count distinct incidence minus first occurrence equals shared total, tree child aggregation, geometric area/secondscale, C4 lower bound. No novel C4 theorem asserted.
+Source SHA c5de4b986ed7a079fa6060a9e2ee7c3a3e5824e99708bc683de31dd87613ef6e.

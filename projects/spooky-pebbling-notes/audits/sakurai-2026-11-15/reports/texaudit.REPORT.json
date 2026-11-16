@@ -1,0 +1,34 @@
+{
+  "id": "SPOOKY-TEXAUDIT-20261115-T6",
+  "stop": "2026-11-15T19:24:31.789749+00:00",
+  "status": "4-page PDF compiled; final rc0; no warning/overfull/underfull",
+  "scope": "private new copy only; no Overleaf update; no author or venue chosen",
+  "source_reference": "REPRO R1 39-module closure; Sandwich source 92b871487f7926e26e2aa807a83b939492132ce3661df66c3f24a67e4b7dda47; manifest 40c55ce3b8de4703f1fc275f44a4145c5e520d587cfddac006eeabc497b418e0",
+  "audit": [
+    "Fixed ceil budget and W<=3n maintained",
+    "H>=16384 lower; H>=2 upper; budget<=n iff H>=7 maintained",
+    "Empty to clean root, old preconditions, active-set disjointness and union-space explicit",
+    "No arbitrary Theta constants or C>3 generalization",
+    "Lee block method not claimed new; coefficient3 lower novelty pending",
+    "Lean 4.35.0 exact commit, Std only, standard3 axioms, no native/sorry",
+    "All 4 pages visually inspected; theorem and reference visible; no clipping found"
+  ],
+  "failures": [
+    "initial default format unavailable rc1",
+    "local format built rc0; first PDF failed missing default font map rc1",
+    "local cm/cmextra maps enabled: two passes rc0",
+    "two overfull boxes fixed by local paragraph/layout change; final compile rc0"
+  ],
+  "system_changes": "none; per-process TEXMF and local format only; installed assets; no install/download",
+  "<host>": "not transmitted; approval pending",
+  "remaining": [
+    "venue template, expanded bibliography, figures and authorship pending",
+    "external model-text equivalence and exhaustive novelty not formalized",
+    "external independent rebuild not claimed here"
+  ],
+  "hashes": {
+    "audited-draft.tex": "2c9edb991e847e426dd07d39ff819fa67adbc3555d4b0931d8d4e134d5aa85bc",
+    "audited-draft.pdf": "593f72aff88851040911bf51b12e32c0793d832114efcb488ae43607bdbb998f",
+    "wrapper.tex": "5c2cf92b43f0c7463e4a8d0f2ffc75ba443a22387d5fb1c5a38859a0c8a832e8"
+  }
+}

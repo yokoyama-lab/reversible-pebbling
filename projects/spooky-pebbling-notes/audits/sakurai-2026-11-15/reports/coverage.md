@@ -1,0 +1,6 @@
+# General all-height heap coverage V2
+Lean4.35.0 no sorry/admit/native_decide. all_height_coverage propext,Quot.sound; paper_forest_components adds Classical.choice.
+leaves_range proves the entire depth-h leaf layer of subtree rooted i is exactly the contiguous natural range starting 2^h*i+2^h-1 of length2^h. grow proves preorder labels(h+1) permute labels(h)++leaf layer. Induction gives labels(H,0) Perm finRange(2^H-1).map val for EVERY H, eliminating finite coverage assumptions without evaluator axioms.
+all_height_components instantiates actual S2 goodAt to forest K<=2B+1 for all complete tree heights. paper_forest_components directly composes original PaperRuns assumptions W<=3n+e, space<=s, initial nonpebbled, root-only final, to produce actual cut with B<=e+2s+1 and K<=2e+4s+3. No coverage/permutation assumption remains.
+Remaining: cumulative shallow-depth count, forest depth paths to actual nesting, final aggregate lower bound and asymptotic boundary conditions. Full C3 depth theorem still incomplete; scientific novelty unconfirmed.
+V1/V2 successful first passes, no failed compile this unit. V2 START2026-11-15T16:39:11.717733Z STOP16:39:12.042594Z CPU0.317647s peak677478400B rc0. All STOP. Budget600wall CPU30/call wall60 memory1GiB. <host> remains blocked pending approval, no retry/route workaround. Local and authorized new showa only.

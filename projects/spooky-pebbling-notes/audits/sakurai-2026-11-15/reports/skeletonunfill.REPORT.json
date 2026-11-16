@@ -1,0 +1,136 @@
+{
+  "id": "SPOOKY-SKELETONUNFILL-20261115-U6",
+  "source_sha256": "27e3255c6159f4f894691b3f617d92e83d70cbceb82aef30140334a7f912a0de",
+  "lean": "4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "native": false,
+  "sorry": false,
+  "completed": [
+    "unfill_skeleton: capState -> held, D>0, depth D-1, work <=2^D-2, space <=2^(D+1)-1; lower ghosts unchanged",
+    "complete: actual PaperRuns empty -> rootOnly (all ghosts removed), initial fringe roots retained -> skeleton compute -> skeleton uncompute -> root-including fringe cleanup; D,K>0,BK=2^D,m=2^(1+h)-1,n=2^(D+1+h)-1; W<=3n, depth B(h+2)+D+(D-1)+B(2h+1), space <=Km+2^(D+1)-1",
+    "height_upper: EVERY integer H>=2, n=2^H-1, exists actual run empty -> clean rootOnly with W<=3n, depth <=3H floor(log2 H)+2H, H*space<=6*2^H. Explicit f=floor(log2 H), D=H-f, B=2^f,K=2^(H-2f),local h=f-1; 2f<=H proved."
+  ],
+  "bound_interpretation": "Constructive O(H log H) depth, O(n/H) space at exact work budget 3n. Together with existing LogLower gives matching asymptotic order in formal model, but no novelty/S-grade claim. Upper construction related to known Lee scheme.",
+  "remaining": [
+    "independent model/text and novelty audit",
+    "paper exposition of combined lower/upper theorem and constants",
+    "potential tighter constants and lower threshold not claimed"
+  ],
+  "distinction": "staged B4 route not used; S6 rootGhost collapse not used. Actual proof uses exact held and preserves fringe roots until upper skeleton erased.",
+  "<host>": "no transmission; prior rejection approval pending",
+  "attempts": {
+    "U1": {
+      "id": "SPOOKY-SKELETONUNFILL-20261115-U1",
+      "start": "2026-11-15T19:00:21.879019+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "SkeletonUnfill.olean",
+        "SkeletonUnfill.lean"
+      ],
+      "stop": "2026-11-15T19:00:22.302286+00:00",
+      "exit_code": 1,
+      "wall": 0.423084292,
+      "cpu_seconds": 0.40458700000000003,
+      "peak_bytes": 686538752,
+      "output_sha256": "087860f28ee264aa2c1bb4af8fa06df389395bc33582b1e6d9b2978b9c6e8b55"
+    },
+    "U2": {
+      "id": "SPOOKY-SKELETONUNFILL-20261115-U2",
+      "start": "2026-11-15T19:00:49.180941+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "SkeletonUnfill.olean",
+        "SkeletonUnfill.lean"
+      ],
+      "stop": "2026-11-15T19:00:49.567552+00:00",
+      "exit_code": 0,
+      "wall": 0.38622866699999997,
+      "cpu_seconds": 0.37673100000000004,
+      "peak_bytes": 696041472,
+      "output_sha256": "1a5e8cdf318352747c05740fa713132f9d0359fe3787907e30327e57e7010c1d"
+    },
+    "U3": {
+      "id": "SPOOKY-SKELETONUNFILL-20261115-U3",
+      "start": "2026-11-15T19:01:37.694849+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "SkeletonUnfill.olean",
+        "SkeletonUnfill.lean"
+      ],
+      "stop": "2026-11-15T19:01:38.224830+00:00",
+      "exit_code": 1,
+      "wall": 0.529789333,
+      "cpu_seconds": 0.524131,
+      "peak_bytes": 694484992,
+      "output_sha256": "e3d118b63ec82ae85693f741d53667c13c9c9e8a2fc371507fcc060df0a806de"
+    },
+    "U4": {
+      "id": "SPOOKY-SKELETONUNFILL-20261115-U4",
+      "start": "2026-11-15T19:02:30.800652+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "SkeletonUnfill.olean",
+        "SkeletonUnfill.lean"
+      ],
+      "stop": "2026-11-15T19:02:31.547122+00:00",
+      "exit_code": 0,
+      "wall": 0.746269334,
+      "cpu_seconds": 0.7419209999999999,
+      "peak_bytes": 720093184,
+      "output_sha256": "884d34e25d43a1978d413f00df38f96595b045c2d21e4f16add15254353ffd26"
+    },
+    "U5": {
+      "id": "SPOOKY-SKELETONUNFILL-20261115-U5",
+      "start": "2026-11-15T19:03:56.690446+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "SkeletonUnfill.olean",
+        "SkeletonUnfill.lean"
+      ],
+      "stop": "2026-11-15T19:03:57.611543+00:00",
+      "exit_code": 1,
+      "wall": 0.920913417,
+      "cpu_seconds": 0.91447,
+      "peak_bytes": 718684160,
+      "output_sha256": "02158ae788e252e9fba2d944ed87b5eb269a2724e432f5ce773099504b67eee5"
+    },
+    "U6": {
+      "id": "SPOOKY-SKELETONUNFILL-20261115-U6",
+      "start": "2026-11-15T19:04:44.921211+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "SkeletonUnfill.olean",
+        "SkeletonUnfill.lean"
+      ],
+      "stop": "2026-11-15T19:04:45.861785+00:00",
+      "exit_code": 0,
+      "wall": 0.940368416,
+      "cpu_seconds": 0.936711,
+      "peak_bytes": 729497600,
+      "output_sha256": "baf1de2e243163a6b14a22cc5418a18cdb11f9bcb7046e734262ce38837bd966"
+    }
+  },
+  "stop": "2026-11-15T19:05:14.366979+00:00"
+}

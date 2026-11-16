@@ -1,0 +1,45 @@
+PRIVATE RESEARCH ARTIFACT — source-only reproducibility capsule
+Target: Sandwich.sandwich (and Sandwich.budget_range_iff).
+
+Prerequisites
+* Existing Lean 4.35.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc.
+* Python 3 with POSIX resource support (tested Python 3.9.6 on macOS arm64).
+* No installation, network, mathlib, or external package fetch is performed.
+* Std/Init are the standard libraries bundled with the pinned Lean commit.
+
+Minimal procedure
+1. Extract this archive into a fresh private directory.
+2. Inspect manifest.json and reproduce.py.
+3. Run: LEAN_BIN=/absolute/path/to/lean python3 reproduce.py
+4. Read the newly created build-*/summary.json and build-*/Sandwich.log.
+
+The program checks every source SHA, verifies compiler version+commit, and
+compiles the 39-module import closure in topological order. LEAN_PATH contains
+ONLY the fresh build directory; old .olean files are neither distributed as
+inputs nor used. It does not delete or overwrite previous builds.
+Each compile has CPU 30 s, wall 60 s, -M1024 MiB and -j1. A 540 s total wall
+check reserves time for checkpointing. Failure stops immediately, preserving
+START/STOP, exit code, source manifest, output log and output hashes. Re-running
+creates a separate build, not an automatic retry of a failed job. Ask the
+coordinator before retrying in a managed research workflow.
+
+Successful target output must list only propext, Classical.choice, Quot.sound
+for Sandwich.sandwich and Sandwich.budget_range_iff, and exit code 0 for EVERY
+module. Warnings about unused simplification arguments are non-fatal. No
+native_decide or sorry is used in these final declarations. Inspect actual
+axiom output, rather than relying on keyword absence alone.
+
+A local clean-source validation is included as evidence, not as an independent
+third-party audit. Platform-specific .olean hashes may differ on another
+architecture. Source SHA, dependency graph, compiler commit and theorem/axiom
+outputs are the reproducibility anchors. Std is pinned by toolchain commit;
+the toolchain binary is not included in this package.
+
+This is the smallest transitive import closure of the current target, not a
+claim that all imported declarations are logically necessary. It includes
+historical helper modules. Finite 7-vertex native certificates are NOT imported.
+
+The paper-draft.tex file is a private mathematical draft, not a submission-
+formatted or LaTeX-compiled manuscript. It must not be treated as accepted,
+public, or novelty-certified. Model correspondence to natural-language papers
+remains a human-audit obligation; Lean proves the stated formal model only.

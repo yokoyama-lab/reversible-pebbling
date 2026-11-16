@@ -1,0 +1,28 @@
+{
+  "id": "SPOOKY-REFPARTITION-20261115-R6",
+  "saved": "2026-11-15T19:59:13.421699+00:00",
+  "source_sha256": "fe58d39bc71087c658fe449f5a27249ff0effa960d7377b5bf5ea4c46a7bbb26",
+  "proved": [
+    "parts deterministic recursive extraction: unmarked prefix plus marked chunks reconstruct original actions exactly",
+    "each chunk starts exactly one reference and contains no further references",
+    "number chunks equals number reference actions; last chunk is terminal suffix, NOT charged as gap",
+    "references predicate scans actual active parent operations using given pred and child u",
+    "extracted_gap on any adjacent extracted chunks: exact C=G+U for first chunk from actual ActionRuns, endpoint assumptions derived from legality",
+    "kernel boundary tests:empty/no references/one reference/adjacent/separated references"
+  ],
+  "remaining": [
+    "combine all interior chunks into one aggregate inequality explicitly in Lean",
+    "map scalar gap lengths to original round union-area",
+    "second-scale contraction and C4 lower bound"
+  ],
+  "boundaries": "zero refs has only prefix; one ref has only terminal chunk; no empty marked chunk; adjacent refs produce a one-round interior chunk, whose ghost/compute legality is determined by actual run",
+  "axioms": [
+    "propext",
+    "Quot.sound"
+  ],
+  "native": false,
+  "sorry": false,
+  "failures": "R1 list/Boolean issue,R3 unavailable tactic,R4 endpoint elaboration; preserved. R6 final rc0.",
+  "novelty": "formal infrastructure, not new S theorem; C4 still unproved; does not conflict with Lee repeated-block upper",
+  "<host>": "not transmitted; approval pending"
+}

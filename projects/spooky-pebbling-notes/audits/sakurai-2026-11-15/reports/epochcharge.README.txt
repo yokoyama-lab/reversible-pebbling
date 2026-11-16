@@ -1,0 +1,1 @@
+LEAN_PATH=. lean -j1 -M1024 -o EpochCharge.olean EpochCharge.lean. Pinned Lean4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc. P3 final successful; P1 failed preserved. Postghost aggregate bound is conditional, not yet PaperRuns theorem. Parent-reference segment balance already actual ActionRuns. No claim that overlapping references are disjoint.

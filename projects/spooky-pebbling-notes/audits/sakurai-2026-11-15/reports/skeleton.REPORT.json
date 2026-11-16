@@ -1,0 +1,138 @@
+{
+  "id": "SPOOKY-SKELETON-20261115-S6",
+  "scope": "initial boundary -> skeleton -> root pebble, all other vertices ghosts",
+  "source_sha256": "ca43242d26705231359dcfc8e1349268b2d2e865a0c0a07aea55443698ce1cab",
+  "lean": "4.35.0 eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "sorry": false,
+  "native": false,
+  "completed": [
+    "Band bounded saturation and legal upper layers",
+    "exact work telescoping identity, interval card bound, work <= 2^D-1",
+    "union space <= 2^(D+1)-1; lower ghosts unchanged",
+    "initial_root actual PaperRuns from empty to rootGhost; h>0,K>0,BK=2^D; n=2^(D+h)-1; W<=n; depth B(h+1)+D+1; space <= max(K(2^h-1)+2^D,2^(D+1)-1)"
+  ],
+  "remaining": [
+    "root-retaining fringe cleanup global batches",
+    "skeleton restoration/uncompute while protecting root",
+    "total W<=3n, integer parameter selection and asymptotic matching upper",
+    "novelty and text/model boundary remain separately audited"
+  ],
+  "not_claimed": "complete clean final state or S result; nonroot ghosts remain",
+  "<host>": "no transfer; prior rejection awaiting explicit approval",
+  "attempts": {
+    "S1": {
+      "id": "SPOOKY-SKELETON-20261115-S1",
+      "start": "2026-11-15T18:38:32.869278+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "Skeleton.olean",
+        "Skeleton.lean"
+      ],
+      "stop": "2026-11-15T18:38:33.261967+00:00",
+      "exit_code": 1,
+      "wall": 0.39250962500000003,
+      "cpu_seconds": 0.37296599999999996,
+      "peak_bytes": 665190400,
+      "output_sha256": "80377b94e7557150ae1b71abec3b6b0825a7aa038be9201a28674ebb021bd291"
+    },
+    "S2": {
+      "id": "SPOOKY-SKELETON-20261115-S2",
+      "start": "2026-11-15T18:39:35.118645+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "Skeleton.olean",
+        "Skeleton.lean"
+      ],
+      "stop": "2026-11-15T18:39:35.599091+00:00",
+      "exit_code": 0,
+      "wall": 0.48024675,
+      "cpu_seconds": 0.47028099999999995,
+      "peak_bytes": 679182336,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "S3": {
+      "id": "SPOOKY-SKELETON-20261115-S3",
+      "start": "2026-11-15T18:41:05.847085+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "Skeleton.olean",
+        "Skeleton.lean"
+      ],
+      "stop": "2026-11-15T18:41:06.445197+00:00",
+      "exit_code": 1,
+      "wall": 0.5979209169999999,
+      "cpu_seconds": 0.594223,
+      "peak_bytes": 684736512,
+      "output_sha256": "a6ab6167503d1561d1d1f7a2e915ad71d181ef1e260bfc6a80d17ff5ec4e3877"
+    },
+    "S4": {
+      "id": "SPOOKY-SKELETON-20261115-S4",
+      "start": "2026-11-15T18:41:45.061235+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "Skeleton.olean",
+        "Skeleton.lean"
+      ],
+      "stop": "2026-11-15T18:41:45.648454+00:00",
+      "exit_code": 0,
+      "wall": 0.587031666,
+      "cpu_seconds": 0.5796889999999999,
+      "peak_bytes": 692125696,
+      "output_sha256": "256c66de37e1ad2b79d4588bf643067c92f4c0d3a1f3a423b127aea690f6b5a6"
+    },
+    "S5": {
+      "id": "SPOOKY-SKELETON-20261115-S5",
+      "start": "2026-11-15T18:42:48.352474+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "Skeleton.olean",
+        "Skeleton.lean"
+      ],
+      "stop": "2026-11-15T18:42:49.132638+00:00",
+      "exit_code": 1,
+      "wall": 0.779980916,
+      "cpu_seconds": 0.7701349999999999,
+      "peak_bytes": 686211072,
+      "output_sha256": "915df4ae2184f8a1afc4671571dfcbfc8d1427ff82b8ec7be7745c5667d4889a"
+    },
+    "S6": {
+      "id": "SPOOKY-SKELETON-20261115-S6",
+      "start": "2026-11-15T18:43:19.367961+00:00",
+      "cmd": [
+        "<home>/.local/bin/lean",
+        "-j1",
+        "-M1024",
+        "-o",
+        "Skeleton.olean",
+        "Skeleton.lean"
+      ],
+      "stop": "2026-11-15T18:43:20.188427+00:00",
+      "exit_code": 0,
+      "wall": 0.8202689169999999,
+      "cpu_seconds": 0.8196279999999999,
+      "peak_bytes": 699727872,
+      "output_sha256": "db7a0581b17a8432a68acdfdc62ee8787a1d6f2c7fe655c9500d23cfa9fc8da2"
+    }
+  },
+  "stop": "2026-11-15T18:43:59.094344+00:00"
+}

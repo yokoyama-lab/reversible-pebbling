@@ -1,0 +1,7 @@
+# Good vertex actual intervals, G4
+Lean4.35.0 no sorry/admit/native_decide. good_live_interval propext,Quot.sound; unique_round_counts additionally Classical.choice.
+
+From actual ActionRuns, initially nonpebbled v and scalar C=U=1, good_decomposition extracts real action-list decomposition xs++compute::middle++uncompute::tail. Thus compute time |xs|, uncompute time |xs|+1+|middle| satisfy strict order. no_compute_after_unique proves no further compute anywhere after the chosen compute. good_live_interval produces the ACTUAL postcompute configuration and suffix witness; occupied boundaries through and including before cleanup number exactly |middle|+1=u-c. Ghosting cannot replace occupancy. unique_round_counts proves chosen compute or uncompute has zero same-event counts both before and after, establishing uniqueness by positions rather than merely equal action values.
+
+Remaining: explicit numerical parent-child nesting by combining these unique positions with parent_bracketed; compose interval lower bounds with full live counts and aggregate over good vertices; induced forest component bound and binary-depth counting. Full asymptotic C3 lower bound and novelty remain unestablished.
+G1/G2 successful intermediate versions, G3 substitution error saved, G4 success. G4 START2026-11-15T16:18:03.688014Z STOP16:18:04.016514Z CPU0.321634s peak668188672B rc0. All subprocesses stopped, no long job. Budget600wall CPU30/call wall60 memory1GiB. Same existing owner, no competing implementation assignment.
