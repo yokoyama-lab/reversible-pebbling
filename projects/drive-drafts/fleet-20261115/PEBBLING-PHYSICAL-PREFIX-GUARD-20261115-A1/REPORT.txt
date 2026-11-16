@@ -1,1 +1,0 @@
-rc0 all four theorems standard three axioms, no sorryAx/native_decide. Original capacity-checked replay success iff original unchecked success AND increment-word PostUpper. FullUpper requires separate initial<=5. PostNonnegative follows from original successful unchecked replay. Q language/poset equivalence remains unproved. No original model changes or dependency rebuild.

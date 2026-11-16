@@ -1,1 +1,0 @@
-Finite Python audit only. Q extensions form strict subset of successful capacity-free replay with final condition in both I and M. Converse FALSE; saved counterexamples in DETAILS. Q extensions AND guard equal capacity legal words in both fixed local cases. No Lean bridge or all-k generalization. Existing 200/584 counts are not new progress.

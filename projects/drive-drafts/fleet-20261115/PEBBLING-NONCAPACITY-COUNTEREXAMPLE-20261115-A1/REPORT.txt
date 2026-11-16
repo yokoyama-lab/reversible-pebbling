@@ -1,1 +1,0 @@
-Six claims rc0; permutations axiom-free; original replay noncapacity success/final and capacity failure propext only. No sorryAx/native_decide. Physical counterexamples only; violation of actual Q definition remains UNPROVED. Review zip d6e1c8c… saved/readback, review start unknown not scientific compute.

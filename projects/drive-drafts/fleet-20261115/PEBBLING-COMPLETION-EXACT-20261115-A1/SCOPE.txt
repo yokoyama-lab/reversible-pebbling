@@ -1,1 +1,0 @@
-B candidate: completion_extensions_iff verified under U.Nodup, permutations, base extension, irreflexivity/support assumptions. No guards/cost/cover count result. Classical heap/trace specialization may apply; no novelty claim. Full physical manuscript connection unproved.

@@ -1,1 +1,0 @@
-Evaluation C: Before/pairTrace equivalence under specified Nodup/distinctness assumptions and sameSignature_before_iff verified. General cover theorem and full manuscript physical model connection unproved. Five nonfatal linter warnings retained. Reused fixed SignatureInvariant source/olean.

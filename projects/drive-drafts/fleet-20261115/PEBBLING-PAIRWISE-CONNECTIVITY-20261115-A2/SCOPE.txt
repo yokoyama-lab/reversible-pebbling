@@ -1,1 +1,0 @@
-Concrete SwapPath connectivity verified, not assumed. Five printed declarations standard axioms only. General signature cover theorem, manuscript Before bridge/model connection not yet verified. A1 failed source/history retained. B candidate for useful existing-theory formalized lemma, no novelty claim.

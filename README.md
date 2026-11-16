@@ -449,6 +449,8 @@ the source repositories are kept as `import/<name>/<branch>`.  The root
 | `projects/spooky-pebbling-lean/` | the spooky pebble game on chains and trees | `yokoyama-lab/spooky-pebbling-lean` |
 | `projects/exact-rev-complexity/` | exact values of reversible-computation quantities (candidate lab; not all pebbling). Blobs over 50 MB were stripped on import | `tetsuo-jp/exact-rev-complexity` |
 | `projects/abandon-pebbling/` | abandon pebbling | `notes/abandon-pebbling` |
+| `projects/spooky-pebbling-notes/` | paper proofs, audits and Lean probes for the spooky pebble game | `notes/spooky-pebbling` |
+| `projects/exact-pebbling-paper-lean/` | Lean files kept beside the paper manuscript (`autoresearch` branch) | the paper repository's `lean/` |
 | `projects/drive-drafts/` | Lean drafts and bundles collected from Google Drive; **mostly unchecked**, see its README | Google Drive |
 
 ## Canonical home (2026-07-28 unification)

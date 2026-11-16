@@ -1,1 +1,0 @@
-Evaluation C: supported irreflexive R and permutation/Pairwise assumptions now derive R-edge Before and completion legality; hR discharged via actual bridge. Language exactness, minimum cover, physical manuscript connection unproved. Setup A1 failure retained. A2 runner and separate payload ast.parse passed before freezing. Sequential actual step START/STOP in STEPS.json.

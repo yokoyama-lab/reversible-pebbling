@@ -1,8 +1,9 @@
 # drive-drafts — Google Drive 上にあった Lean の草稿と束
 
-2026-11-16 に Google Drive から集めた。**このリポジトリの他の場所に同じ内容（git blob が一致するもの）が
-無いファイルだけ**を置いている。Drive にあった Lean 106 本のうち 105 本は
-`projects/fixed-event-pebbling/` などに既に入っていたので、ここには含めていない。
+2026-11-16 に Google Drive から集めた。**このリポジトリのどのコミットにも同じ内容（git blob が一致するもの）が
+無い `.lean` だけ**を置いている（27 本）。それ以外の `.lean`（約 270 本）は `projects/fixed-event-pebbling/` などの
+履歴に既に入っていたので除いた。そのため `fleet-20261115/` の各束は**依存ファイルが欠けた部分集合**であり、
+単独ではビルドできない。依存は `projects/fixed-event-pebbling/` の履歴から補うこと。
 
 **検証状態は一様ではない。ここにあるものを「証明済み」と書かないこと。**
 
