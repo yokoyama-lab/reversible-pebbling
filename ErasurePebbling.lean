@@ -13,3 +13,4 @@ import ErasurePebbling.Compression
 import ErasurePebbling.Additive
 import ErasurePebbling.Checker
 import ErasurePebbling.FirstDrop
+import ErasurePebbling.Contraction

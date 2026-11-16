@@ -3949,6 +3949,39 @@ def main() -> int:
                     "ErasurePebbling.unreachable_p3",
                 ],
             },
+            "erasure_pebbling_contraction": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (2026-11-17): contraction lower bound. "
+                          "For every p >= 2, n >= 1 and every clean plan s with "
+                          "peak p and at most e erasures, with "
+                          "A = (p-1)(e+1)+1: 4n <= |s| + 1 + 2A "
+                          "(contraction_bound), i.e. "
+                          "|s| >= 2n-1 + 2*max(0, n-A) (length_ge). "
+                          "A plan longer than 2n-1 re-places some cell; the "
+                          "lowest such cell is contracted (contract_drop for "
+                          "cell 0, contract_merge = OR-merge with the cell "
+                          "below otherwise) into a clean plan on n-1 cells "
+                          "with no larger peak, no more erasures and at least "
+                          "4 fewer moves; the tight case is theoremA_lower. "
+                          "Corollaries: near_band_lower (n = A+j gives "
+                          ">= 2n-1+2j), p4_lower (n >= 3e+4 gives >= 4n-6e-9), "
+                          "first_drop_tight (j = 1 is attained). Only lower "
+                          "bounds: the matching upper constructions for "
+                          "2 <= j <= p-2 and the p = 4 interior are not in "
+                          "Lean. Lifts the 2026-11-11 paper proof to layer 1; "
+                          "mutation test 4/4 detected, control passes."),
+                "theorems": [
+                    "ErasurePebbling.Contraction.contraction_bound",
+                    "ErasurePebbling.Contraction.length_ge",
+                    "ErasurePebbling.Contraction.near_band_lower",
+                    "ErasurePebbling.Contraction.p4_lower",
+                    "ErasurePebbling.Contraction.first_drop_tight",
+                    "ErasurePebbling.Contraction.contract_drop",
+                    "ErasurePebbling.Contraction.contract_merge",
+                    "ErasurePebbling.Contraction.mc_phase_before",
+                    "ErasurePebbling.Contraction.le_of_tight",
+                ],
+            },
             "erasure_pebbling_bounded": {
                 "status": "proved_bounded",
                 "scope": ("BOUNDED, native_decide, ORACLE LEVEL: the bit-mask "
