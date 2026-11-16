@@ -1,0 +1,13 @@
+name = "abandon-pebbling"
+version = "0.1.0"
+defaultTargets = ["AbandonPebbling"]
+
+# ⚠ mathlib は **spooky-pebbling-lean が既にビルド済みのものを path で借りる**
+#   （6.7GB の olean を二重に持たない・ビルド待ちを避ける）。
+#   その repo を消したり toolchain を上げたりすると壊れる。README §13 に明記。
+[[require]]
+name = "mathlib"
+path = "../../../github.com/yokoyama-lab/spooky-pebbling-lean/.lake/packages/mathlib"
+
+[[lean_lib]]
+name = "AbandonPebbling"
