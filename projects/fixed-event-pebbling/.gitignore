@@ -1,0 +1,19 @@
+CLAUDE.md
+AGENTS.md
+.env
+*.olean
+*.ilean
+build/
+.lake/
+*.pdf
+# LaTeX の中間生成物（監査の記録 audits/ の .log は残す）
+/paper/*.log
+/paper/*.aux
+/paper/*.dvi
+/paper/*.bbl
+/paper/*.blg
+/paper/*.synctex.gz
+/paper/*.fdb_latexmk
+/paper/*.fls
+/paper/*.out
+/paper/*.toc

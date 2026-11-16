@@ -1,0 +1,187 @@
+{
+ "AxMain": {
+  "rc": 0,
+  "names": [
+   "PricedRecurrence.C_affine",
+   "ActualCheckpoint.actual_checkpoint_board"
+  ],
+  "axioms": {
+   "PricedRecurrence.C_affine": [
+    "propext",
+    "Quot.sound"
+   ],
+   "ActualCheckpoint.actual_checkpoint_board": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "skipped": [
+   [
+    "PhysicalExactOptimum",
+    "exact_optimum"
+   ],
+   [
+    "FamilyAllOptimal",
+    "every_family_word"
+   ],
+   [
+    "FullSlotAssembly",
+    "labelled_legal_iff_blocked"
+   ],
+   [
+    "WholeBijection",
+    "local_roundtrip"
+   ],
+   [
+    "WholeBijection",
+    "physical_roundtrip"
+   ],
+   [
+    "PhysicalCount",
+    "exact_physical_word_count"
+   ],
+   [
+    "LabelledCount",
+    "exact_labelled_word_count"
+   ],
+   [
+    "PhysicalCover",
+    "exact_physical_cover"
+   ],
+   [
+    "RawComponentCount",
+    "exact_components"
+   ],
+   [
+    "PhysicalComponentCount",
+    "exact_components"
+   ],
+   [
+    "RawSwapLift",
+    "reach_iff_decode"
+   ],
+   [
+    "ComponentWordCount",
+    "exact_component_word_count"
+   ],
+   [
+    "SignaturePhysicalExact",
+    "exact_component_cover"
+   ],
+   [
+    "SignatureExact",
+    "count_formula"
+   ],
+   [
+    "FinitePartialDFA",
+    "partial_upper_with_initial"
+   ],
+   [
+    "FinitePartialDFA",
+    "partial_lower"
+   ],
+   [
+    "FiniteAlphabetDFA",
+    "complete_lower"
+   ],
+   [
+    "PhysicalAutomataExact",
+    "complete_lower"
+   ],
+   [
+    "FinitePartialEdges",
+    "finite_edge_count"
+   ],
+   [
+    "ComponentExact",
+    "component_556_cover_exact"
+   ],
+   [
+    "ComponentExact",
+    "component_28_cover_exact"
+   ],
+   [
+    "Multiplicity",
+    "raw_exact_multiplicity"
+   ],
+   [
+    "PrecedenceCover",
+    "physical_precedence_upper"
+   ],
+   [
+    "PrecedenceGuard",
+    "physical_run_filter"
+   ],
+   [
+    "RationalObstruction",
+    "I_normalized_rational_obstruction"
+   ],
+   [
+    "RationalObstruction",
+    "M_normalized_rational_obstruction"
+   ]
+  ],
+  "errors": []
+ },
+ "AxResidual": {
+  "skipped": [
+   [
+    "Physical",
+    "initial_exact"
+   ],
+   [
+    "Physical",
+    "middle_exact"
+   ],
+   [
+    "Physical",
+    "initial_nodup"
+   ],
+   [
+    "Physical",
+    "middle_nodup"
+   ]
+  ]
+ },
+ "AxRecurrence": {
+  "skipped": [
+   [
+    "Recurrence",
+    "count_exact"
+   ],
+   [
+    "Recurrence",
+    "zero_iff_no_completion"
+   ],
+   [
+    "Recurrence",
+    "count_distinct"
+   ]
+  ]
+ },
+ "AxRemaining": {
+  "skipped": [
+   [
+    "RemainingPerm",
+    "count_remaining_perm"
+   ],
+   [
+    "RemainingPerm",
+    "completions_remaining_perm"
+   ]
+  ]
+ },
+ "AxBoard": {
+  "skipped": [
+   [
+    "BoardPerm",
+    "count_remaining_perm"
+   ],
+   [
+    "BoardPerm",
+    "completions_remaining_perm"
+   ]
+  ]
+ }
+}

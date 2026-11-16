@@ -1,0 +1,67 @@
+[
+ {
+  "id": "M1",
+  "unit": "PEBBLING-SIGNATURE-COVER-CARD-20261115-A1",
+  "theorem": "signature_number_le_cover_card",
+  "old": "    signatureNumber D ≤ Fintype.card I := by\n  obtain",
+  "new": "    signatureNumber D + 1 ≤ Fintype.card I := by\n  obtain",
+  "rc": 1,
+  "killed": true,
+  "errors": [
+   "SignatureCoverCard.lean:44:2: error: Type mismatch",
+   "SignatureCoverCard.lean:56:2: error: Type mismatch"
+  ]
+ },
+ {
+  "id": "M2",
+  "unit": "PEBBLING-SIGNATURE-COVER-UNIQUE-20261115-A1",
+  "theorem": "minimum_cover_language_bijection",
+  "old": "    (hcard : Fintype.card I = signatureNumber D) :\n    ∃ f : SignatureClass D → I",
+  "new": "    (hcard : Fintype.card I = signatureNumber D + 1) :\n    ∃ f : SignatureClass D → I",
+  "rc": 1,
+  "killed": true,
+  "errors": [
+   "SignatureCoverUnique.lean:98:4: error: 'change' tactic failed, pattern",
+   "SignatureCoverUnique.lean:109:67: error: Application type mismatch: The argument"
+  ]
+ },
+ {
+  "id": "M3",
+  "unit": "PEBBLING-PHYSICAL-CAPACITY-20261115-A1",
+  "theorem": "step_true_iff_false_and_capacity",
+  "old": "some after ∧ after.length ≤ 5 := by",
+  "new": "some after ∧ after.length ≤ 4 := by",
+  "rc": 1,
+  "killed": true,
+  "errors": [
+   "PhysicalStepCapacity.lean:15:45: error: `grind` failed",
+   "PhysicalStepCapacity.lean:15:45: error: `grind` failed",
+   "PhysicalStepCapacity.lean:53:41: error: Application type mismatch: The argument"
+  ]
+ },
+ {
+  "id": "M4",
+  "unit": "PEBBLING-CAPACITY-EDGE-I-20261115-A1",
+  "theorem": "capacity_common_edge",
+  "old": "    w.idxOf 1 < w.idxOf 8 := by",
+  "new": "    w.idxOf 8 < w.idxOf 1 := by",
+  "rc": 1,
+  "killed": true,
+  "errors": [
+   "CapacityCommonEdgeI.lean:22:26: error: Application type mismatch: The argument"
+  ]
+ },
+ {
+  "id": "M5",
+  "unit": "PEBBLING-PHYSICAL-REPLAY-COST-20261115-A2",
+  "theorem": "successful_replayWithCost_cost",
+  "old": "total = PebblingSignature.cost (eventIdIncrement events) (board.length : Int) ids := by",
+  "new": "total = PebblingSignature.cost (eventIdIncrement events) ((board.length : Int) + 1) ids := by",
+  "rc": 1,
+  "killed": true,
+  "errors": [
+   "PhysicalReplayCost.lean:73:22: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+   "PhysicalReplayCost.lean:92:6: error: Type mismatch: After simplification, term"
+  ]
+ }
+]

@@ -1,0 +1,33 @@
+import MLargeData
+namespace MLargeSwap
+open SwapComponents
+set_option maxRecDepth 100000
+theorem legal434 : LocalCertificate.M.Legal w434 := by decide
+theorem closed434 : ∀v∈neighbors w434,LocalCertificate.M.Legal v→v∈component := by decide
+theorem edge434 : w434∈neighbors w348 := by decide
+theorem legal435 : LocalCertificate.M.Legal w435 := by decide
+theorem closed435 : ∀v∈neighbors w435,LocalCertificate.M.Legal v→v∈component := by decide
+theorem edge435 : w435∈neighbors w350 := by decide
+theorem legal436 : LocalCertificate.M.Legal w436 := by decide
+theorem closed436 : ∀v∈neighbors w436,LocalCertificate.M.Legal v→v∈component := by decide
+theorem edge436 : w436∈neighbors w352 := by decide
+theorem legal437 : LocalCertificate.M.Legal w437 := by decide
+theorem closed437 : ∀v∈neighbors w437,LocalCertificate.M.Legal v→v∈component := by decide
+theorem edge437 : w437∈neighbors w355 := by decide
+theorem legal438 : LocalCertificate.M.Legal w438 := by decide
+theorem closed438 : ∀v∈neighbors w438,LocalCertificate.M.Legal v→v∈component := by decide
+theorem edge438 : w438∈neighbors w355 := by decide
+theorem legal439 : LocalCertificate.M.Legal w439 := by decide
+theorem closed439 : ∀v∈neighbors w439,LocalCertificate.M.Legal v→v∈component := by decide
+theorem edge439 : w439∈neighbors w356 := by decide
+theorem legal440 : LocalCertificate.M.Legal w440 := by decide
+theorem closed440 : ∀v∈neighbors w440,LocalCertificate.M.Legal v→v∈component := by decide
+theorem edge440 : w440∈neighbors w356 := by decide
+theorem fresh434 : w434∉[w435,w436,w437,w438,w439,w440,w441,w442,w443,w444,w445,w446,w447,w448,w449,w450,w451,w452,w453,w454,w455,w456,w457,w458,w459,w460,w461,w462,w463,w464,w465,w466,w467,w468,w469,w470,w471,w472,w473,w474,w475,w476,w477,w478,w479,w480,w481,w482,w483,w484,w485,w486,w487,w488,w489,w490,w491,w492,w493,w494,w495,w496,w497,w498,w499,w500,w501,w502,w503,w504,w505,w506,w507,w508,w509,w510,w511,w512,w513,w514,w515,w516,w517,w518,w519,w520,w521,w522,w523,w524,w525,w526,w527,w528,w529,w530,w531,w532,w533,w534,w535,w536,w537,w538,w539,w540,w541,w542,w543,w544,w545,w546,w547,w548,w549,w550,w551,w552,w553,w554,w555] := by decide
+theorem fresh435 : w435∉[w436,w437,w438,w439,w440,w441,w442,w443,w444,w445,w446,w447,w448,w449,w450,w451,w452,w453,w454,w455,w456,w457,w458,w459,w460,w461,w462,w463,w464,w465,w466,w467,w468,w469,w470,w471,w472,w473,w474,w475,w476,w477,w478,w479,w480,w481,w482,w483,w484,w485,w486,w487,w488,w489,w490,w491,w492,w493,w494,w495,w496,w497,w498,w499,w500,w501,w502,w503,w504,w505,w506,w507,w508,w509,w510,w511,w512,w513,w514,w515,w516,w517,w518,w519,w520,w521,w522,w523,w524,w525,w526,w527,w528,w529,w530,w531,w532,w533,w534,w535,w536,w537,w538,w539,w540,w541,w542,w543,w544,w545,w546,w547,w548,w549,w550,w551,w552,w553,w554,w555] := by decide
+theorem fresh436 : w436∉[w437,w438,w439,w440,w441,w442,w443,w444,w445,w446,w447,w448,w449,w450,w451,w452,w453,w454,w455,w456,w457,w458,w459,w460,w461,w462,w463,w464,w465,w466,w467,w468,w469,w470,w471,w472,w473,w474,w475,w476,w477,w478,w479,w480,w481,w482,w483,w484,w485,w486,w487,w488,w489,w490,w491,w492,w493,w494,w495,w496,w497,w498,w499,w500,w501,w502,w503,w504,w505,w506,w507,w508,w509,w510,w511,w512,w513,w514,w515,w516,w517,w518,w519,w520,w521,w522,w523,w524,w525,w526,w527,w528,w529,w530,w531,w532,w533,w534,w535,w536,w537,w538,w539,w540,w541,w542,w543,w544,w545,w546,w547,w548,w549,w550,w551,w552,w553,w554,w555] := by decide
+theorem fresh437 : w437∉[w438,w439,w440,w441,w442,w443,w444,w445,w446,w447,w448,w449,w450,w451,w452,w453,w454,w455,w456,w457,w458,w459,w460,w461,w462,w463,w464,w465,w466,w467,w468,w469,w470,w471,w472,w473,w474,w475,w476,w477,w478,w479,w480,w481,w482,w483,w484,w485,w486,w487,w488,w489,w490,w491,w492,w493,w494,w495,w496,w497,w498,w499,w500,w501,w502,w503,w504,w505,w506,w507,w508,w509,w510,w511,w512,w513,w514,w515,w516,w517,w518,w519,w520,w521,w522,w523,w524,w525,w526,w527,w528,w529,w530,w531,w532,w533,w534,w535,w536,w537,w538,w539,w540,w541,w542,w543,w544,w545,w546,w547,w548,w549,w550,w551,w552,w553,w554,w555] := by decide
+theorem fresh438 : w438∉[w439,w440,w441,w442,w443,w444,w445,w446,w447,w448,w449,w450,w451,w452,w453,w454,w455,w456,w457,w458,w459,w460,w461,w462,w463,w464,w465,w466,w467,w468,w469,w470,w471,w472,w473,w474,w475,w476,w477,w478,w479,w480,w481,w482,w483,w484,w485,w486,w487,w488,w489,w490,w491,w492,w493,w494,w495,w496,w497,w498,w499,w500,w501,w502,w503,w504,w505,w506,w507,w508,w509,w510,w511,w512,w513,w514,w515,w516,w517,w518,w519,w520,w521,w522,w523,w524,w525,w526,w527,w528,w529,w530,w531,w532,w533,w534,w535,w536,w537,w538,w539,w540,w541,w542,w543,w544,w545,w546,w547,w548,w549,w550,w551,w552,w553,w554,w555] := by decide
+theorem fresh439 : w439∉[w440,w441,w442,w443,w444,w445,w446,w447,w448,w449,w450,w451,w452,w453,w454,w455,w456,w457,w458,w459,w460,w461,w462,w463,w464,w465,w466,w467,w468,w469,w470,w471,w472,w473,w474,w475,w476,w477,w478,w479,w480,w481,w482,w483,w484,w485,w486,w487,w488,w489,w490,w491,w492,w493,w494,w495,w496,w497,w498,w499,w500,w501,w502,w503,w504,w505,w506,w507,w508,w509,w510,w511,w512,w513,w514,w515,w516,w517,w518,w519,w520,w521,w522,w523,w524,w525,w526,w527,w528,w529,w530,w531,w532,w533,w534,w535,w536,w537,w538,w539,w540,w541,w542,w543,w544,w545,w546,w547,w548,w549,w550,w551,w552,w553,w554,w555] := by decide
+theorem fresh440 : w440∉[w441,w442,w443,w444,w445,w446,w447,w448,w449,w450,w451,w452,w453,w454,w455,w456,w457,w458,w459,w460,w461,w462,w463,w464,w465,w466,w467,w468,w469,w470,w471,w472,w473,w474,w475,w476,w477,w478,w479,w480,w481,w482,w483,w484,w485,w486,w487,w488,w489,w490,w491,w492,w493,w494,w495,w496,w497,w498,w499,w500,w501,w502,w503,w504,w505,w506,w507,w508,w509,w510,w511,w512,w513,w514,w515,w516,w517,w518,w519,w520,w521,w522,w523,w524,w525,w526,w527,w528,w529,w530,w531,w532,w533,w534,w535,w536,w537,w538,w539,w540,w541,w542,w543,w544,w545,w546,w547,w548,w549,w550,w551,w552,w553,w554,w555] := by decide
+end MLargeSwap

@@ -1,0 +1,35 @@
+import SwapCore
+namespace MSmallSwap
+open SwapComponents
+def w0 : List Nat := [4, 5, 7, 6, 1, 3, 2, 0, 8, 10, 9, 11]
+def w1 : List Nat := [5, 4, 7, 6, 1, 3, 2, 0, 8, 10, 9, 11]
+def w2 : List Nat := [4, 5, 7, 6, 1, 3, 2, 8, 0, 10, 9, 11]
+def w3 : List Nat := [4, 5, 7, 6, 1, 3, 2, 0, 8, 10, 11, 9]
+def w4 : List Nat := [5, 4, 7, 6, 1, 3, 2, 8, 0, 10, 9, 11]
+def w5 : List Nat := [5, 4, 7, 6, 1, 3, 2, 0, 8, 10, 11, 9]
+def w6 : List Nat := [4, 5, 7, 6, 1, 3, 8, 2, 0, 10, 9, 11]
+def w7 : List Nat := [4, 5, 7, 6, 1, 3, 2, 8, 10, 0, 9, 11]
+def w8 : List Nat := [4, 5, 7, 6, 1, 3, 2, 8, 0, 10, 11, 9]
+def w9 : List Nat := [5, 4, 7, 6, 1, 3, 8, 2, 0, 10, 9, 11]
+def w10 : List Nat := [5, 4, 7, 6, 1, 3, 2, 8, 10, 0, 9, 11]
+def w11 : List Nat := [5, 4, 7, 6, 1, 3, 2, 8, 0, 10, 11, 9]
+def w12 : List Nat := [4, 5, 7, 6, 1, 3, 8, 2, 10, 0, 9, 11]
+def w13 : List Nat := [4, 5, 7, 6, 1, 3, 8, 2, 0, 10, 11, 9]
+def w14 : List Nat := [4, 5, 7, 6, 1, 3, 2, 8, 10, 9, 0, 11]
+def w15 : List Nat := [4, 5, 7, 6, 1, 3, 2, 8, 10, 0, 11, 9]
+def w16 : List Nat := [5, 4, 7, 6, 1, 3, 8, 2, 10, 0, 9, 11]
+def w17 : List Nat := [5, 4, 7, 6, 1, 3, 8, 2, 0, 10, 11, 9]
+def w18 : List Nat := [5, 4, 7, 6, 1, 3, 2, 8, 10, 9, 0, 11]
+def w19 : List Nat := [5, 4, 7, 6, 1, 3, 2, 8, 10, 0, 11, 9]
+def w20 : List Nat := [4, 5, 7, 6, 1, 3, 8, 2, 10, 9, 0, 11]
+def w21 : List Nat := [4, 5, 7, 6, 1, 3, 8, 2, 10, 0, 11, 9]
+def w22 : List Nat := [4, 5, 7, 6, 1, 3, 2, 8, 10, 9, 11, 0]
+def w23 : List Nat := [5, 4, 7, 6, 1, 3, 8, 2, 10, 9, 0, 11]
+def w24 : List Nat := [5, 4, 7, 6, 1, 3, 8, 2, 10, 0, 11, 9]
+def w25 : List Nat := [5, 4, 7, 6, 1, 3, 2, 8, 10, 9, 11, 0]
+def w26 : List Nat := [4, 5, 7, 6, 1, 3, 8, 2, 10, 9, 11, 0]
+def w27 : List Nat := [5, 4, 7, 6, 1, 3, 8, 2, 10, 9, 11, 0]
+def component : List (List Nat) := [w0,w1,w2,w3,w4,w5,w6,w7,w8,w9,w10,w11,w12,w13,w14,w15,w16,w17,w18,w19,w20,w21,w22,w23,w24,w25,w26,w27]
+theorem size : component.length=28 := by decide
+theorem unique : component.Nodup := by decide
+end MSmallSwap

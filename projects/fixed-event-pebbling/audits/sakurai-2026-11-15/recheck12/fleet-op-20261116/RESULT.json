@@ -1,0 +1,219 @@
+{
+ "id": "SMF-LEANGATE3-fixedpeb",
+ "host": "op",
+ "time": "2026-11-16 09:35:32",
+ "rc": {
+  "S0": 0,
+  "L0": 0,
+  "G0": 0,
+  "B1": 0,
+  "B2": 0,
+  "A1": 0,
+  "A3": 0,
+  "M6": 0,
+  "M7": 0,
+  "MC": 0,
+  "MW": 0,
+  "MO": 0,
+  "C1": 0
+ },
+ "notes": {
+  "S0": "0 bad=0",
+  "L0": "0 Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Rel extra_paths=0",
+  "G0": "0 hits=0 modules=455",
+  "B1": "0 failed_at=None modules=455 secs=1183.2",
+  "B2": "0 oleans=455/455 stale_or_missing=[]",
+  "A1": "0 names=37 found=37",
+  "A3": "0 print_axioms_rows=1043 nonstd=0 warnings=55",
+  "M6": "0 recompiled<= 8 compile_rc=1 failed_at=PricedRecurrence (detected) error: omega could not prove the goal:",
+  "M7": "0 recompiled<= 97 compile_rc=1 failed_at=ActualCheckpoint (detected) error: Tactic `apply` failed: could not unify the conclusion of `CheckpointCapacity.saturated_board",
+  "MC": "0 recompiled<= 6 compile_rc=1 failed_at=PhysicalCover (detected) error: Application type mismatch: The argument",
+  "MW": "0 recompiled<= 15 compile_rc=1 failed_at=PhysicalCount (detected) error: Application type mismatch: The argument",
+  "MO": "0 recompiled<= 2 compile_rc=1 failed_at=PhysicalExactOptimum (detected) error: Application type mismatch: The argument",
+  "C1": "0 audit_rc=0 same_as_A1=True"
+ },
+ "red": [],
+ "inconclusive": [],
+ "verdict": "GREEN",
+ "axioms": {
+  "ActualCheckpoint.actual_checkpoint_board": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "ChainFullSlotAssembly.labelled_legal_iff_blocked": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "ChainLabelledCount.exact_labelled_word_count": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "ChainPhysicalCover.exact_physical_cover": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "ChainWholeBijection.local_roundtrip": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "ChainWholeBijection.physical_roundtrip": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "ChainWordCounts.exact_physical_word_count": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "ComponentLabelledCode.exact_component_word_count": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "ComponentMultiplicity.raw_exact_multiplicity": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "FamilyAllOptimal.every_family_word": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "FiniteAlphabetDFA.complete_lower": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "FinitePartialDFA.partial_lower": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "FinitePartialDFA.partial_upper_with_initial": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "FinitePartialEdges.finite_edge_count": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "MComponentCover.component_28_cover_exact": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "MComponentCover.component_556_cover_exact": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "MixtureCertificates.I_normalized_rational_obstruction": [
+   "Quot.sound",
+   "propext"
+  ],
+  "MixtureCertificates.M_normalized_rational_obstruction": [
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalAutomataExact.complete_lower": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalCompletionCount.completions_remaining_perm": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalCompletionCount.count_distinct": [
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalCompletionCount.count_exact": [
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalCompletionCount.count_remaining_perm": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalCompletionCount.zero_iff_no_completion": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalComponentCount.exact_components": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalExactOptimum.exact_optimum": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalResidual.initial_exact": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalResidual.initial_nodup": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalResidual.middle_exact": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PhysicalResidual.middle_nodup": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PrecedenceCover.physical_precedence_upper": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PrecedenceGuard.physical_run_filter": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "PricedRecurrence.C_affine": [
+   "Quot.sound",
+   "propext"
+  ],
+  "RawComponentCount.exact_components": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "RawSwapGraph.reach_iff_decode": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "SignatureCover.count_formula": [
+   "propext"
+  ],
+  "SignaturePhysical.exact_component_cover": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ]
+ },
+ "B1_secs": 1183.2
+}
