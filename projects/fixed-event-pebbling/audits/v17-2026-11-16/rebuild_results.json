@@ -1,0 +1,1145 @@
+{
+ "COMPLETION-EXACT-A1": {
+  "unit": "COMPLETION-EXACT-A1",
+  "modules": [
+   "SignatureInvariant",
+   "BeforeTrace",
+   "ExtensionBefore",
+   "CompletionOrder",
+   "CompletionExact"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "SignatureInvariant",
+    "rc": 0,
+    "elapsed": 1.12,
+    "olean": true
+   },
+   {
+    "module": "BeforeTrace",
+    "rc": 0,
+    "elapsed": 1.04,
+    "olean": true
+   },
+   {
+    "module": "ExtensionBefore",
+    "rc": 0,
+    "elapsed": 0.84,
+    "olean": true
+   },
+   {
+    "module": "CompletionOrder",
+    "rc": 0,
+    "elapsed": 0.95,
+    "olean": true
+   },
+   {
+    "module": "CompletionExact",
+    "rc": 0,
+    "elapsed": 0.85,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "PebblingSignature.pairwise_of_forall_before": [
+    "propext"
+   ],
+   "PebblingSignature.pairwise_no_reverse_iff_respects": [
+    "propext",
+    "Quot.sound"
+   ],
+   "PebblingSignature.completion_extensions_iff": [
+    "propext",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "COMPLETION-MAP-A1": {
+  "unit": "COMPLETION-MAP-A1",
+  "modules": [
+   "SignatureInvariant",
+   "BeforeTrace",
+   "ExtensionBefore",
+   "CompletionOrder",
+   "CompletionExact",
+   "PairwiseConnectivityA2",
+   "PathMap",
+   "CompletionMap"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "SignatureInvariant",
+    "rc": 0,
+    "elapsed": 1.06,
+    "olean": true
+   },
+   {
+    "module": "BeforeTrace",
+    "rc": 0,
+    "elapsed": 1.0,
+    "olean": true
+   },
+   {
+    "module": "ExtensionBefore",
+    "rc": 0,
+    "elapsed": 0.83,
+    "olean": true
+   },
+   {
+    "module": "CompletionOrder",
+    "rc": 0,
+    "elapsed": 0.89,
+    "olean": true
+   },
+   {
+    "module": "CompletionExact",
+    "rc": 0,
+    "elapsed": 0.84,
+    "olean": true
+   },
+   {
+    "module": "PairwiseConnectivityA2",
+    "rc": 0,
+    "elapsed": 0.94,
+    "olean": true
+   },
+   {
+    "module": "PathMap",
+    "rc": 0,
+    "elapsed": 0.79,
+    "olean": true
+   },
+   {
+    "module": "CompletionMap",
+    "rc": 0,
+    "elapsed": 0.77,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "PebblingSignature.completion_preserves_signword": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "CONSTANT-COST-SIGNATURE-A1": {
+  "unit": "CONSTANT-COST-SIGNATURE-A1",
+  "modules": [
+   "PairwiseConnectivityA2",
+   "SignatureSwapStd",
+   "SignatureInvariant",
+   "ConstantCostSignature"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "PairwiseConnectivityA2",
+    "rc": 0,
+    "elapsed": 0.94,
+    "olean": true
+   },
+   {
+    "module": "SignatureSwapStd",
+    "rc": 0,
+    "elapsed": 1.01,
+    "olean": true
+   },
+   {
+    "module": "SignatureInvariant",
+    "rc": 0,
+    "elapsed": 1.08,
+    "olean": true
+   },
+   {
+    "module": "ConstantCostSignature",
+    "rc": 0,
+    "elapsed": 0.87,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "PebblingSignature.path_constant_cost_signature": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "PebblingSignature.constant_cost_signature": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "EXTENSION-BEFORE-A2": {
+  "unit": "EXTENSION-BEFORE-A2",
+  "modules": [
+   "SignatureInvariant",
+   "BeforeTrace",
+   "ExtensionBefore",
+   "CompletionOrder",
+   "CompletionFromExtension"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "SignatureInvariant",
+    "rc": 0,
+    "elapsed": 1.08,
+    "olean": true
+   },
+   {
+    "module": "BeforeTrace",
+    "rc": 0,
+    "elapsed": 1.0,
+    "olean": true
+   },
+   {
+    "module": "ExtensionBefore",
+    "rc": 0,
+    "elapsed": 0.82,
+    "olean": true
+   },
+   {
+    "module": "CompletionOrder",
+    "rc": 0,
+    "elapsed": 0.9,
+    "olean": true
+   },
+   {
+    "module": "CompletionFromExtension",
+    "rc": 0,
+    "elapsed": 0.75,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "PebblingSignature.before_total_of_mem": [
+    "propext"
+   ],
+   "PebblingSignature.pairwise_base_edge_before": [
+    "propext",
+    "Quot.sound"
+   ],
+   "PebblingSignature.permutation_pairwise_respects_base": [
+    "propext",
+    "Quot.sound"
+   ],
+   "PebblingSignature.completion_before_from_extension": [
+    "propext",
+    "Quot.sound"
+   ],
+   "PebblingSignature.completion_irrefl_from_extension": [
+    "propext",
+    "Quot.sound"
+   ],
+   "PebblingSignature.completion_antisymm_from_extension": [
+    "propext",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "GUARD-ASSEMBLY-A1": {
+  "unit": "GUARD-ASSEMBLY-A1",
+  "modules": [
+   "SignatureInvariant",
+   "BeforeTrace",
+   "ExtensionBefore",
+   "CompletionOrder",
+   "CompletionExact",
+   "PairwiseConnectivityA2",
+   "PathMap",
+   "CompletionMap",
+   "SignatureSwapStd",
+   "CostMap",
+   "CompletionGuard"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "SignatureInvariant",
+    "rc": 0,
+    "elapsed": 1.02,
+    "olean": true
+   },
+   {
+    "module": "BeforeTrace",
+    "rc": 0,
+    "elapsed": 1.0,
+    "olean": true
+   },
+   {
+    "module": "ExtensionBefore",
+    "rc": 0,
+    "elapsed": 0.83,
+    "olean": true
+   },
+   {
+    "module": "CompletionOrder",
+    "rc": 0,
+    "elapsed": 0.93,
+    "olean": true
+   },
+   {
+    "module": "CompletionExact",
+    "rc": 0,
+    "elapsed": 0.86,
+    "olean": true
+   },
+   {
+    "module": "PairwiseConnectivityA2",
+    "rc": 0,
+    "elapsed": 0.9,
+    "olean": true
+   },
+   {
+    "module": "PathMap",
+    "rc": 0,
+    "elapsed": 0.8,
+    "olean": true
+   },
+   {
+    "module": "CompletionMap",
+    "rc": 0,
+    "elapsed": 0.84,
+    "olean": true
+   },
+   {
+    "module": "SignatureSwapStd",
+    "rc": 0,
+    "elapsed": 0.89,
+    "olean": true
+   },
+   {
+    "module": "CostMap",
+    "rc": 0,
+    "elapsed": 0.75,
+    "olean": true
+   },
+   {
+    "module": "CompletionGuard",
+    "rc": 0,
+    "elapsed": 0.75,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "PebblingSignature.completion_preserves_cost_and_guard": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "NONCAPACITY-COUNTEREXAMPLE-A1": {
+  "unit": "NONCAPACITY-COUNTEREXAMPLE-A1",
+  "modules": [
+   "CommonExtension",
+   "LocalCertificate",
+   "NoncapacityCounterexamples"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "CommonExtension",
+    "rc": 0,
+    "elapsed": 0.61,
+    "olean": true
+   },
+   {
+    "module": "LocalCertificate",
+    "rc": 0,
+    "elapsed": 25.6,
+    "olean": true
+   },
+   {
+    "module": "NoncapacityCounterexamples",
+    "rc": 0,
+    "elapsed": 0.81,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "LocalCertificate.NoncapacityCounterexamples.I_permutation": [],
+   "LocalCertificate.NoncapacityCounterexamples.M_permutation": [],
+   "LocalCertificate.NoncapacityCounterexamples.I_noncapacity_success": [
+    "propext"
+   ],
+   "LocalCertificate.NoncapacityCounterexamples.M_noncapacity_success": [
+    "propext"
+   ],
+   "LocalCertificate.NoncapacityCounterexamples.I_capacity_failure": [
+    "propext"
+   ],
+   "LocalCertificate.NoncapacityCounterexamples.M_capacity_failure": [
+    "propext"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "PHYSICAL-CAPACITY-A1": {
+  "unit": "PHYSICAL-CAPACITY-A1",
+  "modules": [
+   "CommonExtension",
+   "LocalCertificate",
+   "PhysicalStepHeight",
+   "PhysicalReplayHeight",
+   "PhysicalStepCapacity"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "CommonExtension",
+    "rc": 0,
+    "elapsed": 0.86,
+    "olean": true
+   },
+   {
+    "module": "LocalCertificate",
+    "rc": 0,
+    "elapsed": 25.2,
+    "olean": true
+   },
+   {
+    "module": "PhysicalStepHeight",
+    "rc": 0,
+    "elapsed": 1.21,
+    "olean": true
+   },
+   {
+    "module": "PhysicalReplayHeight",
+    "rc": 0,
+    "elapsed": 1.56,
+    "olean": true
+   },
+   {
+    "module": "PhysicalStepCapacity",
+    "rc": 0,
+    "elapsed": 1.64,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "LocalCertificate.step_true_iff_false_and_capacity": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "LocalCertificate.CapacityTrace.replay_false": [
+    "propext"
+   ],
+   "LocalCertificate.replay_true_iff_capacityTrace": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "PHYSICAL-PREFIX-GUARD-A1": {
+  "unit": "PHYSICAL-PREFIX-GUARD-A1",
+  "modules": [
+   "CommonExtension",
+   "LocalCertificate",
+   "PhysicalStepHeight",
+   "PhysicalReplayHeight",
+   "PhysicalStepCapacity",
+   "PhysicalPrefixGuard"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "CommonExtension",
+    "rc": 0,
+    "elapsed": 1.02,
+    "olean": true
+   },
+   {
+    "module": "LocalCertificate",
+    "rc": 0,
+    "elapsed": 25.33,
+    "olean": true
+   },
+   {
+    "module": "PhysicalStepHeight",
+    "rc": 0,
+    "elapsed": 0.84,
+    "olean": true
+   },
+   {
+    "module": "PhysicalReplayHeight",
+    "rc": 0,
+    "elapsed": 0.9,
+    "olean": true
+   },
+   {
+    "module": "PhysicalStepCapacity",
+    "rc": 0,
+    "elapsed": 1.02,
+    "olean": true
+   },
+   {
+    "module": "PhysicalPrefixGuard",
+    "rc": 0,
+    "elapsed": 0.93,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "LocalCertificate.successful_replay_post_nonnegative": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "LocalCertificate.capacityTrace_iff_postUpper_of_replay_false": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "LocalCertificate.replay_true_iff_false_and_postUpper": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "LocalCertificate.replay_true_iff_false_and_fullUpper": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "PHYSICAL-REPLAY-A2": {
+  "unit": "PHYSICAL-REPLAY-A2",
+  "modules": [
+   "CommonExtension",
+   "LocalCertificate",
+   "PhysicalStepHeight",
+   "PhysicalReplayHeight",
+   "PhysicalReplayNodup"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "CommonExtension",
+    "rc": 0,
+    "elapsed": 0.58,
+    "olean": true
+   },
+   {
+    "module": "LocalCertificate",
+    "rc": 0,
+    "elapsed": 25.37,
+    "olean": true
+   },
+   {
+    "module": "PhysicalStepHeight",
+    "rc": 0,
+    "elapsed": 1.07,
+    "olean": true
+   },
+   {
+    "module": "PhysicalReplayHeight",
+    "rc": 0,
+    "elapsed": 1.43,
+    "olean": true
+   },
+   {
+    "module": "PhysicalReplayNodup",
+    "rc": 0,
+    "elapsed": 1.27,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "LocalCertificate.successful_replay_cons_decompose": [
+    "propext"
+   ],
+   "LocalCertificate.successful_replay_ids_exist": [
+    "propext",
+    "Quot.sound"
+   ],
+   "LocalCertificate.successful_replay_length_sum": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "LocalCertificate.I_successful_replay_height": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "LocalCertificate.M_successful_replay_height": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "LocalCertificate.successful_step_nodup": [
+    "propext",
+    "Quot.sound"
+   ],
+   "LocalCertificate.successful_replay_nodup": [
+    "propext",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "PHYSICAL-REPLAY-COST-A2": {
+  "unit": "PHYSICAL-REPLAY-COST-A2",
+  "modules": [
+   "CommonExtension",
+   "LocalCertificate",
+   "PhysicalStepHeight",
+   "PhysicalReplayHeight",
+   "SignatureSwapStd",
+   "PhysicalReplayCost"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "CommonExtension",
+    "rc": 0,
+    "elapsed": 1.05,
+    "olean": true
+   },
+   {
+    "module": "LocalCertificate",
+    "rc": 0,
+    "elapsed": 26.56,
+    "olean": true
+   },
+   {
+    "module": "PhysicalStepHeight",
+    "rc": 0,
+    "elapsed": 1.04,
+    "olean": true
+   },
+   {
+    "module": "PhysicalReplayHeight",
+    "rc": 0,
+    "elapsed": 1.7,
+    "olean": true
+   },
+   {
+    "module": "SignatureSwapStd",
+    "rc": 0,
+    "elapsed": 1.64,
+    "olean": true
+   },
+   {
+    "module": "PhysicalReplayCost",
+    "rc": 0,
+    "elapsed": 1.74,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "LocalCertificate.replayWithCost_projection": [
+    "propext"
+   ],
+   "LocalCertificate.successful_replayWithCost_cost": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "LocalCertificate.successful_replay_has_cost": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "PHYSICAL-STEP-HEIGHT-A2": {
+  "unit": "PHYSICAL-STEP-HEIGHT-A2",
+  "modules": [
+   "CommonExtension",
+   "LocalCertificate",
+   "PhysicalStepHeight"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "CommonExtension",
+    "rc": 0,
+    "elapsed": 1.0,
+    "olean": true
+   },
+   {
+    "module": "LocalCertificate",
+    "rc": 0,
+    "elapsed": 26.37,
+    "olean": true
+   },
+   {
+    "module": "PhysicalStepHeight",
+    "rc": 0,
+    "elapsed": 0.86,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "LocalCertificate.successful_remove_shape": [
+    "propext",
+    "Quot.sound"
+   ],
+   "LocalCertificate.successful_place_shape": [
+    "propext",
+    "Quot.sound"
+   ],
+   "LocalCertificate.successful_step_length_increment": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "LocalCertificate.I_initial_height": [],
+   "LocalCertificate.M_initial_height": []
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "SIGNATURE-COVER-CARD-A1": {
+  "unit": "SIGNATURE-COVER-CARD-A1",
+  "modules": [
+   "PairwiseConnectivityA2",
+   "SignatureSwapStd",
+   "SignatureInvariant",
+   "ConstantCostSignature",
+   "BeforeTrace",
+   "ExtensionBefore",
+   "CompletionOrder",
+   "CompletionExact",
+   "PathMap",
+   "CompletionMap",
+   "CostMap",
+   "CompletionGuard",
+   "SignatureCoverCore",
+   "SignatureCoverCard"
+  ],
+  "mathlib": true,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "PairwiseConnectivityA2",
+    "rc": 0,
+    "elapsed": 1.32,
+    "olean": true
+   },
+   {
+    "module": "SignatureSwapStd",
+    "rc": 0,
+    "elapsed": 1.67,
+    "olean": true
+   },
+   {
+    "module": "SignatureInvariant",
+    "rc": 0,
+    "elapsed": 1.78,
+    "olean": true
+   },
+   {
+    "module": "ConstantCostSignature",
+    "rc": 0,
+    "elapsed": 1.59,
+    "olean": true
+   },
+   {
+    "module": "BeforeTrace",
+    "rc": 0,
+    "elapsed": 1.7,
+    "olean": true
+   },
+   {
+    "module": "ExtensionBefore",
+    "rc": 0,
+    "elapsed": 1.51,
+    "olean": true
+   },
+   {
+    "module": "CompletionOrder",
+    "rc": 0,
+    "elapsed": 1.74,
+    "olean": true
+   },
+   {
+    "module": "CompletionExact",
+    "rc": 0,
+    "elapsed": 1.43,
+    "olean": true
+   },
+   {
+    "module": "PathMap",
+    "rc": 0,
+    "elapsed": 1.31,
+    "olean": true
+   },
+   {
+    "module": "CompletionMap",
+    "rc": 0,
+    "elapsed": 1.42,
+    "olean": true
+   },
+   {
+    "module": "CostMap",
+    "rc": 0,
+    "elapsed": 1.48,
+    "olean": true
+   },
+   {
+    "module": "CompletionGuard",
+    "rc": 0,
+    "elapsed": 1.44,
+    "olean": true
+   },
+   {
+    "module": "SignatureCoverCore",
+    "rc": 0,
+    "elapsed": 1.72,
+    "olean": true
+   },
+   {
+    "module": "SignatureCoverCard",
+    "rc": 0,
+    "elapsed": 2.98,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "PebblingSignature.layerWordVector_injective": [
+    "propext",
+    "Quot.sound"
+   ],
+   "PebblingSignature.signature_number_le_cover_card": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "PebblingSignature.signature_cover_attains_minimum": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "SIGNATURE-COVER-CORE-A1": {
+  "unit": "SIGNATURE-COVER-CORE-A1",
+  "modules": [
+   "PairwiseConnectivityA2",
+   "SignatureSwapStd",
+   "SignatureInvariant",
+   "ConstantCostSignature",
+   "BeforeTrace",
+   "ExtensionBefore",
+   "CompletionOrder",
+   "CompletionExact",
+   "PathMap",
+   "CompletionMap",
+   "CostMap",
+   "CompletionGuard",
+   "SignatureCoverCore"
+  ],
+  "mathlib": false,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "PairwiseConnectivityA2",
+    "rc": 0,
+    "elapsed": 1.42,
+    "olean": true
+   },
+   {
+    "module": "SignatureSwapStd",
+    "rc": 0,
+    "elapsed": 1.55,
+    "olean": true
+   },
+   {
+    "module": "SignatureInvariant",
+    "rc": 0,
+    "elapsed": 0.99,
+    "olean": true
+   },
+   {
+    "module": "ConstantCostSignature",
+    "rc": 0,
+    "elapsed": 0.81,
+    "olean": true
+   },
+   {
+    "module": "BeforeTrace",
+    "rc": 0,
+    "elapsed": 1.6,
+    "olean": true
+   },
+   {
+    "module": "ExtensionBefore",
+    "rc": 0,
+    "elapsed": 0.75,
+    "olean": true
+   },
+   {
+    "module": "CompletionOrder",
+    "rc": 0,
+    "elapsed": 1.03,
+    "olean": true
+   },
+   {
+    "module": "CompletionExact",
+    "rc": 0,
+    "elapsed": 0.73,
+    "olean": true
+   },
+   {
+    "module": "PathMap",
+    "rc": 0,
+    "elapsed": 0.9,
+    "olean": true
+   },
+   {
+    "module": "CompletionMap",
+    "rc": 0,
+    "elapsed": 1.25,
+    "olean": true
+   },
+   {
+    "module": "CostMap",
+    "rc": 0,
+    "elapsed": 1.31,
+    "olean": true
+   },
+   {
+    "module": "CompletionGuard",
+    "rc": 0,
+    "elapsed": 1.36,
+    "olean": true
+   },
+   {
+    "module": "SignatureCoverCore",
+    "rc": 0,
+    "elapsed": 1.58,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "PebblingSignature.cover_class_injection": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "PebblingSignature.completion_class_cover": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ },
+ "SIGNATURE-COVER-UNIQUE-A1": {
+  "unit": "SIGNATURE-COVER-UNIQUE-A1",
+  "modules": [
+   "PairwiseConnectivityA2",
+   "SignatureSwapStd",
+   "SignatureInvariant",
+   "ConstantCostSignature",
+   "BeforeTrace",
+   "ExtensionBefore",
+   "CompletionOrder",
+   "CompletionExact",
+   "PathMap",
+   "CompletionMap",
+   "CostMap",
+   "CompletionGuard",
+   "SignatureCoverCore",
+   "SignatureCoverCard",
+   "SignatureCoverUnique"
+  ],
+  "mathlib": true,
+  "sha_mismatch": [],
+  "steps": [
+   {
+    "module": "PairwiseConnectivityA2",
+    "rc": 0,
+    "elapsed": 0.89,
+    "olean": true
+   },
+   {
+    "module": "SignatureSwapStd",
+    "rc": 0,
+    "elapsed": 1.08,
+    "olean": true
+   },
+   {
+    "module": "SignatureInvariant",
+    "rc": 0,
+    "elapsed": 1.12,
+    "olean": true
+   },
+   {
+    "module": "ConstantCostSignature",
+    "rc": 0,
+    "elapsed": 0.98,
+    "olean": true
+   },
+   {
+    "module": "BeforeTrace",
+    "rc": 0,
+    "elapsed": 1.63,
+    "olean": true
+   },
+   {
+    "module": "ExtensionBefore",
+    "rc": 0,
+    "elapsed": 0.84,
+    "olean": true
+   },
+   {
+    "module": "CompletionOrder",
+    "rc": 0,
+    "elapsed": 0.95,
+    "olean": true
+   },
+   {
+    "module": "CompletionExact",
+    "rc": 0,
+    "elapsed": 1.38,
+    "olean": true
+   },
+   {
+    "module": "PathMap",
+    "rc": 0,
+    "elapsed": 1.48,
+    "olean": true
+   },
+   {
+    "module": "CompletionMap",
+    "rc": 0,
+    "elapsed": 1.35,
+    "olean": true
+   },
+   {
+    "module": "CostMap",
+    "rc": 0,
+    "elapsed": 1.35,
+    "olean": true
+   },
+   {
+    "module": "CompletionGuard",
+    "rc": 0,
+    "elapsed": 1.36,
+    "olean": true
+   },
+   {
+    "module": "SignatureCoverCore",
+    "rc": 0,
+    "elapsed": 1.64,
+    "olean": true
+   },
+   {
+    "module": "SignatureCoverCard",
+    "rc": 0,
+    "elapsed": 2.78,
+    "olean": true
+   },
+   {
+    "module": "SignatureCoverUnique",
+    "rc": 0,
+    "elapsed": 2.2,
+    "olean": true
+   }
+  ],
+  "all_ok": true,
+  "axioms": {
+   "PebblingSignature.minimum_cover_language_bijection": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "PebblingSignature.minimum_cover_unique_fiber": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "PebblingSignature.minimum_cover_no_empty_component": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  "nonstd_axioms": {},
+  "sorryAx": false,
+  "errors": [],
+  "green": true
+ }
+}

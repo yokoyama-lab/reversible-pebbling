@@ -1,0 +1,61 @@
+{
+  "start": "2026-11-16T03:08:55.895647+00:00",
+  "stop": "2026-11-16T03:08:56.351615+00:00",
+  "wall_seconds": 0.4559709168970585,
+  "source_sha": "ab087e2a09ad672be9248e409381581905e98fa0635cae3b111a65a1c06fa9cf",
+  "results": {
+    "I": {
+      "capacity_legal_count": 200,
+      "noncapacity_legal_count": 1200,
+      "Q_extension_count": 472,
+      "Q_edges": 28,
+      "Q_not_noncapacity_count": 0,
+      "noncapacity_not_Q_count": 728,
+      "Q_not_noncapacity_first": [],
+      "noncapacity_not_Q_first": [
+        [
+          2,
+          3,
+          5,
+          4,
+          6,
+          8,
+          1,
+          0,
+          7,
+          9
+        ]
+      ],
+      "guarded_Q_equals_capacity": true,
+      "equivalence": false
+    },
+    "M": {
+      "capacity_legal_count": 584,
+      "noncapacity_legal_count": 15840,
+      "Q_extension_count": 2916,
+      "Q_edges": 42,
+      "Q_not_noncapacity_count": 0,
+      "noncapacity_not_Q_count": 12924,
+      "Q_not_noncapacity_first": [],
+      "noncapacity_not_Q_first": [
+        [
+          1,
+          4,
+          3,
+          5,
+          7,
+          6,
+          8,
+          10,
+          2,
+          0,
+          9,
+          11
+        ]
+      ],
+      "guarded_Q_equals_capacity": true,
+      "equivalence": false
+    }
+  },
+  "scope": "New converse-equivalence/difference audit; Python ordered-list translation of original step, not Lean verification. Reconstructed Q from all capacity words, not witnesses."
+}

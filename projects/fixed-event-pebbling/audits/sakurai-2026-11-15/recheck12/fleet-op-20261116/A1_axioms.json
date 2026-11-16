@@ -1,0 +1,180 @@
+{
+ "ActualCheckpoint.actual_checkpoint_board": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "ChainFullSlotAssembly.labelled_legal_iff_blocked": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "ChainLabelledCount.exact_labelled_word_count": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "ChainPhysicalCover.exact_physical_cover": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "ChainWholeBijection.local_roundtrip": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "ChainWholeBijection.physical_roundtrip": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "ChainWordCounts.exact_physical_word_count": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "ComponentLabelledCode.exact_component_word_count": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "ComponentMultiplicity.raw_exact_multiplicity": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "FamilyAllOptimal.every_family_word": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "FiniteAlphabetDFA.complete_lower": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "FinitePartialDFA.partial_lower": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "FinitePartialDFA.partial_upper_with_initial": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "FinitePartialEdges.finite_edge_count": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "MComponentCover.component_28_cover_exact": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "MComponentCover.component_556_cover_exact": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "MixtureCertificates.I_normalized_rational_obstruction": [
+  "Quot.sound",
+  "propext"
+ ],
+ "MixtureCertificates.M_normalized_rational_obstruction": [
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalAutomataExact.complete_lower": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalCompletionCount.completions_remaining_perm": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalCompletionCount.count_distinct": [
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalCompletionCount.count_exact": [
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalCompletionCount.count_remaining_perm": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalCompletionCount.zero_iff_no_completion": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalComponentCount.exact_components": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalExactOptimum.exact_optimum": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalResidual.initial_exact": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalResidual.initial_nodup": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalResidual.middle_exact": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PhysicalResidual.middle_nodup": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PrecedenceCover.physical_precedence_upper": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PrecedenceGuard.physical_run_filter": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "PricedRecurrence.C_affine": [
+  "Quot.sound",
+  "propext"
+ ],
+ "RawComponentCount.exact_components": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "RawSwapGraph.reach_iff_decode": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "SignatureCover.count_formula": [
+  "propext"
+ ],
+ "SignaturePhysical.exact_component_cover": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ]
+}

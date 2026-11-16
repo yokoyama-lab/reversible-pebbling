@@ -1,0 +1,15 @@
+closure 455
+FAIL {'module': 'InitialSegment', 'rc': 1, 'sec': 43.92, 'olean': False, 'sorryAx': False, 'errors': 1}
+FAIL {'module': 'MiddleSegment', 'rc': 1, 'sec': 88.4, 'olean': False, 'sorryAx': False, 'errors': 1}
+FAIL {'module': 'MUpperVerified', 'rc': 1, 'sec': 120.21, 'olean': False, 'sorryAx': False, 'errors': 0}
+125 ExtensionCompleteness 1.53
+150 CoverageShard18 24.86
+200 MLargeShard23 8.1
+225 MLargeShard48 11.89
+250 MLargeShard73 10.28
+275 InitialShard8 4.49
+300 SwapProjection 1.15
+FAIL {'module': 'IStates', 'rc': 1, 'sec': 34.01, 'olean': False, 'sorryAx': False, 'errors': 1}
+350 BinaryPatterns 0.78
+done 379 fail
+rc=0
