@@ -3922,6 +3922,33 @@ def main() -> int:
                     "ErasurePebbling.estar_threshold",
                 ],
             },
+            "erasure_pebbling_first_drop": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (2026-11-17): the first drop is exactly two "
+                          "moves. For every p >= 3 and e, at n = (p-1)(e+1)+2: "
+                          "M*(n,p,e) = 2n+1 and M*(n,p,e+1) = 2n-1 (first_drop). "
+                          "Lower end: drop_threshold (floor not attained) plus "
+                          "the parity law that every clean plan has odd length "
+                          "(length_odd). Upper end: an explicit plan "
+                          "(drop_construction): an opening of 2p+3 moves that "
+                          "holds cell 1 as a stepping stone (opening_spec), then "
+                          "sweep_spec. Corollaries close the whole table for "
+                          "p = 3 (mstar_p3_floor, mstar_p3_drop, unreachable_p3) "
+                          "and for p = 2 (mstar_p2). Lifts the 2026-11-11 paper "
+                          "proofs to layer 1; mutation test 3/3 detected, "
+                          "control passes."),
+                "theorems": [
+                    "ErasurePebbling.first_drop",
+                    "ErasurePebbling.drop_construction",
+                    "ErasurePebbling.opening_spec",
+                    "ErasurePebbling.place_bottom_step",
+                    "ErasurePebbling.length_odd",
+                    "ErasurePebbling.mstar_p2",
+                    "ErasurePebbling.mstar_p3_floor",
+                    "ErasurePebbling.mstar_p3_drop",
+                    "ErasurePebbling.unreachable_p3",
+                ],
+            },
             "erasure_pebbling_bounded": {
                 "status": "proved_bounded",
                 "scope": ("BOUNDED, native_decide, ORACLE LEVEL: the bit-mask "

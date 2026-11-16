@@ -19,6 +19,7 @@ live in `data/erasure/` (see `data/erasure/SUMMARY.md`).
 | **Conjecture B2 (now a theorem)**, p ≥ 2, every e: `reach(p,e) = (e+2)·2^(p−2)`; upper bound `n ≤ (e+2)·2^(p−2)` for every clean plan | `Compression.conjB2`, `Compression.reach_le` | `Compression.lean` |
 | Drop threshold: the first n where one more erasure helps is `(p−1)(e+1)+2` | `drop_threshold`, `estar_threshold` | `Conjectures.lean` |
 | Additive upper bound at the maximal reach (2026-11-11): `M*((e+2)·2^(p−2),p,e) ≤ M*(2^(p−1),p,0) + e·(M*(2^(p−2),p−1,0)+1)` for p ≥ 2 (any sub-plans, not only Bennett's; anchor `M*(6,3,1) ≤ 13`) | `Additive.mstar_reach_le`, `anchor_6_3_1` | `Additive.lean` |
+| **First drop is exactly two** (2026-11-17), p ≥ 3, every e, at n = (p−1)(e+1)+2: `M*(n,p,e) = 2n+1` and `M*(n,p,e+1) = 2n−1`; every clean plan has odd length; hence the complete tables for p = 2 and p = 3 | `first_drop`, `drop_construction`, `length_odd`, `mstar_p2`, `mstar_p3_floor`, `mstar_p3_drop`, `unreachable_p3` | `FirstDrop.lean` |
 
 Bounded (oracle-level, `native_decide`, `Bounded.lean`): RC-02 anchors
 (`M*(4,3,·)=9,7,7,7`, `M*(6,4,·)=15,11,11,11`, `M*(16,5,·)=71,45,37,31`,

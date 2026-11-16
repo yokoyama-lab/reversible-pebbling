@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "39b017f78194720dca466df193e5b79682ac01dc719741c9b879b5a20c238d21",
+ "proof_bundle_sha256": "20df7aa855d290dbca0d8fc4bebaee91e3882d76c480e5f416a0fc706f5f761a",
  "source_sha256": {
   "lakefile.toml": "e6279687261ee91a8173f529f1bc1951ab9287b6da740add8cd2dd8a3e78c8b2",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -13,6 +13,7 @@
   "ErasurePebbling/Checker.lean": "aeba0346c56edec669a37bda883f8b49da2688c0a285a4f42cbb2b1620a92985",
   "ErasurePebbling/Compression.lean": "dab48f42261e87b42bf43dc6e3416ea8aeba625a850b5a35e2d7c9e57a34afff",
   "ErasurePebbling/Conjectures.lean": "f0b53ecec431e9f6e1b54b7f3881014040c4f33917120df12a166d8b7946fe59",
+  "ErasurePebbling/FirstDrop.lean": "77a1178269f092028be7b19ecd40af00bc3e264af5a82beea416a4087cc89f43",
   "ErasurePebbling/Potential.lean": "fde9109d8acbfd6c1a1b533c47b91c6bd5dfc514ea0a7d46d26c1b128a305cfe",
   "ErasurePebbling/Reach.lean": "e7de11d44e128da7c5db054168adf7cea7aa1d7ba7a50e0f2925a3dc68aad25a",
   "ErasurePebbling/RemovalCases.lean": "70ef57688c6412605e5e6b4555aec38296c6b45e93395a41eb2d978280b0afd2",
@@ -20,7 +21,7 @@
   "ErasurePebbling/Sliding.lean": "d1524c0e4ee8ff95f635b67db54614c9cd6d14e362c64bf597ca1984f29405e9",
   "ErasurePebbling/Sweep.lean": "07f0fa019a73090d62c258f61d900fd7188a0083605c3845068cc227cfb5e0a6",
   "ErasurePebbling/UpperBound.lean": "35aed5b54dc970d69c8f366d144d946d26ee6f445e1578eba6799d711976d9b7",
-  "ErasurePebbling.lean": "92cc7a97aed0016d0aa71145319a1d07fe4f95f62cb2836a2fdce663043539ed",
+  "ErasurePebbling.lean": "d44565e4d8e8dfad86465e0754153fead6ac95106247b7021dfdcdd1a671df1d",
   "RevPebbling/AnchorCertify.lean": "40bf53b0795b8dd8cdb14f14d405542403788b67495a1b5fb3e0d79e6246656b",
   "RevPebbling/AnchorCertify4798.lean": "b770164d7376dc8f5a0d8beb5e300b07cb3125fbaca00ff82ee10d4c5fb719dc",
   "RevPebbling/AnchorDP.lean": "782df7f9944c51738ae7d2f2a0e38d01a3ebf448a97bfd448c54e8b72440ab03",
@@ -2624,6 +2625,25 @@
    "theorems": [
     "ErasurePebbling.drop_threshold",
     "ErasurePebbling.estar_threshold"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_first_drop": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (2026-11-17): the first drop is exactly two moves. For every p >= 3 and e, at n = (p-1)(e+1)+2: M*(n,p,e) = 2n+1 and M*(n,p,e+1) = 2n-1 (first_drop). Lower end: drop_threshold (floor not attained) plus the parity law that every clean plan has odd length (length_odd). Upper end: an explicit plan (drop_construction): an opening of 2p+3 moves that holds cell 1 as a stepping stone (opening_spec), then sweep_spec. Corollaries close the whole table for p = 3 (mstar_p3_floor, mstar_p3_drop, unreachable_p3) and for p = 2 (mstar_p2). Lifts the 2026-11-11 paper proofs to layer 1; mutation test 3/3 detected, control passes.",
+   "theorems": [
+    "ErasurePebbling.first_drop",
+    "ErasurePebbling.drop_construction",
+    "ErasurePebbling.opening_spec",
+    "ErasurePebbling.place_bottom_step",
+    "ErasurePebbling.length_odd",
+    "ErasurePebbling.mstar_p2",
+    "ErasurePebbling.mstar_p3_floor",
+    "ErasurePebbling.mstar_p3_drop",
+    "ErasurePebbling.unreachable_p3"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],

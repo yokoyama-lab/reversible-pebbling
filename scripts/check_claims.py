@@ -47,6 +47,8 @@ _FITTED = ("a coefficient FITTED to measured anchor-DP runs (CLAUDE.md, "
 
 CONSTANT_ALLOW = {
     "4.31.0": "the Lean toolchain version",
+    "10.5281": "the Zenodo DOI prefix in the README badge (an identifier, not a quantity)",
+    "2610.24435": "an arXiv identifier (Thumann and Soloveichik, 2026) cited in the README (an identifier, not a quantity)",
     "2.5171540": "the anchor bound, an exact integer computation "
                  "outside the prover (see data/anchor_T700000_m12.txt)",
     "2.5171539807": "the same bound at full precision",
