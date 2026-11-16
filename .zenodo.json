@@ -1,0 +1,10 @@
+{
+  "upload_type": "software",
+  "title": "reversible-pebbling: machine-checked results on reversible pebble games",
+  "creators": [
+    {"name": "Yokoyama, Tetsuo", "affiliation": "Nanzan University"}
+  ],
+  "license": "MIT",
+  "keywords": ["reversible computation", "pebble game", "Lean 4", "Rocq", "formal proof", "time-space trade-off"],
+  "description": "Lean 4 (and Rocq) formalisations of reversible pebble games with their full development history: the exact growth rate of space-optimal reversible pebbling of chains (the Knill constant), erasure-budgeted clean pebbling of chains, fixed-event line pebblings, spooky pebbling, reversible pebbling of complete binary trees, and further variants. Status labels (general theorem, bounded machine check, paper proof, draft) are given in each part."
+}

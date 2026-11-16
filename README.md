@@ -1,9 +1,45 @@
-# reversible-pebbling-lean
+# reversible-pebbling
 
-Machine-checked (Lean 4) results on exact reversible pebbling of
-chains — the artifact accompanying the paper *"Exact Reversible
-Pebbling at Minimal Space: Machine-Checked Structure Theorems and the
-Growth Rate of Space-Optimal Simulation"* (in preparation).
+Machine-checked results (Lean 4, with a Rocq layer) on **reversible pebble
+games** — the combinatorial model of time–space trade-offs in reversible
+computation.  The repository collects all of our formalisations in one
+place, **with their full development history** (commit dates are the
+original ones).
+
+| part | subject | where |
+|---|---|---|
+| Knill constant | exact growth rate `c` of space-optimal reversible pebbling of chains; `c = 2^{1+κ*}` and 16 digits of `c`, inside Lean | `RevPebbling/`, `rocq/`, this README below |
+| erasure-budgeted pebbling | clean reversible pebbling of a chain with at most `e` irreversible erasures: saturation threshold (Theorem A), maximal reach `(e+2)·2^(p−2)` (B1/B2), a counterexample to budget monotonicity | `ErasurePebbling/` (see its `NOTES.md`) |
+| fixed-event pebbling | order classification and poset covers of shortest line pebblings with fixed placement counts and erasures | `projects/fixed-event-pebbling/` |
+| spooky pebbling | exact values for the spooky pebble game on chains and trees | `projects/spooky-pebbling-lean/`, `projects/spooky-pebbling-notes/` |
+| tree pebbling | space-optimal reversible pebbling of complete binary trees in polynomially many moves (WiNF 2026) | `projects/tree-pebbling-lean/` |
+| abandon pebbling, exact values | further variants and an exact-value candidate lab | `projects/abandon-pebbling/`, `projects/exact-rev-complexity/` |
+| drafts | Lean drafts collected from working notes; **mostly unchecked** | `projects/drive-drafts/` |
+
+**Status labels.** Each part states what is a general theorem proved in
+Lean/Rocq (no `sorry`, standard axioms), what is a bounded machine check
+(`native_decide`, finite ranges), and what is paper proof or experiment.
+`proof-manifest.json` is the machine-generated record for the root
+project; the subprojects keep their own status tables.  Not everything
+here is finished or reviewed; the drafts in particular are not.
+
+**Related work for the erasure part.** The maximal reach and the
+saturation threshold also follow from the priced separator recurrence of
+Thumann and Soloveichik (arXiv:2610.24435, 2026) by taking the erasure
+price to infinity and to 1⁺, respectively; our Lean proofs are
+independent of that recurrence.  Li, Tromp and Vitányi (Physica D, 1998)
+introduced the erasure pebble game and the springboard construction.
+
+A paper-specific, single-commit release of the Knill-constant artifact is
+at [`yokoyama-lab/reversible-pebbling-exact-rate`](https://github.com/yokoyama-lab/reversible-pebbling-exact-rate) (v1.0.0).
+Licence: MIT (see `LICENSE`; files in `projects/` keep their own
+licence notes where present).
+
+## The Knill constant
+
+The root Lake project is the artifact accompanying the paper *"Exact
+Reversible Pebbling at Minimal Space: Machine-Checked Structure Theorems
+and the Growth Rate of Space-Optimal Simulation"* (in preparation).
 
 Its subject is the **Knill constant** `c`, the growth rate of Knill's
 space-optimal cost `f_p = F(2^{p-1}, p)`.  The name is attached to `c`

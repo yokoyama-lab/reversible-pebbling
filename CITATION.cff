@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below. For the Knill-constant paper artifact, see also yokoyama-lab/reversible-pebbling-exact-rate."
+type: software
+title: "reversible-pebbling: machine-checked results on reversible pebble games"
+authors:
+  - family-names: Yokoyama
+    given-names: Tetsuo
+    affiliation: Nanzan University
+license: MIT
+repository-code: "https://github.com/yokoyama-lab/reversible-pebbling"
+keywords:
+  - reversible computation
+  - pebble game
+  - Lean 4
+  - Rocq
+  - formal proof
+  - time-space trade-off
