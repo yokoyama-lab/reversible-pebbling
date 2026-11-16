@@ -7,6 +7,7 @@ authors:
     given-names: Tetsuo
     affiliation: Nanzan University
 license: MIT
+doi: "10.5281/zenodo.24283883"
 repository-code: "https://github.com/yokoyama-lab/reversible-pebbling"
 keywords:
   - reversible computation

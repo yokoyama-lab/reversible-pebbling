@@ -1,5 +1,7 @@
 # reversible-pebbling
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24283883.svg)](https://doi.org/10.5281/zenodo.24283883)
+
 Machine-checked results (Lean 4, with a Rocq layer) on **reversible pebble
 games** — the combinatorial model of time–space trade-offs in reversible
 computation.  The repository collects all of our formalisations in one
