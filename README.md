@@ -435,6 +435,22 @@ still inside `lake build`.
 (The modules above were renamed from the historical `GenJanus.*`
 namespace in the 2026-07-28 unification; see below.)
 
+## `projects/` — other pebbling formalisations (imported 2026-11-16)
+
+Each subdirectory is a separate Lake project, imported **with its full git
+history** (commit dates preserved; `git log -- projects/<name>`).  Branches of
+the source repositories are kept as `import/<name>/<branch>`.  The root
+`lake build` does not build them; build each inside its own directory.
+
+| directory | subject | source |
+|---|---|---|
+| `projects/fixed-event-pebbling/` | order classification and poset covers of shortest line pebblings with fixed placement counts and erasures | `yokoyama-lab/fixed-event-pebbling` |
+| `projects/tree-pebbling-lean/` | space-optimal reversible pebbling of complete binary trees | local repository `tree-pebbling-lean` |
+| `projects/spooky-pebbling-lean/` | the spooky pebble game on chains and trees | `yokoyama-lab/spooky-pebbling-lean` |
+| `projects/exact-rev-complexity/` | exact values of reversible-computation quantities (candidate lab; not all pebbling). Blobs over 50 MB were stripped on import | `tetsuo-jp/exact-rev-complexity` |
+| `projects/abandon-pebbling/` | abandon pebbling | `notes/abandon-pebbling` |
+| `projects/drive-drafts/` | Lean drafts and bundles collected from Google Drive; **mostly unchecked**, see its README | Google Drive |
+
 ## Canonical home (2026-07-28 unification)
 
 This repository is now the **single source of truth** for the pebbling
