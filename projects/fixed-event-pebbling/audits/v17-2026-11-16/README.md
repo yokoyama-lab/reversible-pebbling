@@ -28,3 +28,11 @@
 - 結果: **14 単位すべて緑**（全段 rc=0・.olean 生成・`error` 行なし・`sorryAx` なし・SHA256SUMS と一致）。主たるモジュールで印字された 49 定理の公理は
   標準 3 つ（propext・Classical.choice・Quot.sound）以内。1 コンパイルの最長は 26.6 秒（LocalCertificate）。Mathlib の 2 単位（COVER-CARD・COVER-UNIQUE）は
   `reversible-pebbling-lean-lowend/.lake/packages/mathlib`（fabf563a）の既存ビルドを読むだけで使った。
+
+## v18 で足した検査（同じ `layers.py` を拡張・再実行）
+
+- 下界の証明書: 各層の署名の代表の全対（I 1,308 対・M 8,565 対）について、両語の共通順序を守り層の外にある語を 1 つずつ保存し
+  （`layers.json` の `I_lower_bound_certificates`・`M_lower_bound_certificates`）、置換であること・共通順序を守ること・層の外であることを検査。全対で成立。
+- Q_X^∩ の推移閉包の辺のうち容量を外した合法語のどれかで破れるもの: I 9/28 本（R_2<P_9 を含む）、M 17/42 本。
+- k=1: L_1 = F0 I F1 T1 の語の大域の費用＝局所の費用＋19+18、T の 2 語の費用は 13・15。L_1 の 11 層の署名の数は I の層と T の層の畳み込みに一致。
+  一般の k は確かめていない。

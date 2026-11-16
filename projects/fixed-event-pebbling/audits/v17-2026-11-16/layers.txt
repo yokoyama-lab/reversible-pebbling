@@ -1,4 +1,5 @@
-I {'events': 10, 'Q_edges_transitive': 28, 'LE_Q': 472, 'capacity_legal': 200, 'capacity_free_legal': 1200, 'LE_Q_subset_capacity_free': True, 'guarded_LE_Q_equals_legal': True, 'total_signatures': 138, 'all_P_sigma_exact': True}
+k1 {'T_costs': [13, 15], 'shift_19_plus_18k_ok': True, 'global_layers': {77: 1, 79: 4, 81: 9, 83: 17, 85: 27, 87: 39, 89: 50, 91: 53, 93: 45, 95: 25, 97: 6}, 'convolution': {77: 1, 79: 4, 81: 9, 83: 17, 85: 27, 87: 39, 89: 50, 91: 53, 93: 45, 95: 25, 97: 6}, 'signatures_equal_convolution': True}
+I {'events': 10, 'Q_capacity_origin_edges': 9, 'lower_bound_pairs': 1308, 'lower_bound_all_ok': True, 'Q_edges_transitive': 28, 'LE_Q': 472, 'capacity_legal': 200, 'capacity_free_legal': 1200, 'LE_Q_subset_capacity_free': True, 'guarded_LE_Q_equals_legal': True, 'total_signatures': 138, 'all_P_sigma_exact': True}
   A=27 words=1 sig=1 sizes=[1] exact=True
   A=29 words=3 sig=3 sizes=[1, 1, 1] exact=True
   A=31 words=8 sig=6 sizes=[1, 1, 1, 1, 2, 2] exact=True
@@ -9,7 +10,7 @@ I {'events': 10, 'Q_edges_transitive': 28, 'LE_Q': 472, 'capacity_legal': 200, '
   A=41 words=41 sig=26 sizes=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4] exact=True
   A=43 words=25 sig=19 sizes=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2] exact=True
   A=45 words=6 sig=6 sizes=[1, 1, 1, 1, 1, 1] exact=True
-M {'events': 12, 'Q_edges_transitive': 42, 'LE_Q': 2916, 'capacity_legal': 584, 'capacity_free_legal': 15840, 'LE_Q_subset_capacity_free': True, 'guarded_LE_Q_equals_legal': True, 'total_signatures': 352, 'all_P_sigma_exact': True}
+M {'events': 12, 'Q_capacity_origin_edges': 17, 'lower_bound_pairs': 8565, 'lower_bound_all_ok': True, 'Q_edges_transitive': 42, 'LE_Q': 2916, 'capacity_legal': 584, 'capacity_free_legal': 15840, 'LE_Q_subset_capacity_free': True, 'guarded_LE_Q_equals_legal': True, 'total_signatures': 352, 'all_P_sigma_exact': True}
   A=34 words=1 sig=1 sizes=[1] exact=True
   A=36 words=4 sig=4 sizes=[1, 1, 1, 1] exact=True
   A=38 words=11 sig=9 sizes=[1, 1, 1, 1, 1, 1, 1, 2, 2] exact=True
