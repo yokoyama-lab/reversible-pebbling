@@ -1,0 +1,378 @@
+# spooky-pebbling-lean
+
+鎖（線グラフ）上の **spooky pebble game** の厳密値に関する結果を Lean 4 で形式化する。
+
+紙の証明と数値実験の正本は別リポジトリ（`notes/spooky-pebbling`）にあり、ここは
+**そのうち機械証明まで上げたもの**を置く場所である。何が Lean で証明済みで、何がまだ
+紙のままなのかを混同しないよう、下の「層」の表を常に最新にすること。
+
+## 木（完全二分木）: 最小ペブル数での時間下界（`SpookyTree/`、2026-09-30）
+
+鎖とは別の小さな形式化。頂点を根からの道 `List Bool` で表し、完全二分木 `T_h`（`n = 2^h − 1`）の
+spooky pebble game（`ghost` 無条件の広いモデル。**下界は KSS Def 2.6/2.7 の意味論にそのまま移る**）を定義する。
+
+| 定理 | 内容 |
+|---|---|
+| `lemmaR` | 時刻 `g` に部分木にペブルが無く、後に根がペブルなら、その間に部分木の全頂点が置かれる |
+| `lemmaF` | 根以外の頂点がペブルなら、その部分木の各頂点は以後どこかでペブル |
+| `moves_eq` | 手数 + 1 = 2 × 置く手（pebble・unghost）の数 |
+| `cut` | 頂点 `x` を置いた後、`x` の真の子孫への置く手は `gfun M (cap−3) (h−|x|)` 回以上（上限を妨害の数え上げで使う） |
+| `main_bound` | 正しい手順の手数 `T` について `2((2^h − 1) + gfun M (cap−3) h) ≤ T + 1` |
+| `time_lower_bound` | 上限 `h+1`、`j(M+2) < h`、`2j(h−2) ≤ 2^(M+2)` なら `2(2^h−1) + (j−2)2^h ≤ T + 1` |
+| `time_lower_bound_log` | `j = ⌊(h−1)/(2⌊log₂h⌋+3)⌋` で同じ不等式 = **`T(T_h, h+1) = Ω(n log n / log log n)`**（KSS Thm 5.5 の構成は `O(n log n)`） |
+| `ex2_valid` | `h = 2` の 5 手の正しい手順（`Valid` が空虚でないことの確認） |
+
+検査（2026-09-30）: `lake build SpookyTree` 緑（クリーンビルド、最大 1.1GB）、上の定理の公理は標準 3 つのみ、
+`sorry`/`admit`/`axiom`/`native_decide` 0 件、変異注入 6 種（unghost の前提を外す・上限を緩める・`Ready` を `∨` に・
+`Valid.others` を潰す・`False` の混入）はすべてビルドを落とし、戻すと緑。紙の証明と経緯は著者の研究ノート（非公開）にある。
+
+### 上界と増大度の決定（`SpookyTree/Upper*.lean`、2026-10-06）
+
+最小ペブル数 `h + 1` での最小手数は **`Θ(n log n / log log n)`** である。KSS Thm 5.5 の `O(n log n)` の構成は漸近最適でない
+（KSS §6 の「construct a more time-efficient algorithm for the binary tree or prove it is impossible」に前者で答える）。
+
+上界は**ブロック構成**による。深さ `d` のブロック根を処理する間、祖先の兄弟をすべてゴーストにしてあるので、
+部分木の外にあるペブルは根の 1 個だけで、余裕が `d` 個ある。その余裕で `L` 段下の前線 `2^L` 個を同時に保持すると、
+ブロックの内部 `L` 段は再計算なしで片づき、部分木の再計算は `L` 段に 1 回で済む（KSS は 1 段に 1 回）。
+Lean の手順 `strategy h Λ` は、深さ `2^Λ` 未満では幅 1、それ以降は幅 `Λ`、高さ `Λ + 1` 以下は最下段、という切りを使う。
+
+| 定理 | 内容 |
+|---|---|
+| `onFront_spec`・`placeInt_spec`・`removeInt_spec`・`compute_spec` | 部品の仕様（合法・部分木の中・ペブル数の上限・打った後の配置）。配置は「ブロック根から `i` 段下は全部同じ状態」の形 `Pat` で書く |
+| `block_spec` | 深さ 1 以上のブロック根 `y` の `T(y)`（全部ゴースト）を、`T(y)` 内のペブル `h` 個以下で全部空にする |
+| `valid_of_runs` | 手のリストについての仕様から `Valid` へ |
+| `time_upper_bound` | `1 ≤ Λ`、`2^(Λ+1) ≤ h + 1` なら、手数 `T` が `T + 3 ≤ 2(2^Λ + ⌊(h−1)/Λ⌋ + 1)·2^h` の妥当な手順がある |
+| `time_upper_bound_log` | `h ≥ 4` で `⌊log₂h⌋·(T + 3) ≤ 2(4h + ⌊log₂h⌋)·2^h` = **`T(T_h, h+1) = O(n log n / log log n)`** |
+| `time_theta` | 上の上界と `time_lower_bound_log` を並べた形 |
+| `validK_of_valid` | 妥当な手順は、手数もペブル数も変えずに KSS の意味論の手順（`ValidK`: `ghost` は子が揃っていないときだけ）に直せる（鎖の `KSSModel.lean` と同じ読み替え） |
+| `time_theta_kss` | `ValidK` についての上界と下界。**上界も下界も KSS の意味論の定理として読める** |
+
+検査（2026-10-06）: `lake build SpookyTree` 緑（独立の検査者がリポジトリの外でゼロからビルド）、上の定理の公理は標準 3 つのみ、
+`sorry`/`admit`/`axiom`/`native_decide` 0 件、新しい 5 ファイルの警告 0 件。変異注入は作成時の 10 種と独立の検査者の 16 種
+（ペブル数の上限を 1 下げる・仮定を緩める・ブロックの規則を 1 ずらす・`pc` が片方の子を数えない・`ValidK` の向きを逆にする 等）が
+すべてビルドを落とし、無変異の対照は通る。`strategy h Λ` と読み替え後の手順は `#eval` で書き出し、独立の再生器で小さい `h` を照合した。
+定数は詰まっていない（先頭の係数は下界 1/2、上界 8）。`ValidK` と KSS の集合列による定義の対応は、鎖と同じく符号化の読み替えによる。
+
+### 先頭の係数は 2（`SpookyTree/Sharp*.lean`、2026-10-06）
+
+上の定理の先頭の係数（`2^h · h / log₂h` の係数）は下界 1/2・上界 8 だった。これを**どちらも 2** に揃えた:
+**`T(T_h, h+1) = (2 + o(1)) · 2^h · h / log₂h = (2 + o(1)) · n log₂n / log₂log₂n`**。
+
+| 定理 | 内容 |
+|---|---|
+| `psi_amgm` | ポテンシャル `ψ(p) = log₂p + 2` について `2 + ψ(p0) + ψ(p1) ≤ 2ψ(p0 + p1)`（相加相乗平均 `4·p0·p1 ≤ (p0+p1)²`） |
+| `sharpB` | `x` を置いた直後、`x` の子の子孫 `y`（高さ `j`）の部分木にペブルが `p` 個あれば、以後 `T(y)` の頂点への置く手は `Hb j p` 回以上（`j` についての帰納法。`cut` と違い、ペブルのある部分木を捨てない） |
+| `sharpA` | `x` を置いた後、`x` の真の子孫への置く手は `Fb k = 2^k (k − K)/Λ` 回以上 |
+| `time_lower_bound_sharp` | `T + 1 ≥ 2(2^h − 1) + 2 · 2^h · (h − 3⌈log₂(h+1)⌉ − 1)/(log₂(h+1) + 4)` |
+| `time_upper_bound_sharp` | `h ≥ 32`、`lg = ⌊log₂h⌋`、`ll = ⌊log₂lg⌋` で `lg·(lg − 2ll)·(T + 3) ≤ 2(lg·h + 4h + lg²)·2^h` の妥当な手順がある（`time_upper_bound` で幅を `Λ = lg − 2ll` に取っただけ） |
+| `time_sharp_kss` | 上の 2 つを KSS の意味論（`ValidK`）について並べた形 |
+
+`o(1)` は `log log h / log h` の大きさで、収束はとても遅い（係数は `h = 2^20` で下界 1.67・上界 4.0、`h = 2^100` で 1.92・2.36）。
+検査（2026-10-06）: `lake build SpookyTree` 緑、上の定理の公理は標準 3 つのみ、`sorry` 等 0 件、新しい 3 ファイルの警告 0 件、
+変異注入 6 種（ポテンシャルを `log₂p + 1` に・`Λ = Ψ + 1` に・余裕の項を落とす・置き直しを `2^j` 回に・時刻 `τ` の手を数える・`4h` を `3h` に）はすべて落ち、対照は通る。
+この 3 ファイルには独立の検査者によるゲートをまだ通していない。
+
+## 仕事量と手数の厳密な対応（`SpookyTree/Work.lean`・`SpookyDag/`、2026-10-19・10-24）
+
+Lee–Lee–Jeong（arXiv:2610.09434）は手数でなく**仕事量** `W = #pebble + #unpebble`（ghost は 0、ゴーストの頂点に置く手は pebble に含む）で測り、
+手数 `N` との関係は `W ≤ N < 2W` にとどめている。実際には最小値どうしが厳密に結びつく:
+
+**`W* = (T* + 1)/2 + (n − 1)`**（`n` は頂点数。完全二分木では `n − 1 = 2^h − 2`）。
+
+* 下界: 各頂点は一度は置かれ、目標以外の頂点を最後に空にする手は unpebble しかない（ghost の結果はゴーストで、消すには置き直すしかない）ので `#unpebble ≥ n − 1`。`T + 1 = 2·#place` と合わせる。
+* 上界: 「あとで同じ頂点に手が来る unpebble を ghost に、ゴーストの頂点への pebble を unghost に」読み替える。
+  `Legal` の前提がペブルの位置だけを見る（ゴーストを見ない）ので手順は妥当なままで、手数もペブル数も変わらず `#unpebble = n − 1` になる。
+
+| ファイル | 内容 |
+|---|---|
+| `SpookyTree/Work.lean` | 完全二分木。`work_feasible_iff`: 任意の `h ≥ 1`・`cap` で「仕事量 `W` 以下の妥当な手順がある」⇔「`T + 1 + 2(2^h − 2) ≤ 2W` の妥当な手順がある」。`work_lower_bound_sharp`・`work_upper_bound_sharp`: 仕事量での先頭の係数は 1（`2^h·h/log₂h` を単位として） |
+| `SpookyDag/Game.lean` | 一般の有限グラフ（`Dag V`: 入力 `pred` と目標 `root`。非輪状性は仮定しない）上の同じ 4 操作。`anc_placed`: 目標の祖先は全て置かれる（補題 R の一般形） |
+| `SpookyDag/Count.lean` | `moves_eq`: `T + 1 = 2·nPlace` |
+| `SpookyDag/Work.lean` | `work_feasible_iff`: 全ての頂点が目標の祖先なら `W* = (T* + 1)/2 + (Fintype.card V − 1)`。読み替え（`valid_msW`）には祖先の仮定が要らない |
+
+**規則の範囲に注意。** この等式は Lee–Lee–Jeong の規則（ghost に前提が無い＝ここの `Valid`）でのもの。KSS の定義（ghost は入力が揃わないときだけ＝`ValidK`）では
+**成り立たない**（完全二分木 `h = 3`・ペブル 4 個で KSS 型の最小仕事量は 20、等式の値は 17。独立 2 実装の全数探索）。最小手数は両方の規則で等しい（`validK_of_valid`）。
+
+検査: `SpookyTree/Work.lean` は 2026-10-20 に独立の検査者による 5 点ゲートを通過（クローンで成果物ゼロから再ビルド、12 定理と依存 847 定数の公理は標準 3 つ、独自設計の変異 33 種すべて赤）。
+`SpookyDag/` は `lake build SpookyDag` 緑（警告 0）、主要 7 定理の公理は標準 3 つのみ、`sorry` 等 0 件。
+小さいグラフの全数探索（0-1 BFS。完全二分木 `h ≤ 3`、鎖 `n ≤ 8`、ランダムな充満二分木、菱形、高さ 4 のピラミッド、格子、扇、ランダムな単一出口 DAG 12 個）で等式が 107 組すべて一致し、`n − 1` を `n` にずらした式は 107 組すべて不一致。
+作成者の変異注入 12 種（文: `n − 1` を `n − 2` に・`T + 1` を `T + 2` に・下界の祖先の仮定を弱める・上界の `n − 1` を `n − 2` に。定義: unpebble でなく ghost を数える・unpebble を 2 倍に数える・読み替えの窓 `Ioo` を `Icc` に・unpebble を常に ghost に・unghost への読み替えを外す。
+規則: ghost に KSS 型の前提を付ける・祖先を `TransGen`（目標を除く）に・終状態にゴーストを許す）はすべて赤、無変異の対照は緑。
+規則の変異 2 種は `Count.lean` の段階で落ちるので、等式そのものが規則に敏感なことは上の全数探索（KSS 型で 20 ≠ 17）で別に確かめた。
+`SpookyDag/` には独立の検査者によるゲートをまだ通していない。
+
+## 定義の出典
+
+| もの | 出典 |
+|---|---|
+| spooky pebble game の遷移規則 | Kornerup–Sadun–Soloveichik, arXiv:2110.08973v3, **Definition 2.6/2.7** に対応 |
+| $T_P$ / $T_{UP}$ / $T_{UG}$ の名前と役割 | Kornerup–Sadun–Soloveichik, *Tight Bounds on the Spooky Pebble Game*, Quantum 9:1636 (2025), arXiv:2110.08973v3, §3–4 |
+| 概念の初出（本形式化が逐語で従うものではない） | Quist–Laarman, *Trade-offs between classical and quantum space using spooky pebbling*, LMCS 21:4 (2025), arXiv:2401.10579, Definition 2.2 |
+
+頂点は `0, …, n-1`、辺は `i → i+1`。配置は `ℕ → Cell`（`Cell = empty | pebble | ghost`）で、
+鎖の長さ `n` は述語の側に持たせている。`ghost` だけが前提条件を持たない（測定）。
+
+> ⚠ **2026-08-18 に出典表示を訂正した**（監査 `docs/review-plan.md` Round 2・重大2）。
+> それまで遷移規則を「QL Def 2.2 の逐語」としていたが、**QL Def 2.2 とは一致していない**。
+> QL の前提条件は in-node 条件だけで対象頂点 `v` 自身の状態を拘束せず、また `(P, S)` は
+> `P ∩ S ≠ ∅` を許す。本形式化は `v` 自身の状態条件を 4 本課し `Cell` 型で `P ∩ S = ∅` を
+> 強制するので **QL に対し狭い**。KSS Def 2.6/2.7（`‖P_i △ P_{i+1}‖ = 1`）の下では
+> その 4 条件は定義から従う。
+>
+> **KSS とのずれは 2026-08-18（commit `20b1c49`）に解消した。**
+> KSS は `remove(v)` が ghost を作るか否かを `parents(v) ⊆ P` で自動決定するが、
+> 本形式化の `.ghost` は `ready` が真でも打てるので **KSS より広い**。
+> そのままだと **下界はそのまま KSS へ移るが、上界は自動では移らない**
+> （実際 `sweep 2` と `placeUpto` は `ready` が真の状態で `ghost` を打っている）。
+> **これを埋める正規化補題（`ready` が真の `ghost v` → `unpebble v`、後続の
+> `unghost v` → `pebble v`。前提条件も長さも `pcount` も不変）は `KSSModel.lean` で
+> 証明済みで、`TUP_eq_K` / `TUG_eq_K` / `TP_eq_K` により 3 量とも一致する。**
+> ⇒ **上界も下界も KSS の意味論の定理として読める。**
+> 詳細は `SpookyPebbling/Defs.lean` の冒頭と `KSSModel.lean`。
+
+## 層（何が機械証明されているか）
+
+| 主張 | 層 | 置き場 |
+|---|---|---|
+| **定理B**: $T_{UG}(n,s)=4n-2s$（$s\le n\le\theta(s)$、$\theta(s)=s(s+1)/2$） | **1（Lean）** | `SpookyPebbling/Theta.lean` |
+| **定理C**: $T_{UP}(n,s)=4n-2s-1$（$s\le n\le\theta(s)-1$）と系 $\delta=T_{UG}-T_{UP}=+1$ | **1（Lean）** | `SpookyPebbling/Delta.lean` |
+| **符号反転**: $\delta$ は $n<\theta(s)$ で $+1$、$\theta(s)\le n\le B_4(s)-1$ で $-1$ | **1（Lean）** | `SpookyPebbling/Sign.lean` |
+| **$T_{UP}(n,2)=n^2+n-3$**（上限 2 の閉形式） | **1（Lean）** | `SpookyPebbling/Cap2.lean` |
+| **$T_{UG}(n,2)=n^2+n-4$** と、$s=2$ では $\delta=-1$ が全ての $n\ge3$ で成立 | **1（Lean）** | `SpookyPebbling/Cap2Exact.lean` |
+| **上限 2 では鎖（$n\ge3$）の先端にペブルを置けない**（KSS Cor 4.7 の $\infty$ 条項） | **1（Lean）** | `SpookyPebbling/Cap2Exact.lean` |
+| **$T(n,3)=n^2-n-3$**（$n\ge4$） | **1（Lean）** | `SpookyPebbling/Lemma48.lean` |
+| **KSS Thm 4.11（上限 3）**: $T_P(n{+}1,3)=T_{UG}(n,2)+1$ | **1（Lean）** | `Bridge.lean` / `Lemma48.lean` |
+| **KSS Lemma 3.2**: $T_P(n{+}1,s{+}1)\le T_{UG}(n,s)+1$（全 $s$） | **1（Lean）** | `SpookyPebbling/Bridge.lean` |
+| **定理D**: $T_{UG}(n,s)\ge 6n-s(s+3)$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope6.lean` |
+| **定理F**: $T_{UG}(n,s)=6n-s(s+3)$（$\theta(s)\le n\le B_4(s)-1$）と $B_4(s)=B_4(s-1)+\theta(s)-1$ | **1（Lean）** | `SpookyPebbling/Slope6Exact.lean` |
+| **定理E**: $T_{UG}(n,s)\ge 2mn-c_m(s)$（任意の傾き $2m$。定理A・定理D を含む） | **1（Lean）** | `SpookyPebbling/SlopeE.lean` |
+| **定理E'**: $T_{UP}(n,s)\ge 2mn-\beta_m(s)$（$m\ge1$・$s\ge2$・$n\ge1$。**下界のみ**。緊密性は下の層2 の行） | **1（Lean）** | `SpookyPebbling/SlopeTight.lean` |
+| 定理E' が定理E より真に強い点: $(m,s)=(4,3)$ で $\beta_4(3)=34<c_4(3)=38$（**この 1 点だけ**。$\forall m\ge4$ の一般命題は Lean に無い） | **1（Lean）** | `SpookyPebbling/SlopeTight.lean` `slope8_strictly_better` |
+| **KSS Thm 4.11**: $T_P(n{+}1,s{+}1)=T_{UG}(n,s)+1$（**任意の $s$**） | **1（Lean）** | `Bridge.lean` / `Lemma48Gen.lean` |
+| **KSS Lemma 4.5**: 任意の目標配置を作る正準手順（$2M{+}2-|S|$ 手・$|S|{+}1$ ペブル。$S$ は $[0,M]$ 上の目標のペブル集合） | **1（Lean）** | `SpookyPebbling/PlaceI.lean` |
+| **KSS Lemma 4.10**: $T_{UG}\le T_{UP}+1$、**Lemma 4.9**: $T_{UP}\le T_{UG}+1$、ゆえに差はちょうど 1 | **1（Lean）** | `SpookyPebbling/UGvsUP.lean` |
+| **KSS の意味論との同値性**（`legalK` は Def 2.6/2.7 の逐語。$T$ は一致する） | **1（Lean）** | `SpookyPebbling/KSSModel.lean` |
+| **KSS の緩和漸化式 (1) は厳密値の範囲で無損失**: `relaxed n s = T_UG(n,s)`（$s\ge2$・$n\ge1$・$n\le B_4(s)-1$）。`relaxed` は KSS §4 式 (1)（$T_{UP}(k,s)$ を $T_{UG}(k,s)-1$ に置き換えた緩和）を $\mathbb N_\infty$ 値の関数として定義したもの。`relaxed ≤ T_UG` と、`relaxed` の上の下界 $2n$・$4n-2s$・$6n-s(s+3)$ は無条件。$s=2$ では範囲を緩められない（`relaxed 4 2 = 14 < 16 = T_UG(4,2)`） | **1（Lean）** | `SpookyPebblingExtra/Relaxed.lean`（**本体ライブラリの外**。原稿が数える 33 モジュールには入れない。`lake build SpookyPebblingExtra`） |
+| **補題3**: $T_{UG}(n,s)=2n$（$n\le s$）、**補題4**: $T_{UP}(k,s)=2k-1$（$k\le s$） | **1（Lean）** | `SpookyPebbling/Closed.lean` |
+| **定理A**: $T_{UG}(n,s)\ge 4n-2s$（$s\ge2$・無条件） | **1（Lean）** | `SpookyPebbling/Slope4.lean` |
+| **KSS Cor 4.12**: $T_{UG}(n,s)=\min_k[2k-1+T_{UP}(k,s)+T_{UG}(n-k,s-1)]$ | **1（Lean）** | `SpookyPebbling/Unghost.lean` |
+| $T_{UP}(k,s)\ge 2k-1$、$T_{UG}(n,s)\ge 2n$（無条件） | **1（Lean）** | `SpookyPebbling/Small.lean` |
+| **$T_{UP}$ 分解が厳密**（$\ge$ と $\le$ の両方向。$s\ge3$） | **1（Lean）** | `Decomp.lean` / `Upper.lean` |
+| **$\ge$ 方向**（KSS の交換論法は不要） | **1（Lean）** | `SpookyPebbling/Decomp.lean` |
+| **$\le$ 方向**（掃き＋尻尾の持ち上げ＋ゴースト回収） | **1（Lean）** | `Sweep.lean` / `Lift.lean` / `Reghost.lean` / `Upper.lean` |
+| **$T_{UG}(n,s) \ne T_{UP}(n,s)$**（パリティ不変量） | **1（Lean）** | `SpookyPebbling/Parity.lean` |
+| unpebbling は奇数手・unghosting は偶数手・pebbling は奇数手 | **1（Lean）** | `SpookyPebbling/Parity.lean` |
+| **補題G**: 始状態に余分なゴーストが在っても手数は減らない | **1（Lean）** | `SpookyPebbling/Ghost.lean` |
+| 段(i): 頭の手は `2k-1` 手以上 | **1（Lean）** | `SpookyPebbling/Count.lean` |
+| 頭・尻尾への射影が部分鎖の妥当な手順になること | **1（Lean）** | `SpookyPebbling/Project.lean` |
+| **到達可能性**: `s ≥ 2` ならどんな長さの鎖も片付く（`sInf ∅ = 0` を回避） | **1（Lean）** | `SpookyPebbling/Reach.lean` |
+| 意味論が `< n` の値にしか依存しない（射影の土台） | **1（Lean）** | `SpookyPebbling/Defs.lean` |
+| 定理E' の**緊密性**（$\max_n(2mn-T_{UP})=\beta_m(s)$。$m\le8,s\le7$ で全数照合済み） | 2（機械検査） | `notes/spooky-pebbling/theorem_slope_tight.py` |
+| 緩和漸化式 (1) が $B_4(s)$ **より先で必ず損をする**こと（$s\ge3$）。数値では $s=2..7$・$n\le140$ で一致域がちょうど $B_4(s)-1$ まで、また (1) の厳密解 $=\max_m(2mn-c_m(s))$ が 2,100 点で一致 | 3（有界の数値照合） | `notes/spooky-pebbling/kss_relaxed_check.py` |
+| 傾き 8 以降の**上界側**（構成）、鎖以外の一般 DAG | **3（未解決）** | — |
+
+**$T_{UG}\ne T_{UP}$ は KSS が持っていない。** KSS Thm 4.11 の $\pm1$ は Lemma 4.9/4.10 の
+両側不等式から出るもので、$0$ の可能性を排除していない。パリティが排除する。
+
+**分解の $\ge$ 方向は KSS の交換論法を使わない。** KSS Lemma 4.1 は
+「すべての最適算法のうち $k$ を最大にするものを取る」WLOG から $P^\bot$ を構成するが、
+$k$ を*与えられた 1 本の手順の内側*で
+
+$$s^\dagger := \max_t |P_t|,\quad F := \{t : |P_t| = s^\dagger\},\quad
+  u := \max_{t\in F}\ \min\{i : v_i\in P_t\},\quad k := u+1$$
+
+と取れば、必要な「尻尾のペブルは常に $\le s^\dagger-1$」が**定義から**出る。
+手順を作り変えないので、最適性の仮定も sweep-first 正規化も要らず、
+**任意の妥当な手順について**主張が立つ（`decomp_ge` の仮定は `Run` だけ）。
+
+**⚠ $\le$ 方向で紙の証明が飛ばしていた点（形式化で判明）**: 「$v_{k-1}$ まで掃いて
+ペブル 1 個を残す `2k-1` 手」は **`unpebble` では書けない**。`unpebble v_i` は
+$v_{i-1}\in P$ を要求するが、掃きでは $v_{i-1}$ を既に外しているからである
+（$v_0$ だけは前提が無いので外せる）。手数がちょうど `2k-1` である以上、余分な手を
+入れる余地は無い。したがって
+
+> **掃きは `ghost` を使い、$v_0..v_{k-2}$ にゴーストを残す。**
+
+残ったゴーストは頭の手順が回収する: 頭の手順はどのみち各頂点を 1 回は置くので
+（`head_places`）、その `pebble` を `unghost` に読み替えればよく、**手数は変わらない**
+（`Run_reghost` = `Ghost.lean` の補題G のちょうど逆向き）。この読み替えが要ることは
+紙の証明にも `closed2.py` の数値検証にも現れていなかった。変異G（掃きを `unpebble` に
+戻す）でビルドが落ちることが、この点が本質であることの機械的な証拠である。
+
+## 検査（テストファースト）
+
+`SpookyPebbling/Tests.lean` は 2 種類を置く。
+
+1. **陽性**: `notes/spooky-pebbling` の BFS（Knill の既知値 5 点と独立 2 実装 40 点で
+   校正済み）が返した**最適手順そのもの**を転記し、`by decide` で妥当性を検査する。
+   同時に `T… ≤ 値` の上界が得られる（$T_{UP}(n,2)=n^2+n-3$、$T_{UG}(n,2)=n^2+n-4$、
+   $T_P(n,3)=n^2-n-3$、$k\le s$ で $T_{UP}=2k-1$、$n\le s$ で $T_{UG}=2n$ の各点）
+2. **陰性（変異注入）**: 前提条件・上限・終状態・範囲を 1 つずつ壊した手順が
+   **`Run` にならない**ことを `by decide` で検査する。陽性だけでは
+   「何でも `Run` になる」定義でも通ってしまうため
+
+**定義が正しいことは証明できない。**できるのは、独立に得た値と突き合わせて
+「間違っていたら落ちる」ようにしておくことだけ。
+
+## ビルド
+
+```sh
+lake build SpookyPebbling
+```
+
+Lean `v4.31.0` ＋ mathlib `v4.31.0`。`sorry` は入れない方針（入れる場合は本 README の
+層の表に必ず書く）。緑が本物かは変異注入で確かめること（`lake build` の沈黙は
+成功と OOM を区別しない）。
+
+## 検査ゲート（2026-08-24・独立セッションによる再検証）
+
+`notes/spooky-pebbling/paper-ieice` の原稿執筆セッションが、**このリポジトリを読み取りだけで
+扱いつつ**、`/work/tmp` の作業コピーで白紙から検証した。生データは
+`notes/spooky-pebbling/paper-ieice/{build_report.json,probe_summary.txt,mutate.sh}`。
+
+| 点 | 結果 |
+|---|---|
+| **白紙ビルド** | `git clone` して `.lake/build` が空の状態から `lake build SpookyPebbling` が **rc=0**。**olean 33 本すべてをその実行で生成**（`find -newermt` で確認）。9 分 34 秒・最大 2,911 MB |
+| 元リポジトリ | **無改変**（`git status` と `find .lake -newermt` が 0 件） |
+| `sorry` / `admit` / `axiom` 宣言 / `native_decide` / `set_option` | 全 33 モジュールで **すべて 0 件** |
+| 公理検査 | 原稿が名指しする **56 宣言**に `#print axioms`。標準 3 公理の外は **0**・`sorryAx` **0**（内訳: 標準3つ 49 / `[Quot.sound, propext]` 2 / `[propext]` 2 / **公理なし 3**） |
+| 同（白紙ビルドの olean に対して） | **同一の結果**。⇒ キャッシュ再生ではない |
+| 変異注入（独立に実施） | **変異 3/3 を棄却・対照 2/2 が緑**（区間を `B4 s` まで広げる／到達不能性を `n≥2` に緩める／`TUG_cap2` の値を 1 ずらす） |
+
+⚠ **README が下に挙げる変異 51 種のうち、この再検証で独立に再現したのは上の 3 種だけ**である。
+残りは自己申告のまま（監査 `exp/audit/D_spooky_lean.md` §3-1 も同じことを書いている）。
+
+## 検査ゲート（2026-08-14 実施）
+
+| 点 | 結果 |
+|---|---|
+| ビルド | `lake build SpookyPebbling` rc=0 |
+| 成果物の実在 | olean 32 本を確認（`find .lake/build/lib/lean/SpookyPebbling -name '*.olean' | wc -l`） |
+| `sorry` / `native_decide` / 追加 `axiom` | **0 件**（当時 18 ファイル。2026-08-24 時点で 33 モジュールすべて 0 件） |
+| 公理検査 | `decomp_ge` を含む主要定理すべて `[propext, Classical.choice, Quot.sound]` のみ（`sorryAx` 無し） |
+| 変異A（偽の補題 `probe : False`） | **検出**（ビルドが落ちる） |
+| 変異B（`ghost` に前提条件を付ける） | **検出**。うち `Tests.lean` だけで 14 か所（`by decide` が定義の変異を捕まえる） |
+| 変異C（$\ge$ 方向の `2k-1` を `2k` に強める） | **検出** |
+| 変異D（尻尾の上限を `s†-1` でなく `s` にする） | **検出**（`k` の取り方が効いている証拠） |
+| 変異E（構成の手数を `2j+1` でなく `2j` と主張） | **検出** |
+| 変異F（`s ≥ 3` を `s ≥ 2` に緩める） | **検出**（掃きの 3 個が入らなくなる） |
+| 変異G（掃きの `ghost` を `unpebble` にする＝紙の証明どおりの書き方） | **検出**（ゴーストが本質である証拠） |
+| 変異H（到達可能性の上限を 2 でなく 1 と主張） | **検出** |
+| 変異I（到達可能性の構成から最初の `ghost v_{n-1}` を消す） | **検出**（枠を空けないと掃きに 3 個要る） |
+| 変異J（Cor 4.12 の `2k-1` を `2k` に強める） | **検出** |
+| 変異K（Cor 4.12 の $\le$ 方向を `s ≥ 1` に緩める） | **検出**（掃きに 2 個要る） |
+| 変異L（定理A の傾きを 4 でなく 5 にする） | **検出** |
+| 変異M（`T_UP` の下界を `2k-1` でなく `2k` にする） | **検出** |
+| 変異N（傾き 4 の領域を $\theta(s)+1$ まで広げる） | **検出**（真の値は 2 大きい） |
+| 変異O（定理B の傾きを 4 でなく 3 にする） | **検出** |
+| 変異P（Lemma 4.10 の `+1` を落として `T_UG ≤ T_UP` にする） | **検出**（`unpebble` 枝で `unghost` を挿む分が入らない） |
+| 変異Q（定理D を $s(s+2)$ に強める） | **検出** |
+| 変異R（定理C の範囲に $n=\theta(s)$ を含める） | **検出**（$\delta$ が反転する点そのもの） |
+| 変異S（$T_{UP}\ge 4n-2s-1$ の `-1` を落とす） | **検出** |
+| **定理B と BFS の突き合わせ** | `TUG 3 2 = 8`・`TUG 3 3 = 6`・`TUG 5 3 = 14` が**転記した最適手順の長さと一致**（片方は定理・片方は全数探索） |
+| **定理C と BFS の突き合わせ** | `TUP 2 2 = 3`・`TUP 3 3 = 5`・`TUP 5 3 = 13` が一致。`(5,3)` は $n=\theta(s)-1$＝**範囲の右端そのもの** |
+| **$\delta=+1$ と BFS の突き合わせ** | `TUG 3 3 = TUP 3 3 + 1`・`TUG 5 3 = TUP 5 3 + 1` が転記した手順の長さでも成立 |
+| **定理D の緊密性** | `(n,s)=(3,2)` で $6n-s(s+3)=8$ が BFS の最適手数 8 と**一致（等号）** |
+| 変異T（定理F の区間を $B_4(s)$ まで広げる） | **検出**（BFS でも $T_{UG}(9,3)=38\ne36$） |
+| 変異U（$B_4$ の漸化から `-1` を落とす） | **検出** |
+| 変異V（$T_{UP}\le T_{UG}+1$ の `+1` を落とす） | **検出** |
+| 変異W（定理F の左端を $\theta(s)-1$ に広げる） | **検出** |
+| 変異X（終端に要る手数を 3→4 に強める） | **検出** |
+| 変異Y（$T_{UP}(n,2)$ の値を 1 ずらす） | **検出** |
+| 変異Z（上限 2 の構成の手数を $2n$ でなく $2n-1$ と主張） | **検出** |
+| 変異AA（$T_{UP}\ge 6n-s(s+3)+1$ の `+1` を `+2` に強める） | **検出**（$\delta=-1$ が緊密である証拠） |
+| 変異AB（$\delta$ の符号を逆向きに主張） | **検出** |
+| **定理F と BFS の突き合わせ** | `TUG 6 3 = 18`・`TUG 7 3 = 24` が転記した BFS の最適手順の長さと一致。$B_4(3)=9$ は実測どおり（`9,18,32,52,79,114` を `rfl` で照合） |
+| **上限 2 の閉形式と BFS** | `TUP 3 2 = 9`・`TUP 4 2 = 17` が転記した最適手順の長さと一致 |
+| 変異AC（$T_{UG}(n,2)$ の値を 1 ずらす） | **検出** |
+| 変異AD（到達不能性を $n\ge2$ に緩める） | **検出**（$n=2$ では実際に到達できる） |
+| 変異AE（不変条件の上限を 2 でなく 3 にする） | **検出**（3 個目が入らないことが本質） |
+| **符号反転と BFS** | `n=5=θ(3)-1` で `TUG 5 3 = TUP 5 3 + 1`、`n=6=θ(3)` で `TUP 6 3 = TUG 6 3 + 1`。転記した手順の長さ（14/13 と 19/18）でも同じ向き |
+| 変異AF（Lemma 3.2 の `+1` を落とす） | **検出** |
+| 変異AG（$T_P(n,3)$ の上界を 1 きつくする） | **検出**（BFS でも $T_P(4,3)=9$） |
+| 変異AH（鎖を伸ばすとき上限を増やさない） | **検出**（挿した `pebble v_n` の分が要る） |
+| **上限 2 の可否の対比** | 同じ長さ 3 の鎖で、上限 3 なら 5 手の witness（`wP3_3`）が在り、上限 2 では**どんな手順も存在しない**（定理）。`TUG 4 2 = 16` も `wUG4_2` と一致 |
+| 変異AI（Lemma 4.8 の `+1` を落とす） | **検出** |
+| 変異AJ（$T(n,3)$ の値を 1 ずらす） | **検出** |
+| 変異AK（**最後**の手でなく**最初**の手で切る） | **検出**（`Last(v_n)` で切るのが本質）|
+| 変異AL（数え上げの置く手を $v_0..v_{n-1}$ に減らす） | **検出**（終端の `place` の 1 手が効く）|
+| 変異AM（$c_m$ の漸化式の `+2` を `+1` に） | **検出** |
+| 変異AN（底 $c_m(1)$ を 1 小さく） | **検出** |
+| 変異AO（傾きを $2m$ でなく $2m+1$ と主張） | **検出** |
+| **$T(n,3)$ と BFS** | 定理の値 `TP 4 3 = 9`・`TP 5 3 = 17` が、独立に走らせた BFS の**最適**手数（`wP4_3`・`wP5_3` の長さ）と一致。`TP 6 3 = 27` も BFS と一致 |
+| 変異AP（Lemma 4.8 一般版の `+1` を `+2` に強める） | **検出** |
+| 変異AQ（正準形の手数を `2M+1` でなく `2M` と主張） | **検出** |
+| 変異AR（正準形のペブル上限を `+2` でなく `+1` に） | **検出** |
+| 変異AS（数え上げから外す手の寄与を落とす） | **検出** |
+| **定理E と定理A・定理D の突き合わせ** | 一般形から $m=2,3$ を取り出すと、**独立に証明した** `TUG_ge_slope4`・`TUG_ge_slope6` とまったく同じ主張になる（`TUG_ge_slope4_of_E` / `TUG_ge_slope6_of_E`）。$c_2(s)=2s$・$c_3(s)=s(s+3)$ も漸化式から導出 |
+| 変異AW（KSS への読み替えで `ghost`→`unpebble` を止める） | **検出** |
+| 変異AX（KSS 側の `ghost` 制限を外す＝両モデルを同一にする） | **検出** |
+| 変異AY（正規化が手数を変えないという主張を崩す） | **検出** |
+| 変異AT（$\beta$ の漸化式の `+1` を落とす） | **検出** |
+| 変異AU（底 $\beta_m(2)$ の定数を 1 小さく） | **検出** |
+| 変異AV（定理E' の傾きを $2m$ でなく $2m+1$ と主張） | **検出** |
+| **Thm 4.11 の二重証明** | 上限 3 の場合を `Lemma48.lean`（特化版）と `Lemma48Gen.lean`（一般版）で**別々に**証明してある。値も `TP 4 3 = 9`・`TP 5 3 = 17` で BFS と一致 |
+| **定理E' と既知の結果** | $m=2$ で `TUP_ge_slope4`、$m=3$ で `TUP_ge_slope6'` とまったく同じ主張になる（`bb_two` / `bb_three`）。$m=3$ では定理E とも一致し、$m=4$ で 34 対 38 と真に強い |
+| 主定理の非空虚性 | `Tests.lean` で具体的な `Run` に `decomp_ge` / `decomp_le_run` を適用して結論を得ている |
+
+再現:
+
+```sh
+lake build SpookyPebbling                       # rc=0
+grep -cE '\bsorry\b|\bnative_decide\b|^axiom ' SpookyPebbling/*.lean   # すべて 0
+echo 'import SpookyPebbling
+#print axioms Spooky.TUG_ne_TUP' > /tmp/ax.lean && lake env lean /tmp/ax.lean
+```
+
+## ファイル
+
+| ファイル | 内容 |
+|---|---|
+| `Defs.lean` | 遷移規則（**KSS Def 2.6/2.7 に対応**）、`Run`、`TP`/`TUP`/`TUG`、`< n` 依存性 |
+| `Parity.lean` | パリティ不変量 → `TUG_ne_TUP` |
+| `Ghost.lean` | 補題G（余分なゴーストは損にならない） |
+| `Project.lean` | 軌跡・`valid`/上限の分離・添字ずらし・頭/尻尾への射影 |
+| `Count.lean` | 段(i)（`2k-1` の数え上げ） |
+| `Split.lean` | ペブル数の分割・最下位ペブル・最大元の存在 |
+| `Decomp.lean` | `s†≥2`、尻尾の上限、**`decomp_ge` / `TUP_ge_decomp`**（$\ge$ 方向） |
+| `Lift.lean` | 持ち上げ（射影の逆）・連結・`valid_mono`・`traj_above` |
+| `Sweep.lean` | 掃き `sweep k`（`2k-1` 手、ゴーストを残す）とその仕様 |
+| `Reghost.lean` | `head_places` と再ゴースト `Run_reghost`（補題G の逆向き） |
+| `Reach.lean` | 到達可能性（上限 2 の構成と上限の単調性） |
+| `Upper.lean` | **`decomp_le_run_gen` / `decomp_le` / `decomp_exact`**（$\le$ 方向と等号） |
+| `Unghost.lean` | **KSS Cor 4.12**（`decomp_ug_ge` / `decomp_ug_le` / `decomp_ug_exact`） |
+| `Small.lean` | 数え上げの下界（`T_UP ≥ 2k-1`・`T_UG ≥ 2n`） |
+| `Slope4.lean` | **定理A**（`T_UG ≥ 4n-2s`。Cor 4.12 の望遠鏡） |
+| `Closed.lean` | 補題3・補題4（`n ≤ s` / `k ≤ s` での厳密値。上界＝構成） |
+| `Theta.lean` | `θ(s)=s(s+1)/2` と **定理B**（傾き 4 の領域の厳密値） |
+| `UGvsUP.lean` | **KSS Lemma 4.9/4.10**（`T_UG ≤ T_UP+1` と逆向き。差はちょうど 1） |
+| `KSSModel.lean` | **KSS Def 2.6/2.7 の意味論**と本形式化の同値性（`T` が一致するので上界も KSS の定理） |
+| `Slope6.lean` | **定理D**（`T_UG ≥ 6n-s(s+3)`。望遠鏡をもう一段） |
+| `Delta.lean` | **定理C**（`T_UP = 4n-2s-1` と `δ = +1`） |
+| `Slope6Exact.lean` | **定理F**（傾き 6 の領域の厳密値と折れ目 `B₄(s)`） |
+| `Cap2.lean` | **`T_UP(n,2)=n²+n-3`**（終端に 3 手要ることで足りない 2 を取り返す） |
+| `Sign.lean` | **δ の符号反転**（`T_UP ≥ 6n-s(s+3)+1` と `δ=-1`） |
+| `Cap2Exact.lean` | `T_UG(n,2)=n²+n-4`・`s=2` の `δ=-1`・上限 2 の到達不能性 |
+| `Bridge.lean` | **KSS Lemma 3.2**（unghosting → pebbling は 1 手）と `T_P(n,3) ≤ n²-n-3` |
+| `Lemma48.lean` | **KSS Lemma 4.8（上限 3→2）**と **`T(n,3) = n²-n-3`** |
+| `SlopeE.lean` | **定理E**（任意の傾き `2m`。`c_m(s)` の漸化式と `m=2,3` の閉形式） |
+| `PlaceI.lean` | **KSS Lemma 4.5**（任意の目標配置を作る正準手順 `placeUpto`） |
+| `Lemma48Gen.lean` | **KSS Lemma 4.8（一般の `s`）**と **Thm 4.11**。`T_P` は `T_UG` で決まる |
+| `SlopeTight.lean` | **定理E'**（任意の傾きの緊密な下界 `β_m(s)`） |
+| `Tests.lean` | 陽性 13 点・陰性 6 点・両方向の非空虚性・定理B/C/D と BFS の突き合わせ |
+
+## 残っているもの（層3＝未解決）
+
+**紙で証明済みだが未移植（層2）のものは無くなった。** 残るのは未解決問題:
+
+1. **傾き 8 以降の上界（構成）**。下界は `SlopeTight.lean` の定理E' で**緊密なものが取れた**
+   （$\beta_m(s)$、$m\le8\,s\le7$ で実測と完全一致）。残るのは
+   「その値が本当に達成される」ことを示す構成側で、そこができれば $\delta$ の符号反転と
+   定理F の $n\le B_4(s)-1$ という制限も外れる
+2. **鎖以外の一般 DAG**。本リポジトリの `k` の取り方（満室時刻の最下位ペブル）は
+   鎖であることをほとんど使っていないので、木への一般化が近い
+3. ~~到達可能性~~ → **`Reach.lean` で解決**（2026-08-16）
+
+## ライセンス
+
+MIT License（`LICENSE`）。

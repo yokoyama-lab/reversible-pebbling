@@ -1,0 +1,5 @@
+/.lake
+/.ruff_cache
+CLAUDE.md
+AGENTS.md
+.claude/settings.local.json
