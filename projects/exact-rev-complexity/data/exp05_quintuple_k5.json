@@ -1,0 +1,19 @@
+{
+ "machines": 451479,
+ "halt": 223444,
+ "nonhalt_cycle": 2740,
+ "nonhalt_translated": 216565,
+ "nonhalt_no_halt_rule": 8730,
+ "undecided": 0,
+ "cycle_not_initial": 0,
+ "best_steps": 388,
+ "best_ones": 16,
+ "best_steps_machine": "1RB0RD_1RC0RB_1RD1RZ_1LE1LA_0LE0LA",
+ "best_ones_machine": "0RB0LA_0LC1RD_1LA1RB_0RE1RZ_1LC1RE",
+ "undecided_machines": [],
+ "seconds": 185.96,
+ "states": 5,
+ "formalism": "quintuple",
+ "reversible": true,
+ "step_limit": 3000
+}

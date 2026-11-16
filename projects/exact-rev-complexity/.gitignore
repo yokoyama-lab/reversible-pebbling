@@ -1,0 +1,146 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.olean
+.lake/
+lean/.lake/
+data/families/sat_work/
+
+# --- 2026-08-14 追加 ---
+# DRAT の証明対象 CNF は決定的に再生成できる（scripts/q2_cnf.py）。
+# 77MB あるので本体は追跡せず、data/q2_certs/SHA256SUMS で同一性を担保する。
+data/q2_certs/*.cnf
+data/q2_certs/*.drat
+# コンパイル済みバイナリ・ビルド成果物
+rocq/anchor/run_ml
+rocq/anchor/shim/t3
+rocq/anchor/arrbuild/run_arr
+rocq/anchor/**/*.cm[iox]
+rocq/anchor/**/*.o
+rust/*/target/
+*.vo
+*.vok
+*.vos
+*.glob
+.pytest_cache/
+
+# --- 2026-08-17 追加（第8夜） ---
+# autoresearch の DRAT は 4〜12GB/本で、朝の退避コミットが書きかけの DRAT ごと履歴に入れていた
+# （.git が 50GB、追跡中の drat/cnf 合計 67GB）。q2_certs と同じ扱いにする:
+# 本体は追跡せず、manifest 参照分は autoresearch/results/SHA256SUMS で同一性を担保する。
+# 既に追跡済みのものは残る（履歴からの除去は人間の判断: git filter-repo）。
+autoresearch/results/*.drat
+
+# --- 2026-08-18 追加（第9夜） ---
+# 計数補題つき CNF（tools/add_counting.py）は実験専用で、probe CNF から決定的に再生成できる
+# （h=7 で 50〜60MB/本）。manifest からは参照しない。
+autoresearch/results/*_cnt.cnf
+
+# --- main 側（2026-08 昼の作業）---
+.claude/settings.local.json
+.claude/worktrees/
+
+# --- 2026-08-23 追加（第15夜） ---
+# LRAT（drat-trim -L）は DRAT と同じく数百MB〜十数GB。*.drat と同じ扱い:
+# 本体は追跡せず autoresearch/results/SHA256SUMS で同一性を担保する。
+autoresearch/results/*.lrat
+
+# --- 2026-08-23 追加（第20夜 周3/3）---
+# 殻補題の等号制約つき CNF（tools/night20r3_exact_counts.py）と、その素の入力。
+# 第9夜の *_cnt.cnf と同じ扱い: 実験専用・決定的に再生成できる（scripts/tree_mstar_cnf.py +
+# tools/night20r3_exact_counts.py）・manifest からは参照しない。1 本 14〜19MB。
+autoresearch/results/*_exact.cnf
+autoresearch/results/*_base.cnf
+
+# --- 2026-08-23 追加（第21夜）---
+# ① 別セッションのディスク掃除（<local>/dev/infra/idle-compute/compress_drat.sh）が
+#    results/*.drat を zstd で固めて原本を消す。**その .zst が 0.7〜4.2GB/本**で、
+#    未追跡のまま朝の退避コミット（git add -A）に入ると第8夜と同じ事故（.git 50GB）になる。
+autoresearch/results/*.zst
+# ② certs_keep/ は manifest が指す証明書への**ハードリンク**（実体は 1 つ。掃除の rm -f から守る）。
+#    git に入れるものではない。復元は autoresearch/jobs/job43_night21_restore_certs.py。
+autoresearch/results/certs_keep/
+
+# 第23夜 周3/3: LRAT 書式変換器のビルド成果物（正本は lrat_text2bin.c）
+autoresearch/tools/lrat_text2bin
+
+# --- 2026-08-24 追加（第24夜）---
+# one-shot 符号化（tools/night24_oneshot_cnf.py / night24_oneshot2_cnf.py）の CNF。
+# v2 は 1 本 102〜103MB（h=7 は 915MB）で、**未追跡のまま朝の退避コミットに入ると
+# 第8夜・第21夜と同じ事故（.git の肥大）になる**。決定的に再生成できる（h=6 で 8〜12 秒）ので
+# *.drat / *.lrat と同じ扱いにし、同一性は autoresearch/results/SHA256SUMS で担保する。
+autoresearch/results/oneshot_h*.cnf
+autoresearch/results/oneshot2_h*.cnf
+
+# --- 2026-08-24 追加（第24夜 周2/3）---
+# δ 梯子（tools/night24r2_oneshot3_cnf.py）の CNF。事象数が δ とともに増えるので
+# h=6 δ=2 で約 350MB。上と同じ扱い（再生成可能・SHA256SUMS で同一性）。
+autoresearch/results/oneshot3_h*.cnf
+
+# CEGAR（tools/night25r2_oneshot3_cegar.py）が毎ラウンド書き直す CNF。
+# --keep のとき残り、h=6 では 12M 節＝数百 MB になりうる。
+# ⚠ 中間の _cegar_base_*.cnf はツールが自分で消すが、落ちたときに残ることがある。
+autoresearch/results/oneshot3cegar_h*.cnf
+autoresearch/results/_cegar_base_h*.cnf
+
+# --- 2026-08-24 追加（第27夜＝第26夜 周2/3）---
+# 上界狩り用の時刻添字 CNF（jobs/job67_*.py が scripts/tree_mstar_cnf.py で作る）。
+# h=6 K=237 で 16MB、生成は 1 秒。証明書ではない（SAT 側なので --proof を渡さない）ので
+# 追跡する意味が無い。再生成: python3 scripts/tree_mstar_cnf.py --h 6 --p 12 --K 237 --symbreak --out <path>
+autoresearch/results/t*_p*_k*_sat.cnf
+autoresearch/results/_t*_p*_k*_model.txt
+
+# --- 2026-08-27 追加（第32夜）---
+# 完全性検査（tools/night31_oneshot_completeness.py）が作る v2 の CNF と、
+# それに実スケジュールの一次変数を単位節として足した版。素の v2 と同じ大きさ
+# （h=6 で 102MB × 2 本）で、build() を呼び直せば決定的に再生成できる。
+# oneshot2_h*.cnf と同じ扱い（追跡せず、必要なら SHA256SUMS で同一性を担保）。
+autoresearch/results/night31_v2_h*.cnf
+
+# --- 2026-08-28 （第33夜）---
+# v3（δ 梯子）の完全性検査（tools/night33_v3_completeness.py）が作る CNF と、
+# それに実スケジュールの一次変数を単位節として足した版。
+# oneshot3_h*.cnf と同じ扱い（再生成可能・h=5 δ=8 で 250MB 級）。
+autoresearch/results/night33_v3_h*.cnf
+
+# --- 2026-08-31 追加 ---
+# 上の autoresearch/results/*.drat / *.lrat は「*」がディレクトリを跨がないため
+# results/ 直下にしか効かず、results/logs/ 以下が漏れていた（実測 .lrat 5 本 0.74GB が未追跡）。
+# 深さに依らない形で塞ぐ。証明ログは再生成可能で、同一性は
+# autoresearch/results/SHA256SUMS で担保する（certs_keep/ は :63 で既に除外済み）。
+autoresearch/results/**/*.drat
+autoresearch/results/**/*.lrat
+autoresearch/results/**/*.blrat
+
+# --- 2026-09-12 追加（第59夜） ---
+# 変異注入・公理行プローブの足場（tools/leanmutate.py・jobs/job100 が生成する）。
+# 原本＋変異表から決定的に再生成できるので追跡しない。
+lean/build/mut_*/
+lean/build/mutate58/
+lean/build/probe/
+
+# --- 2026-09-14 追加（第61夜 周3/3） ---
+# レベル束の証明書（tools/night61r3_levelcert.py run が作る .npz）。h=6 で 1 本 100MB 級。
+# 生成は決定的（dict BFS）なので追跡しない。値は results/logs/night61r3_levelcert_*.out。
+autoresearch/results/levelcert/
+
+# --- 2026-10-08 追加（第75夜 周3/5） ---
+# Aut 商 BFS の C 実装（frontier-only）のビルド成果物。正本は tools/night75_canonbfs_fo.c。
+# ビルド: gcc -O2 -o tools/night75_canonbfs_fo tools/night75_canonbfs_fo.c
+# *.run は走行中に再ビルドされて ETXTBSY になるのを避けるための固定コピー。
+tools/night75_canonbfs_fo
+tools/night75_canonbfs_fo.run
+tools/night74_canonbfs
+
+# --- 2026-10-09 追加（第79夜 周1） ---
+# 投稿用アーティファクトの組み立て先と、その検証用の展開先・組版比較の作業場。
+# すべて paper-ieice-q2/make_artifact.py と jobs/night79r1_*.py が決定的に作り直す。
+# 展開先は外部依存（mathlib）へのハードリンクを含むので git に入れてはならない。
+.night79r1/
+paper-ieice-q2/lean-mutation-work/
+
+# --- 2026-10-10 追加（第80夜 周1） ---
+# 紙幅を詰めるときの prefix ごとの組版の作業場（jobs/night80r1_shrink.py --measure）。
+# 原稿の複写が prefix の本数だけ出来る。決定的に作り直せるので git に入れない。
+.night80r1/

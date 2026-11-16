@@ -1,0 +1,68 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM1_bundle_q_swap.lean:134:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvAP_5,
+    ∀ m ∈ SA,
+      m ∉ F →
+        (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) →
+          #(toggleAt C m) ≤ 6 → toggleAt C m ∈ LvlAP 4 ∨ toggleAt C m ∈ LvlAP 5 ∨ toggleAt C m ∈ LvlAP 6
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM1_bundle_q_swap.lean:144:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvAP_7,
+    ∀ m ∈ SA,
+      m ∉ F →
+        (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) →
+          #(toggleAt C m) ≤ 6 → toggleAt C m ∈ LvlAP 6 ∨ toggleAt C m ∈ LvlAP 7 ∨ toggleAt C m ∈ LvlAP 8
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM1_bundle_q_swap.lean:154:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvAP_9,
+    ∀ m ∈ SA,
+      m ∉ F →
+        (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) →
+          #(toggleAt C m) ≤ 6 → toggleAt C m ∈ LvlAP 8 ∨ toggleAt C m ∈ LvlAP 9 ∨ toggleAt C m ∈ LvlAP 10
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM1_bundle_q_swap.lean:164:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvAP_11,
+    ∀ m ∈ SA,
+      m ∉ F →
+        (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) →
+          #(toggleAt C m) ≤ 6 → toggleAt C m ∈ LvlAP 10 ∨ toggleAt C m ∈ LvlAP 11 ∨ toggleAt C m ∈ LvlAP 12
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM1_bundle_q_swap.lean:174:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvAP_13,
+    ∀ m ∈ SA,
+      m ∉ F →
+        (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) →
+          #(toggleAt C m) ≤ 6 → toggleAt C m ∈ LvlAP 12 ∨ toggleAt C m ∈ LvlAP 13 ∨ toggleAt C m ∈ LvlAP 14
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM1_bundle_q_swap.lean:184:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvAP_15,
+    ∀ m ∈ SA,
+      m ∉ F →
+        (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) →
+          #(toggleAt C m) ≤ 6 → toggleAt C m ∈ LvlAP 14 ∨ toggleAt C m ∈ LvlAP 15 ∨ toggleAt C m ∈ LvlAP 16
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM1_bundle_q_swap.lean:612:63: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvBP_8, 3 ∈ C → TfP #C < 8
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM1_bundle_q_swap.lean:614:66: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvBP_10, 3 ∈ C → TfP #C < 10
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM1_bundle_q_swap.lean:619:66: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvBP_15, 3 ∈ C → TfP #C < 15
+is false
+'SplitLemma.H4Peak.pred_irrefl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvAP_closed' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvAP_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmAP' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvAQ_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvAQ_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmAQ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvBP_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvBP_miss' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmBP' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvBQ_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvBQ_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmBQ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmA' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmB' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hpair' depends on axioms: [propext, Quot.sound]
+'SplitLemma.H4Peak.split_num_cert' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

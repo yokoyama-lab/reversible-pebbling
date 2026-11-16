@@ -1,0 +1,30 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/hulleq/M2_four_to_three/HullEq.lean:221:17: warning: `Finset.filter_card_add_filter_neg_card_eq_card` has been deprecated: Use `Finset.card_filter_add_card_filter_not` instead
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/hulleq/M2_four_to_three/HullEq.lean:223:26: error: Application type mismatch: The argument
+  hfour
+has type
+  ∀ v ∈ V, v ≠ ρ → ¬OnceClass mv M ρ v → #(Occ mv M v) = 4
+but is expected to have type
+  ∀ v ∈ V, v ≠ ρ → ¬OnceClass mv M ρ v → #(Occ mv M v) = 3
+in the application
+  And.intro hfour
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/hulleq/M2_four_to_three/HullEq.lean:254:2: error: Type mismatch
+  hres
+has type
+  #(Occ mv M 1) = 1 ∧
+    filter (OnceClass mv M 1) (cbtV h) = C (hS.target + 1) ∧
+      #(filter (OnceClass mv M 1) (cbtV h)) = p ∧
+        (∀ v ∈ cbtV h, v ≠ 1 → ¬OnceClass mv M 1 v → #(Occ mv M v) = 3) ∧
+          #({v ∈ cbtV h | ¬OnceClass mv M 1 v}) + p = 2 ^ h - 1
+but is expected to have type
+  #(Occ mv M 1) = 1 ∧
+    filter (OnceClass mv M 1) (cbtV h) = C (hS.target + 1) ∧
+      #(filter (OnceClass mv M 1) (cbtV h)) = p ∧
+        (∀ v ∈ cbtV h, v ≠ 1 → ¬OnceClass mv M 1 v → #(Occ mv M v) = 4) ∧
+          #({v ∈ cbtV h | ¬OnceClass mv M 1 v}) + p = 2 ^ h - 1
+'HullLemma.Sched.root_at_target' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemma.Sched.once_card_lt_peak' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemma.Sched.card_le_of_root_not_once' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemma.Sched.eq_structure' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullEq.cbt_eq_structure' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullEq.cbt_h6_p13_structure' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullEq.cbt_h6_p11_root_not_once' depends on axioms: [propext, Classical.choice, Quot.sound]

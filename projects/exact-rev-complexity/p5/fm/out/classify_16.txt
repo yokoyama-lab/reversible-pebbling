@@ -1,0 +1,17 @@
+n=1: all 0/1, cat 0/1, spider 0/1, h<=2 0/1, h<=3 0/1, maxdeg<=2 0/1, maxdeg<=3 0/1
+n=2: all 0/1, cat 0/1, spider 0/1, h<=2 0/1, h<=3 0/1, maxdeg<=2 0/1, maxdeg<=3 0/1
+n=3: all 0/2, cat 0/2, spider 0/2, h<=2 0/2, h<=3 0/2, maxdeg<=2 0/2, maxdeg<=3 0/2
+n=4: all 0/4, cat 0/4, spider 0/3, h<=2 0/3, h<=3 0/4, maxdeg<=2 0/3, maxdeg<=3 0/4
+n=5: all 0/9, cat 0/8, spider 0/5, h<=2 0/5, h<=3 0/8, maxdeg<=2 0/6, maxdeg<=3 0/8
+n=6: all 0/20, cat 0/16, spider 0/7, h<=2 0/7, h<=3 0/15, maxdeg<=2 0/11, maxdeg<=3 0/17
+n=7: all 0/48, cat 0/32, spider 0/11, h<=2 0/11, h<=3 0/29, maxdeg<=2 0/23, maxdeg<=3 0/39
+n=8: all 0/115, cat 0/64, spider 0/15, h<=2 0/15, h<=3 0/53, maxdeg<=2 0/46, maxdeg<=3 0/89
+n=9: all 0/286, cat 0/128, spider 0/22, h<=2 0/22, h<=3 0/98, maxdeg<=2 0/98, maxdeg<=3 0/211
+n=10: all 0/719, cat 0/256, spider 0/30, h<=2 0/30, h<=3 0/177, maxdeg<=2 0/207, maxdeg<=3 0/507
+n=11: all 0/1842, cat 0/512, spider 0/42, h<=2 0/42, h<=3 0/319, maxdeg<=2 0/451, maxdeg<=3 0/1238
+n=12: all 0/4766, cat 0/1024, spider 0/56, h<=2 0/56, h<=3 0/565, maxdeg<=2 0/983, maxdeg<=3 0/3057
+n=13: all 0/12486, cat 0/2048, spider 0/77, h<=2 0/77, h<=3 0/1001, maxdeg<=2 0/2179, maxdeg<=3 0/7639
+n=14: all 0/32973, cat 0/4096, spider 0/101, h<=2 0/101, h<=3 0/1749, maxdeg<=2 0/4850, maxdeg<=3 0/19241
+n=15: all 137/87811, cat 0/8192, spider 0/135, h<=2 0/135, h<=3 13/3047, maxdeg<=2 0/10905, maxdeg<=3 6/48865
+n=16: all 1121/235381, cat 0/16384, spider 0/176, h<=2 0/176, h<=3 49/5264, maxdeg<=2 0/24631, maxdeg<=3 48/124906
+runcap: 成功 / 経過 0h06m52s / 最大メモリ 5523 MB（上限 12 GB）

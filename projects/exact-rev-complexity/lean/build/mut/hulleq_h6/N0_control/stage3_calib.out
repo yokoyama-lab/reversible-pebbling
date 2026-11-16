@@ -1,0 +1,5 @@
+'HullEqWitnessH6Calib.target_h6_p13' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6Calib.h6_p13_structure_decide' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6Calib.h6_p13_once_set' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6Calib.h6_p13_four_concrete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitnessH6Calib.h6_p13_four_apply' depends on axioms: [propext, Classical.choice, Quot.sound]

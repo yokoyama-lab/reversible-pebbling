@@ -1,0 +1,23 @@
+{
+ "p": 7,
+ "e": 0,
+ "n": 37,
+ "layer_sizes": [
+  9331287
+ ],
+ "bfs_seconds": 126.6,
+ "staircase_bad": [],
+ "tip_minsupp_by_u": {
+  "0": {
+   "s": 0,
+   "witness": [
+    37
+   ]
+  }
+ },
+ "pts_reach": 9331286,
+ "pts_unreach": 5,
+ "kchk": 4,
+ "counterexamples": [],
+ "check_seconds": 3681.9
+}

@@ -1,0 +1,8 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/hulleq/M3b_hyp_offby1_consistent/HullEqWitness.lean:62:86: error: unsolved goals
+⊢ False
+'HullEqWitness.eq_hyps_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.target_h3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_matches_h3' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_matches_h3_decide' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_config_h3' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_four_h3' depends on axioms: [propext, Classical.choice, Quot.sound]

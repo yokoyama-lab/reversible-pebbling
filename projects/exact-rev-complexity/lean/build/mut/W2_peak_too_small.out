@@ -1,0 +1,20 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTWitMut_W2_peak_too_small.lean:66:46: error: Tactic `decide` proved that the proposition
+  #(Ch3 9) ≤ 4
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTWitMut_W2_peak_too_small.lean:66:46: error: Tactic `decide` proved that the proposition
+  #(Ch3 11) ≤ 4
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTWitMut_W2_peak_too_small.lean:66:46: error: Tactic `decide` proved that the proposition
+  #(Ch3 13) ≤ 4
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTWitMut_W2_peak_too_small.lean:74:14: error: Application type mismatch: The argument
+  cbt_sched_h3
+has type
+  Sched (cbtPred 3) (cbtFree 3) 1 4 17 Ch3 mvh3
+but is expected to have type
+  Sched (cbtPred 3) (cbtFree 3) 1 5 17 Ch3 mvh3
+in the application
+  And.intro cbt_sched_h3
+'HullLemmaCBTWitMut.cbt_sched_h3' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTWitMut.cbt_sched_h4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTWitMut.cbt_h3_exact' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

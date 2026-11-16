@@ -1,0 +1,19 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4_M3_drop_state.lean:113:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvA_5,
+    ∀ m ∈ SA,
+      m ∉ F → (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) → toggleAt C m ∈ LvlA 4 ∨ toggleAt C m ∈ LvlA 5 ∨ toggleAt C m ∈ LvlA 6
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4_M3_drop_state.lean:121:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvA_7,
+    ∀ m ∈ SA,
+      m ∉ F → (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) → toggleAt C m ∈ LvlA 6 ∨ toggleAt C m ∈ LvlA 7 ∨ toggleAt C m ∈ LvlA 8
+is false
+'SplitLemma.H4.pred_irrefl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvA_closed' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvA_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.hDmA' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvB_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvB_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.hDmB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.hpair' depends on axioms: [propext, Quot.sound]
+'SplitLemma.H4.split_num_cert' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

@@ -1,0 +1,6 @@
+'HullEqWitness.eq_hyps_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.target_h3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_matches_h3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_matches_h3_decide' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_config_h3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_four_h3' depends on axioms: [propext, Classical.choice, Quot.sound]

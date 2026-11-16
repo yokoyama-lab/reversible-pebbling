@@ -1,0 +1,52 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM2_peak_premise_up.lean:135:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvAP_6,
+    ∀ m ∈ SA,
+      m ∉ F →
+        (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) →
+          #(toggleAt C m) ≤ 7 → toggleAt C m ∈ LvlAP 5 ∨ toggleAt C m ∈ LvlAP 6 ∨ toggleAt C m ∈ LvlAP 7
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM2_peak_premise_up.lean:145:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvAP_8,
+    ∀ m ∈ SA,
+      m ∉ F →
+        (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) →
+          #(toggleAt C m) ≤ 7 → toggleAt C m ∈ LvlAP 7 ∨ toggleAt C m ∈ LvlAP 8 ∨ toggleAt C m ∈ LvlAP 9
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM2_peak_premise_up.lean:155:2: error: Tactic `decide` proved that the proposition
+  ∀ C ∈ LvAP_10,
+    ∀ m ∈ SA,
+      m ∉ F →
+        (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) →
+          #(toggleAt C m) ≤ 7 → toggleAt C m ∈ LvlAP 9 ∨ toggleAt C m ∈ LvlAP 10 ∨ toggleAt C m ∈ LvlAP 11
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4Peak_PM2_peak_premise_up.lean:237:14: error: Application type mismatch: The argument
+  LvAP_closed
+has type
+  ∀ i < 14,
+    ∀ (C : Finset ℕ),
+      LvAP i C →
+        ∀ m ∈ SA, m ∉ F → (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) → #(toggleAt C m) ≤ 7 → ∃ j ≤ i + 1, LvAP j (toggleAt C m)
+but is expected to have type
+  ∀ i < 14,
+    ∀ (C : Finset ℕ),
+      LvAP i C →
+        ∀ m ∈ SA, m ∉ F → (∀ c ∈ pred m, c ∈ C ∨ c ∈ F) → #(toggleAt C m) ≤ 6 → ∃ j ≤ i + 1, LvAP j (toggleAt C m)
+in the application
+  Dm_le_Dcert_of_levels_peak LvAP_zero LvAP_closed
+'SplitLemma.H4Peak.pred_irrefl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvAP_closed' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvAP_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmAP' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvAQ_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvAQ_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmAQ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvBP_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvBP_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmBP' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvBQ_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.LvBQ_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmBQ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmA' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hDmB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4Peak.hpair' depends on axioms: [propext, Quot.sound]
+'SplitLemma.H4Peak.split_num_cert' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

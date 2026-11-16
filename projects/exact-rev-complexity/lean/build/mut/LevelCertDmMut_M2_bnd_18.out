@@ -1,0 +1,29 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/LevelCertDmMut_M2_bnd_18.lean:291:2: error: Type mismatch
+  split_lemma_strong_num predT3_irrefl (Dcert_valid predT3 FT3 5) ?m.58 ?m.59 ?m.60 ?m.61 ?m.62 2 3 ?m.67 ?m.68 ?m.69
+    ?m.70 ?m.71 ?m.72 (fun x s => TfA3 s + 1) 17 hDmA3 hDmB3 hpairT3 l hL hP hfin
+has type
+  17 ≤ l.length
+but is expected to have type
+  18 ≤ l.length
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/LevelCertDmMut_M2_bnd_18.lean:304:3: error: Application type mismatch: The argument
+  split_h3_num_cert schedT3 schedT3_legal schedT3_peak schedT3_clean
+has type
+  18 ≤ schedT3.length
+but is expected to have type
+  17 ≤ schedT3.length
+in the application
+  And.intro (split_h3_num_cert schedT3 schedT3_legal schedT3_peak schedT3_clean)
+'SplitLemma.Dm_le_Dcert_of_levels' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.predT3_irrefl' depends on axioms: [propext, Quot.sound]
+'SplitLemma.schedT3_legal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.schedT3_peak' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.schedT3_clean' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.LvA3_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.LvA3_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.hDmA3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.LvB3_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.LvB3_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.hDmB3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.hpairT3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.split_h3_num_cert' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.split_h3_num_cert_tight' depends on axioms: [sorryAx]

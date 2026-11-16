@@ -1,0 +1,17 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/hulleq/M5_witness_count/HullEqWitness.lean:80:18: error: Application type mismatch: The argument
+  h4 4 ?m.82 ?m.83 ?m.84
+has type
+  #(Occ mvh3 17 4) = 4
+but is expected to have type
+  #(Occ mvh3 17 4) = 3
+in the application
+  And.intro (h4 4 ?m.82 ?m.83 ?m.84)
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/hulleq/M5_witness_count/HullEqWitness.lean:92:35: error: Tactic `decide` proved that the proposition
+  #(Occ mvh3 17 4) = 3
+is false
+'HullEqWitness.eq_hyps_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.target_h3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_matches_h3' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_matches_h3_decide' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_config_h3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullEqWitness.eq_structure_four_h3' depends on axioms: [propext, Classical.choice, Quot.sound]

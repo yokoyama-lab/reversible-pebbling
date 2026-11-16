@@ -1,0 +1,9 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/HullLemmaCBTMut_M1_sorry.lean:86:8: warning: declaration uses `sorry`
+'HullLemmaCBTMut.cbt_reach' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_bound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h3_bound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h6_bound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h7_bound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h6_maxbudget' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_nonvacuous' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HullLemmaCBTMut.cbt_h2_tight' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

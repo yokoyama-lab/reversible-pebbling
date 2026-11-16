@@ -1,0 +1,23 @@
+
+=== h=7  B=15  (UNSAT 側; L(7)=16) ===
+  DRAT  : s UNSATISFIABLE    式   222,524 B /   6825 変数 | 証明    178,976 B /  12,558 行 | 解    0.01s 検    0.08s | s VERIFIED
+  VeriPB: UNSAT              式    99,715 B /    945 変数 | 証明      9,137 B /     546 行 | 解    0.05s 検    0.05s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 3389 本）
+          Exact 生証明 32,963 B / 3,932 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 19.59×（VeriPB が小さい）
+
+=== h=7  B=16  (SAT 側; L(7)=16) ===
+  DRAT  : s SATISFIABLE            式    234,276 B
+  VeriPB: SAT                      式     99,715 B
+
+=== h=15  B=40  (UNSAT 側; L(15)=41) ===
+  DRAT  : s UNSATISFIABLE    式 6,175,528 B / 151965 変数 | 証明  3,484,260 B / 203,390 行 | 解    0.15s 検    0.38s | s VERIFIED
+  VeriPB: UNSAT              式 1,705,658 B /   7965 変数 | 証明     91,397 B /   4,456 行 | 解    0.33s 検    0.11s | s VERIFIED
+          健全性: 部分集合 OK（Exact が落とした制約 0 本 / 我々 52049 本）
+          Exact 生証明 506,832 B / 56,502 行（1.1 形式）
+  ⇒ 証明サイズ DRAT/VeriPB = 38.12×（VeriPB が小さい）
+
+=== h=15  B=41  (SAT 側; L(15)=41) ===
+  DRAT  : s SATISFIABLE            式  6,317,568 B
+  VeriPB: SAT                      式  1,705,658 B
+runcap: 成功 / 経過 0h00m04s / 最大メモリ 111 MB（上限 16 GB）

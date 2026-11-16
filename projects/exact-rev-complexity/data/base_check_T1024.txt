@@ -1,0 +1,12 @@
+T_b=1024 mant=8 cap=2^390 grid=98048
+  T=128 [59s]
+  T=256 [118s]
+  T=384 [183s]
+  T=512 [248s]
+  T=640 [310s]
+  T=768 [370s]
+  T=896 [429s]
+  T=1024 [491s]
+saturation: L_grid reaches 2^1022 at grid index 87377/98048 (log2 v = 348.40)
+pairwise check: 0 violations / 98047; min slack +28.020 bits at log2 v = 145.05 (beta = 0.1417)
+BASE CERTIFIED

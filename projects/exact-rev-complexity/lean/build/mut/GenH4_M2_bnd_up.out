@@ -1,0 +1,21 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4_M2_bnd_up.lean:358:62: error: Tactic `decide` proved that the proposition
+  48 ≤ (fun x s => Tf s + 1) 6 1 + (fun x s => Tf s + 1) (6 - 1) 1 + 2 * (fun x s => Tf s + 1) (6 - 1) 4 + 1
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4_M2_bnd_up.lean:358:62: error: Tactic `decide` proved that the proposition
+  48 ≤ (fun x s => Tf s + 1) 6 2 + (fun x s => Tf s + 1) (6 - 1) 2 + 2 * (fun x s => Tf s + 1) (6 - 1) 3 + 1
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4_M2_bnd_up.lean:358:62: error: Tactic `decide` proved that the proposition
+  48 ≤ (fun x s => Tf s + 1) 6 3 + (fun x s => Tf s + 1) (6 - 1) 3 + 2 * (fun x s => Tf s + 1) (6 - 1) 2 + 1
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/GenH4_M2_bnd_up.lean:358:62: error: Tactic `decide` proved that the proposition
+  48 ≤ (fun x s => Tf s + 1) 6 4 + (fun x s => Tf s + 1) (6 - 1) 4 + 2 * (fun x s => Tf s + 1) (6 - 1) 1 + 1
+is false
+'SplitLemma.H4.pred_irrefl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvA_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvA_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.hDmA' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvB_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.LvB_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.hDmB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.H4.hpair' depends on axioms: [propext, sorryAx, Quot.sound]
+'SplitLemma.H4.split_num_cert' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

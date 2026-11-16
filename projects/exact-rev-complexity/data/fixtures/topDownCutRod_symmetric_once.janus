@@ -1,0 +1,35 @@
+// An inefficient solution for the rod cutting problem (local B-method)
+
+// Store to max the maximum value of all cuts using garbage stack g.
+procedure findMax(int p[],int n,int r[],int max,stack g)
+  iterate int i = 1 to n
+    local int res = 0
+    call memoizedCutRod(p,n-i,r,res) // It's very inefficinet if B-method is used here.
+    if max <= p[i]+res then // notice that even if the bhs are equal, the value is pushed to stack g. It differentiates the control flows at the assertion.
+      push(max,g) // zero clear max
+      max ^= p[i]+res
+    fi max = p[i]+res
+    push(res,g) // zero clear res
+    delocal int res = 0
+  end
+
+procedure memoizedCutRod(int p[],int n,int r[],int res)
+  if n != 0 then
+    if r[n] > 0 then // if the solution is memoized
+      res <=> r[n]
+    else
+      local stack g = nil
+      call findMax(p,n,r,res,g) // inefficient B-method
+      r[n] ^= res
+      uncall findMax(p,n,r,res,g)
+      res ^= r[n]
+      delocal stack g = nil
+    fi r[n] = 0
+  fi n != 0 
+
+procedure main()
+  int p[] = {0,1,5,8,9,10,17,17,20,24,30} // p[i] means the price of the rod of length i inches. p[0] is dummy and not used.
+  int r[size(p)] = {0} // reversible memo table
+  int res // a variable to store the solution, i.e. the maximum revenue obtainable by cutting up the rod.
+  
+  call memoizedCutRod(p,10,r,res)

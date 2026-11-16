@@ -1,0 +1,20 @@
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/LevelCertDmMut_M1_tf_s3_up.lean:211:6: error: Tactic `decide` proved that the proposition
+  2 ∈ {2, 4, 5} → #{2, 4, 5} ≠ 3
+is false
+<local>/dev/github.com/tetsuo-jp/exact-rev-complexity-autoresearch/lean/build/mut/LevelCertDmMut_M1_tf_s3_up.lean:261:6: error: Tactic `decide` proved that the proposition
+  3 ∈ {3, 6, 7} → #{3, 6, 7} ≠ 3
+is false
+'SplitLemma.Dm_le_Dcert_of_levels' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.predT3_irrefl' depends on axioms: [propext, Quot.sound]
+'SplitLemma.schedT3_legal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.schedT3_peak' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.schedT3_clean' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.LvA3_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.LvA3_miss' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.hDmA3' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.LvB3_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.LvB3_miss' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.hDmB3' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.hpairT3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SplitLemma.split_h3_num_cert' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'SplitLemma.split_h3_num_cert_tight' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

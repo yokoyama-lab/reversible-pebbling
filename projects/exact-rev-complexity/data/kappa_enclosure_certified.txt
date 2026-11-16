@@ -1,0 +1,18 @@
+  (S) global sup over q in [1/100, 302/100] \ peak box: adaptive cover
+Krawczyk: unique critical point certified in the start box
+  q*   = [1.5153832361072514300458497030237796 +/- 3.64e-35]
+  rho* = [1.2554083402357119894979381658141637 +/- 3.37e-35]
+  V(q*) = [0.33174237925631051986374821775138328 +/- 3.38e-36]
+  kappa_lo (from V at rational q0) = [0.331742379256310519863748217751 +/- 3.84e-31]
+T1 ok: q >= 3.02  =>  V <= 0.33113 < kappa_lo
+T2 ok: q <= 0.01  =>  V <= [8.0426e-31 +/- 4.97e-36] < kappa_lo
+peak window: sup V <= [0.331742379256310519863750346182 +/- 2.13e-32]  (|V'| <= [2.1284e-12 +/- 3.07e-17])
+  cover: 200 boxes done, 89 pending [1s]
+  cover: 400 boxes done, 3 pending [2s]
+  cover: 600 boxes done, 1 pending [2s]
+S ok: cover proved V < kappa_lo off the peak (602 certified boxes)
+
+CERTIFIED ENCLOSURE
+  kappa* in [[0.33174237925631051986374821775138 +/- 3.29e-33], [0.33174237925631051986375034618202 +/- 1.29e-33]]
+  width <= [2.1284e-24 +/- 3.07e-29]
+  c = 2^(1+kappa*) in [[2.5170648368938161205744381533129 +/- 3.13e-33], [2.5170648368938161205744418667782 +/- 4.21e-32]]

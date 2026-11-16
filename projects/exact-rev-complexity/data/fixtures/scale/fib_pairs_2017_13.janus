@@ -1,0 +1,36 @@
+// Memoized paired fibonacci example
+// k: odd
+
+procedure fib(int M[], int k, int r1, int r2)
+ if k <= 1 then
+  if k = 0 then
+   r1 ^= 1
+   M[0] ^= 1              //flip
+  else
+   r1 ^= 1
+   r2 ^= 1
+   M[0] ^= 1              //flip
+   M[1] ^= 1              //flip
+  fi k = 0
+ else
+  if M[k] != 0 && M[k-1] != 0 then
+   r1 ^= M[k-1]           //set $\mathit{fib}_{k-1}$
+   r2 ^= M[k]             //set $\mathit{fib}_{k}$
+   M[k-1] ^= r1           //clear
+   M[k]   ^= r2           //clear
+  else
+   call fib(M, k-2, r1, r2)
+   M[k-1] ^= r1 + r2      //set $\mathit{fib}_{k-1}$
+   M[k]   ^= r2 + M[k-1]  //set $\mathit{fib}_{k}$
+   r1^=(M[k-1]-r2)^M[k-1] //set $\mathit{fib}_{k-1}$
+   r2^=(M[k]-M[k-1])^M[k] //set $\mathit{fib}_{k}$
+  fi M[k] = 0 && M[k-1] = 0
+ fi k <= 1
+
+procedure main()
+  int M[14]
+  int n
+  int r1
+  int r2
+  n += 13
+  call fib(M, n, r1, r2)
