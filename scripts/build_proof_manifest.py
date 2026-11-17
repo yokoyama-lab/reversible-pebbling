@@ -4001,8 +4001,9 @@ def main() -> int:
                           "mstar_p4_interior (M*(n,4,e) = 4n-6e-9 for "
                           "3e+4 <= n <= 4e+7), mstar_p5_interior "
                           "(M*(n,5,e) = 4n-8e-11 for 4e+5 <= n <= 7e+11). "
-                          "Not covered: n > T(p)+e*T(p-1) (for p = 4 the "
-                          "endpoint n = 4e+8 stays open) and the structural "
+                          "Not covered: n > T(p)+e*T(p-1) (see "
+                          "erasure_pebbling_next_point for n = T(p)+e*T(p-1)+1) "
+                          "and the structural "
                           "statement that optimal plans use exactly e erasures. "
                           "Lifts the 2026-11-11 paper proof to layer 1; "
                           "mutation test 6/6 detected, control passes."),
@@ -4016,6 +4017,33 @@ def main() -> int:
                     "ErasurePebbling.Triangular.window_seg",
                     "ErasurePebbling.Triangular.Seg.reverse",
                     "ErasurePebbling.Triangular.tri_eq",
+                ],
+            },
+            "erasure_pebbling_next_point": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (2026-11-17): one past the triangular "
+                          "frontier. For every p >= 4, e >= 0 and "
+                          "n = T(p) + e*T(p-1) + 1, with L0 = 2n-1 + 2(n-A): a "
+                          "clean plan with L0+2 moves exists (next_spec: the "
+                          "25-move seed seed_p4 for p = 4, checked by decide, "
+                          "lifted to larger p by lift, then e erasure blocks), "
+                          "and every plan has length L0 or >= L0+2 "
+                          "(next_point, from Contraction.length_ge and "
+                          "length_odd). For p = 4, n = 4e+8: "
+                          "23+10e <= M* <= 25+10e (p4_endpoint). Whether L0 is "
+                          "attained is NOT decided; numerically the priced "
+                          "recurrence of Thumann-Soloveichik excludes it "
+                          "(scripts/erasure_ts_lagrangian.py, layer 2). "
+                          "Lifts the upper bound of the 2026-11-11 paper note; "
+                          "mutation test 5/5 detected, control passes."),
+                "theorems": [
+                    "ErasurePebbling.NextPoint.next_point",
+                    "ErasurePebbling.NextPoint.p4_endpoint",
+                    "ErasurePebbling.NextPoint.next_spec",
+                    "ErasurePebbling.NextPoint.base_spec",
+                    "ErasurePebbling.NextPoint.lift",
+                    "ErasurePebbling.NextPoint.block",
+                    "ErasurePebbling.NextPoint.seed_p4",
                 ],
             },
             "erasure_pebbling_bounded": {
