@@ -14,3 +14,4 @@ import ErasurePebbling.Additive
 import ErasurePebbling.Checker
 import ErasurePebbling.FirstDrop
 import ErasurePebbling.Contraction
+import ErasurePebbling.Triangular

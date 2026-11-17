@@ -3966,9 +3966,9 @@ def main() -> int:
                           "Corollaries: near_band_lower (n = A+j gives "
                           ">= 2n-1+2j), p4_lower (n >= 3e+4 gives >= 4n-6e-9), "
                           "first_drop_tight (j = 1 is attained). Only lower "
-                          "bounds: the matching upper constructions for "
-                          "2 <= j <= p-2 and the p = 4 interior are not in "
-                          "Lean. Lifts the 2026-11-11 paper proof to layer 1; "
+                          "bounds here; the matching upper constructions "
+                          "(n <= T(p)+e*T(p-1)) are erasure_pebbling_triangular. "
+                          "Lifts the 2026-11-11 paper proof to layer 1; "
                           "mutation test 4/4 detected, control passes."),
                 "theorems": [
                     "ErasurePebbling.Contraction.contraction_bound",
@@ -3980,6 +3980,42 @@ def main() -> int:
                     "ErasurePebbling.Contraction.contract_merge",
                     "ErasurePebbling.Contraction.mc_phase_before",
                     "ErasurePebbling.Contraction.le_of_tight",
+                ],
+            },
+            "erasure_pebbling_triangular": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (2026-11-17): the contraction bound is "
+                          "attained up to the triangular frontier. With "
+                          "T(p) = p(p-1)/2+1 (tri, tri_eq) and "
+                          "A = (p-1)(e+1)+1: for every p >= 3, e >= 0 and "
+                          "1 <= n <= T(p) + e*T(p-1), "
+                          "M*(n,p,e) = 2n-1 + 2*max(0, n-A) (mstar_exact). "
+                          "Upper side: tri_spec (p >= 2, p <= n <= T(p): peak p, "
+                          "no erasure, 4n-2p-1 moves, by splitting n = a+b and "
+                          "running the (p-1)-plan above a held stone) and "
+                          "blocks_spec (e blocks of length in [p-1, T(p-1)], one "
+                          "erasure each), built from window_seg (a play shifted "
+                          "into a window above a held stone) and Seg.reverse. "
+                          "Lower side: Contraction.length_ge. Corollaries: "
+                          "near_band_exact (n = A+j, j <= p-2), "
+                          "mstar_p4_interior (M*(n,4,e) = 4n-6e-9 for "
+                          "3e+4 <= n <= 4e+7), mstar_p5_interior "
+                          "(M*(n,5,e) = 4n-8e-11 for 4e+5 <= n <= 7e+11). "
+                          "Not covered: n > T(p)+e*T(p-1) (for p = 4 the "
+                          "endpoint n = 4e+8 stays open) and the structural "
+                          "statement that optimal plans use exactly e erasures. "
+                          "Lifts the 2026-11-11 paper proof to layer 1; "
+                          "mutation test 6/6 detected, control passes."),
+                "theorems": [
+                    "ErasurePebbling.Triangular.mstar_exact",
+                    "ErasurePebbling.Triangular.near_band_exact",
+                    "ErasurePebbling.Triangular.mstar_p4_interior",
+                    "ErasurePebbling.Triangular.mstar_p5_interior",
+                    "ErasurePebbling.Triangular.tri_spec",
+                    "ErasurePebbling.Triangular.blocks_spec",
+                    "ErasurePebbling.Triangular.window_seg",
+                    "ErasurePebbling.Triangular.Seg.reverse",
+                    "ErasurePebbling.Triangular.tri_eq",
                 ],
             },
             "erasure_pebbling_bounded": {
