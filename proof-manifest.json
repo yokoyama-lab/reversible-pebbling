@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "012f03a7b101e5c9666b73af0a883699056177828a81af3f4f04d36fd14b5dc1",
+ "proof_bundle_sha256": "ff92a0a851be575222f70c66650d4fe501b2d7f864a7cd3555382bd0c0590bc1",
  "source_sha256": {
   "lakefile.toml": "e6279687261ee91a8173f529f1bc1951ab9287b6da740add8cd2dd8a3e78c8b2",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -16,6 +16,7 @@
   "ErasurePebbling/Contraction.lean": "a9b24483569de7af7f59feb32920df231ca47bfa8dfd7ca6a37c878499f95d4f",
   "ErasurePebbling/FirstDrop.lean": "77a1178269f092028be7b19ecd40af00bc3e264af5a82beea416a4087cc89f43",
   "ErasurePebbling/NextPoint.lean": "fe7f7201eb67507b9bf5f44a04ef53a7f920a293d417eb2db908e0d0f3757fcf",
+  "ErasurePebbling/NextPointLower.lean": "d93a5c0d8ba5f78f6ad36722222129165783ae1d0ac4cb1f752a7e4d2a9f83ad",
   "ErasurePebbling/Potential.lean": "fde9109d8acbfd6c1a1b533c47b91c6bd5dfc514ea0a7d46d26c1b128a305cfe",
   "ErasurePebbling/Reach.lean": "e7de11d44e128da7c5db054168adf7cea7aa1d7ba7a50e0f2925a3dc68aad25a",
   "ErasurePebbling/RemovalCases.lean": "70ef57688c6412605e5e6b4555aec38296c6b45e93395a41eb2d978280b0afd2",
@@ -24,7 +25,7 @@
   "ErasurePebbling/Sweep.lean": "07f0fa019a73090d62c258f61d900fd7188a0083605c3845068cc227cfb5e0a6",
   "ErasurePebbling/Triangular.lean": "c1620f2538abf62766c926e7b6e36fe554fcd30073d2ef63d23bd81b23a542d5",
   "ErasurePebbling/UpperBound.lean": "35aed5b54dc970d69c8f366d144d946d26ee6f445e1578eba6799d711976d9b7",
-  "ErasurePebbling.lean": "7e48fd6d09db8e2287ae614da8fe6a18b49faca526a3198fb9d0ff4ce9723681",
+  "ErasurePebbling.lean": "3020262dbb20ccc3d9cf1fd1ffa8e9b632f2871a29d536404e7382792131d209",
   "RevPebbling/AnchorCertify.lean": "40bf53b0795b8dd8cdb14f14d405542403788b67495a1b5fb3e0d79e6246656b",
   "RevPebbling/AnchorCertify4798.lean": "b770164d7376dc8f5a0d8beb5e300b07cb3125fbaca00ff82ee10d4c5fb719dc",
   "RevPebbling/AnchorDP.lean": "782df7f9944c51738ae7d2f2a0e38d01a3ebf448a97bfd448c54e8b72440ab03",
@@ -2693,7 +2694,7 @@
   },
   "erasure_pebbling_next_point": {
    "status": "proved_general",
-   "scope": "UNBOUNDED (2026-11-17): one past the triangular frontier. For every p >= 4, e >= 0 and n = T(p) + e*T(p-1) + 1, with L0 = 2n-1 + 2(n-A): a clean plan with L0+2 moves exists (next_spec: the 25-move seed seed_p4 for p = 4, checked by decide, lifted to larger p by lift, then e erasure blocks), and every plan has length L0 or >= L0+2 (next_point, from Contraction.length_ge and length_odd). For p = 4, n = 4e+8: 23+10e <= M* <= 25+10e (p4_endpoint). Whether L0 is attained is NOT decided; numerically the priced recurrence of Thumann-Soloveichik excludes it (scripts/erasure_ts_lagrangian.py, layer 2). Lifts the upper bound of the 2026-11-11 paper note; mutation test 5/5 detected, control passes.",
+   "scope": "UNBOUNDED (2026-11-17): one past the triangular frontier. For every p >= 4, e >= 0 and n = T(p) + e*T(p-1) + 1, with L0 = 2n-1 + 2(n-A): a clean plan with L0+2 moves exists (next_spec: the 25-move seed seed_p4 for p = 4, checked by decide, lifted to larger p by lift, then e erasure blocks), and every plan has length L0 or >= L0+2 (next_point, from Contraction.length_ge and length_odd). For p = 4, n = 4e+8: 23+10e <= M* <= 25+10e (p4_endpoint). L0 is excluded in erasure_pebbling_next_point_lower. Lifts the upper bound of the 2026-11-11 paper note; mutation test 5/5 detected, control passes.",
    "theorems": [
     "ErasurePebbling.NextPoint.next_point",
     "ErasurePebbling.NextPoint.p4_endpoint",
@@ -2702,6 +2703,27 @@
     "ErasurePebbling.NextPoint.lift",
     "ErasurePebbling.NextPoint.block",
     "ErasurePebbling.NextPoint.seed_p4"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_next_point_lower": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (2026-11-17): the lower bound one past the triangular frontier. frontier_lower: for every p >= 2, n >= 2, e and every clean plan with peak p, at most e erasures and length <= 2n-1 + 2(n-A), A = (p-1)(e+1)+1, we have n <= T(p) + e*T(p-1). Hence next_exact: M*(n,p,e) = L0+2 at n = T(p)+e*T(p-1)+1 for every p >= 4, e >= 0, and p4_exact: M*(4e+8,4,e) = 25+10e. The proof works on the plan's toggle counts (Tr, ofPlay) without contraction: ascents of the last-move times are erasures, runs hold <= p-1 singles (kr_le), the length bound makes everything tight (forced), and the doubles below the k-th single of a run number <= p-1-k (gap_bound). Lifts the 2026-11-11 paper proof (a different route: that one used contraction with event-level erasure preservation) to layer 1; mutation test 6/6 detected, control passes.",
+   "theorems": [
+    "ErasurePebbling.NextPointLower.frontier_lower",
+    "ErasurePebbling.NextPointLower.next_exact",
+    "ErasurePebbling.NextPointLower.p4_exact",
+    "ErasurePebbling.NextPointLower.Tr.frontier_of_length",
+    "ErasurePebbling.NextPointLower.Tr.forced",
+    "ErasurePebbling.NextPointLower.Tr.gap_bound",
+    "ErasurePebbling.NextPointLower.Tr.kr_le",
+    "ErasurePebbling.NextPointLower.Tr.numAsc_le_eras",
+    "ErasurePebbling.NextPointLower.Tr.asc_single",
+    "ErasurePebbling.NextPointLower.Tr.end_single",
+    "ErasurePebbling.NextPointLower.ofPlay"
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],

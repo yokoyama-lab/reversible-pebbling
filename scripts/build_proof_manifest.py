@@ -4030,10 +4030,8 @@ def main() -> int:
                           "and every plan has length L0 or >= L0+2 "
                           "(next_point, from Contraction.length_ge and "
                           "length_odd). For p = 4, n = 4e+8: "
-                          "23+10e <= M* <= 25+10e (p4_endpoint). Whether L0 is "
-                          "attained is NOT decided; numerically the priced "
-                          "recurrence of Thumann-Soloveichik excludes it "
-                          "(scripts/erasure_ts_lagrangian.py, layer 2). "
+                          "23+10e <= M* <= 25+10e (p4_endpoint). L0 is "
+                          "excluded in erasure_pebbling_next_point_lower. "
                           "Lifts the upper bound of the 2026-11-11 paper note; "
                           "mutation test 5/5 detected, control passes."),
                 "theorems": [
@@ -4044,6 +4042,39 @@ def main() -> int:
                     "ErasurePebbling.NextPoint.lift",
                     "ErasurePebbling.NextPoint.block",
                     "ErasurePebbling.NextPoint.seed_p4",
+                ],
+            },
+            "erasure_pebbling_next_point_lower": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (2026-11-17): the lower bound one past "
+                          "the triangular frontier. frontier_lower: for every "
+                          "p >= 2, n >= 2, e and every clean plan with peak p, "
+                          "at most e erasures and length <= 2n-1 + 2(n-A), "
+                          "A = (p-1)(e+1)+1, we have n <= T(p) + e*T(p-1). "
+                          "Hence next_exact: M*(n,p,e) = L0+2 at "
+                          "n = T(p)+e*T(p-1)+1 for every p >= 4, e >= 0, and "
+                          "p4_exact: M*(4e+8,4,e) = 25+10e. The proof works on "
+                          "the plan's toggle counts (Tr, ofPlay) without "
+                          "contraction: ascents of the last-move times are "
+                          "erasures, runs hold <= p-1 singles (kr_le), the "
+                          "length bound makes everything tight (forced), and "
+                          "the doubles below the k-th single of a run number "
+                          "<= p-1-k (gap_bound). Lifts the 2026-11-11 paper "
+                          "proof (a different route: that one used contraction "
+                          "with event-level erasure preservation) to layer 1; "
+                          "mutation test 6/6 detected, control passes."),
+                "theorems": [
+                    "ErasurePebbling.NextPointLower.frontier_lower",
+                    "ErasurePebbling.NextPointLower.next_exact",
+                    "ErasurePebbling.NextPointLower.p4_exact",
+                    "ErasurePebbling.NextPointLower.Tr.frontier_of_length",
+                    "ErasurePebbling.NextPointLower.Tr.forced",
+                    "ErasurePebbling.NextPointLower.Tr.gap_bound",
+                    "ErasurePebbling.NextPointLower.Tr.kr_le",
+                    "ErasurePebbling.NextPointLower.Tr.numAsc_le_eras",
+                    "ErasurePebbling.NextPointLower.Tr.asc_single",
+                    "ErasurePebbling.NextPointLower.Tr.end_single",
+                    "ErasurePebbling.NextPointLower.ofPlay",
                 ],
             },
             "erasure_pebbling_bounded": {
