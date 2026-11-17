@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "exact_reversible_pebbling",
  "prover": "Lean (version 4.31.0, x86_64-unknown-linux-gnu, commit 68218e876d2a38b1985b8590fff244a83c321783, Release)",
- "proof_bundle_sha256": "ff92a0a851be575222f70c66650d4fe501b2d7f864a7cd3555382bd0c0590bc1",
+ "proof_bundle_sha256": "ccba63c0d6767bc6e130d46917425578517b7ce5458c63b3344de63c264f02d8",
  "source_sha256": {
   "lakefile.toml": "e6279687261ee91a8173f529f1bc1951ab9287b6da740add8cd2dd8a3e78c8b2",
   "lean-toolchain": "efac0b94923b2d8b6840cd35be9177ad0fc5ab2332f4f4311c98712cee92fdee",
@@ -15,8 +15,9 @@
   "ErasurePebbling/Conjectures.lean": "f0b53ecec431e9f6e1b54b7f3881014040c4f33917120df12a166d8b7946fe59",
   "ErasurePebbling/Contraction.lean": "a9b24483569de7af7f59feb32920df231ca47bfa8dfd7ca6a37c878499f95d4f",
   "ErasurePebbling/FirstDrop.lean": "77a1178269f092028be7b19ecd40af00bc3e264af5a82beea416a4087cc89f43",
+  "ErasurePebbling/FrontierRigidity.lean": "fa4ffa321521c4816bd2b5a637f2e71952b04bab59eb4a96c33ae77d38f9e061",
   "ErasurePebbling/NextPoint.lean": "fe7f7201eb67507b9bf5f44a04ef53a7f920a293d417eb2db908e0d0f3757fcf",
-  "ErasurePebbling/NextPointLower.lean": "d93a5c0d8ba5f78f6ad36722222129165783ae1d0ac4cb1f752a7e4d2a9f83ad",
+  "ErasurePebbling/NextPointLower.lean": "9b05d345e2dcd89873aeafcf7bebb21183f914951bd2cab1d0104aa5f22196e3",
   "ErasurePebbling/Potential.lean": "fde9109d8acbfd6c1a1b533c47b91c6bd5dfc514ea0a7d46d26c1b128a305cfe",
   "ErasurePebbling/Reach.lean": "e7de11d44e128da7c5db054168adf7cea7aa1d7ba7a50e0f2925a3dc68aad25a",
   "ErasurePebbling/RemovalCases.lean": "70ef57688c6412605e5e6b4555aec38296c6b45e93395a41eb2d978280b0afd2",
@@ -25,7 +26,7 @@
   "ErasurePebbling/Sweep.lean": "07f0fa019a73090d62c258f61d900fd7188a0083605c3845068cc227cfb5e0a6",
   "ErasurePebbling/Triangular.lean": "c1620f2538abf62766c926e7b6e36fe554fcd30073d2ef63d23bd81b23a542d5",
   "ErasurePebbling/UpperBound.lean": "35aed5b54dc970d69c8f366d144d946d26ee6f445e1578eba6799d711976d9b7",
-  "ErasurePebbling.lean": "3020262dbb20ccc3d9cf1fd1ffa8e9b632f2871a29d536404e7382792131d209",
+  "ErasurePebbling.lean": "6f928647c67f77d76e41caf7e600b12615939796e404f5cd461abd72cb52cd46",
   "RevPebbling/AnchorCertify.lean": "40bf53b0795b8dd8cdb14f14d405542403788b67495a1b5fb3e0d79e6246656b",
   "RevPebbling/AnchorCertify4798.lean": "b770164d7376dc8f5a0d8beb5e300b07cb3125fbaca00ff82ee10d4c5fb719dc",
   "RevPebbling/AnchorDP.lean": "782df7f9944c51738ae7d2f2a0e38d01a3ebf448a97bfd448c54e8b72440ab03",
@@ -2727,6 +2728,26 @@
    ],
    "native_decide_theorems": [],
    "axiom_free_theorems": [],
+   "carried_hypotheses": {},
+   "proves_hypotheses": {}
+  },
+  "erasure_pebbling_frontier_rigidity": {
+   "status": "proved_general",
+   "scope": "UNBOUNDED (2026-11-17): rigidity on the triangular frontier n = T(p) + e*T(p-1), p >= 2, n >= 2. Every clean plan with peak p, at most e erasures and at most L0 = 2n-1 + 2(n-A) moves (all shortest plans, optimal_meets_bound for p >= 3) places cell i < n-1 once iff psingle p i and otherwise exactly twice, the target once, uses exactly e erasures, and a move is an erasure iff it is the last move on a cell with pasc p (rigidity); hence the placement counts do not depend on the plan (counts_unique). psingle/pasc come from a fixed automaton pst; example_p4_e1 checks the p=4, e=1 case by decide. Agreement of pst with the closed forms s_k = kp - k(k+1)/2 etc. of the 2026-11-11 note is checked numerically only (p <= 8, e <= 4). Uses NextPointLower.Tr.frontier_eq; mutation test 6/6 detected, control passes.",
+   "theorems": [
+    "ErasurePebbling.FrontierRigidity.rigidity",
+    "ErasurePebbling.FrontierRigidity.counts_unique",
+    "ErasurePebbling.FrontierRigidity.optimal_meets_bound",
+    "ErasurePebbling.FrontierRigidity.example_p4_e1",
+    "ErasurePebbling.FrontierRigidity.Tr.pattern",
+    "ErasurePebbling.FrontierRigidity.Tr.tight_gap",
+    "ErasurePebbling.FrontierRigidity.Tr.double_room",
+    "ErasurePebbling.NextPointLower.Tr.frontier_eq"
+   ],
+   "native_decide_theorems": [],
+   "axiom_free_theorems": [
+    "ErasurePebbling.FrontierRigidity.example_p4_e1"
+   ],
    "carried_hypotheses": {},
    "proves_hypotheses": {}
   },

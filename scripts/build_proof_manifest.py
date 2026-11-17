@@ -4077,6 +4077,35 @@ def main() -> int:
                     "ErasurePebbling.NextPointLower.ofPlay",
                 ],
             },
+            "erasure_pebbling_frontier_rigidity": {
+                "status": "proved_general",
+                "scope": ("UNBOUNDED (2026-11-17): rigidity on the triangular "
+                          "frontier n = T(p) + e*T(p-1), p >= 2, n >= 2. Every "
+                          "clean plan with peak p, at most e erasures and at "
+                          "most L0 = 2n-1 + 2(n-A) moves (all shortest plans, "
+                          "optimal_meets_bound for p >= 3) places cell i < n-1 "
+                          "once iff psingle p i and otherwise exactly twice, the "
+                          "target once, uses exactly e erasures, and a move is "
+                          "an erasure iff it is the last move on a cell with "
+                          "pasc p (rigidity); hence the placement counts do not "
+                          "depend on the plan (counts_unique). psingle/pasc come "
+                          "from a fixed automaton pst; example_p4_e1 checks the "
+                          "p=4, e=1 case by decide. Agreement of pst with the "
+                          "closed forms s_k = kp - k(k+1)/2 etc. of the "
+                          "2026-11-11 note is checked numerically only (p <= 8, "
+                          "e <= 4). Uses NextPointLower.Tr.frontier_eq; "
+                          "mutation test 6/6 detected, control passes."),
+                "theorems": [
+                    "ErasurePebbling.FrontierRigidity.rigidity",
+                    "ErasurePebbling.FrontierRigidity.counts_unique",
+                    "ErasurePebbling.FrontierRigidity.optimal_meets_bound",
+                    "ErasurePebbling.FrontierRigidity.example_p4_e1",
+                    "ErasurePebbling.FrontierRigidity.Tr.pattern",
+                    "ErasurePebbling.FrontierRigidity.Tr.tight_gap",
+                    "ErasurePebbling.FrontierRigidity.Tr.double_room",
+                    "ErasurePebbling.NextPointLower.Tr.frontier_eq",
+                ],
+            },
             "erasure_pebbling_bounded": {
                 "status": "proved_bounded",
                 "scope": ("BOUNDED, native_decide, ORACLE LEVEL: the bit-mask "

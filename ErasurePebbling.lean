@@ -17,3 +17,4 @@ import ErasurePebbling.Contraction
 import ErasurePebbling.Triangular
 import ErasurePebbling.NextPoint
 import ErasurePebbling.NextPointLower
+import ErasurePebbling.FrontierRigidity

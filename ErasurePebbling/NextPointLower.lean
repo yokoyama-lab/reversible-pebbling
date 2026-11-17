@@ -1067,8 +1067,14 @@ theorem gap_of_asc {i : Nat} (ha : T.asc i) : T.gap i = 0 := by
   rw [show i = (i - 1) + 1 by omega]
   simp only [gap]; rw [if_pos hs]
 
-/-- **The bound.**  A plan meeting the length bound lives below the triangular frontier. -/
-theorem frontier : T.n ≤ Triangular.tri T.p + e * Triangular.tri (T.p - 1) := by
+/-- **The bound, with its slack.**  The gaps below the singles fall short of their
+capacities by exactly `T(p) + e·T(p−1) − n`. -/
+theorem frontier_eq :
+    T.n + rsum (T.n - 1) (fun i => if T.single i ∧ ¬ T.asc i then T.p - 1 - T.kr i else 0) =
+      Triangular.tri T.p + e * Triangular.tri (T.p - 1) +
+        rsum (T.n - 1) (fun i => if T.single i then T.gap i else 0) ∧
+    (∀ i, i < T.n - 1 → (if T.single i then T.gap i else 0) ≤
+      (if T.single i ∧ ¬ T.asc i then T.p - 1 - T.kr i else 0)) := by
   -- the doubles
   have hD := T.gap_tele (T.n - 1)
   have hlast : T.gap (T.n - 1) = 0 := by
@@ -1080,8 +1086,8 @@ theorem frontier : T.n ≤ Triangular.tri T.p + e * Triangular.tri (T.p - 1) := 
     unfold S; rw [← rsum_add]
     rw [rsum_congr _ (fun _ => 1) _ (fun i _ => by split <;> rfl), rsum_one]
   -- gap ≤ capacity, pointwise
-  have h1 := rsum_le (fun i => if T.single i then T.gap i else 0)
-    (fun i => if T.single i ∧ ¬ T.asc i then T.p - 1 - T.kr i else 0) (T.n - 1) (by
+  have h1pt : ∀ i, i < T.n - 1 → (if T.single i then T.gap i else 0) ≤
+      (if T.single i ∧ ¬ T.asc i then T.p - 1 - T.kr i else 0) := by
       intro i hi
       by_cases hs : T.single i
       · rw [if_pos hs]
@@ -1090,7 +1096,9 @@ theorem frontier : T.n ≤ Triangular.tri T.p + e * Triangular.tri (T.p - 1) := 
         · rw [if_pos ⟨hs, ha⟩]
           have := gap_bound F hp hn hs hi ha
           omega
-      · rw [if_neg hs]; exact Nat.zero_le _)
+      · rw [if_neg hs]; exact Nat.zero_le _
+  have h1 := rsum_le (fun i => if T.single i then T.gap i else 0)
+    (fun i => if T.single i ∧ ¬ T.asc i then T.p - 1 - T.kr i else 0) (T.n - 1) h1pt
   -- split off the run starts
   have h2 : rsum (T.n - 1) (fun i => if T.single i then T.p - 1 - T.kr i else 0) =
       rsum (T.n - 1) (fun i => if T.single i ∧ ¬ T.asc i then T.p - 1 - T.kr i else 0) +
@@ -1155,6 +1163,12 @@ theorem frontier : T.n ≤ Triangular.tri T.p + e * Triangular.tri (T.p - 1) := 
     omega
   have m2 : e * Triangular.tri (T.p - 1) = T.hcap (T.p - 1) * e + e := by
     rw [← hH, Nat.mul_succ, Nat.mul_comm]
+  exact ⟨by omega, h1pt⟩
+
+/-- **The bound.**  A plan meeting the length bound lives below the triangular frontier. -/
+theorem frontier : T.n ≤ Triangular.tri T.p + e * Triangular.tri (T.p - 1) := by
+  obtain ⟨h, hpt⟩ := frontier_eq F hp hn
+  have := rsum_le _ _ _ hpt
   omega
 
 end forced3
